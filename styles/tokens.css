@@ -1,0 +1,56 @@
+/* ============================================================
+   ONSITE Web Generator — Design System v0 토큰
+   미니멀(거의 흑백, 여백·위계 중심). primitive → semantic.
+   섹션/컴포넌트 CSS는 이 토큰만 참조. raw 값 금지.
+   ============================================================ */
+:root{
+  /* ---------- primitive: 색 ---------- */
+  --c-ink-900:#111318;
+  --c-ink-700:#3d414a;
+  --c-ink-500:#6b7078;
+  --c-ink-300:#a6abb4;
+  --c-line:#e8e9ec;
+  --c-line-2:#f1f2f4;
+  --c-white:#ffffff;
+  --c-paper:#fafafb;
+  /* 상태색(최소) — 매뉴얼 Callout 등에서 사용 */
+  --c-info:#2563eb; --c-info-bg:#eff4ff;
+  --c-warn:#b45309; --c-warn-bg:#fff7ed;
+  --c-danger:#b91c1c; --c-danger-bg:#fef2f2;
+  --c-ok:#15803d; --c-ok-bg:#f0fdf4;
+
+  /* ---------- primitive: 타이포 스케일 (모듈러) ---------- */
+  --fs-13:13px; --fs-14:14px; --fs-15:15px; --fs-16:16px; --fs-18:18px;
+  --fs-22:22px; --fs-28:28px; --fs-34:34px; --fs-44:44px;
+  --lh-tight:1.25; --lh-base:1.6;
+  --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+  --font-mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+
+  /* ---------- primitive: 스페이싱 (8pt + 4pt 보조) ---------- */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px;
+  --s-6:32px; --s-7:48px; --s-8:72px; --s-9:104px;
+
+  /* ---------- primitive: 형태 ---------- */
+  --radius-sm:8px; --radius:10px; --radius-pill:100px;
+  --border-w:1px;
+
+  /* ============================================================
+     semantic (역할 토큰) — 컴포넌트/섹션은 여기부터 참조
+     다크모드는 이 레이어만 교체 (값 정의는 후순위 / 훅만 유지)
+     ============================================================ */
+  --bg:var(--c-white);
+  --bg-alt:var(--c-paper);
+  --surface:var(--c-white);
+  --text:var(--c-ink-900);
+  --text-muted:var(--c-ink-500);
+  --text-soft:var(--c-ink-300);
+  --border:var(--c-line);
+  --border-soft:var(--c-line-2);
+
+  /* 브랜드 강조 = 잉크색 (컬러 최소화 정책). 추후 브랜드 컬러 도입 시 여기만 교체 */
+  --brand:var(--c-ink-900);
+  --brand-contrast:var(--c-white);
+
+  --maxw:1080px;
+}

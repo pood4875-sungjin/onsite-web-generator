@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹사이트 빌더형 AX 디자인 제너레이터 구축·배포</title>
+<style>
+  :root{
+    --bg:#fbfbfa; --card:#fff; --text:#1a1a1a; --muted:#6b6b6b;
+    --line:#e7e7e4; --brand:#2b6ef2; --brand-soft:#eef3fe;
+    --code-bg:#f4f4f2; --ok:#1a7f4b;
+    --maxw:840px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",
+      "Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+    line-height:1.7; font-size:16px; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:56px 24px 120px}
+  header.doc{margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid var(--line)}
+  .kicker{font-size:12.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--brand); margin-bottom:12px}
+  header.doc h1{font-size:28px; line-height:1.35; margin:0 0 14px; letter-spacing:-.02em}
+  .lead{font-size:16px; color:#333; margin:0; padding:14px 18px;
+    background:var(--brand-soft); border-left:3px solid var(--brand); border-radius:0 8px 8px 0}
+
+  h2{font-size:20px; margin:52px 0 16px; letter-spacing:-.01em; scroll-margin-top:20px}
+  h2 .num{color:var(--brand); font-variant-numeric:tabular-nums; margin-right:10px}
+  h3{font-size:15.5px; margin:26px 0 8px; color:#2a2a2a}
+  p{margin:12px 0}
+  .muted{color:var(--muted)}
+  strong{font-weight:650}
+  a{color:var(--brand); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  ul{margin:12px 0; padding-left:20px}
+  li{margin:6px 0}
+
+  table{width:100%; border-collapse:collapse; margin:18px 0; font-size:14px;
+    background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden}
+  th,td{text-align:left; padding:10px 13px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{background:#f6f6f4; font-weight:650; font-size:12.5px; color:#444}
+  tr:last-child td{border-bottom:none}
+  td.c,th.c{text-align:center; white-space:nowrap}
+  .scroll{overflow-x:auto}
+
+  code{background:var(--code-bg); padding:1.5px 6px; border-radius:5px;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:13px}
+  pre{background:var(--code-bg); color:#333; border:1px solid var(--line);
+    padding:16px 18px; border-radius:10px; overflow-x:auto; font-size:13px; line-height:1.6; margin:16px 0}
+  pre code{background:none; padding:0; color:inherit; font-size:13px}
+
+  .flow{background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; margin:16px 0; font-size:13.5px; line-height:1.9; color:#333;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; overflow-x:auto}
+  .flow .arrow{color:var(--brand)}
+
+  .callout{background:var(--brand-soft); border:1px solid var(--brand); border-radius:10px;
+    padding:16px 18px; margin:18px 0}
+  .callout .tag{display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--brand); margin-bottom:6px}
+
+  nav.toc{background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:18px 22px; margin-bottom:44px}
+  nav.toc .t{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--muted); margin-bottom:10px}
+  nav.toc ol{margin:0; padding-left:0; list-style:none; columns:2; column-gap:32px}
+  nav.toc li{margin:4px 0; font-size:14px}
+  nav.toc a{color:#333}
+  nav.toc .n{color:var(--brand); font-weight:600; margin-right:7px; font-variant-numeric:tabular-nums}
+
+  @media(max-width:640px){
+    .wrap{padding:36px 18px 80px}
+    header.doc h1{font-size:22px}
+    nav.toc ol{columns:1}
+    h2{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc">
+    <div class="kicker">과제 기획서</div>
+    <h1>웹사이트 빌더형 AX 디자인 제너레이터<br>구축·배포</h1>
+    <p class="lead">기획 내용을 입력하면, 사전에 정의된 <strong>디자인 시스템 / 컴포넌트 / 섹션 패턴 / 템플릿 구조</strong>를 기준으로 웹 페이지를 안정적으로 생성하는 웹사이트 빌더형 도구를 구축한다.</p>
+  </header>
+
+  <nav class="toc">
+    <div class="t">목차</div>
+    <ol>
+      <li><a href="#s1"><span class="n">1</span>과제 개요</a></li>
+      <li><a href="#s2"><span class="n">2</span>전체 개념</a></li>
+      <li><a href="#s3"><span class="n">3</span>핵심 구축 구조</a></li>
+      <li><a href="#s4"><span class="n">4</span>Claude/Codex 활용 (7월)</a></li>
+      <li><a href="#s5"><span class="n">5</span>8월: 코드 구조 구현</a></li>
+      <li><a href="#s6"><span class="n">6</span>9월: MVP 구축</a></li>
+      <li><a href="#s7"><span class="n">7</span>10~12월 고도화</a></li>
+      <li><a href="#s8"><span class="n">8</span>월별 계획표</a></li>
+      <li><a href="#s9"><span class="n">9</span>월별 성공 기준</a></li>
+      <li><a href="#s10"><span class="n">10</span>핵심 정리</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <h2 id="s1"><span class="num">01</span>과제 개요</h2>
+  <h3>과제명</h3>
+  <p>웹사이트 빌더형 AX 디자인 제너레이터 구축·배포</p>
+  <h3>과제 정의</h3>
+  <p>기획 내용을 입력하면, 제너레이터가 사전에 정의된 디자인 시스템 / 컴포넌트 / 섹션 패턴 / 템플릿 구조를 기준으로 웹 페이지를 생성하는 도구를 구축한다. 우선 적용 대상은 <strong>온사이트 제품소개 페이지 및 매뉴얼 페이지</strong>로 설정한다.</p>
+  <p>초기 MVP는 완전 자동 생성 방식이 아니라, 정해진 템플릿 구조 안에 기획 내용을 입력하면 웹 페이지가 생성되는 방식으로 시작한다. 이후 고도화 단계에서는 AI가 기획 내용을 해석하고, 적합한 섹션 패턴을 자동으로 판단·조합하는 방식으로 확장한다.</p>
+
+  <!-- 2 -->
+  <h2 id="s2"><span class="num">02</span>전체 개념</h2>
+  <h3>초기 MVP 구조</h3>
+  <div class="flow">
+    기획 내용 입력 <span class="arrow">↓</span><br>
+    정해진 템플릿 선택 <span class="muted">(예: 제품소개 / 매뉴얼)</span> <span class="arrow">↓</span><br>
+    템플릿에 맞는 입력 폼 작성 <span class="arrow">↓</span><br>
+    사전 구현된 섹션에 콘텐츠 자동 배치 <span class="arrow">↓</span><br>
+    HTML / CSS / JavaScript 조합 <span class="arrow">↓</span><br>
+    웹 페이지 미리보기 및 산출
+  </div>
+  <h3>11월 이후 고도화 구조</h3>
+  <div class="flow">
+    기획 내용 입력 <span class="arrow">↓</span><br>
+    AI가 콘텐츠 목적과 구조 해석 <span class="arrow">↓</span><br>
+    적합한 섹션 패턴 자동 선택 <span class="arrow">↓</span><br>
+    섹션 순서 자동 조합 <span class="arrow">↓</span><br>
+    웹 페이지 생성
+  </div>
+  <p class="muted">초기에는 템플릿 기반 생성을 우선 구현하고, 이후에는 기획 기반 섹션 자동 판단으로 확장한다.</p>
+
+  <!-- 3 -->
+  <h2 id="s3"><span class="num">03</span>핵심 구축 구조</h2>
+  <p>제너레이터는 AI가 즉흥적으로 디자인하는 도구가 아니라, <strong>정의된 블록을 조합하는 웹사이트 빌더형 도구</strong>로 구축한다.</p>
+  <div class="scroll">
+  <table>
+    <tr><th>구분</th><th>역할</th><th>산출물</th></tr>
+    <tr><td><strong>Design System</strong></td><td>컬러, 타이포, 간격, 버튼, 카드 등 시각 기준 정의</td><td><code>DESIGN_SYSTEM.md</code>, <code>tokens.css</code></td></tr>
+    <tr><td><strong>Component Library</strong></td><td>버튼, 카드, 탭, 아코디언, 배지 등 기본 UI 구성</td><td><code>components/</code></td></tr>
+    <tr><td><strong>Section Pattern Library</strong></td><td>Hero, Feature, Process, Manual, Blog, FAQ, CTA, Banner 등 웹 구성 단위 정의</td><td><code>sections/</code></td></tr>
+    <tr><td><strong>Template Preset</strong></td><td>제품소개/매뉴얼 페이지의 고정 구조 정의</td><td><code>templates/product-intro.json</code>, <code>templates/manual.json</code></td></tr>
+    <tr><td><strong>Content Schema</strong></td><td>기획 내용을 어떤 구조로 입력받을지 정의</td><td><code>content-schema.json</code></td></tr>
+  </table>
+  </div>
+
+  <!-- 4 -->
+  <h2 id="s4"><span class="num">04</span>Claude/Codex 활용 방식 — 7월: 기준 정리 및 구조화</h2>
+  <p>7월에는 Claude를 활용하여 디자인 시스템과 섹션 패턴을 문서화·구조화한다. 핵심은 "알아서 디자인해줘"가 아니라, <strong>디자인 시스템 / 컴포넌트 / 섹션 패턴 / 콘텐츠 입력 구조를 AI가 읽을 수 있는 기준으로 정리</strong>하는 것이다.</p>
+  <h3>7월 주요 작업</h3>
+  <ul>
+    <li>웹 구성 섹션 분류</li>
+    <li>섹션별 디자인 완료</li>
+    <li>컴포넌트 구성 정리</li>
+    <li>디자인 시스템 기준 정리</li>
+    <li>Claude가 읽을 수 있는 MD 문서 구조화</li>
+  </ul>
+  <h3>Claude 산출물</h3>
+  <ul>
+    <li><code>DESIGN_SYSTEM.md</code></li>
+    <li><code>SECTION_PATTERN.md</code></li>
+    <li><code>COMPONENT_RULE.md</code></li>
+    <li><code>CONTENT_SCHEMA.md</code></li>
+    <li><code>TEMPLATE_STRUCTURE.md</code></li>
+  </ul>
+
+  <!-- 5 -->
+  <h2 id="s5"><span class="num">05</span>8월: AI가 읽을 수 있는 코드 구조 구현</h2>
+  <p>8월에는 7월에 정리한 문서와 디자인 기준을 기반으로, Claude Code/Codex를 활용해 실제 코드 구조를 만든다.</p>
+  <h3>목표</h3>
+  <p>디자인 시스템, 컴포넌트, 섹션 패턴을 각각 HTML / CSS / JavaScript 단위로 구현하고, <strong>AI가 해당 구조를 읽고 조합할 수 있는 상태</strong>로 만든다.</p>
+  <h3>코드 구조 예시</h3>
+  <pre><code>onsite-web-generator/
+├─ docs/
+│  ├─ DESIGN_SYSTEM.md
+│  ├─ SECTION_PATTERN.md
+│  ├─ COMPONENT_RULE.md
+│  └─ AI_GENERATION_RULE.md
+├─ styles/
+│  ├─ tokens.css
+│  └─ global.css
+├─ components/
+│  ├─ Button.js
+│  ├─ Card.js
+│  ├─ Badge.js
+│  └─ Accordion.js
+├─ sections/
+│  ├─ HeroSection.js
+│  ├─ FeatureSection.js
+│  ├─ ProcessSection.js
+│  ├─ ManualStepSection.js
+│  ├─ FAQSection.js
+│  └─ CTASection.js
+├─ templates/
+│  ├─ productIntroTemplate.json
+│  └─ manualTemplate.json
+└─ sample/
+   ├─ onsite-product-intro.json
+   └─ onsite-manual.json</code></pre>
+  <h3>8월 Claude 테스트 방식</h3>
+  <p>Claude에 디자인 시스템, 섹션 패턴, 컴포넌트 규칙, 템플릿 구조를 함께 제공하고, 온사이트 제품소개 페이지 콘텐츠를 입력했을 때 적절한 섹션과 콘텐츠 배치가 가능한지 검증한다.</p>
+  <div class="callout">
+    <span class="tag">예시 요청</span>
+    첨부한 <code>DESIGN_SYSTEM.md</code>, <code>SECTION_PATTERN.md</code>, <code>COMPONENT_RULE.md</code>, <code>productIntroTemplate.json</code>을 기준으로 온사이트 제품소개 페이지 콘텐츠를 입력했을 때, 어떤 섹션에 어떤 콘텐츠가 배치되어야 하는지 JSON으로 만들어줘.
+  </div>
+  <h3>검증 포인트</h3>
+  <table>
+    <tr><th>검증 항목</th><th>확인 내용</th></tr>
+    <tr><td>디자인 시스템 준수</td><td>임의 컬러나 스타일을 생성하지 않는가</td></tr>
+    <tr><td>섹션 매핑</td><td>콘텐츠가 적절한 섹션에 배치되는가</td></tr>
+    <tr><td>코드 재사용</td><td>기존 컴포넌트와 섹션을 조합하는가</td></tr>
+    <tr><td>구조 안정성</td><td>같은 입력에 대해 유사한 결과가 반복되는가</td></tr>
+    <tr><td>온사이트 적합성</td><td>제품소개/매뉴얼 페이지 맥락에 맞는가</td></tr>
+  </table>
+
+  <!-- 6 -->
+  <h2 id="s6"><span class="num">06</span>9월: 제너레이터 MVP 구축</h2>
+  <p>9월에는 Claude에서 테스트하는 수준을 넘어, <strong>내부 도구 형태의 제너레이터 MVP</strong>를 구축한다.</p>
+  <h3>MVP 기능</h3>
+  <table>
+    <tr><th>기능</th><th>설명</th></tr>
+    <tr><td>템플릿 선택</td><td>제품소개 / 매뉴얼 페이지 중 선택</td></tr>
+    <tr><td>콘텐츠 입력</td><td>제목, 설명, 기능, 단계, FAQ 등 입력</td></tr>
+    <tr><td>섹션 자동 배치</td><td>정해진 템플릿 구조에 콘텐츠 삽입</td></tr>
+    <tr><td>미리보기</td><td>생성된 웹 페이지 확인</td></tr>
+    <tr><td>코드 출력</td><td>HTML/CSS/JS 또는 정적 웹 결과물 출력</td></tr>
+    <tr><td>온사이트 적용</td><td>제품소개/매뉴얼 페이지 1차 완료</td></tr>
+  </table>
+  <h3>MVP 범위</h3>
+  <p>9월 MVP에서는 자동 판단을 최소화한다.</p>
+  <div class="flow">
+    사용자 입력 <span class="arrow">↓</span> 정해진 템플릿 <span class="arrow">↓</span> 정해진 섹션 <span class="arrow">↓</span> 웹 페이지 생성
+  </div>
+  <p>즉, 9월에는 AI가 모든 섹션을 알아서 선택하는 단계까지 확장하지 않고, <strong>정해진 템플릿 구조 안에 기획 내용을 넣으면 웹으로 산출되는 것</strong>을 핵심 목표로 한다.</p>
+
+  <!-- 7 -->
+  <h2 id="s7"><span class="num">07</span>10~12월 고도화 방향</h2>
+  <table>
+    <tr><th class="c">월</th><th>방향</th><th>내용</th></tr>
+    <tr><td class="c"><strong>10월</strong></td><td>안정화</td><td>생성 결과 오류 보완, 내부 검증, 온사이트 페이지 품질 개선</td></tr>
+    <tr><td class="c"><strong>11월</strong></td><td>패턴 자동 판단</td><td>AI가 기획 내용을 읽고 Hero, Feature, FAQ, CTA 등 적합한 섹션을 자동 선택하도록 고도화</td></tr>
+    <tr><td class="c"><strong>12월</strong></td><td>템플릿 확장 및 배포</td><td>제품소개 외 다른 페이지 유형 추가, 활용 가이드 배포, 최종 피드백 반영</td></tr>
+  </table>
+
+  <!-- 8 -->
+  <h2 id="s8"><span class="num">08</span>최종 월별 계획표</h2>
+  <div class="scroll">
+  <table>
+    <tr>
+      <th>구분</th><th>내용</th>
+      <th class="c">7월</th><th class="c">8월</th><th class="c">9월</th>
+      <th class="c">10월</th><th class="c">11월</th><th class="c">12월</th>
+    </tr>
+    <tr>
+      <td><strong>KR4</strong></td><td>AX 디자인 제너레이터 구축을 통한 디자인 제작 효율화</td>
+      <td class="c" colspan="6">진척률 / 피드백 반영률</td>
+    </tr>
+    <tr>
+      <td><strong>Ini.1</strong></td><td>UXUI 디자인 제작 효율화를 위한 웹사이트 빌더형 AX 제너레이터 구축·배포</td>
+      <td class="c">10%</td><td class="c">25%</td><td class="c">45%</td>
+      <td class="c">70%</td><td class="c">90%</td><td class="c">100%</td>
+    </tr>
+    <tr>
+      <td><strong>TASK1</strong></td><td>디자인 시스템 및 섹션 패턴 기준 수립</td>
+      <td>디자인 시스템 정리, 웹 구성 섹션 분류 및 섹션 디자인</td>
+      <td>AI 구현을 위한 문서·코드 구조 확정</td>
+      <td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td>
+    </tr>
+    <tr>
+      <td><strong>TASK2</strong></td><td>제너레이터 구현 및 온사이트 적용</td>
+      <td class="c">–</td>
+      <td>디자인 시스템·컴포넌트·섹션을 HTML/CSS/JS로 구현하고 Claude 테스트 완료</td>
+      <td>정해진 템플릿 기반 제너레이터 MVP 구축, 온사이트 제품소개·매뉴얼 페이지 1차 완료</td>
+      <td>제너레이터 안정화 및 산출 품질 보완</td>
+      <td>기획 기반 섹션 패턴 자동 판단 로직 고도화</td>
+      <td>제품소개 외 페이지 유형 추가 및 템플릿 최종 보완</td>
+    </tr>
+    <tr>
+      <td><strong>TASK3</strong></td><td>검증 및 활용 가이드 배포</td>
+      <td class="c">–</td><td class="c">–</td>
+      <td>온사이트 적용 결과 검토 및 개선사항 정리</td>
+      <td>내부 검증 및 피드백 반영</td>
+      <td>활용 가이드 정리</td>
+      <td>활용 가이드 배포 및 최종 피드백 반영</td>
+    </tr>
+  </table>
+  </div>
+
+  <!-- 9 -->
+  <h2 id="s9"><span class="num">09</span>월별 성공 기준</h2>
+  <table>
+    <tr><th class="c">시점</th><th>성공 기준</th></tr>
+    <tr><td class="c"><strong>7월 말</strong></td><td>디자인 시스템과 웹 섹션 패턴이 정리되고, 섹션 디자인이 완료됨</td></tr>
+    <tr><td class="c"><strong>8월 말</strong></td><td>Claude/Codex가 문서와 코드를 읽고 섹션 조합 테스트를 수행할 수 있음</td></tr>
+    <tr><td class="c"><strong>9월 말</strong></td><td>제너레이터 MVP 안에서 온사이트 제품소개/매뉴얼 페이지가 생성됨</td></tr>
+    <tr><td class="c"><strong>10월 말</strong></td><td>내부 검증을 통해 생성 품질과 오류가 보완됨</td></tr>
+    <tr><td class="c"><strong>11월 말</strong></td><td>AI가 기획 내용에 맞는 섹션 패턴을 일부 자동 판단함</td></tr>
+    <tr><td class="c"><strong>12월 말</strong></td><td>최종 템플릿, 활용 가이드, 배포본이 정리됨</td></tr>
+  </table>
+
+  <!-- 10 -->
+  <h2 id="s10"><span class="num">10</span>핵심 정리</h2>
+  <div class="callout">
+    <span class="tag">핵심</span>
+    이 과제의 핵심은 AI가 자유롭게 웹사이트를 디자인하는 것이 아니라, 사전에 정의된 <strong>디자인 시스템 / 컴포넌트 / 섹션 패턴 / 템플릿 구조</strong>를 기반으로 웹 페이지를 <strong>안정적으로 생성</strong>하는 것이다.
+  </div>
+  <div class="flow">
+    7월 <span class="muted">디자인 시스템 / 섹션 패턴 정의 및 디자인</span> <span class="arrow">↓</span><br>
+    8월 <span class="muted">HTML/CSS/JS 코드화 + Claude/Codex 테스트</span> <span class="arrow">↓</span><br>
+    9월 <span class="muted">정해진 템플릿 기반 제너레이터 MVP 구축 + 온사이트 적용</span> <span class="arrow">↓</span><br>
+    10월 <span class="muted">안정화 및 내부 검증</span> <span class="arrow">↓</span><br>
+    11월 <span class="muted">기획 기반 섹션 자동 판단 고도화</span> <span class="arrow">↓</span><br>
+    12월 <span class="muted">페이지 유형 확장, 활용 가이드 배포, 최종 피드백 반영</span>
+  </div>
+  <p>최종적으로는 온사이트 제품소개·매뉴얼 페이지를 시작으로, <strong>기획 입력만으로 브랜드/제품 기준에 맞는 웹 페이지를 빠르게 생성</strong>할 수 있는 웹사이트 빌더형 AX 디자인 제너레이터를 구축하는 것을 목표로 한다.</p>
+
+</div>
+</body>
+</html>

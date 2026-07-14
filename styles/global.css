@@ -1,0 +1,43 @@
+/* ============================================================
+   ONSITE Web Generator — global.css
+   최소 리셋 + 기본 타입. tokens.css 다음에 로드.
+   ============================================================ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-sans);
+  font-size:var(--fs-16);
+  line-height:var(--lh-base);
+  letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,p,figure{margin:0}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font:inherit}
+
+/* 레이아웃 유틸 */
+.container{max-width:var(--maxw);margin:0 auto;padding:0 var(--s-5)}
+.center{text-align:center}
+
+/* 섹션 리듬 (섹션 공통) */
+.band{padding:var(--s-9) 0;border-top:var(--border-w) solid var(--border-soft)}
+.band.alt{background:var(--bg-alt)}
+
+/* 타입 위계 */
+.eyebrow{font-size:var(--fs-13);font-weight:var(--fw-semibold);letter-spacing:.04em;
+  text-transform:uppercase;color:var(--text-soft);margin-bottom:var(--s-3)}
+.h-sec{font-size:var(--fs-34);font-weight:var(--fw-bold);letter-spacing:-.03em;line-height:var(--lh-tight)}
+.sub-sec{font-size:var(--fs-16);color:var(--text-muted);margin-top:var(--s-3);max-width:560px}
+.center .sub-sec{margin-left:auto;margin-right:auto}
+
+/* 버튼 (Component: Button) */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-15);font-weight:var(--fw-medium);
+  padding:11px 20px;border-radius:var(--radius-sm);border:var(--border-w) solid var(--border);
+  background:var(--surface);color:var(--text);cursor:pointer;transition:.12s}
+.btn:hover{background:var(--bg-alt)}
+.btn-primary{background:var(--brand);color:var(--brand-contrast);border-color:var(--brand)}
+.btn-lg{padding:14px 26px;font-size:var(--fs-16)}
