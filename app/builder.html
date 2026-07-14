@@ -5,17 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ONSITE Web Generator — Builder</title>
 <style>
-/* ===== DS v0 토큰 (인라인) ===== */
+/* ===== DS v1 토큰 (Wanted 기반, 인라인) ===== */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
+@import url("https://cdn.jsdelivr.net/npm/wanted-sans@1.0.3/fonts/webfonts/variable/split/WantedSansVariable.css");
 :root{
-  --ink:#111318;--ink-2:#3d414a;--muted:#6b7078;--soft:#a6abb4;
-  --line:#e8e9ec;--line-2:#f1f2f4;--bg:#fff;--bg-2:#fafafb;
-  --info:#2563eb;--info-bg:#eff4ff;--warn:#b45309;--warn-bg:#fff7ed;
-  --danger:#b91c1c;--danger-bg:#fef2f2;--ok:#15803d;--ok-bg:#f0fdf4;
+  --brand:oklch(0.563 0.232 257);--brand-hover:oklch(0.484 0.205 258);
+  --ink:oklch(0.148 0.004 277);
+  --ink-2:oklch(0.259 0.010 273 / 0.88);
+  --muted:oklch(0.298 0.010 273 / 0.61);
+  --soft:oklch(0.298 0.010 273 / 0.43);
+  --line:oklch(0.521 0.018 273 / 0.10);
+  --line-2:oklch(0.521 0.018 273 / 0.16);
+  --bg:oklch(1 0 0);--bg-2:oklch(0.972 0.002 286);
+  --info:oklch(0.563 0.232 257);--info-bg:oklch(0.954 0.022 250);
+  --warn:oklch(0.625 0.148 56);--warn-bg:oklch(0.967 0.030 81);
+  --danger:oklch(0.546 0.220 27);--danger-bg:oklch(0.951 0.018 18);
+  --ok:oklch(0.673 0.211 144);--ok-bg:oklch(0.968 0.052 154);
   --fs-13:13px;--fs-14:14px;--fs-15:15px;--fs-16:16px;--fs-18:18px;
   --fs-22:22px;--fs-28:28px;--fs-34:34px;--fs-44:44px;
   --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:72px;--s-9:104px;
-  --radius:10px;--radius-sm:8px;
-  --font-sans:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+  --radius:12px;--radius-sm:8px;
+  --font-sans:"Pretendard JP","Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --font-display:"Wanted Sans Variable","Wanted Sans","Pretendard JP","Pretendard Variable",system-ui,sans-serif;
   --font-mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
@@ -101,17 +112,18 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 /* ============================================================
    섹션 렌더 스타일 (캔버스/프리뷰 공용) — .sx 스코프
    ============================================================ */
-.sx{--brand:var(--ink);--brand-contrast:#fff}
+.sx{--brand-contrast:#fff;font-family:var(--font-sans)}
 .sx .container{max-width:1000px;margin:0 auto;padding:0 32px}
 .sx .band{padding:64px 0}
 .sx .band.alt{background:var(--bg-2)}
-.sx .eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
-.sx .h-sec{font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1.25;margin:0}
+.sx .eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
+.sx .h-sec{font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.024em;line-height:1.3;margin:0;color:var(--ink)}
 .sx .sub{font-size:16px;color:var(--muted);margin-top:10px;max-width:520px}
 .sx .center{text-align:center}.sx .center .sub{margin-left:auto;margin-right:auto}
 .sx .btn{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:500;padding:11px 20px;
   border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none}
-.sx .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sx .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:700}
+.sx .btn.primary:hover{background:var(--brand-hover)}
 .sx .row{display:flex;gap:10px}
 .sx .grid{display:grid;gap:16px}
 .sx .card{border:1px solid var(--line);border-radius:10px;padding:22px}
@@ -126,7 +138,7 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 .sx .hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:80px 0}
 .sx .hero.min{grid-template-columns:1fr;text-align:center}
 .sx .hero.bg{grid-template-columns:1fr;text-align:center;background:var(--bg-2);border-radius:0}
-.sx .hero h1{font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1.15;margin:0}
+.sx .hero h1{font-family:var(--font-display);font-size:42px;font-weight:700;letter-spacing:-.028em;line-height:1.2;margin:0;color:var(--ink)}
 .sx .hero .lead{font-size:18px;color:var(--muted);margin:16px 0 28px}
 .sx .visual{aspect-ratio:4/3;border-radius:10px;background:var(--bg-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:14px}
 .sx .cols-2{grid-template-columns:1fr 1fr}
@@ -137,11 +149,12 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 .sx .quote{font-size:26px;font-weight:500;line-height:1.45;letter-spacing:-.02em;max-width:680px;margin:0 auto;text-align:center}
 .sx .who{text-align:center;color:var(--muted);margin-top:18px;font-size:15px}
 .sx .cell{border:1px solid var(--line);border-radius:8px;height:60px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:13px;font-weight:600}
-.sx .callout{border:1px solid var(--line);border-left-width:3px;border-radius:8px;padding:16px 18px}
-.sx .callout.info{border-left-color:var(--info);background:var(--info-bg)}
-.sx .callout.warn{border-left-color:var(--warn);background:var(--warn-bg)}
-.sx .callout.danger{border-left-color:var(--danger);background:var(--danger-bg)}
-.sx .callout.tip{border-left-color:var(--ok);background:var(--ok-bg)}
+.sx .callout{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sx .callout b{font-size:14px}
+.sx .callout.info{background:var(--info-bg);border-color:transparent}.sx .callout.info b{color:var(--info)}
+.sx .callout.warn{background:var(--warn-bg);border-color:transparent}.sx .callout.warn b{color:var(--warn)}
+.sx .callout.danger{background:var(--danger-bg);border-color:transparent}.sx .callout.danger b{color:var(--danger)}
+.sx .callout.tip{background:var(--ok-bg);border-color:transparent}.sx .callout.tip b{color:var(--ok)}
 .sx table.spec{width:100%;border-collapse:collapse;font-size:14px}
 .sx table.spec td{border:1px solid var(--line);padding:10px 14px}
 .sx table.spec td:first-child{background:var(--bg-2);font-weight:600;width:30%}
@@ -267,7 +280,7 @@ const SECTIONS = {
        return `<div class="band alt"><div class="container">${head('Pricing','요금제','')}<div class="grid cols-3" style="margin-top:32px">${p('Basic','무료')}${p('Pro','₩9,900')}${p('Enterprise','문의')}</div></div></div>`;}},
     {type:'showcase',label:'Showcase',variants:[{id:'shot',label:'스크린샷'},{id:'video',label:'비디오'},{id:'gallery',label:'갤러리'}],
      render:v=>{if(v==='gallery')return `<div class="band"><div class="container">${head('Showcase','제품 화면','')}<div class="grid cols-3" style="margin-top:32px">${Array(3).fill('<div class="visual">이미지</div>').join('')}</div></div></div>`;
-       return `<div class="band"><div class="container">${head('Showcase','제품을 직접 확인하세요','')}<div class="visual" style="margin-top:32px;aspect-ratio:16/9">${v==='video'?'▶ 비디오':'스크린샷'}</div></div></div>`;}},
+       return `<div class="band"><div class="container">${head('Showcase','제품을 직접 확인하세요','')}<div class="visual" style="margin-top:32px;aspect-ratio:16/9">${v==='video'?'동영상':'스크린샷'}</div></div></div>`;}},
     {type:'industry',label:'업종별 활용 ★',variants:[{id:'grid',label:'그리드'},{id:'tab',label:'탭'}],
      render:v=>{const it=(t)=>`<div class="card"><h3 style="font-size:16px">${t}</h3><p class="muted" style="margin-top:4px">${H.sample}</p></div>`;
        return `<div class="band alt"><div class="container">${head('By industry','다양한 업종에서','')}<div class="grid cols-4" style="margin-top:32px;gap:12px">${['제조','IT','서비스','의료','공공','교육','금융','엔터프라이즈'].map(it).join('')}</div></div></div>`;}},
@@ -289,7 +302,7 @@ const SECTIONS = {
      render:v=>{const s=(i,t)=>`<div class="step"><div class="n">${i}</div><div><h3 style="font-size:16px">${t}</h3><p class="muted" style="margin-top:4px">${H.sample}</p>${v==='shot'?'<div class="visual" style="margin-top:12px;aspect-ratio:16/6">스크린샷</div>':''}</div></div>`;
        return `<div class="band"><div class="container">${head('절차','따라 하기','',false)}<div style="margin-top:16px">${s(1,'첫 번째 단계')}${s(2,'두 번째 단계')}${s(3,'세 번째 단계')}</div></div></div>`;}},
     {type:'callout',label:'Callout / 노트',variants:[{id:'info',label:'info'},{id:'warn',label:'warning'},{id:'tip',label:'tip'},{id:'danger',label:'danger'}],
-     render:v=>{const map={info:['ℹ️ 참고','info'],warn:['⚠️ 주의','warn'],tip:['💡 팁','tip'],danger:['⛔ 경고','danger']};const[t,c]=map[v]||map.info;
+     render:v=>{const map={info:['참고','info'],warn:['주의','warn'],tip:['팁','tip'],danger:['경고','danger']};const[t,c]=map[v]||map.info;
        return `<div class="band"><div class="container"><div class="callout ${c}"><b>${t}</b><p class="muted" style="margin:6px 0 0">${H.sample}</p></div></div></div>`;}},
     {type:'specTable',label:'Spec Table / 사양',variants:[{id:'kv',label:'key-value'},{id:'compare',label:'비교표'}],
      render:v=>`<div class="band"><div class="container">${head('사양','상세 정보','',false)}<table class="spec" style="margin-top:16px"><tr><td>항목 A</td><td>값이 들어갑니다</td></tr><tr><td>항목 B</td><td>값이 들어갑니다</td></tr><tr><td>항목 C</td><td>값이 들어갑니다</td></tr></table></div></div>`},
@@ -299,7 +312,7 @@ const SECTIONS = {
        return `<div class="band"><div class="container">${head('문제 해결','자주 있는 문제','',false)}<div class="grid" style="margin-top:16px;gap:10px">${q('로그인이 안 돼요')}${q('알림이 안 와요')}</div></div></div>`;}},
     {type:'media',label:'Media',variants:[{id:'img',label:'캡션이미지'},{id:'video',label:'비디오'},{id:'code',label:'코드블록'}],
      render:v=>{if(v==='code')return `<div class="band"><div class="container"><pre style="background:var(--ink);color:#e8e8e8;padding:18px;border-radius:10px;font-family:var(--font-mono);font-size:13px;overflow:auto">$ onsite init\n$ onsite deploy</pre></div></div>`;
-       return `<div class="band"><div class="container"><div class="visual" style="aspect-ratio:16/9">${v==='video'?'▶ 비디오':'이미지'}</div><p class="muted center" style="margin-top:10px;font-size:13px">그림 1. 캡션이 들어갑니다</p></div></div>`;}},
+       return `<div class="band"><div class="container"><div class="visual" style="aspect-ratio:16/9">${v==='video'?'동영상':'이미지'}</div><p class="muted center" style="margin-top:10px;font-size:13px">그림 1. 캡션이 들어갑니다</p></div></div>`;}},
   ],
 };
 const CAT_LABEL={common:'공통',product:'제품소개',manual:'매뉴얼'};
@@ -343,6 +356,12 @@ function showPreview(chip){
   pvHead.textContent=`${s.label} · ${chip.textContent}`;
   pvBody.innerHTML=s.render(chip.dataset.variant);
   preview.style.display='block';
+  // 칩 우측에 초기 배치 (mousemove 전에도 보이게)
+  const r=chip.getBoundingClientRect(),w=360,h=270,pad=12;
+  let x=r.right+pad,y=r.top;
+  if(x+w>innerWidth)x=r.left-w-pad;
+  if(y+h>innerHeight)y=innerHeight-h-pad;
+  preview.style.left=Math.max(pad,x)+'px';preview.style.top=Math.max(pad,y)+'px';
 }
 function movePreview(e){
   const pad=14,w=360,h=270;

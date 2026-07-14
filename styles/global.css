@@ -1,43 +1,56 @@
 /* ============================================================
    ONSITE Web Generator — global.css
-   최소 리셋 + 기본 타입. tokens.css 다음에 로드.
+   최소 리셋 + Wanted 타입 램프 + 버튼. tokens.css 다음에 로드.
    ============================================================ */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  background:var(--bg);
-  color:var(--text);
+  background:var(--bg-canvas);
+  color:var(--fg-default);
   font-family:var(--font-sans);
-  font-size:var(--fs-16);
+  font-size:var(--t-body1);
   line-height:var(--lh-base);
-  letter-spacing:-.01em;
+  letter-spacing:var(--tr-body1);
+  font-feature-settings:"ss20","calt","kern";
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,h4,p,figure{margin:0}
+h1,h2,h3,h4,h5,p,figure{margin:0}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font:inherit}
 
-/* 레이아웃 유틸 */
-.container{max-width:var(--maxw);margin:0 auto;padding:0 var(--s-5)}
+/* HTML 디폴트 매핑 (Wanted type ramp) */
+h1{font-family:var(--font-display);font-size:var(--t-title1);font-weight:700;letter-spacing:var(--tr-title1);line-height:var(--lh-tight);color:var(--fg-strong)}
+h2{font-size:var(--t-title2);font-weight:700;letter-spacing:var(--tr-title2);line-height:var(--lh-tight);color:var(--fg-strong)}
+h3{font-size:var(--t-title3);font-weight:700;letter-spacing:var(--tr-title3);line-height:var(--lh-tight);color:var(--fg-strong)}
+h4{font-size:var(--t-heading1);font-weight:700;letter-spacing:var(--tr-heading1);color:var(--fg-strong)}
+h5{font-size:var(--t-heading2);font-weight:700;letter-spacing:var(--tr-heading2);color:var(--fg-strong)}
+p{font-size:var(--t-body1);line-height:var(--lh-read);letter-spacing:var(--tr-body1)}
+small{font-size:var(--t-caption1);letter-spacing:var(--tr-caption1);color:var(--fg-secondary)}
+code,pre{font-family:var(--font-mono);font-size:var(--t-label1)}
+
+/* 레이아웃 */
+.container{max-width:var(--maxw);margin:0 auto;padding:0 var(--space-24)}
 .center{text-align:center}
 
-/* 섹션 리듬 (섹션 공통) */
-.band{padding:var(--s-9) 0;border-top:var(--border-w) solid var(--border-soft)}
-.band.alt{background:var(--bg-alt)}
+/* 섹션 리듬 — 넉넉한 수직 (64~96) */
+.band{padding:var(--space-96) 0}
+.band.alt{background:var(--bg-subtle)}
 
 /* 타입 위계 */
-.eyebrow{font-size:var(--fs-13);font-weight:var(--fw-semibold);letter-spacing:.04em;
-  text-transform:uppercase;color:var(--text-soft);margin-bottom:var(--s-3)}
-.h-sec{font-size:var(--fs-34);font-weight:var(--fw-bold);letter-spacing:-.03em;line-height:var(--lh-tight)}
-.sub-sec{font-size:var(--fs-16);color:var(--text-muted);margin-top:var(--s-3);max-width:560px}
+.eyebrow{font-size:var(--t-label2);font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--fg-brand);margin-bottom:var(--space-12)}
+.h-sec{font-family:var(--font-display);font-size:var(--t-title2);font-weight:700;
+  letter-spacing:var(--tr-title2);line-height:var(--lh-tight);color:var(--fg-strong)}
+.sub-sec{font-size:var(--t-body1);color:var(--fg-secondary);margin-top:var(--space-12);max-width:560px}
 .center .sub-sec{margin-left:auto;margin-right:auto}
 
-/* 버튼 (Component: Button) */
-.btn{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-15);font-weight:var(--fw-medium);
-  padding:11px 20px;border-radius:var(--radius-sm);border:var(--border-w) solid var(--border);
-  background:var(--surface);color:var(--text);cursor:pointer;transition:.12s}
-.btn:hover{background:var(--bg-alt)}
-.btn-primary{background:var(--brand);color:var(--brand-contrast);border-color:var(--brand)}
-.btn-lg{padding:14px 26px;font-size:var(--fs-16)}
+/* 버튼 (Wanted: solid brand / outlined / text) */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-body2);font-weight:700;
+  letter-spacing:0.006em;height:40px;padding:0 20px;border-radius:10px;
+  border:1px solid var(--border-default);background:var(--bg-surface);color:var(--fg-brand);cursor:pointer;transition:.12s ease}
+.btn:hover{background:var(--blue-50)}
+.btn-primary{background:var(--bg-brand);color:var(--fg-on-brand);border-color:transparent}
+.btn-primary:hover{background:var(--blue-900)}
+.btn-lg{height:48px;padding:0 28px;font-size:var(--t-body1);border-radius:var(--radius-12)}
