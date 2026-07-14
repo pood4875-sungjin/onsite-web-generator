@@ -1,0 +1,84 @@
+/* ============================================================
+   sections.css — 섹션 렌더 킷 (빌더·갤러리 공용, 단일 소스)
+   출력 토큰(Wanted 라이트) + .sx 스코프 렌더 스타일.
+   registry.js의 render() 결과는 항상 .sx 안에서 렌더된다.
+   ============================================================ */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
+@import url("https://cdn.jsdelivr.net/npm/wanted-sans@1.0.3/fonts/webfonts/variable/split/WantedSansVariable.css");
+
+:root{
+  --brand:oklch(0.563 0.232 257);--brand-hover:oklch(0.484 0.205 258);
+  --ink:oklch(0.148 0.004 277);
+  --ink-2:oklch(0.259 0.010 273 / 0.88);
+  --muted:oklch(0.298 0.010 273 / 0.61);
+  --soft:oklch(0.298 0.010 273 / 0.43);
+  --line:oklch(0.521 0.018 273 / 0.10);
+  --line-2:oklch(0.521 0.018 273 / 0.16);
+  --bg:oklch(1 0 0);--bg-2:oklch(0.972 0.002 286);
+  --info:oklch(0.563 0.232 257);--info-bg:oklch(0.954 0.022 250);
+  --warn:oklch(0.625 0.148 56);--warn-bg:oklch(0.967 0.030 81);
+  --danger:oklch(0.546 0.220 27);--danger-bg:oklch(0.951 0.018 18);
+  --ok:oklch(0.673 0.211 144);--ok-bg:oklch(0.968 0.052 154);
+  --fs-13:13px;--fs-14:14px;--fs-15:15px;--fs-16:16px;--fs-18:18px;
+  --fs-22:22px;--fs-28:28px;--fs-34:34px;--fs-44:44px;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;--s-7:48px;--s-8:72px;--s-9:104px;
+  --radius:12px;--radius-sm:8px;
+  --font-sans:"Pretendard JP","Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --font-display:"Wanted Sans Variable","Wanted Sans","Pretendard JP","Pretendard Variable",system-ui,sans-serif;
+  --font-mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+
+/* ===== .sx 스코프 — 섹션 렌더 (항상 라이트 페이지 위) ===== */
+.sx{--brand-contrast:#fff;font-family:var(--font-sans);color:var(--ink-2);letter-spacing:.0057em}
+.sx .container{max-width:1000px;margin:0 auto;padding:0 32px}
+.sx .band{padding:64px 0}
+.sx .band.alt{background:var(--bg-2)}
+.sx .eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
+.sx .h-sec{font-family:var(--font-display);font-size:30px;font-weight:700;letter-spacing:-.024em;line-height:1.3;margin:0;color:var(--ink)}
+.sx .sub{font-size:16px;color:var(--muted);margin-top:10px;max-width:520px}
+.sx .center{text-align:center}.sx .center .sub{margin-left:auto;margin-right:auto}
+.sx .btn{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:500;padding:11px 20px;
+  border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none}
+.sx .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:700}
+.sx .btn.primary:hover{background:var(--brand-hover)}
+.sx .row{display:flex;gap:10px}
+.sx .grid{display:grid;gap:16px}
+.sx .card{border:1px solid var(--line);border-radius:10px;padding:22px}
+.sx .k{font-family:var(--font-mono);font-size:13px;color:var(--soft);margin-bottom:12px}
+.sx h3{margin:0}
+/* 공통/개별 */
+.sx .announce{background:var(--bg-2);border-bottom:1px solid var(--line);text-align:center;padding:9px;font-size:14px;color:var(--ink-2)}
+.sx .gnb{display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 32px;border-bottom:1px solid var(--line)}
+.sx .gnb.trans{background:transparent}
+.sx .gnb .logo{font-weight:700}
+.sx .gnb nav{display:flex;gap:26px;font-size:15px;color:var(--muted)}
+.sx .hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:80px 0}
+.sx .hero.min{grid-template-columns:1fr;text-align:center}
+.sx .hero.bg{grid-template-columns:1fr;text-align:center;background:var(--bg-2);border-radius:0}
+.sx .hero h1{font-family:var(--font-display);font-size:42px;font-weight:700;letter-spacing:-.028em;line-height:1.2;margin:0;color:var(--ink)}
+.sx .hero .lead{font-size:18px;color:var(--muted);margin:16px 0 28px}
+.sx .visual{aspect-ratio:4/3;border-radius:10px;background:var(--bg-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:14px}
+.sx .cols-2{grid-template-columns:1fr 1fr}
+.sx .cols-3{grid-template-columns:repeat(3,1fr)}
+.sx .cols-4{grid-template-columns:repeat(4,1fr)}
+.sx .muted{color:var(--muted);font-size:14px}
+.sx .num{font-size:42px;font-weight:700;letter-spacing:-.03em}
+.sx .quote{font-size:26px;font-weight:500;line-height:1.45;letter-spacing:-.02em;max-width:680px;margin:0 auto;text-align:center}
+.sx .who{text-align:center;color:var(--muted);margin-top:18px;font-size:15px}
+.sx .cell{border:1px solid var(--line);border-radius:8px;height:60px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:13px;font-weight:600}
+.sx .callout{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sx .callout b{font-size:14px}
+.sx .callout.info{background:var(--info-bg);border-color:transparent}.sx .callout.info b{color:var(--info)}
+.sx .callout.warn{background:var(--warn-bg);border-color:transparent}.sx .callout.warn b{color:var(--warn)}
+.sx .callout.danger{background:var(--danger-bg);border-color:transparent}.sx .callout.danger b{color:var(--danger)}
+.sx .callout.tip{background:var(--ok-bg);border-color:transparent}.sx .callout.tip b{color:var(--ok)}
+.sx table.spec{width:100%;border-collapse:collapse;font-size:14px}
+.sx table.spec td{border:1px solid var(--line);padding:10px 14px}
+.sx table.spec td:first-child{background:var(--bg-2);font-weight:600;width:30%}
+.sx .step{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--line-2)}
+.sx .step .n{flex:0 0 32px;height:32px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
+.sx .toc{border:1px solid var(--line);border-radius:10px;padding:18px 22px}
+.sx .toc a{display:block;padding:6px 0;color:var(--muted);font-size:15px;text-decoration:none;border-bottom:1px solid var(--line-2)}
+.sx ul.chk{list-style:none;padding:0;margin:0}
+.sx ul.chk li{padding:8px 0 8px 26px;position:relative;font-size:15px}
+.sx ul.chk li::before{content:"☐";position:absolute;left:0;color:var(--soft)}
