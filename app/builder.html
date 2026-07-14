@@ -8,6 +8,7 @@
 /* ===== DS v1 토큰 (Wanted 기반, 인라인) ===== */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
 @import url("https://cdn.jsdelivr.net/npm/wanted-sans@1.0.3/fonts/webfonts/variable/split/WantedSansVariable.css");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 :root{
   --brand:oklch(0.563 0.232 257);--brand-hover:oklch(0.484 0.205 258);
   --ink:oklch(0.148 0.004 277);
@@ -112,7 +113,7 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 /* ============================================================
    섹션 렌더 스타일 (캔버스/프리뷰 공용) — .sx 스코프
    ============================================================ */
-.sx{--brand-contrast:#fff;font-family:var(--font-sans)}
+.sx{--brand-contrast:#fff;font-family:var(--font-sans);color:var(--ink-2);letter-spacing:.0057em}
 .sx .container{max-width:1000px;margin:0 auto;padding:0 32px}
 .sx .band{padding:64px 0}
 .sx .band.alt{background:var(--bg-2)}
@@ -166,6 +167,62 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 .sx ul.chk li{padding:8px 0 8px 26px;position:relative;font-size:15px}
 .sx ul.chk li::before{content:"☐";position:absolute;left:0;color:var(--soft)}
 @media(max-width:820px){.lib{display:none}}
+
+/* ============================================================
+   Framer-스타일 빌더 크롬 (다크). 출력(.sx)은 라이트 유지.
+   design.md: near-black canvas · 화이트 pill primary · accent-blue=링크/포커스만
+   ============================================================ */
+:root{
+  --f-canvas:#0d0d0f; --f-s1:#1a1a1d; --f-s2:#26262a;
+  --f-ink:#f5f5f7; --f-mut:#8a8a90;
+  --f-line:rgba(255,255,255,.09); --f-line2:rgba(255,255,255,.16);
+  --f-accent:#0099ff;
+}
+body{background:var(--f-canvas);color:var(--f-ink);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Pretendard JP",sans-serif;
+  font-feature-settings:"cv01","cv05","cv09","cv11","ss03","ss07";letter-spacing:-.011em}
+
+.topbar{background:var(--f-canvas);border-bottom:1px solid var(--f-line)}
+.topbar .brand{color:var(--f-ink)} .topbar .brand span{color:var(--f-mut)}
+.seg{background:var(--f-s1);border-color:var(--f-line)}
+.seg button{color:var(--f-mut)}
+.seg button.on{background:var(--f-s2);color:var(--f-ink)}
+.tbtn{background:var(--f-s1);border:1px solid var(--f-line);color:var(--f-ink);border-radius:100px}
+.tbtn:hover{background:var(--f-s2)}
+.tbtn.primary{background:#fff;color:#0d0d0f;border-color:transparent}
+.tbtn.primary:hover{background:#e8e8ee}
+
+.lib{background:var(--f-canvas);border-right:1px solid var(--f-line)}
+.lib .search{background:var(--f-s1);border:1px solid var(--f-line);color:var(--f-ink);border-radius:10px}
+.lib .search::placeholder{color:var(--f-mut)}
+.cat-h{color:var(--f-mut)} .cat-h .cnt{color:var(--f-line2)}
+.sec-name{color:var(--f-ink)}
+.vchip{background:var(--f-s1);border:1px solid var(--f-line);color:var(--f-mut)}
+.vchip:hover{background:var(--f-s2);color:var(--f-ink);border-color:var(--f-line2)}
+
+/* 다크 아트보드 + 화이트 페이지 프레임 */
+.canvas-wrap{background:var(--f-canvas)}
+.artboard-top{max-width:1120px;margin:0 auto var(--s-2);display:flex;gap:10px;align-items:center;
+  font-family:var(--font-mono);font-size:12px}
+.artboard-top .dim{color:var(--f-mut)}
+.artboard-top .pt-name{color:var(--f-accent)}
+.canvas{max-width:1120px;background:#fff;border:none;border-radius:14px;
+  box-shadow:0 0 0 .5px rgba(255,255,255,.10), 0 16px 50px rgba(0,0,0,.45)}
+.canvas.drag-over{outline:2px dashed var(--f-accent);outline-offset:-3px;border:none}
+.empty{color:#9498a8} .empty .big{color:#6b7078}
+
+.preview{background:var(--f-s1);border:1px solid var(--f-line2);box-shadow:0 16px 50px rgba(0,0,0,.55)}
+.preview .pv-head{color:var(--f-mut);border-bottom:1px solid var(--f-line)}
+.preview .pv-body{background:#fff}
+
+.modal-bg{background:rgba(0,0,0,.62)}
+.modal{background:var(--f-s1)}
+.modal .m-head{border-bottom:1px solid var(--f-line)} .modal .m-head h3{color:var(--f-ink)}
+.modal textarea{background:var(--f-canvas);color:var(--f-ink)}
+.modal .m-foot{border-top:1px solid var(--f-line)}
+
+.toolbar button{background:#fff;color:#0d0d0f;border-radius:100px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.block-bar,.block-tag{background:#0d0d0f}
 </style>
 </head>
 <body>
@@ -191,6 +248,7 @@ body{margin:0;font-family:var(--font-sans);color:var(--ink);background:var(--bg-
 
     <!-- 캔버스 -->
     <div class="canvas-wrap">
+      <div class="artboard-top"><span class="dim">1120</span><span class="pt-name" id="frameName">제품소개</span></div>
       <div class="canvas" id="canvas">
         <div class="empty" id="empty">
           <div class="big">여기로 섹션을 끌어다 놓으세요</div>
@@ -425,7 +483,9 @@ canvas.addEventListener('drop',e=>{
 document.getElementById('ptype').addEventListener('click',e=>{
   const btn=e.target.closest('button');if(!btn)return;
   document.querySelectorAll('#ptype button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
-  pageType=btn.dataset.pt;buildLib(document.getElementById('search').value.toLowerCase());
+  pageType=btn.dataset.pt;
+  document.getElementById('frameName').textContent=pageType==='product'?'제품소개':'매뉴얼';
+  buildLib(document.getElementById('search').value.toLowerCase());
 });
 document.getElementById('search').addEventListener('input',e=>buildLib(e.target.value.toLowerCase()));
 document.getElementById('clearBtn').addEventListener('click',()=>{if(canvasBlocks.length&&confirm('캔버스를 비울까요?')){canvasBlocks=[];renderCanvas();}});
