@@ -211,9 +211,9 @@ let uidSeq=1;
 /* ===== 라이브러리 렌더 ===== */
 function buildLib(filter=''){
   const list=document.getElementById('libList');
-  const cats = pageType==='product'?['common','product']:['common','manual'];
+  const cats = CAT_ORDER;
   list.innerHTML = cats.map(cat=>{
-    const secs=SECTIONS[cat].filter(s=>!filter || s.label.toLowerCase().includes(filter)|| s.variants.some(v=>v.label.toLowerCase().includes(filter)));
+    const secs=SECTIONS[cat].filter(s=>(s.pageTypes||['product','manual']).includes(pageType) && (!filter || s.label.toLowerCase().includes(filter)|| s.variants.some(v=>v.label.toLowerCase().includes(filter))));
     if(!secs.length)return '';
     return `<div class="cat"><div class="cat-h">${CAT_LABEL[cat]} <span class="cnt">${secs.length}</span></div>${
       secs.map(s=>`<div class="sec-row"><div class="sec-name">${s.label}</div><div class="vchips">${
