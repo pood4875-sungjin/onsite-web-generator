@@ -14,6 +14,34 @@ function head(eyebrow,title,sub,center=true){
 const cardEl=(inner,cls='')=>`<div class="card ${cls}">${inner}</div>`;
 const B='제품소개', M='매뉴얼', BM=['product','manual'];
 
+/* 미니 UI 목업 (회색 박스 대신 디자인된 스켈레톤) */
+function mock(kind='app',tint=false){
+  const barTop=`<div class="bar"><i></i><i></i><i></i><span class="u"></span></div>`;
+  const cls=`mock${tint?' tint':''}`;
+  if(kind==='dashboard')return `<div class="${cls}">${barTop}<div class="mcontent"><span class="ln t"></span><div class="kpirow">${'<div class="kp"><b></b><i></i></div>'.repeat(3)}</div><div class="mbars">${[52,74,60,88,66,82].map(h=>`<i style="height:${h}%"></i>`).join('')}</div></div></div>`;
+  if(kind==='chat')return `<div class="${cls}">${barTop}<div class="mcontent" style="gap:7px"><span class="bub"></span><span class="bub me"></span><span class="bub" style="max-width:55%"></span><span class="bub me" style="max-width:60%"></span></div></div>`;
+  if(kind==='plain')return `<div class="${cls}">${barTop}<div class="mcontent"><span class="ln t"></span><span class="ln"></span><span class="ln"></span><span class="ln" style="width:70%"></span><div class="cardrow"><div class="mc"></div><div class="mc"></div></div></div></div>`;
+  return `<div class="${cls}">${barTop}<div class="mbody"><div class="side"><b class="on"></b><b></b><b></b><b></b></div><div class="mcontent"><span class="ln t"></span><span class="ln"></span><div class="cardrow"><div class="mc"></div><div class="mc"></div></div><span class="ln"></span><span class="ln" style="width:66%"></span></div></div></div>`;
+}
+/* 라인 아이콘 (Wanted 계열 2px stroke, currentColor) */
+const P24='<svg class="ico" viewBox="0 0 24 24">';
+const ICON={
+  message:`${P24}<path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z"/></svg>`,
+  tasks:`${P24}<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>`,
+  folder:`${P24}<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>`,
+  calendar:`${P24}<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>`,
+  shield:`${P24}<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6Z"/><path d="M9.5 12l2 2 3.5-3.5"/></svg>`,
+  bolt:`${P24}<path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg>`,
+  chart:`${P24}<path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg>`,
+  users:`${P24}<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6a3 3 0 0 1 0 6M18 20a6 6 0 0 0-3-5"/></svg>`,
+  plug:`${P24}<path d="M9 3v6M15 3v6M6 9h12v2a6 6 0 0 1-12 0Z"/><path d="M12 17v4"/></svg>`,
+  cloud:`${P24}<path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A4 4 0 0 1 17 18Z"/></svg>`,
+  cog:`${P24}<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>`,
+  check:`${P24}<path d="M20 6 9 17l-5-5"/></svg>`,
+};
+const ICO_LIST=['message','tasks','folder','calendar','shield','bolt','chart','users','plug','cloud','cog','check'];
+const ico=(i)=>ICON[ICO_LIST[i%ICO_LIST.length]];
+
 const SECTIONS = {
   /* 01 Navigation */
   nav:[
@@ -29,11 +57,11 @@ const SECTIONS = {
     {type:'standard',label:'Standard Hero',pageTypes:['product'],variants:[{id:'split',label:'split'},{id:'center',label:'centered'},{id:'min',label:'minimal'},{id:'bg',label:'bg-image'}],
      render:v=>{const cta=`<div class="row" style="${v==='split'?'':'justify-content:center'}"><a class="btn primary">무료로 시작하기</a><a class="btn">도입 문의 →</a></div>`;
        const txt=`<div>${eb('현장 업무 플랫폼')}<h1>현장의 모든 일,<br>하나로 연결됩니다</h1><p class="lead">${H.sample}</p>${cta}</div>`;
-       if(v==='split')return `<div class="container"><div class="hero">${txt}<div class="visual">비주얼</div></div></div>`;
+       if(v==='split')return `<div class="container"><div class="hero">${txt}${mock('app',true)}</div></div>`;
        if(v==='bg')return `<div class="hero bg" style="padding:80px 32px"><div class="container">${txt}</div></div>`;
        return `<div class="container"><div class="hero min">${txt}</div></div>`;}},
     {type:'productVisual',label:'Product Visual Hero',pageTypes:['product'],variants:[{id:'screenshot',label:'스크린샷'},{id:'dashboard',label:'대시보드'}],
-     render:v=>`<div class="container"><div class="hero"><div>${eb('제품 소개')}<h1>직접 보면<br>더 확실합니다</h1><p class="lead">${H.sample}</p><div class="row"><a class="btn primary">데모 보기</a></div></div><div class="visual" style="aspect-ratio:16/11">${v==='dashboard'?'대시보드 프리뷰':'제품 스크린샷'}</div></div></div>`},
+     render:v=>`<div class="container"><div class="hero"><div>${eb('제품 소개')}<h1>직접 보면<br>더 확실합니다</h1><p class="lead">${H.sample}</p><div class="row"><a class="btn primary">데모 보기</a></div></div>${mock(v==='dashboard'?'dashboard':'app')}</div></div>`},
     {type:'pageHero',label:'Page Hero (배너)',pageTypes:BM,variants:[{id:'detail',label:'상세'},{id:'manual',label:'매뉴얼'}],
      render:v=>`<div class="band alt" style="padding:56px 0"><div class="container">${v==='manual'?'<div class="breadcrumb" style="margin-bottom:16px"><span>매뉴얼</span><span class="sep">›</span><span style="color:var(--ink)">시작하기</span></div>':eb('제품 상세')}<h1 style="font-size:38px">${v==='manual'?'현장 메신저 시작 가이드':'현장 메신저'}</h1><p class="sub">${H.sample}</p></div></div>`},
     {type:'video',label:'Video / BG Hero',pageTypes:['product'],variants:[{id:'video',label:'영상'},{id:'carousel',label:'캐러셀'}],
@@ -55,16 +83,16 @@ const SECTIONS = {
   /* 04 Image + Text */
   imgtext:[
     {type:'imageText',label:'Image & Text',pageTypes:BM,variants:[{id:'left',label:'이미지 좌'},{id:'right',label:'이미지 우'}],
-     render:v=>{const img='<div class="visual">스크린샷</div>';const txt=`<div>${eb('기능')}<h2 class="h-sec">현장과 본사가<br>실시간으로</h2><p class="sub">${H.sample}</p><ul class="chk" style="margin-top:16px"><li>실시간 메시지</li><li>읽음 확인</li></ul></div>`;
+     render:v=>{const img=mock('chat');const txt=`<div>${eb('기능')}<h2 class="h-sec">현장과 본사가<br>실시간으로</h2><p class="sub">${H.sample}</p><ul class="chk" style="margin-top:16px"><li>실시간 메시지</li><li>읽음 확인</li></ul></div>`;
        return `<div class="band"><div class="container"><div class="hero" style="padding:0">${v==='left'?img+txt:txt+img}</div></div></div>`;}},
     {type:'zigzag',label:'교차 (Zigzag)',pageTypes:['product'],variants:[{id:'alt',label:'좌우 교차'}],
-     render:v=>{const block=(rev,i)=>`<div class="hero" style="padding:24px 0">${rev?`<div class="visual">화면 ${i}</div><div><h3 style="font-size:24px">기능 ${i}</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div>`:`<div><h3 style="font-size:24px">기능 ${i}</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div><div class="visual">화면 ${i}</div>`}</div>`;
+     render:v=>{const block=(rev,i)=>`<div class="hero" style="padding:24px 0">${rev?`${mock('plain')}<div><h3 style="font-size:24px">기능 ${i}</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div>`:`<div><h3 style="font-size:24px">기능 ${i}</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div>${mock('plain')}`}</div>`;
        return `<div class="band"><div class="container">${block(false,1)}${block(true,2)}</div></div>`;}},
   ],
   /* 05 Card */
   card:[
     {type:'iconCard',label:'아이콘 카드',pageTypes:['product'],variants:[{id:'c3',label:'3열'},{id:'c4',label:'4열'}],
-     render:v=>{const n=v==='c4'?4:3;return `<div class="band"><div class="container">${head('Features','핵심 기능','')}<div class="grid cols-${n}" style="margin-top:32px">${Array.from({length:n*2},(_,i)=>cardEl(`<div class="ic">◆</div><h3 style="margin-top:8px">기능 ${i+1}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`}},
+     render:v=>{const n=v==='c4'?4:3;return `<div class="band"><div class="container">${head('Features','핵심 기능','')}<div class="grid cols-${n}" style="margin-top:32px">${Array.from({length:n*2},(_,i)=>cardEl(`<div class="ic">${ico(i)}</div><h3 style="margin-top:12px">기능 ${i+1}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`}},
     {type:'imageCard',label:'이미지 카드',pageTypes:['product'],variants:[{id:'c3',label:'3열'}],
      render:v=>`<div class="band alt"><div class="container">${head('Products','다양한 제품','')}<div class="grid cols-3" style="margin-top:32px">${[1,2,3].map(i=>cardEl(`<div class="visual" style="aspect-ratio:16/10;margin:-22px -22px 14px;border-radius:10px 10px 0 0;border:none">이미지</div><h3>제품 ${i}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`,'')).join('')}</div></div></div>`},
     {type:'statCard',label:'수치 카드',pageTypes:['product'],variants:[{id:'kpi',label:'KPI'}],
@@ -80,19 +108,19 @@ const SECTIONS = {
   /* 07 Feature Showcase */
   feature:[
     {type:'grid',label:'Feature Grid',pageTypes:['product'],variants:[{id:'grid',label:'그리드'},{id:'alt',label:'좌우교차'}],
-     render:v=>v==='alt'?`<div class="band"><div class="container"><div class="hero" style="padding:0"><div><h2 class="h-sec">핵심 기능</h2><p class="sub">${H.sample}</p></div><div class="visual">스크린샷</div></div></div></div>`
-       :`<div class="band alt"><div class="container">${head('Features','일의 시작부터 끝까지','')}<div class="grid cols-3" style="margin-top:32px">${[1,2,3].map(i=>cardEl(`<h3>기능 ${i}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`},
+     render:v=>v==='alt'?`<div class="band"><div class="container"><div class="hero" style="padding:0"><div><h2 class="h-sec">핵심 기능</h2><p class="sub">${H.sample}</p></div>${mock('app')}</div></div></div>`
+       :`<div class="band alt"><div class="container">${head('Features','일의 시작부터 끝까지','')}<div class="grid cols-3" style="margin-top:32px">${[1,2,3].map(i=>cardEl(`<div class="ic" style="margin-bottom:12px">${ico(i)}</div><h3>기능 ${i}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`},
     {type:'tab',label:'Feature Tab',pageTypes:['product'],variants:[{id:'tab',label:'탭'}],
-     render:v=>`<div class="band"><div class="container">${head('Features','기능별로 살펴보기','')}<div class="tabs" style="margin-top:24px"><span class="tab on">소통</span><span class="tab">관리</span><span class="tab">기록</span></div><div class="hero" style="padding:0"><div><h3 style="font-size:24px">현장과 본사가 실시간으로</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div><div class="visual">기능 화면</div></div></div></div>`},
+     render:v=>`<div class="band"><div class="container">${head('Features','기능별로 살펴보기','')}<div class="tabs" style="margin-top:24px"><span class="tab on">소통</span><span class="tab">관리</span><span class="tab">기록</span></div><div class="hero" style="padding:0"><div><h3 style="font-size:24px">현장과 본사가 실시간으로</h3><p class="muted" style="margin-top:8px">${H.sample}</p></div>${mock('app')}</div></div></div>`},
     {type:'bento',label:'Bento Feature',pageTypes:['product'],variants:[{id:'bento',label:'Bento'}],
-     render:v=>`<div class="band"><div class="container">${head('Features','한눈에 보는 강점','')}<div class="grid" style="grid-template-columns:2fr 1fr;margin-top:32px">${cardEl(`<h3 style="font-size:22px">대표 기능</h3><p class="muted" style="margin-top:8px">${H.sample}</p><div class="visual" style="margin-top:16px">화면</div>`)}<div class="grid" style="gap:16px">${cardEl(`<h3>기능 A</h3>`)}${cardEl(`<h3>기능 B</h3>`)}</div></div></div></div>`},
+     render:v=>`<div class="band"><div class="container">${head('Features','한눈에 보는 강점','')}<div class="grid" style="grid-template-columns:2fr 1fr;margin-top:32px">${cardEl(`<h3 style="font-size:22px">대표 기능</h3><p class="muted" style="margin-top:8px">${H.sample}</p><div style="margin-top:16px">${mock('dashboard')}</div>`)}<div class="grid" style="gap:16px">${cardEl(`<div class="ic" style="margin-bottom:8px">${ico(0)}</div><h3>기능 A</h3>`)}${cardEl(`<div class="ic" style="margin-bottom:8px">${ico(1)}</div><h3>기능 B</h3>`)}</div></div></div></div>`},
   ],
   /* 08 Product Showcase */
   product:[
     {type:'lineup',label:'제품 라인업',pageTypes:['product'],variants:[{id:'c3',label:'3열'},{id:'c4',label:'4열'}],
-     render:v=>{const n=v==='c4'?4:3;return `<div class="band"><div class="container">${head('Products','온사이트의 다양한 제품','현장 업무에 필요한 모든 기능')}<div class="grid cols-${n}" style="margin-top:32px">${Array.from({length:n*2},(_,i)=>cardEl(`<div class="k">0${i+1}</div><h3>제품 ${i+1}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`}},
+     render:v=>{const n=v==='c4'?4:3;return `<div class="band"><div class="container">${head('Products','온사이트의 다양한 제품','현장 업무에 필요한 모든 기능')}<div class="grid cols-${n}" style="margin-top:32px">${Array.from({length:n*2},(_,i)=>cardEl(`<div class="ic">${ico(i)}</div><h3 style="margin-top:12px">제품 ${i+1}</h3><p class="muted" style="margin-top:6px">${H.sample}</p>`)).join('')}</div></div></div>`}},
     {type:'showcase',label:'제품 화면 전시',pageTypes:['product'],variants:[{id:'shot',label:'스크린샷'},{id:'device',label:'디바이스'}],
-     render:v=>`<div class="band alt"><div class="container center">${head('Showcase','제품을 직접 확인하세요','')}${v==='device'?'<div class="device" style="margin-top:32px"></div>':'<div class="visual" style="margin-top:32px;aspect-ratio:16/9">제품 스크린샷</div>'}</div></div>`},
+     render:v=>`<div class="band alt"><div class="container center">${head('Showcase','제품을 직접 확인하세요','')}<div style="margin-top:32px">${v==='device'?`<div class="device">${mock('chat')}</div>`:mock('dashboard')}</div></div></div>`},
   ],
   /* 09 Process / Step */
   process:[

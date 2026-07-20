@@ -119,3 +119,37 @@
 .sx .kpi .n{font-size:34px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
 .sx .price{border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center}
 .sx .price.feat{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+
+/* ===== 디자인 마감 — 목업 UI · 아이콘 · 톤 ===== */
+.sx .ico{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;display:block}
+.sx .ic{width:44px;height:44px;border-radius:12px;background:var(--info-bg);border:1px solid transparent;color:var(--brand);display:flex;align-items:center;justify-content:center}
+.sx .card{transition:border-color .15s,transform .15s}
+.sx .card:hover{border-color:var(--line-2)}
+.sx .visual{background:linear-gradient(155deg,var(--info-bg),var(--bg-2));color:var(--soft)}
+
+/* 미니 UI 목업 */
+.sx .mock{aspect-ratio:16/11;border-radius:12px;border:1px solid var(--line);background:#fff;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(20,22,31,.05),0 8px 24px rgba(20,22,31,.05)}
+.sx .mock.tint{background:linear-gradient(160deg,var(--info-bg),#fff)}
+.sx .mock .bar{height:26px;flex:none;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:5px;padding:0 10px;background:var(--bg-2)}
+.sx .mock .bar i{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
+.sx .mock .bar .u{margin-left:8px;height:9px;flex:1;max-width:220px;background:#fff;border:1px solid var(--line);border-radius:5px}
+.sx .mock .mbody{flex:1;display:flex;min-height:0}
+.sx .mock .side{width:26%;border-right:1px solid var(--line-2);padding:9px;display:flex;flex-direction:column;gap:6px;background:var(--bg-2)}
+.sx .mock .side b{height:7px;background:var(--line-2);border-radius:3px}
+.sx .mock .side b.on{background:var(--brand);opacity:.85}
+.sx .mock .mcontent{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.sx .mock .ln{height:7px;background:var(--line-2);border-radius:3px}
+.sx .mock .ln.t{height:11px;width:52%;background:var(--soft)}
+.sx .mock .cardrow{display:flex;gap:8px}
+.sx .mock .mc{flex:1;height:40px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.sx .mock .kpirow{display:flex;gap:8px}
+.sx .mock .kp{flex:1;border:1px solid var(--line);border-radius:6px;padding:8px}
+.sx .mock .kp b{display:block;height:12px;width:60%;background:var(--brand);opacity:.85;border-radius:3px;margin-bottom:5px}
+.sx .mock .kp i{display:block;height:5px;width:80%;background:var(--line-2);border-radius:2px}
+.sx .mock .mbars{display:flex;align-items:flex-end;gap:6px;height:52px;margin-top:auto}
+.sx .mock .mbars i{flex:1;background:var(--brand);opacity:.85;border-radius:3px 3px 0 0}
+.sx .mock .bub{max-width:70%;height:16px;border-radius:9px;background:var(--bg-2)}
+.sx .mock .bub.me{align-self:flex-end;background:var(--info-bg)}
+/* 디바이스 안 목업 */
+.sx .device{position:relative;overflow:hidden;background:#fff}
+.sx .device .mock{aspect-ratio:auto;height:100%;border:none;border-radius:0;box-shadow:none}
