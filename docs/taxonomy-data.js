@@ -1,0 +1,123 @@
+/* 섹션 유형 분류 데이터 (taxonomy.html · taxonomy-visual.html 공용) */
+const TAX=[
+{no:"01",key:"nav",name:"Navigation",pri:"P0",desc:"웹사이트 전체/현재 페이지의 이동 구조.",groups:[
+  {n:"1.1",h:"기본 GNB (구성)",items:["로고+메뉴","+CTA","+검색","+언어선택","+로그인","+CTA+유틸리티"]},
+  {n:"1.2",h:"GNB 표현 유형",items:["흰색 배경","컬러 배경","투명 배경","Hero 위 Overlay","스크롤 배경전환","Sticky 고정","숨김 후 스크롤 노출"]},
+  {n:"1.3",h:"메뉴 유형",items:["단일","Dropdown","Mega Menu","제품군 메뉴","이미지 포함 Mega","설명 포함 Mega","제품 카드 Mega"]},
+  {n:"1.4",h:"페이지 내부 Nav",items:["Breadcrumb","Anchor","Tab","Sticky Tab","Sidebar","이전·다음","카테고리"]},
+]},
+{no:"02",key:"hero",name:"Hero",pri:"P0",desc:"가장 먼저 노출되는 대표 메시지 영역.",groups:[
+  {n:"2.1",h:"타이포 강조형",items:["중앙정렬","좌측정렬","대형 전면","한 문장","키워드 강조","숫자·성과 강조","타이포 애니메이션"]},
+  {n:"2.2",h:"배경 이미지형",items:["전면","+중앙타이포","+좌측타이포","+하단타이포","Gradient Overlay","Card Overlay","이미지 Carousel"]},
+  {n:"2.3",h:"배경 영상형",items:["전면","+중앙","+좌측","+최소 UI","+CTA","+Scroll Indicator","영상 Carousel"]},
+  {n:"2.4",h:"이미지·콘텐츠 분할형",items:["텍스트좌/이미지우","이미지좌/텍스트우","텍스트좌/제품UI우","+디바이스Mockup","+영상","+Form","50:50","40:60","60:40"]},
+  {n:"2.5",h:"제품 화면 강조형",items:["Screenshot","Dashboard Preview","Browser Mockup","Mobile Mockup","다중화면 Layer","+Floating Card","+주요지표","화면 Carousel"]},
+  {n:"2.6",h:"배너형",items:["낮은 Page Banner","제목만","제목+설명","+Breadcrumb","배경이미지","컬러배경","제품별 Key Visual","공지 포함"]},
+  {n:"2.7",h:"인터랙션형",items:["마우스 반응","스크롤 반응","Parallax","3D Object","인터랙티브 Demo","숫자/키워드 전환","카드 자동전환"]},
+]},
+{no:"03",key:"text",name:"Text / Introduction",pri:"P0",desc:"핵심 메시지를 텍스트 중심으로 설명.",groups:[
+  {n:"3.1",h:"기본 텍스트형",items:["제목+설명","Eyebrow+제목+설명","대형 문장","한 문장 선언","인용문","키워드 강조","좌측정렬","중앙정렬"]},
+  {n:"3.2",h:"분할 텍스트형",items:["좌제목/우설명","좌설명/우핵심문장","제목/본문 2단","본문 2단","본문 3단","메시지+숫자","메시지+CTA"]},
+  {n:"3.3",h:"문제·가치 설명형",items:["문제 정의","Solution 소개","Problem/Solution","As-is/To-be","Before/After","가치 제안","도입 효과"]},
+]},
+{no:"04",key:"imgtext",name:"Image + Text",pri:"P0",desc:"이미지·제품화면·그래픽 + 텍스트 결합 대표 콘텐츠.",groups:[
+  {n:"4.1",h:"기본 좌우 분할형",items:["이미지좌/텍스트우","텍스트좌/이미지우","이미지상/텍스트하","텍스트상/이미지하","이미지 크게","텍스트 크게"]},
+  {n:"4.2",h:"반복 교차형",items:["좌우 Zigzag","기능별 Zigzag","연속 교차","Sticky 이미지+스크롤 텍스트","Sticky 텍스트+이미지 전환"]},
+  {n:"4.3",h:"이미지 종류(Variant)",items:["실제 제품","Screenshot","UI 화면","디바이스 Mockup","아이소메트릭","일러스트","Diagram","Infographic","현장 사진","고객 사례","Before/After"]},
+  {n:"4.4",h:"텍스트 구성",items:["제목+설명","+CTA","번호+제목+설명","아이콘+제목+설명","Badge+제목+설명","+Bullet List","+Check List","+수치"]},
+]},
+{no:"05",key:"card",name:"Card",pri:"P0",badge:"신규 최상위",desc:"동일 수준 콘텐츠를 반복 노출.",groups:[
+  {n:"5.1",h:"카드 레이아웃",items:["2단","3단","4단","5단","6단","비대칭 Grid","Bento","가로 스크롤","Carousel","Masonry","대표+보조","1대형+여러소형"]},
+  {n:"5.2",h:"기본 카드",items:["제목","+설명","+설명+링크","번호+제목","Badge+제목","태그+제목+설명"]},
+  {n:"5.3",h:"아이콘 카드",items:["아이콘+제목","+설명","+설명+링크","원형","사각","일러스트","강조 컬러"]},
+  {n:"5.4",h:"이미지 카드",items:["이미지+제목","+설명","이미지+태그+제목","+CTA","전체 Overlay","이미지 상단","이미지 좌측 가로","이미지 배경"]},
+  {n:"5.5",h:"제품 카드",items:["이미지+제품명","+설명","+특징","+CTA","제품군","Category","관련제품","비교선택","상태·버전"]},
+  {n:"5.6",h:"기능 카드",items:["아이콘","Screenshot","설명","영상","기능별 CTA","주요기능 강조","기능 Group"]},
+  {n:"5.7",h:"수치 카드",items:["숫자+설명","KPI","증가율","성과수치","Icon+숫자","Chart 포함","Progress 포함"]},
+  {n:"5.8",h:"후기·사례 카드",items:["고객 후기","인용문","고객정보 포함","고객사 Logo","적용사례","산업별 사례","결과수치 포함"]},
+  {n:"5.9",h:"자료 카드",items:["블로그","뉴스","리포트","매뉴얼","다운로드","영상 콘텐츠","웨비나","업데이트"]},
+]},
+{no:"06",key:"list",name:"List",pri:"P0",badge:"신규 최상위",desc:"카드보다 간결·고밀도 반복 노출.",groups:[
+  {n:"6.1",h:"기본 리스트",items:["텍스트","번호","Bullet","Check","아이콘","설명 포함","링크"]},
+  {n:"6.2",h:"리스트 카드형",items:["가로 이미지 카드","썸네일+제목","+설명","아이콘+제목+설명","번호+제목+설명","날짜+제목","Category+제목","Download 정보"]},
+  {n:"6.3",h:"게시글 리스트",items:["블로그","뉴스","공지","업데이트","자료","매뉴얼","관련","인기","최신"]},
+  {n:"6.4",h:"기능 리스트",items:["기능명+설명","+Check","+아이콘","+Screenshot","+상세링크","핵심/세부 구조","기능 Accordion"]},
+  {n:"6.5",h:"제품 리스트",items:["제품명+설명","+이미지","+주요기능","+Category","+사양","+상세링크","제품군 Accordion"]},
+]},
+{no:"07",key:"feature",name:"Feature Showcase",pri:"P0",desc:"핵심 기능을 시각적으로 설명.",groups:[
+  {n:"7.1",h:"기능 이미지 강조형",items:["대형 Screenshot+설명","대형 제품이미지+설명","UI 확대","이미지 교체","Annotation","+Floating 설명 카드","Hover 설명","확대 Viewer"]},
+  {n:"7.2",h:"기능 카드형",items:["2단","3단","4단","주요1+보조","Bento","가로형","Carousel"]},
+  {n:"7.3",h:"기능 아이콘형",items:["2단","3단","4단","리스트","+한 줄 설명","+상세설명","연결선 구조","Carousel"]},
+  {n:"7.4",h:"기능 Tab형",items:["Tab→이미지","Tab→영상","Tab→설명","세로Tab+우측화면","가로Tab+하단화면","제품별","역할별","Category별"]},
+  {n:"7.5",h:"기능 Accordion형",items:["제목+설명","+이미지","선택 시 화면 변경","Category","FAQ 혼합"]},
+  {n:"7.6",h:"기능 Carousel형",items:["카드","Screenshot","제품기능","전체화면 Slide","중앙 강조","썸네일 Nav","텍스트+이미지 동기화"]},
+  {n:"7.7",h:"스크롤 인터랙션형",items:["Sticky 이미지+설명전환","Sticky 텍스트+화면전환","Scroll Snap","단계별 확대","화면 위 Highlight","Scrollytelling"]},
+]},
+{no:"08",key:"product",name:"Product Showcase",pri:"P0",desc:"단일 제품/여러 제품군 전시.",groups:[
+  {n:"8.1",h:"단일 제품 소개",items:["이미지+설명","화면+설명","핵심기능 요약","상세사양","CTA","데모 연결","자료 연결"]},
+  {n:"8.2",h:"제품군 카드형",items:["2단","3단","4단","Bento","대표+관련","Category별","산업별","역할별"]},
+  {n:"8.3",h:"제품군 리스트형",items:["이미지+설명 리스트","Category 리스트","Accordion","Tab","비교 리스트","선택 가이드","관련 제품"]},
+  {n:"8.4",h:"제품군 Carousel형",items:["카드","이미지","Category","중앙 강조","썸네일 Nav"]},
+  {n:"8.5",h:"제품 비교형",items:["비교표","기능별","사양별","Check Matrix","질문형","장점 비교","추천 Highlight"]},
+]},
+{no:"09",key:"process",name:"Process / Step",pri:"P0",desc:"작동 방식·사용/도입 과정.",groups:[
+  {n:"9.1",h:"Step형",items:["3단","4단","5단","번호","아이콘","이미지","카드","세로","가로"]},
+  {n:"9.2",h:"Timeline형",items:["수평","수직","연혁","도입절차","운영과정","프로젝트 진행"]},
+  {n:"9.3",h:"Flow형",items:["Arrow","Card","Diagram","Input/Process/Output","사용자 흐름","데이터 흐름","작동 흐름","순환","분기"]},
+  {n:"9.4",h:"단계별 이미지형",items:["Screenshot","제품 이미지","이미지+번호","이미지+설명","Carousel","Tab","Sticky"]},
+]},
+{no:"10",key:"diagram",name:"Diagram / Architecture",pri:"P0",desc:"기술 구조·복잡한 관계 시각화 (B2B·SaaS 핵심).",groups:[
+  {n:"10.1",h:"구조도형",items:["시스템","서비스","제품 생태계","데이터","플랫폼","모듈","계층","제품 연결"]},
+  {n:"10.2",h:"흐름도형",items:["데이터","사용자","업무","AI 처리","센서 데이터","분석·결과","외부 연동"]},
+  {n:"10.3",h:"연결 관계형",items:["Integration Map","API 연결","제품 간","기기 간","서비스 간","Partner Ecosystem","Cloud"]},
+  {n:"10.4",h:"Diagram 표현형",items:["아이콘","라인","카드","원형","방사형","단계","Isometric","인터랙티브"]},
+]},
+{no:"11",key:"media",name:"Media",pri:"P1",desc:"이미지·영상 중심 제품 경험 전달.",groups:[
+  {n:"11.1",h:"이미지형",items:["Full Width","Full Bleed","Grid 2/3/4","Masonry","Carousel","Before/After","확대 가능","Lightbox"]},
+  {n:"11.2",h:"영상형",items:["Full Width","배경","+텍스트","카드","Grid","Carousel","Demo","Tutorial","고객 인터뷰","Modal"]},
+  {n:"11.3",h:"Device Mockup형",items:["Desktop","Mobile","Tablet","Multi","Browser Frame","Carousel","Layer"]},
+]},
+{no:"12",key:"stat",name:"Statistics / Data",pri:"P0",desc:"성과·효율·신뢰도 데이터 전달.",groups:[
+  {n:"12.1",h:"숫자형",items:["2단","3단","4단","대형 강조","+설명","+아이콘","+비교값","+출처"]},
+  {n:"12.2",h:"Chart형",items:["Bar","Line","Donut","Progress","Gauge","Before/After","비교","Dashboard Preview"]},
+  {n:"12.3",h:"KPI 카드형",items:["3단","4단","성과수치","Icon","Chart","증감률"]},
+]},
+{no:"13",key:"comparison",name:"Comparison",pri:"P0",desc:"제품·기능·기존방식 비교.",groups:[
+  {n:"13.1",h:"비교표형",items:["제품","기능","요금","사양","지원환경","Check Matrix","경쟁방식"]},
+  {n:"13.2",h:"좌우 비교형",items:["Before/After","As-is/To-be","기존/개선","자사/타사","사용 전/후","문제/해결"]},
+  {n:"13.3",h:"카드 비교형",items:["제품 카드","플랜 카드","기능 카드","추천 제품 강조","대표 플랜 강조"]},
+]},
+{no:"14",key:"case",name:"Case Study / Testimonial",pri:"P0",desc:"실제 사용 사례·고객 신뢰.",groups:[
+  {n:"14.1",h:"사례형",items:["카드 2단","카드 3단","Carousel","대표 대형","이미지+설명","문제/해결/결과","KPI 중심","산업별","고객사별"]},
+  {n:"14.2",h:"후기형",items:["단일 인용문","카드","2단","3단","Carousel","영상","고객 프로필 포함","고객사 Logo 포함"]},
+  {n:"14.3",h:"고객사 Logo형",items:["Grid","Marquee","Carousel","대표 강조","산업별","수치+Logo"]},
+]},
+{no:"15",key:"blog",name:"Blog / Resource",pri:"P0",desc:"콘텐츠·자료 탐색.",groups:[
+  {n:"15.1",h:"카드형 리스트",items:["2단","3단","4단","이미지 Grid","텍스트 Grid","Featured 1+일반","Bento","Carousel"]},
+  {n:"15.2",h:"리스트형",items:["썸네일","가로 카드","제목 중심","날짜+제목","Category+제목","Compact","최신","인기"]},
+  {n:"15.3",h:"대표 콘텐츠형",items:["Featured Post","대표 리포트/뉴스/사례","이미지 대형+설명","좌우 분할 Featured","배경 이미지 Featured"]},
+  {n:"15.4",h:"탐색형",items:["Category Tab","Filter Chip","Tag Filter","Search","정렬","제품별","산업별","유형별"]},
+  {n:"15.5",h:"다운로드 자료형",items:["자료 카드","파일 리스트","브로슈어","매뉴얼","리포트","다운로드 CTA","Form 포함"]},
+]},
+{no:"16",key:"faq",name:"FAQ / Accordion",pri:"P0",desc:"질문·세부 정보를 접고 펼침.",groups:[
+  {n:"16.1",h:"FAQ형",items:["기본 Accordion","2단","Category","Tab","Search","+CTA","+Contact"]},
+  {n:"16.2",h:"콘텐츠 Accordion형",items:["기능","제품","제품군","사양","매뉴얼","단계","이미지 연동"]},
+]},
+{no:"17",key:"form",name:"Form",pri:"P0",desc:"문의·상담·신청 완료.",groups:[
+  {n:"17.1",h:"기본 Form형",items:["문의","상담 신청","데모 신청","견적 요청","자료 다운로드","뉴스레터","기술 지원"]},
+  {n:"17.2",h:"Form 레이아웃",items:["중앙 단일","좌설명/우Form","좌Form/우연락처","배경이미지+Form Card","Hero 내부","Modal","다단계"]},
+]},
+{no:"18",key:"cta",name:"CTA",pri:"P0",desc:"다음 행동 유도 전환.",groups:[
+  {n:"18.1",h:"기본 CTA",items:["제목+버튼","제목+설명+버튼","Primary/Secondary","텍스트 링크","버튼 1개","버튼 2개"]},
+  {n:"18.2",h:"배너 CTA",items:["컬러 배경","이미지 배경","Gradient","제품 이미지 포함","좌우 분할","Full Width","좁은 높이"]},
+  {n:"18.3",h:"카드 CTA",items:["단일","2단","문의/다운로드 분리","제품별","역할별"]},
+  {n:"18.4",h:"고정 CTA",items:["Floating","Sticky Bottom","Sticky Side","모바일 하단","문의 Button","다운로드 Button"]},
+]},
+{no:"19",key:"notice",name:"Notice / Banner",pri:"P1",desc:"공지·주요 정보 보조 전달.",groups:[
+  {n:"19",h:"유형",items:["상단 Announcement Bar","이벤트","업데이트","프로모션","점검 안내","새 기능 안내","제품 출시","Cookie Notice","Warning","Info"]},
+]},
+{no:"20",key:"footer",name:"Footer",pri:"P0",desc:"하단 정보·보조 Navigation.",groups:[
+  {n:"20.1",h:"Footer 유형",items:["Minimal","기본","다단","Sitemap","제품 중심","회사 정보 중심","Newsletter","CTA 포함","다운로드 CTA"]},
+  {n:"20.2",h:"구성 요소",items:["Logo","회사 설명","제품 링크","회사 링크","Resource 링크","연락처","주소","SNS","개인정보처리방침","이용약관","Copyright","Family Site","언어 선택"]},
+]},
+];
