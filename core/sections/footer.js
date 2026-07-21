@@ -1,3 +1,5 @@
+import { safeUrl } from '../url.js';
+
 export const footer = {
   type: 'footer',
   variants: ['full', 'slim'],
@@ -9,7 +11,7 @@ export const footer = {
     const brand = esc(shared?.productName || '');
     const cols = (data.columns || [])
       .map((c) => {
-        const links = (c.links || []).map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join('');
+        const links = (c.links || []).map((l) => `<a href="${esc(safeUrl(l.href))}">${esc(l.label)}</a>`).join('');
         return `<div class="fcol"><b>${esc(c.title)}</b>${links}</div>`;
       })
       .join('');

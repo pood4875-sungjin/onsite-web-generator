@@ -1,3 +1,5 @@
+import { safeUrl } from '../url.js';
+
 export const nav = {
   type: 'nav',
   variants: ['solid', 'transparent'],
@@ -9,10 +11,10 @@ export const nav = {
     const { esc, shared } = ctx;
     const brand = esc(shared?.productName || '');
     const links = (data.links || [])
-      .map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`)
+      .map((l) => `<a href="${esc(safeUrl(l.href))}">${esc(l.label)}</a>`)
       .join('');
     const c = data.cta;
-    const ctaHtml = c && c.label ? `<a class="btn primary" href="${esc(c.href)}">${esc(c.label)}</a>` : '';
+    const ctaHtml = c && c.label ? `<a class="btn primary" href="${esc(safeUrl(c.href))}">${esc(c.label)}</a>` : '';
     return `<div class="gnb ${variant === 'transparent' ? 'trans' : ''}">` +
       `<div class="logo">${brand}</div><nav>${links}</nav>${ctaHtml}</div>`;
   },

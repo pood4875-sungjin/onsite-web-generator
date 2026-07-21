@@ -3,13 +3,14 @@
 Source: `core/probe/out.html` (rendered from `core/probe/sample-page.js` via the sample pack + the base scaffold hardcoded in `core/renderer.js`).
 
 ## Tokens actually consumed by the 5 sections + scaffold
-The scaffold `<style>` block only references these 9 of the 14 tokens the sample pack defines (`grep 'var(--' core/renderer.js`):
+The scaffold `<style>` block only references these 10 of the 14 tokens the sample pack defines (`grep 'var(--' core/renderer.js`):
 - `--accent` (`.btn.primary` background/border)
 - `--bg`, `--bg-2` (`body` background, `.band.alt` / `.hero-media` background)
 - `--ink`, `--ink-2` (`body` text, `.gnb a` text)
 - `--line` (`.btn` border, `.card` border, `.gnb` border-bottom)
 - `--radius` (`.btn`, `.card`, `.hero-media`)
 - `--fs-h1`, `--fs-h2` (`h1`, `.h-sec`)
+- `--container` (`.container{max-width:var(--container)}`)
 
 Defined in `tokens.css.js` but **never consumed anywhere in the scaffold**: `--fs-body`, `--sp-2`, `--sp-4`, `--sp-6`. Section markup that would need body-text sizing or a real spacing scale (e.g. `.lead`, `.sub`, `.muted`, gaps between cards/rows) falls back to browser defaults or the scaffold's few hardcoded pixel values (`gap:24px`, `gap:40px`, `padding:64px 0`, etc.) instead of these tokens — i.e. the token set is aspirational, not yet wired up.
 
@@ -61,3 +62,8 @@ Minor hygiene (not a styling gap, but worth flagging): the renderer emits traili
 - A StylePack must ship the **footer column layout** (`.fcols` flex/grid + `.fcol` spacing) and **footer link color/decoration** — the scaffold only gives the footer a background band, so this section is the least "pack-agnostic-safe" of the five; without pack CSS it's visibly broken (unstyled link-dump), not just plain.
 - A StylePack must ship **every variant class a pack's `variantMap` can select** (`.trans`, `.stack`, `.boxed`, `.slim`) — the section code emits these classes unconditionally based on the pack's own variant choice, but the scaffold gives them zero rules, so picking an untested variant currently produces a silently unstyled section with no visual difference from its base form.
 - The token set is bigger than what the scaffold consumes (`--fs-body`, `--sp-2/4/6` are defined but dead) — a pack's CSS is what would actually put a real typographic scale and spacing rhythm to use; until then those 4 tokens are unverified/untested by this probe.
+
+## Follow-ups (deferred, from final review)
+- **Slot-value robustness**: `validatePageDoc()` doesn't enforce slot schema (required/min/max), and sections do `(data.x || []).map(...)` — a wrong-typed slot (e.g. items as a string) throws and aborts the whole render. Harden when PageDoc comes from less-trusted input (AI/user). Ties to PRD §14 slotSchema.
+- **Trailing-space class hygiene**: `class="gnb "`, `class="hero "`, etc. — cosmetic; consider a class-join helper.
+- **tokensCss injection surface**: `renderer.js` inlines `pack.tokensCss()` into `<style>` unescaped. Safe now (pack-authored), but add a guard/comment before token values become import/user-derived.

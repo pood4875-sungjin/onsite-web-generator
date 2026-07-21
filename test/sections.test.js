@@ -60,6 +60,11 @@ test('footer shows product name', () => {
   const html = footer.render({ columns: [] }, 'full', ctx);
   assert.match(html, /ONSITE/);
 });
+test('hero strips javascript: cta href', () => {
+  const html = hero.render({ title: 'T', ctas: [{ label: 'x', href: 'javascript:alert(1)' }] }, 'split', ctx);
+  assert.doesNotMatch(html, /javascript:/);
+});
+
 test('index exposes all sections by type', () => {
   ['nav', 'hero', 'feature', 'cta', 'footer'].forEach((t) => {
     assert.equal(byId[t].type, t);

@@ -2,6 +2,7 @@
  * @typedef {Object} PageDoc
  * @property {Object} [sharedFacts]
  * @property {SectionInstance[]} sections
+ * @property {{title?: string, description?: string}} [meta]  페이지 메타 (title 등)
  *
  * @typedef {Object} SectionInstance
  * @property {string} type
