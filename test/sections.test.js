@@ -2,6 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { hero } from '../core/sections/hero.js';
 import { feature } from '../core/sections/feature.js';
+import { nav } from '../core/sections/nav.js';
+import { cta } from '../core/sections/cta.js';
+import { footer } from '../core/sections/footer.js';
+import { sections, byId } from '../core/sections/index.js';
 import { esc } from '../core/esc.js';
 
 const ctx = { esc, shared: { productName: 'ONSITE' } };
@@ -36,4 +40,24 @@ test('feature renders one card per item', () => {
 test('feature escapes item text', () => {
   const html = feature.render({ heading: 'H', items: [{ title: '<x>', desc: '' }] }, 'grid', ctx);
   assert.match(html, /&lt;x&gt;/);
+});
+
+test('nav shows product name from shared facts', () => {
+  const html = nav.render({ links: [{ label: '제품', href: '#' }] }, 'solid', ctx);
+  assert.match(html, /ONSITE/);
+});
+test('cta renders heading and button', () => {
+  const html = cta.render({ heading: '지금 시작', button: { label: '문의', href: '/c' } }, 'band', ctx);
+  assert.match(html, /지금 시작/);
+  assert.match(html, /href="\/c"/);
+});
+test('footer shows product name', () => {
+  const html = footer.render({ columns: [] }, 'full', ctx);
+  assert.match(html, /ONSITE/);
+});
+test('index exposes all sections by type', () => {
+  ['nav', 'hero', 'feature', 'cta', 'footer'].forEach((t) => {
+    assert.equal(byId[t].type, t);
+  });
+  assert.ok(Array.isArray(sections));
 });
