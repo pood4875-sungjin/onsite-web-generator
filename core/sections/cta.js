@@ -4,7 +4,7 @@ export const cta = {
   slots: {
     heading: { kind: 'text', required: true },
     sub:     { kind: 'text', default: '' },
-    button:  { kind: 'text', item: { label: 'text', href: 'link' } },
+    button:  { kind: 'link', item: { label: 'text', href: 'link' } },
   },
   render(data, variant, ctx) {
     const { esc } = ctx;

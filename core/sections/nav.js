@@ -3,7 +3,7 @@ export const nav = {
   variants: ['solid', 'transparent'],
   slots: {
     links: { kind: 'list', min: 0, max: 8, item: { label: 'text', href: 'link' } },
-    cta:   { kind: 'text', default: '' },
+    cta:   { kind: 'link', default: null, item: { label: 'text', href: 'link' } },
   },
   render(data, variant, ctx) {
     const { esc, shared } = ctx;
@@ -11,8 +11,9 @@ export const nav = {
     const links = (data.links || [])
       .map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`)
       .join('');
-    const cta = data.cta ? `<a class="btn primary">${esc(data.cta)}</a>` : '';
+    const c = data.cta;
+    const ctaHtml = c && c.label ? `<a class="btn primary" href="${esc(c.href)}">${esc(c.label)}</a>` : '';
     return `<div class="gnb ${variant === 'transparent' ? 'trans' : ''}">` +
-      `<div class="logo">${brand}</div><nav>${links}</nav>${cta}</div>`;
+      `<div class="logo">${brand}</div><nav>${links}</nav>${ctaHtml}</div>`;
   },
 };

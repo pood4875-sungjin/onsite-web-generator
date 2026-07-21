@@ -46,6 +46,11 @@ test('nav shows product name from shared facts', () => {
   const html = nav.render({ links: [{ label: '제품', href: '#' }] }, 'solid', ctx);
   assert.match(html, /ONSITE/);
 });
+test('nav cta renders label and href when provided', () => {
+  const html = nav.render({ links: [], cta: { label: '무료로 시작', href: '/start' } }, 'solid', ctx);
+  assert.match(html, /무료로 시작/);
+  assert.match(html, /href="\/start"/);
+});
 test('cta renders heading and button', () => {
   const html = cta.render({ heading: '지금 시작', button: { label: '문의', href: '/c' } }, 'band', ctx);
   assert.match(html, /지금 시작/);
