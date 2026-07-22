@@ -29,12 +29,25 @@
   .rtop .rhome{color:var(--tx2);text-decoration:none;font-size:16px;line-height:1}
   .rtop b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .rlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-  .prow2{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px}
-  .prow2:hover{background:rgba(255,255,255,.06);color:var(--tx)}
-  .prow2.on{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--tx)}
-  .prow2 .pt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .prow2 .x{opacity:0;color:var(--tx3);font-size:12px;flex:0 0 auto}
-  .prow2:hover .x{opacity:1} .prow2 .x:hover{color:#f87171}
+  .pnode{position:relative}
+  .prow2{position:relative;display:flex;align-items:center;gap:6px;padding:8px 8px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px;transition:background var(--dur) var(--ease)}
+  .prow2:hover{background:color-mix(in srgb,var(--tx) 8%,transparent);color:var(--tx)}
+  .prow2.on{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--tx)}
+  .prow2 .dh{flex:0 0 auto;cursor:grab;color:var(--tx3);font-size:11px;line-height:1;opacity:0;transition:var(--dur)}
+  .prow2:hover .dh{opacity:.65} .prow2 .dh:active{cursor:grabbing}
+  .prow2 .tw{flex:0 0 auto;color:var(--tx3);font-size:10px;width:10px;text-align:center}
+  .prow2 .pt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+  .prow2 .addc,.prow2 .x{flex:0 0 auto;opacity:0;color:var(--tx3);font-size:13px;line-height:1;width:18px;height:18px;display:grid;place-items:center;border-radius:6px;transition:var(--dur)}
+  .prow2:hover .addc,.prow2:hover .x{opacity:.8}
+  .prow2 .addc:hover{opacity:1;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .prow2 .x:hover{opacity:1;color:#f87171;background:color-mix(in srgb,#f87171 14%,transparent)}
+  /* DnD 상태 */
+  .prow2.dragging{opacity:.35}
+  .prow2.din{background:color-mix(in srgb,var(--accent) 22%,transparent);box-shadow:inset 0 0 0 1.5px var(--accent)}
+  .prow2.dbefore::before,.prow2.dafter::after{content:'';position:absolute;left:6px;right:6px;height:2px;border-radius:2px;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+  .prow2.dbefore::before{top:-2px}.prow2.dafter::after{bottom:-2px}
+  .rlist.droproot{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 40%,transparent);border-radius:10px}
+  .rhint{font-size:10.5px;color:var(--tx3);padding:2px 8px 8px;line-height:1.4}
   .raddbtn{margin-top:10px;border:1px dashed var(--line2);background:none;color:var(--tx2);border-radius:10px;padding:10px;font-size:13px;cursor:pointer}
   .raddbtn:hover{color:var(--tx);border-color:var(--accent)}
   .ptmenu{position:absolute;left:12px;right:12px;bottom:56px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:6px;display:none;z-index:40;box-shadow:var(--shadow-3)}
@@ -348,21 +361,73 @@
 
   /* ---- 좌측 페이지 레일 (다중 프로젝트) ---- */
   const PT_MENU=[['main','메인홈'],['features','제품 기능소개'],['pricing','요금 비교'],['landing','랜딩']];
+  const MAX_DEPTH=2;           // 루트 0 · 최대 2뎁스
+  let pendingParent=null;      // 자식 추가 시 부모 id
+  let dragId=null;
+
+  function countDesc(id){ let n=0; const stack=[id]; while(stack.length){ const cur=stack.pop(); project.pages.forEach(p=>{ if(p.parentId===cur){ n++; stack.push(p.id); } }); } return n; }
+  function clearDnd(){ document.querySelectorAll('.prow2').forEach(x=>x.classList.remove('dbefore','dafter','din')); document.getElementById('rlist').classList.remove('droproot'); }
+
   function renderRail(){
     if(!project || project.kind!=='multi') return;
     document.getElementById('rail').style.display='flex';
     document.getElementById('rname').textContent=project.name;
     const rl=document.getElementById('rlist'); rl.innerHTML='';
-    project.pages.forEach(pg=>{
-      const r=el('div','prow2'+(pg.id===(pageRef&&pageRef.id)?' on':''),`<span class="pt">${pg.name}</span><span class="x" title="삭제">✕</span>`);
+
+    const rowOf=(pg,depth)=>{
+      const twig = depth>0 ? '<span class="tw">›</span>' : '';
+      const addBtn = depth<MAX_DEPTH ? '<span class="addc" title="하위 페이지 추가">＋</span>' : '';
+      const r=el('div','prow2'+(pg.id===(pageRef&&pageRef.id)?' on':''),
+        `<span class="dh" title="드래그로 이동">⠿</span>${twig}<span class="pt">${pg.name}</span>${addBtn}<span class="x" title="삭제">✕</span>`);
+      r.style.paddingLeft=(8+depth*15)+'px';
+      r.draggable=true; r.dataset.id=pg.id;
       r.querySelector('.pt').onclick=()=>{ persist(); location.href='?p='+project.id+'&page='+pg.id; };
-      r.querySelector('.x').onclick=(e)=>{ e.stopPropagation(); if(project.pages.length<=1){alert('마지막 페이지는 삭제할 수 없어요');return;} if(!confirm(`"${pg.name}" 삭제할까요?`))return; deletePage(project.id,pg.id); const rest=getProject(project.id).pages; location.href='?p='+project.id+'&page='+rest[0].id; };
-      rl.append(r);
-    });
+      r.querySelector('.x').onclick=(e)=>{ e.stopPropagation();
+        if(project.pages.length<=1){ alert('마지막 페이지는 삭제할 수 없어요'); return; }
+        const d=countDesc(pg.id);
+        if(!confirm(d? `"${pg.name}"와 하위 ${d}개 페이지를 삭제할까요?` : `"${pg.name}" 삭제할까요?`)) return;
+        const wasCur = pageRef && (pg.id===pageRef.id || project.pages.some(x=>x.id===pageRef.id && belongs(pageRef.id,pg.id)));
+        deletePage(project.id,pg.id);
+        project=getProject(project.id);
+        if(wasCur){ location.href='?p='+project.id+'&page='+project.pages[0].id; }
+        else renderRail();
+      };
+      const ac=r.querySelector('.addc');
+      if(ac) ac.onclick=(e)=>{ e.stopPropagation(); pendingParent=pg.id; menu.classList.add('open'); };
+
+      r.addEventListener('dragstart',(e)=>{ dragId=pg.id; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',pg.id); setTimeout(()=>r.classList.add('dragging'),0); });
+      r.addEventListener('dragend',()=>{ r.classList.remove('dragging'); dragId=null; clearDnd(); });
+      r.addEventListener('dragover',(e)=>{ e.preventDefault(); e.stopPropagation(); if(!dragId||dragId===pg.id) return;
+        clearDnd();
+        const rect=r.getBoundingClientRect(); const y=(e.clientY-rect.top)/rect.height;
+        const canInside = depth<MAX_DEPTH;
+        const zone = canInside ? (y<0.28?'before':y>0.72?'after':'inside') : (y<0.5?'before':'after');
+        r.classList.add(zone==='before'?'dbefore':zone==='after'?'dafter':'din'); r.dataset.zone=zone;
+      });
+      r.addEventListener('drop',(e)=>{ e.preventDefault(); e.stopPropagation(); const zone=r.dataset.zone||'after'; clearDnd();
+        if(!dragId||dragId===pg.id) return;
+        let parentId,index;
+        if(zone==='inside'){ parentId=pg.id; index=null; }
+        else { parentId=pg.parentId||null; const sibs=project.pages.filter(x=>(x.parentId||null)===parentId && x.id!==dragId); const pos=sibs.findIndex(x=>x.id===pg.id); index = zone==='before'?pos:pos+1; }
+        persist(); movePage(project.id,dragId,parentId,index); project=getProject(project.id); renderRail();
+      });
+      return r;
+    };
+    // pageRef가 pg의 자손인지
+    function belongs(childId,ancestorId){ let cur=project.pages.find(x=>x.id===childId); const seen=new Set(); while(cur&&cur.parentId){ if(cur.parentId===ancestorId)return true; if(seen.has(cur.id))break; seen.add(cur.id); cur=project.pages.find(x=>x.id===cur.parentId); } return false; }
+
+    const walk=(nodes,depth)=>{ nodes.forEach(n=>{ rl.append(rowOf(n,depth)); if(n.children.length) walk(n.children,depth+1); }); };
+    walk(pageTree(project.pages),0);
+
+    // 루트 빈 영역에 드롭 = 최상위 맨 끝으로
+    rl.ondragover=(e)=>{ if(dragId){ e.preventDefault(); rl.classList.add('droproot'); } };
+    rl.ondragleave=(e)=>{ if(e.target===rl) rl.classList.remove('droproot'); };
+    rl.ondrop=(e)=>{ e.preventDefault(); clearDnd(); if(!dragId) return; persist(); movePage(project.id,dragId,null,null); project=getProject(project.id); renderRail(); };
+
     const menu=document.getElementById('ptmenu'); menu.innerHTML='';
-    PT_MENU.forEach(([id,label])=>{ const b=document.createElement('button'); b.textContent=label; b.onclick=()=>{ persist(); const pg=addPage(project.id,id); location.href='?p='+project.id+'&page='+pg.id; }; menu.append(b); });
-    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
-    document.addEventListener('click',(e)=>{ if(!menu.contains(e.target) && e.target.id!=='addPage') menu.classList.remove('open'); });
+    PT_MENU.forEach(([id,label])=>{ const b=document.createElement('button'); b.textContent=label; b.onclick=()=>{ persist(); const pg=addPage(project.id,id,pendingParent); location.href='?p='+project.id+'&page='+pg.id; }; menu.append(b); });
+    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); pendingParent=null; menu.classList.toggle('open'); };
+    document.addEventListener('click',(e)=>{ if(!menu.contains(e.target) && e.target.id!=='addPage' && !e.target.classList.contains('addc')) menu.classList.remove('open'); });
   }
 
   /* ---- init ---- */
