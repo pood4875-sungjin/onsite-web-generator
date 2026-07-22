@@ -18,12 +18,13 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+  body{margin:0;background:transparent;color:var(--tx);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+  body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--scrim);pointer-events:none}
   button{font-family:inherit;cursor:pointer}
   .orb{display:none}
   .app{position:relative;z-index:1;display:flex;height:100vh}
   /* 좌측 페이지 레일 (다중) */
-  .rail{width:212px;flex:0 0 212px;border-right:1px solid var(--line);background:rgba(255,255,255,.02);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:14px 12px;position:relative}
+  .rail{width:212px;flex:0 0 212px;border-right:1px solid var(--line);background:var(--surf2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:14px 12px;position:relative}
   .rtop{display:flex;align-items:center;gap:8px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
   .rtop .rhome{color:var(--tx2);text-decoration:none;font-size:16px;line-height:1}
   .rtop b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -45,7 +46,7 @@
   .chat{width:440px;flex:0 0 440px;display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surf2);backdrop-filter:blur(20px)}
   .chead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:10px}
-  .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--cta);box-shadow:0 4px 16px rgba(34,211,238,.3)}
+  .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--grad-brand);box-shadow:var(--cta-glow)}
   .brand b{font-weight:600;font-size:14px;color:var(--tx);display:block;line-height:1.2}
   .brand span{font-size:11px;color:var(--tx3)}
   .reset{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);color:var(--tx2);border-radius:999px;padding:6px 12px;font-size:12px}
