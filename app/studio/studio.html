@@ -96,6 +96,15 @@
   .empty{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;background:rgba(7,10,18,.7);backdrop-filter:blur(3px);transition:.4s}
   .empty.hide{opacity:0;pointer-events:none}
   .empty .big{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--r-md);background:var(--primary);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+  /* AI 생성 오버레이 */
+  .genning{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:13px;text-align:center;background:rgba(7,10,18,.84);backdrop-filter:blur(8px)}
+  .genning.on{display:flex;animation:rise .3s var(--ease)}
+  .genning .gspin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.14);border-top-color:#fff;animation:spin .8s linear infinite}
+  .genning b{color:#fff;font-weight:600;font-size:15px}
+  .genning .gtext{color:rgba(255,255,255,.58);font-size:13px;min-height:18px}
+  .genning .gbar{width:200px;height:4px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .genning .gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22d3ee,#818cf8);border-radius:999px;transition:width .35s ease}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .empty b{font-weight:600;color:rgba(255,255,255,.9)} .empty span{font-size:13px;color:var(--tx2)}
   .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
   .dl:hover{background:rgba(255,255,255,.1)}
@@ -152,6 +161,7 @@
     </div>
     <div class="pvbox">
       <div class="empty" id="empty"><div class="big"></div><b>왼쪽 대화를 채우면</b><span>이곳에 페이지가 실시간으로 완성됩니다</span></div>
+      <div class="genning" id="genning"><div class="gspin"></div><b>페이지 생성 중</b><span class="gtext" id="gtext">기획 내용 분석 중…</span><div class="gbar"><i></i></div></div>
       <iframe id="frame" title="preview"></iframe>
     </div>
   </main>
@@ -184,12 +194,11 @@
     upsertProject(project);
   }
 
-  const STEPS = ['kind','pageType','volume','pack','motion','facts','features','stats','banner','done'];
+  const STEPS = ['kind','pageType','volume','motion','facts','features','stats','banner','done'];
   const PROMPT = {
     kind:'안녕하세요 👋 어떤 종류의 프로젝트를 만들까요?',
     pageType:'좋아요! 어떤 페이지 타입으로 시작할까요?',
     volume:'페이지 볼륨(섹션 수)을 골라주세요.',
-    pack:'스타일 팩을 선택하세요. 프리뷰가 즉시 리스킨됩니다 ✨',
     motion:'모션 레벨은 어떻게 할까요?',
     facts:'이제 공유 사실을 입력할게요. 제품명과 태그라인을 알려주세요.',
     features:'핵심 기능 3가지를 입력해주세요.',
@@ -224,13 +233,25 @@
   }
   window.addEventListener('resize', fitPreview);
 
+  // 완료 시 AI 생성 애니메이션 → 공개
+  function runGenerate(){
+    const g=document.getElementById('genning'), gt=document.getElementById('gtext'), bar=document.querySelector('#genning .gbar i');
+    const steps=['기획 내용 분석 중…','섹션 구조 조립 중…','스타일 적용 중…','마무리 중…'];
+    empty.classList.add('hide'); g.classList.add('on'); bar.style.width='0'; gt.textContent=steps[0];
+    requestAnimationFrame(()=>{ bar.style.width='26%'; });
+    let i=0; const iv=setInterval(()=>{ i++; if(i<steps.length){ gt.textContent=steps[i]; bar.style.width=(26+i*24)+'%'; } }, 480);
+    setTimeout(()=>{ clearInterval(iv); bar.style.width='100%';
+      setTimeout(()=>{ g.classList.remove('on'); generated=true; persist(); render(); }, 340);
+    }, 1900);
+  }
+
   function advance(userText){
     if(userText) meBubble(userText);
     idx++;
     const step = STEPS[idx];
     botBubble(PROMPT[step]);
     mountWidget(step);
-    if(step==='done'){ generated=true; persist(); render(); }
+    if(step==='done'){ runGenerate(); }
     scroll();
   }
 
@@ -252,14 +273,6 @@
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(o.label));
     if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; render(); advance(o.label); });
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(o.label); });
-    if(step==='pack'){
-      const wrap=el('div','card');
-      const g=el('div','packs');
-      DARK_PACKS.forEach(p=>{ const b=el('button','pk'+(p.id===pack.id?' sel':''),`<div class="sw" style="background:${p.swatch}"></div><div class="meta"><b>${p.name}</b><span>${p.desc}</span></div>`);
-        b.onclick=()=>{ pack=p; render(); g.querySelectorAll('.pk').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); syncDots(); }; g.append(b); });
-      wrap.append(g, nextBtn(`${pack.name} 팩`, ()=>advance(`${pack.name} 팩`)));
-      return wrap;
-    }
     if(step==='motion'){
       const wrap=el('div','card'); const g=el('div','mopts');
       [{id:'static',label:'정적',hint:'애니 없음'},{id:'subtle',label:'은은',hint:'스크롤 페이드'},{id:'rich',label:'리치',hint:'스태거'}].forEach(m=>{
