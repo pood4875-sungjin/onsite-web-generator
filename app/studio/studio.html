@@ -112,12 +112,14 @@
 </div>
 
 <script type="module">
-  import { renderSite } from '../../core/site-render.js';
+  import { renderComposed } from '../../core/darkglow/render.js';
   import { DARK_PACKS } from '../../core/packs/darkglow/packs.js';
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
+  const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
   const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'' };
   let data = structuredClone(EMPTY), pack = DARK_PACKS[0], motion = 'subtle', generated = false;
+  let pageType = 'main', volume = 'heavy';
 
   const STEPS = ['kind','pageType','volume','pack','motion','facts','features','stats','banner','done'];
   const PROMPT = {
@@ -144,7 +146,7 @@
   function scroll(){msgs.scrollTo({top:msgs.scrollHeight,behavior:'smooth'});}
 
   function render(){
-    frame.srcdoc = renderSite(data, pack, motion);
+    frame.srcdoc = renderComposed(data, pack, motion, pageType, volume);
     badge.textContent = `${pack.name} · ${MOT[motion]}`;
     empty.classList.toggle('hide', generated);
   }
@@ -175,8 +177,8 @@
 
   function buildWidget(step){
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(o.label));
-    if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>advance(o.label));
-    if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만 · 4섹션'},{id:'mid',label:'중간',hint:'균형 · 6섹션'},{id:'heavy',label:'헤비',hint:'풍성 · 8섹션'}], o=>advance(o.label));
+    if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; render(); advance(o.label); });
+    if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(o.label); });
     if(step==='pack'){
       const wrap=el('div','card');
       const g=el('div','packs');
@@ -237,10 +239,10 @@
       b.onclick=()=>{ pack=p; render(); syncDots(); }; dz.append(b); });
   }
 
-  function reset(){ data=structuredClone(EMPTY); pack=DARK_PACKS[0]; motion='subtle'; generated=false; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); buildDots(); render(); }
+  function reset(){ data=structuredClone(EMPTY); pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; volume='heavy'; generated=false; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); buildDots(); render(); }
 
   document.getElementById('reset').onclick=reset;
-  document.getElementById('dl').onclick=()=>{ const b=new Blob([renderSite(data,pack,motion)],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='page.html'; a.click(); URL.revokeObjectURL(a.href); };
+  document.getElementById('dl').onclick=()=>{ const b=new Blob([renderComposed(data,pack,motion,pageType,volume)],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='page.html'; a.click(); URL.revokeObjectURL(a.href); };
 
   // init
   buildDots(); botBubble(PROMPT.kind); mountWidget('kind'); render();
