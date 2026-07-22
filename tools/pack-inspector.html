@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pack Inspector — 출력 팩 충실도 확인</title>
+
+<!-- 섹션 렌더 킷: 변수 계약(:root) + .sx 렌더 스타일 + 폰트 @import -->
+<link rel="stylesheet" href="../styles/sections.css">
+
+<style>
+  /* ── 인스펙터 자체 chrome (섹션 변수 계약과 분리된 네임스페이스) ── */
+  :root{ --ui-bg:#0f1216; --ui-panel:#161a20; --ui-line:#262c35; --ui-fg:#e7ecf3; --ui-dim:#94a0b0; --ui-acc:#5b9dff; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--ui-bg); color:var(--ui-fg);
+    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif; }
+  a{ color:inherit; }
+  .topbar{ position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:14px 22px; background:rgba(15,18,22,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--ui-line); }
+  .topbar h1{ font-size:15px; font-weight:700; margin:0; letter-spacing:-.01em; }
+  .topbar .tag{ font-size:11px; color:var(--ui-dim); border:1px solid var(--ui-line); border-radius:999px; padding:3px 9px; }
+  select{ background:var(--ui-panel); color:var(--ui-fg); border:1px solid var(--ui-line); border-radius:8px;
+    padding:8px 12px; font-size:14px; font-weight:600; cursor:pointer; }
+  .meta{ font-size:12px; color:var(--ui-dim); max-width:520px; line-height:1.5; }
+  .wrap{ max-width:1320px; margin:0 auto; padding:28px 22px 120px; }
+  .sec{ margin-top:40px; }
+  .sec > h2{ font-size:12px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--ui-dim);
+    margin:0 0 14px; padding-bottom:8px; border-bottom:1px solid var(--ui-line); }
+  .panel{ background:var(--ui-panel); border:1px solid var(--ui-line); border-radius:14px; padding:20px; }
+
+  /* 스와치 */
+  .swgroup{ margin-bottom:18px; }
+  .swgroup > b{ font-size:12px; color:var(--ui-dim); font-weight:600; }
+  .swrow{ display:flex; flex-wrap:wrap; gap:10px; margin-top:9px; }
+  .sw{ width:150px; border:1px solid var(--ui-line); border-radius:10px; overflow:hidden; background:#0c0f13; }
+  .sw .chip{ height:52px; }
+  .sw .info{ padding:8px 10px; }
+  .sw .var{ font-size:11px; font-weight:600; }
+  .sw .hex{ font-size:11px; color:var(--ui-dim); font-family:var(--font-mono); text-transform:uppercase; }
+
+  /* 타입 램프 */
+  .type-row{ display:flex; align-items:baseline; gap:16px; padding:9px 0; border-bottom:1px dashed var(--ui-line); }
+  .type-row .lbl{ width:190px; flex:none; font-size:11px; color:var(--ui-dim); font-family:var(--font-mono); }
+  .type-row .spec{ width:70px; flex:none; font-size:11px; color:var(--ui-dim); }
+  .type-row .demo{ color:#fff; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* 스페이싱 / radius */
+  .scale{ display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap; }
+  .scale .item{ text-align:center; font-size:11px; color:var(--ui-dim); }
+  .scale .bar{ background:var(--ui-acc); border-radius:3px; margin:0 auto 6px; }
+  .rad .box{ background:#26456f; border:1px solid var(--ui-acc); width:64px; height:64px; margin:0 auto 6px; }
+
+  /* 섹션 프리뷰 */
+  .stagewrap{ border:1px solid var(--ui-line); border-radius:14px; overflow:hidden; background:#fff; }
+  #stage{ background:#fff; }
+  .previt{ border-top:1px solid #eceff3; }
+  .previt:first-child{ border-top:0; }
+  .previt .cap{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:#8a93a0; background:#f6f8fa; padding:6px 16px; border-bottom:1px solid #eceff3; }
+
+  /* side-by-side 원본 대조 */
+  .cols{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .cols h3{ font-size:12px; color:var(--ui-dim); margin:0 0 10px; font-weight:600; }
+  .refcard{ background:#fff; border:1px solid var(--ui-line); border-radius:12px; padding:12px; }
+  .refcard img{ width:100%; height:auto; display:block; border-radius:6px; border:1px solid #eceff3; margin-bottom:10px; }
+  .refcard figcaption{ font-size:11px; color:#5b6270; }
+  .note{ font-size:12px; color:var(--ui-dim); line-height:1.55; margin-top:10px; }
+  @media (max-width:900px){ .cols{ grid-template-columns:1fr; } .type-row .demo{ font-size:20px!important; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Pack Inspector</h1>
+  <span class="tag">출력 팩 충실도 확인</span>
+  <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ui-dim)">팩
+    <select id="packSel"></select>
+  </label>
+  <span class="meta" id="packMeta"></span>
+</div>
+
+<div class="wrap">
+  <div class="sec"><h2>토큰 · 컬러</h2><div class="panel" id="swatches"></div></div>
+  <div class="sec"><h2>토큰 · 타입 램프</h2><div class="panel" id="typeramp"></div></div>
+  <div class="sec"><h2>토큰 · 스페이싱 &amp; Radius</h2><div class="panel"><div id="scales"></div></div></div>
+
+  <div class="sec"><h2>섹션 프리뷰 (선택 팩으로 리스킨)</h2>
+    <div class="stagewrap"><div id="stage"></div></div>
+  </div>
+
+  <div class="sec"><h2>KRDS 원본 대조 (side-by-side)</h2>
+    <div class="panel">
+      <div class="cols">
+        <div>
+          <h3>KRDS 원본 (Figma v1.0.0)</h3>
+          <div id="refCol"></div>
+        </div>
+        <div>
+          <h3>이 팩이 재현한 것 (판정 기준)</h3>
+          <div class="note" id="reproNote"></div>
+        </div>
+      </div>
+      <div class="note" id="refFallback" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 섹션 레지스트리 (클래식 스크립트: 전역 SECTIONS 정의) -->
+<script src="../sections/registry.js"></script>
+<!-- 전역을 window로 노출 (module에서 접근) -->
+<script>
+  try { window.__SECTIONS = SECTIONS; window.__CAT_LABEL = CAT_LABEL; }
+  catch(e){ window.__SECTIONS = null; console.error('registry load fail', e); }
+</script>
+
+<!-- 팩 오버라이드 주입 지점 -->
+<style id="pack-css"></style>
+
+<script type="module">
+import { SECTION_PACKS, PACK_BY_ID } from '../core/packs/index.js';
+
+const SECTIONS = window.__SECTIONS || {};
+const $ = (s)=>document.querySelector(s);
+
+// 프리뷰에 보여줄 섹션 카테고리 (핵심 5 + 신호색 확인용)
+const SHOW = ['nav','hero','feature','stat','cta','notice','footer'];
+
+// KRDS 원본 대조용 참조 이미지 (tools/refs/krds/ 에 캡처)
+const REFS = [
+  { src:'refs/krds/side-nav.png',     cap:'Side navigation — 2depth/3depth · Pretendard GOV · 정부블루 강조' },
+  { src:'refs/krds/palette-blue.png', cap:'System / Blue 램프 (정부블루 계열)' },
+  { src:'refs/krds/palette-red.png',  cap:'System / Red 램프 (danger 계열)' },
+];
+
+// ---- 팩 셀렉트 ----
+const sel = $('#packSel');
+SECTION_PACKS.forEach(p=>{
+  const o=document.createElement('option'); o.value=p.meta.id; o.textContent=p.meta.name; sel.appendChild(o);
+});
+sel.value = PACK_BY_ID.krds ? 'krds' : SECTION_PACKS[0].meta.id;
+sel.addEventListener('change', ()=>applyPack(sel.value));
+
+function applyPack(id){
+  const pack = PACK_BY_ID[id];
+  $('#packMeta').textContent = pack.meta.desc + '  ·  ' + (pack.meta.source||'');
+  // :root 계약을 #stage 스코프로 오버라이드 (인스펙터 chrome 불변)
+  $('#pack-css').textContent = (pack.vars) ? pack.tokensCss('#stage') : '';
+  renderTokens(pack);
+  renderStage(pack);
+  renderRepro(pack);
+}
+
+// ---- 토큰 패널 ----
+function renderTokens(pack){
+  // 컬러 스와치
+  const sw = $('#swatches'); sw.innerHTML='';
+  const groups = pack.swatchGroups || defaultGroups(pack);
+  groups.forEach(g=>{
+    const box=document.createElement('div'); box.className='swgroup';
+    box.innerHTML = `<b>${g.label}</b>`;
+    const row=document.createElement('div'); row.className='swrow';
+    g.keys.forEach(k=>{
+      const hex = pack.vars ? pack.vars[k] : getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+      const el=document.createElement('div'); el.className='sw';
+      el.innerHTML = `<div class="chip" style="background:${hex}"></div>
+        <div class="info"><div class="var">${k}</div><div class="hex">${hex||'—'}</div></div>`;
+      row.appendChild(el);
+    });
+    box.appendChild(row); sw.appendChild(box);
+  });
+
+  // 타입 램프
+  const tr = $('#typeramp'); tr.innerHTML='';
+  const font = pack.vars ? pack.vars['--font-display'] : 'var(--font-display)';
+  (pack.typeRamp || defaultRamp()).forEach(t=>{
+    const r=document.createElement('div'); r.className='type-row';
+    r.innerHTML = `<span class="lbl">${t.name}</span><span class="spec">${t.size}px · ${t.weight}</span>
+      <span class="demo" style="font-family:${font};font-size:${t.size}px;font-weight:${t.weight}">다람쥐 헌 쳇바퀴에 타고파 AaGg 123</span>`;
+    tr.appendChild(r);
+  });
+
+  // 스페이싱 + radius
+  const sc = $('#scales'); sc.innerHTML='';
+  const space = pack.spaceScale || [4,8,12,16,24,32,48];
+  const rad = pack.radiusScale || [{name:'sm',v:8},{name:'md',v:12}];
+  sc.innerHTML = `<div style="font-size:12px;color:var(--ui-dim);margin-bottom:10px">스페이싱 (px)</div>
+    <div class="scale">${space.map(v=>`<div class="item"><div class="bar" style="width:${v}px;height:${Math.max(v,6)}px"></div>${v}</div>`).join('')}</div>
+    <div style="font-size:12px;color:var(--ui-dim);margin:22px 0 10px">Radius (px)</div>
+    <div class="scale rad">${rad.map(r=>`<div class="item"><div class="box" style="border-radius:${r.v}px"></div>${r.name} · ${r.v}</div>`).join('')}</div>`;
+}
+
+// ---- 섹션 스테이지 ----
+function renderStage(pack){
+  const stage = $('#stage'); stage.innerHTML='';
+  SHOW.forEach(cat=>{
+    const list = SECTIONS[cat]; if(!list || !list.length) return;
+    const sec = list[0];
+    const vid = (pack.variantMap && pack.variantMap[cat]) || (sec.variants && sec.variants[0] && sec.variants[0].id);
+    let html=''; try{ html = sec.render(vid); }catch(e){ html = `<div style="padding:16px;color:#c00">render 실패: ${cat}</div>`; }
+    const it=document.createElement('div'); it.className='previt';
+    const label = (window.__CAT_LABEL && window.__CAT_LABEL[cat]) || cat;
+    it.innerHTML = `<div class="cap">${label} · ${sec.label||sec.type} · variant=${vid||'—'}</div><div class="sx">${html}</div>`;
+    stage.appendChild(it);
+  });
+}
+
+// ---- 원본 대조 ----
+function renderRepro(pack){
+  const col = $('#refCol'); col.innerHTML='';
+  REFS.forEach(r=>{
+    const f=document.createElement('figure'); f.className='refcard'; f.style.margin='0 0 14px';
+    f.innerHTML = `<img src="${r.src}" alt="" onerror="this.style.display='none';this.nextElementSibling.dataset.missing='1'">
+      <figcaption>${r.cap}</figcaption>`;
+    col.appendChild(f);
+  });
+  $('#reproNote').innerHTML = pack.meta.id==='krds'
+    ? `왼쪽 KRDS 원본과 위 <b>섹션 프리뷰</b>·<b>컬러 스와치</b>를 비교:<br>
+       ① 스와치 hex가 KRDS 실측(brand #256ef4, ink #131416, line #cdd1d5 …)과 일치하는가<br>
+       ② 섹션이 정부블루·저-radius·1px 헤어라인·Pretendard GOV 톤으로 리스킨됐는가<br>
+       ③ 버튼/링크 강조색이 정부블루로 통일됐는가<br>
+       → 세 개 부합하면 <b>탑재 성공</b>.`
+    : `기본(Wanted) 팩 — sections.css :root 원본. KRDS로 전환해 대조하세요.`;
+}
+
+function defaultGroups(pack){ return [{label:'vars', keys:['--brand','--ink','--bg','--line']}]; }
+function defaultRamp(){ return [{name:'h1',size:44,weight:700},{name:'body',size:16,weight:400}]; }
+
+applyPack(sel.value);
+</script>
+</body>
+</html>
