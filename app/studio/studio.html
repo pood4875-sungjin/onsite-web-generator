@@ -56,7 +56,15 @@
   .ptmenu button:hover{background:rgba(255,255,255,.08)}
 
   /* 좌: 챗 */
-  .chat{width:440px;flex:0 0 440px;display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surf2);backdrop-filter:blur(20px)}
+  .chat{width:var(--chat-w,440px);flex:0 0 var(--chat-w,440px);display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surf2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+  /* 대화창↔프리뷰 리사이저 */
+  .splitter{flex:0 0 6px;cursor:col-resize;position:relative;z-index:15;align-self:stretch;background:transparent}
+  .splitter::before{content:'';position:absolute;top:0;bottom:0;left:2px;width:2px;border-radius:2px;background:transparent;transition:background var(--dur) var(--ease)}
+  .splitter:hover::before,.splitter.drag::before{background:var(--accent)}
+  .splitter::after{content:'';position:absolute;top:50%;left:-2px;width:10px;height:34px;transform:translateY(-50%);border-radius:6px;background:var(--surface);border:1px solid var(--line2);opacity:0;transition:opacity var(--dur) var(--ease)}
+  .splitter:hover::after,.splitter.drag::after{opacity:1}
+  body.resizing{cursor:col-resize;user-select:none}
+  body.resizing iframe{pointer-events:none}
   .chead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:10px}
   .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--grad-brand);box-shadow:var(--cta-glow)}
@@ -164,6 +172,8 @@
     <div class="msgs" id="msgs"></div>
   </aside>
 
+  <div class="splitter" id="split" title="드래그로 크기 조절"></div>
+
   <main class="preview">
     <div class="pvhead">
       <div class="l">▦ 실시간 프리뷰 <span class="badge" id="badge">에테르 · 은은</span></div>
@@ -243,6 +253,26 @@
     fitPreview();
   }
   window.addEventListener('resize', fitPreview);
+
+  /* ---- 대화창↔프리뷰 리사이저 ---- */
+  (function(){
+    const app=document.querySelector('.app'), split=document.getElementById('split');
+    const KEY='midas-chat-w', MIN=320, PREVIEW_MIN=360;
+    const railW=()=>{ const r=document.getElementById('rail'); return (r && r.style.display!=='none') ? r.offsetWidth : 0; };
+    const maxW=()=> Math.max(MIN, app.clientWidth - railW() - 6 - PREVIEW_MIN);
+    const clamp=(w)=> Math.min(maxW(), Math.max(MIN, w));
+    function setW(w,save){ w=clamp(w); app.style.setProperty('--chat-w', w+'px'); fitPreview(); if(save) localStorage.setItem(KEY, w); }
+    // 저장값 복원
+    const saved=parseInt(localStorage.getItem(KEY),10); if(saved) setW(saved,false);
+    let dragging=false;
+    split.addEventListener('pointerdown',(e)=>{ dragging=true; split.setPointerCapture(e.pointerId); split.classList.add('drag'); document.body.classList.add('resizing'); e.preventDefault(); });
+    split.addEventListener('pointermove',(e)=>{ if(!dragging) return; setW(e.clientX - app.getBoundingClientRect().left - railW(), false); });
+    function end(e){ if(!dragging) return; dragging=false; try{split.releasePointerCapture(e.pointerId);}catch(_){} split.classList.remove('drag'); document.body.classList.remove('resizing'); localStorage.setItem(KEY, parseInt(getComputedStyle(app).getPropertyValue('--chat-w'),10)||440); }
+    split.addEventListener('pointerup',end); split.addEventListener('pointercancel',end);
+    // 더블클릭 = 기본폭 리셋
+    split.addEventListener('dblclick',()=>{ localStorage.removeItem(KEY); app.style.removeProperty('--chat-w'); fitPreview(); });
+    window.addEventListener('resize',()=>{ const w=parseInt(getComputedStyle(app).getPropertyValue('--chat-w'),10); if(w) setW(w,false); });
+  })();
 
   // 완료 시 AI 생성 애니메이션 → 공개
   function runGenerate(){
