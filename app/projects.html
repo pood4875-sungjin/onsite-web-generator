@@ -4,60 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>내 프로젝트 · MIDAS Web Generator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
+<link rel="stylesheet" href="ds.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
-  :root{ --ink:#160211; --ink2:#5b5566; --ink3:#948e9e; --line:#eceaf0; --accent:#5b5bf5; }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:'Manrope',-apple-system,"Pretendard",system-ui,sans-serif;color:var(--ink);min-height:100vh;
-    background:radial-gradient(1200px 700px at 85% -5%,rgba(180,120,255,.08),transparent 60%),#fff}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
-  .brand{display:flex;align-items:center;gap:10px}.logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#22d3ee,#818cf8)}
-  .brand b{font-size:15px;font-weight:800;letter-spacing:-.01em}
-  .wordmark span{font-weight:500;opacity:.55}
-  .newbtn{border:none;border-radius:100px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;padding:9px 18px;cursor:pointer;text-decoration:none}
-  .wrap{max-width:1040px;margin:0 auto;padding:24px 24px 80px}
-  h1{font-size:22px;font-weight:700;margin:0 0 18px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-  .card{cursor:pointer;text-align:left;border:none;background:none;padding:0;position:relative}
-  .thumb{height:150px;border-radius:14px;overflow:hidden;border:1px solid var(--line);position:relative;transition:.18s;background:linear-gradient(135deg,#0b0f1a,#1b2740)}
-  .card:hover .thumb{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,24,29,.12)}
-  .mini{position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;gap:8px}
-  .mini .mh{height:8px;width:40%;border-radius:4px;background:rgba(255,255,255,.85)}
-  .mini .mt{height:14px;width:70%;border-radius:5px;background:rgba(255,255,255,.95)}
-  .mini .mb{height:8px;width:55%;border-radius:4px;background:rgba(255,255,255,.6)}
-  .mini .mrow{display:flex;gap:6px;margin-top:auto}.mini .mrow i{flex:1;height:34px;border-radius:8px;background:rgba(255,255,255,.5)}
-  .tt{font-size:14px;font-weight:600;margin:12px 2px 2px}.ts{font-size:12px;color:var(--ink3);margin:0 2px}
-  .del{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:8px;border:none;background:rgba(0,0,0,.35);color:#fff;cursor:pointer;opacity:0;transition:.15s;font-size:13px}
-  .card:hover .del{opacity:1}.del:hover{background:rgba(220,38,38,.85)}
-  .empty{color:var(--ink3);font-size:14px;padding:40px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+  body{min-height:100vh;background:var(--canvas)}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px}
+  .nav .r{display:flex;align-items:center;gap:10px}
+  .newbtn{border:none;border-radius:var(--r-sm);background:var(--primary);color:var(--on-primary);font-weight:var(--fw-med);font-size:var(--fs-body-sm);padding:9px 16px;cursor:pointer;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 32px 90px}
+  h1{font-size:var(--fs-display-sm);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);margin:8px 0 20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+  .card{border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;background:var(--surface);transition:var(--dur) var(--ease);cursor:pointer}
+  .card:hover{border-color:var(--hairline-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .thumb{height:158px;position:relative;overflow:hidden;background:var(--canvas-2);border-bottom:1px solid var(--hairline)}
+  .thumb iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none;background:#070a12}
+  .meta{padding:13px 15px;display:flex;align-items:flex-start;gap:8px}
+  .meta .info{flex:1;min-width:0}
+  .meta .nm{font-size:var(--fs-body-sm);font-weight:var(--fw-semi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta .sb{font-size:var(--fs-caption);color:var(--mute);margin-top:2px}
+  .acts{display:flex;gap:2px;opacity:0;transition:var(--dur)}
+  .card:hover .acts{opacity:1}
+  .acts button{width:26px;height:26px;border:none;background:none;border-radius:var(--r-sm);color:var(--mute);cursor:pointer;display:grid;place-items:center}
+  .acts button:hover{background:var(--canvas-2);color:var(--ink)}
+  .acts .del:hover{color:var(--a-red);background:color-mix(in srgb,var(--a-red) 12%,transparent)}
+  .empty{grid-column:1/-1;color:var(--mute);font-size:var(--fs-body);padding:60px;text-align:center;border:1px dashed var(--hairline);border-radius:var(--r-md)}
 </style>
 </head>
-<body>
-<div class="top">
-  <div class="brand"><b class="wordmark">MIDAS <span>Web Generator</span></b></div>
-  <a class="newbtn" href="index.html">+ 새로 만들기</a>
+<body class="ds-body">
+<div class="nav">
+  <div class="brand"><b class="ds-wordmark">MIDAS <span>Web Generator</span></b></div>
+  <div class="r"><button id="themeBtn"></button><a class="newbtn" href="index.html">+ 새로 만들기</a></div>
 </div>
 <div class="wrap">
   <h1>내 프로젝트</h1>
   <div class="grid" id="projects"></div>
 </div>
+
 <script type="module">
-  import { getProjects, deleteProject, PT_LABEL } from './store.js';
-  const mini=`<div class="mini"><div class="mh"></div><div class="mt"></div><div class="mb"></div><div class="mrow"><i></i><i></i><i></i></div></div>`;
-  function open(p){ const pg=p.pages[0]; if(!pg){ location.href=`index.html`; return; } location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`; }
+  import { getProjects, saveProjects, deleteProject } from './store.js';
+  import { renderComposed } from '../core/darkglow/render.js';
+  import { DARK_PACK_BY_ID } from '../core/packs/darkglow/packs.js';
+  import { mountThemeToggle } from './theme.js';
+  mountThemeToggle(document.getElementById('themeBtn'));
+
+  const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
+  const box=document.getElementById('projects');
+
+  function thumbnail(project){
+    const wrap=document.createElement('div'); wrap.className='thumb';
+    const pg=project.pages[0];
+    if(pg){
+      const pack=DARK_PACK_BY_ID[project.stylePack]||DARK_PACK_BY_ID.aether;
+      const html=renderComposed(pg.data||{}, pack, 'static', pg.pageType, pg.volume);
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=html; wrap.append(f);
+      requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; });
+    }
+    return wrap;
+  }
+
+  function open(p){ const pg=p.pages[0]; if(!pg){ location.href='index.html'; return; } location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`; }
+  function rename(p){ const nn=prompt('프로젝트 이름', p.name); if(nn==null) return; const t=nn.trim(); if(!t) return; const all=getProjects(); const t2=all.find(x=>x.id===p.id); if(t2){ t2.name=t; saveProjects(all); render(); } }
+
   function render(){
-    const box=document.getElementById('projects'); const ps=getProjects();
-    if(!ps.length){ box.style.display='block'; box.innerHTML='<div class="empty">아직 프로젝트가 없어요. 새로 만들어보세요.</div>'; return; }
-    box.style.display='grid'; box.innerHTML='';
+    const ps=getProjects();
+    box.innerHTML='';
+    if(!ps.length){ box.innerHTML='<div class="empty">아직 프로젝트가 없어요. <b>새로 만들기</b>로 시작해보세요.</div>'; return; }
     ps.forEach(p=>{
       const d=new Date(p.createdAt); const date=`${d.getMonth()+1}/${d.getDate()}`;
-      const kindLabel=p.kind==='multi'?`사이트 · ${p.pages.length}페이지`:(PT_LABEL[p.pages[0]?.pageType]||'페이지');
-      const c=document.createElement('button'); c.className='card';
-      c.innerHTML=`<div class="thumb"><button class="del" title="삭제">✕</button>${mini}</div><div class="tt">${p.name}</div><div class="ts">${kindLabel} · ${date}</div>`;
-      c.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); if(confirm(`"${p.name}" 삭제할까요?`)){ deleteProject(p.id); render(); } };
-      c.onclick=()=>open(p);
-      box.append(c);
+      const kindLabel=p.kind==='multi'?`사이트 · ${p.pages.length}p`:(PTL[p.pages[0]?.pageType]||'페이지');
+      const card=document.createElement('div'); card.className='card';
+      card.append(thumbnail(p));
+      const meta=document.createElement('div'); meta.className='meta';
+      meta.innerHTML=`<div class="info"><div class="nm">${p.name}</div><div class="sb">${kindLabel} · ${date}</div></div>
+        <div class="acts"><button class="ren" title="이름 변경"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2 2 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+        <button class="del" title="삭제"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>`;
+      meta.querySelector('.ren').onclick=(e)=>{ e.stopPropagation(); rename(p); };
+      meta.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); if(confirm(`"${p.name}" 삭제할까요?`)){ deleteProject(p.id); render(); } };
+      card.append(meta);
+      card.onclick=()=>open(p);
+      box.append(card);
     });
   }
   render();

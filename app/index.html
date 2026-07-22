@@ -1,106 +1,108 @@
 <!doctype html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>새 프로젝트 · MIDAS Web Generator</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <link rel="stylesheet" href="ds.css">
 <style>
-  body{min-height:100vh;overflow-y:auto;background:var(--scrim),var(--bg);background-attachment:fixed}
-  .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:18px 26px;z-index:5}
-  .brand{display:flex;align-items:center;gap:9px}
-  .navlink{color:var(--ink-2);font-size:var(--fs-sm);font-weight:var(--fw-semi);text-decoration:none;border:1px solid var(--line);background:var(--glass);border-radius:var(--r-pill);padding:7px 14px;backdrop-filter:blur(6px)}
-  .navlink:hover{color:var(--ink);background:#fff}
+  body{min-height:100vh;overflow-y:auto;background:var(--scrim),var(--canvas);background-attachment:fixed}
+  .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;z-index:5}
+  .nav .r{display:flex;align-items:center;gap:10px}
+  .navlink{color:var(--body);font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-decoration:none;border:1px solid var(--hairline);background:var(--surface);border-radius:var(--r-sm);padding:8px 14px}
+  .navlink:hover{color:var(--ink);border-color:var(--hairline-strong)}
 
-  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:96px 24px 88px}
-  .step{display:none;width:100%;max-width:640px;text-align:center;margin-top:auto;margin-bottom:auto;animation:fade .35s var(--ease)}
+  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:104px 24px 96px}
+  .step{display:none;width:100%;max-width:660px;text-align:center;margin-top:auto;margin-bottom:auto;animation:fade .3s var(--ease)}
   .step.on{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  h1{font-size:var(--fs-display);font-weight:var(--fw-black);letter-spacing:-.02em;margin:0 0 10px}
-  .sub{font-size:var(--fs-h2);color:var(--ink);opacity:.7;margin:0 0 34px}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .eyebrow{margin-bottom:14px}
+  h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:var(--lh-tight);margin:0 0 12px;color:var(--ink)}
+  .sub{font-size:var(--fs-body-lg);color:var(--body-mid);margin:0 0 40px;letter-spacing:var(--tr-body)}
 
-  /* 종류 카드 + 썸네일 */
+  /* 종류 카드 */
   .cards{display:flex;gap:20px;justify-content:center}
-  .kc{width:290px;height:220px;background:var(--glass);border:1px solid #fff;border-radius:var(--r-sm);padding:0;cursor:pointer;
-    display:flex;flex-direction:column;text-align:left;backdrop-filter:blur(8px);transition:var(--dur) var(--ease);
-    box-shadow:0 6px 24px rgba(120,80,160,.06);overflow:hidden;font-family:inherit;color:var(--ink)}
-  .kc:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(120,80,160,.14);background:rgba(255,255,255,.7)}
-  .kc.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-  .kc .thumb{flex:1;position:relative;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.35)}
-  .kc .lab{padding:14px 18px;border-top:1px solid rgba(255,255,255,.7)}
-  .kc .kt{font-size:16px;font-weight:var(--fw-bold);margin-bottom:3px}
-  .kc .kd{font-size:var(--fs-sm);color:var(--ink-2)}
-  /* mini page mockups */
-  .pg{width:96px;background:#fff;border:1px solid #e7e3ef;border-radius:6px;box-shadow:0 6px 16px rgba(90,60,120,.10);padding:9px;display:flex;flex-direction:column;gap:5px}
-  .pg .d3{display:flex;gap:3px;margin-bottom:2px}.pg .d3 i{width:4px;height:4px;border-radius:50%;background:#e0dbe9}
-  .pg .ln{height:5px;border-radius:3px;background:#e8e4f0}.pg .ln.t{width:60%;background:#cfc8dd;height:7px}
-  .pg .g2{display:flex;gap:4px;margin-top:2px}.pg .g2 span{flex:1;height:16px;border-radius:4px;background:#eef0f6}
-  .pg.accentline .ln.c{width:44%;background:var(--accent);opacity:.55}
-  .fan{position:relative;width:130px;height:120px}
+  .kc{width:300px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
+  .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .kc.sel{border-color:var(--ink)}
+  .kc .thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative}
+  .kc.single .thumb{background:color-mix(in srgb,var(--a-blue) 12%,var(--canvas))}
+  .kc.multi .thumb{background:color-mix(in srgb,var(--a-purple) 12%,var(--canvas))}
+  .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
+  .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
+  .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
+  /* mini page */
+  .pg{width:92px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:8px;display:flex;flex-direction:column;gap:5px}
+  .pg .d3{display:flex;gap:3px;margin-bottom:2px}.pg .d3 i{width:4px;height:4px;border-radius:50%;background:var(--hairline-strong)}
+  .pg .ln{height:5px;border-radius:2px;background:var(--hairline)}.pg .ln.t{width:60%;height:7px;background:var(--hairline-strong)}
+  .pg .g2{display:flex;gap:4px;margin-top:2px}.pg .g2 span{flex:1;height:14px;border-radius:3px;background:var(--canvas-2)}
+  .single .pg .ln.c{width:42%;background:var(--a-blue);opacity:.75}
+  .multi .pg .ln.c{width:42%;background:var(--a-purple);opacity:.75}
+  .fan{position:relative;width:126px;height:112px}
   .fan .pg{position:absolute;left:50%;top:50%}
-  .fan .f1{transform:translate(-50%,-50%) rotate(0deg);z-index:3}
-  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;opacity:.85;height:104px}
-  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;opacity:.7;height:104px}
+  .fan .f1{transform:translate(-50%,-50%);z-index:3}
+  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;opacity:.9;height:98px}
+  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;opacity:.75;height:98px}
 
-  /* step2 폼 */
-  .fields{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:12px}
-  .fields label{font-size:var(--fs-sm);font-weight:var(--fw-semi);color:var(--ink-2);margin:6px 0 -4px}
-  .opt{color:var(--ink-3);font-weight:var(--fw-reg)}
+  /* step2 */
+  .fields{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px}
+  .fields label{font-size:var(--fs-body-sm);font-weight:var(--fw-med);color:var(--body);margin:6px 0 -6px}
+  .opt{color:var(--mute);font-weight:var(--fw-reg)}
   .orgchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
 
-  /* step3 스타일 */
-  .styles{display:flex;gap:14px;justify-content:center}
-  .sc{position:relative;width:184px;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:#fff;transition:var(--dur) var(--ease)}
-  .sc:hover{transform:translateY(-2px)}.sc.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-  .sc .sw{height:104px}.sc .cap{padding:11px 13px;font-size:var(--fs-sm);font-weight:var(--fw-semi);text-align:left}
-  .sc .rec{position:absolute;top:9px;right:9px}
+  /* step3 */
+  .styles{display:flex;gap:16px;justify-content:center}
+  .sc{position:relative;width:190px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
+  .sc:hover{border-color:var(--hairline-strong);transform:translateY(-2px)}.sc.sel{border-color:var(--ink)}
+  .sc .sw{height:108px}.sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left}
+  .sc .rec{position:absolute;top:10px;right:10px}
 
-  .navbtns{margin-top:34px;display:flex;gap:10px;justify-content:center}
+  .navbtns{margin-top:36px;display:flex;gap:10px;justify-content:center}
   .dots{position:fixed;bottom:36px;left:50%;transform:translateX(-50%)}
 </style>
 </head>
 <body class="ds-body">
 <div class="nav">
   <div class="brand"><b class="ds-wordmark">MIDAS <span>Web Generator</span></b></div>
-  <a class="navlink" href="projects.html">내 프로젝트 →</a>
+  <div class="r"><button id="themeBtn"></button><a class="navlink" href="projects.html">내 프로젝트 →</a></div>
 </div>
 
 <div class="wrap">
-  <!-- 1: 종류 -->
   <div class="step on" id="st1">
+    <div class="ds-eyebrow eyebrow">새 프로젝트</div>
     <h1>어떤 걸 만들까요?</h1>
     <p class="sub">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
     <div class="cards">
-      <button class="kc" data-k="single">
-        <div class="thumb"><div class="pg accentline"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
+      <button class="kc single" data-k="single">
+        <div class="thumb"><div class="pg"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
         <div class="lab"><div class="kt">단일 페이지</div><div class="kd">랜딩 · 공지 등 한 장</div></div>
       </button>
-      <button class="kc" data-k="multi">
-        <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1 accentline"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
+      <button class="kc multi" data-k="multi">
+        <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
         <div class="lab"><div class="kt">다중 페이지</div><div class="kd">메인·기능·요금… 사이트 구축</div></div>
       </button>
     </div>
   </div>
 
-  <!-- 2: 이름 + 사업군 -->
   <div class="step" id="st2">
+    <div class="ds-eyebrow eyebrow">1 / 2 · 프로젝트 정보</div>
     <h1>프로젝트 정보</h1>
     <p class="sub">이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.</p>
     <div class="fields">
       <label>프로젝트 이름</label><input class="ds-input" id="pname" placeholder="예: 온사이트 제품사이트">
       <label>제품명 <span class="opt">(선택)</span></label><input class="ds-input" id="product" placeholder="예: Onsite">
-      <label>사업군</label>
-      <div class="orgchips" id="orgchips"></div>
+      <label>사업군</label><div class="orgchips" id="orgchips"></div>
     </div>
     <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)">← 이전</button><button class="ds-btn primary" onclick="go(3)">다음 →</button></div>
   </div>
 
-  <!-- 3: 스타일 (추천) -->
   <div class="step" id="st3">
+    <div class="ds-eyebrow eyebrow">2 / 2 · 스타일</div>
     <h1>스타일을 선택하세요</h1>
     <p class="sub" id="st3sub">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
     <div class="styles" id="styles"></div>
-    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)">← 이전</button><button class="ds-btn accent" onclick="finish()">시작하기 →</button></div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)">← 이전</button><button class="ds-btn primary" onclick="finish()">시작하기 →</button></div>
   </div>
 
   <div class="ds-dots dots"><i class="on"></i><i></i><i></i></div>
@@ -109,33 +111,27 @@
 <script type="module">
   import { createProject, addPage } from './store.js';
   import { DARK_PACKS } from '../core/packs/darkglow/packs.js';
+  import { mountThemeToggle } from './theme.js';
+  mountThemeToggle(document.getElementById('themeBtn'));
 
-  const ORGS = [
-    { id:'enterprise', label:'전사', rec:'aether' },
-    { id:'sk', label:'SK', rec:'ember' },
-    { id:'ensol', label:'엔솔', rec:'violet' },
-    { id:'personal', label:'개인작업', rec:'aether' },
-  ];
+  const ORGS=[{id:'enterprise',label:'전사',rec:'aether'},{id:'sk',label:'SK',rec:'ember'},{id:'ensol',label:'엔솔',rec:'violet'},{id:'personal',label:'개인작업',rec:'aether'}];
   let kind='single', stylePack='aether', org='';
 
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
-    document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
-    if(n===3) renderStyles(); };
+    document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1)); if(n===3) renderStyles(); };
 
   document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{ kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80); });
 
-  // 사업군 칩
   const oc=document.getElementById('orgchips');
   ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=o.label;
     b.onclick=()=>{ org=o.id; oc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); stylePack=o.rec; }; oc.append(b); });
 
-  function recFor(){ return (ORGS.find(o=>o.id===org)||{}).rec; }
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
-    const rec=recFor(); const orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
-    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군에는 추천 스타일을 표시했어요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
+    const rec=(ORGS.find(o=>o.id===org)||{}).rec, orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
+    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군 추천을 표시했어요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
     DARK_PACKS.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      const rb = (p.id===rec) ? `<span class="ds-badge rec">★ ${orgLabel} 추천</span>` : '';
+      const rb=(p.id===rec)?`<span class="ds-badge rec">★ ${orgLabel} 추천</span>`:'';
       c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div>${rb}<div class="cap">${p.name} · ${p.desc}</div>`;
       c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
   }
