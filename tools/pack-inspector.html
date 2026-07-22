@@ -78,8 +78,12 @@
 </div>
 
 <script type="module">
-import { PACKS, PACK_BY_ID, renderPage, buildDemoPageDoc } from '../core/packs/index.js';
+import { PACKS, renderPage, buildDemoPageDoc } from '../core/packs/index.js';
+import { validatePack } from '../core/packs/spec.js';
+import { templatePack } from '../core/packs/_template/pack.js';
 
+const ALL = [...PACKS, templatePack];              // 스캐폴드도 확인용으로 노출
+const PACK_BY_ID = Object.fromEntries(ALL.map((p) => [p.meta.id, p]));
 const $ = (s) => document.querySelector(s);
 const REFS = [
   { src:'refs/krds/side-nav.png', cap:'Side navigation · Pretendard GOV · 정부블루 강조' },
@@ -88,7 +92,7 @@ const REFS = [
 ];
 
 const sel = $('#packSel');
-PACKS.forEach((p) => { const o = document.createElement('option'); o.value = p.meta.id; o.textContent = p.meta.name; sel.appendChild(o); });
+ALL.forEach((p) => { const o = document.createElement('option'); o.value = p.meta.id; o.textContent = p.meta.name; sel.appendChild(o); });
 sel.value = PACK_BY_ID.krds ? 'krds' : PACKS[0].meta.id;
 sel.addEventListener('change', () => applyPack(sel.value));
 
@@ -102,7 +106,11 @@ function loadFrame(f, html, cb){ f.onload = () => { autosize(f); setTimeout(() =
 
 function applyPack(id){
   const pack = PACK_BY_ID[id];
-  $('#packMeta').textContent = pack.meta.desc + (pack.meta.source ? '  ·  ' + pack.meta.source : '');
+  const v = validatePack(pack);
+  const badge = v.ok
+    ? `<span style="color:#2ec07a;font-weight:700">✓ 표준 준수</span>`
+    : `<span style="color:#ff8a8a;font-weight:700" title="${(v.errors[0]||'').replace(/"/g,'')}">✗ 표준 위반 (${v.errors.length})</span>`;
+  $('#packMeta').innerHTML = `${badge} · ${pack.meta.desc}${pack.meta.source ? '  ·  ' + pack.meta.source : ''}`;
   renderFoundation(pack);
   renderComponents(pack);
   renderStage(pack);
