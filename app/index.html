@@ -6,14 +6,14 @@
 <title>새 프로젝트 · MIDAS Web Generator</title>
 <link rel="stylesheet" href="ds.css">
 <style>
-  body{min-height:100vh;overflow:hidden;background:var(--scrim),var(--bg)}
+  body{min-height:100vh;overflow-y:auto;background:var(--scrim),var(--bg);background-attachment:fixed}
   .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:18px 26px;z-index:5}
   .brand{display:flex;align-items:center;gap:9px}
   .navlink{color:var(--ink-2);font-size:var(--fs-sm);font-weight:var(--fw-semi);text-decoration:none;border:1px solid var(--line);background:var(--glass);border-radius:var(--r-pill);padding:7px 14px;backdrop-filter:blur(6px)}
   .navlink:hover{color:var(--ink);background:#fff}
 
-  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 90px}
-  .step{display:none;width:100%;max-width:640px;text-align:center;animation:fade .35s var(--ease)}
+  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:96px 24px 88px}
+  .step{display:none;width:100%;max-width:640px;text-align:center;margin-top:auto;margin-bottom:auto;animation:fade .35s var(--ease)}
   .step.on{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   h1{font-size:var(--fs-display);font-weight:var(--fw-black);letter-spacing:-.02em;margin:0 0 10px}
