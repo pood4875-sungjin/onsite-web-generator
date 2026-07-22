@@ -316,7 +316,7 @@
     data = structuredClone(pageRef.data || EMPTY);
     pack = DARK_PACKS.find(x=>x.id===project.stylePack) || DARK_PACKS[0];
     motion = project.motion || 'subtle';
-    const hasContent = !!(data.productName || data.tagline || (data.features && data.features.length));
+    const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
     if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — 편집 중`); mountWidget('done'); }
     else { idx=STEPS.indexOf('volume'); botBubble(PROMPT.volume); mountWidget('volume'); } // 종류·타입은 대시보드서 결정 → 볼륨부터
     render();

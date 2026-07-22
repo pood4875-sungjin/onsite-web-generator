@@ -94,8 +94,8 @@
     document.getElementById('examples').append(c);
   });
 
-  document.getElementById('makeBtn').onclick = ()=>start('main');
-  document.getElementById('idea').addEventListener('keydown', e=>{ if(e.key==='Enter') start('main'); });
+  document.getElementById('makeBtn').onclick = ()=>{ location.href='new.html'; };
+  document.getElementById('idea').addEventListener('keydown', e=>{ if(e.key==='Enter') location.href='new.html'; });
 
   function renderProjects(){
     const box = document.getElementById('projects');

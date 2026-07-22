@@ -26,19 +26,38 @@ export function deleteProject(id){ saveProjects(getProjects().filter(p => p.id !
 let seq = 0;
 const uid = (pre) => pre + Date.now().toString(36) + (seq++).toString(36);
 
-export function newPage(pageType='main'){
-  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', data: emptyData() };
+// 페이지 생성 — 프로젝트 공유 사실(제품명·태그라인·주CTA)을 초기값으로 시드
+export function newPage(pageType='main', shared={}){
+  const data = emptyData();
+  if(shared.productName) data.productName = shared.productName;
+  if(shared.tagline) data.tagline = shared.tagline;
+  if(shared.primaryCta) data.primaryCta = shared.primaryCta;
+  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', data };
 }
 
-export function createProject({ name, kind='single', pageType='main', stylePack='aether' } = {}){
+export function createProject({ name, kind='single', shared={}, stylePack='aether' } = {}){
   const p = {
     id: uid('pr'),
-    name: name || '무제 프로젝트',
+    name: name || shared.productName || '무제 프로젝트',
     kind,
+    shared,
     stylePack,
     motion: 'subtle',
     createdAt: Date.now(),
-    pages: [ newPage(pageType) ],
+    // 단일 = 페이지 1개 자동, 다중 = 워크스페이스에서 추가
+    pages: kind === 'single' ? [ newPage('main', shared) ] : [],
   };
   return upsertProject(p);
+}
+
+export function addPage(projectId, pageType='main'){
+  const p = getProject(projectId); if(!p) return null;
+  const pg = newPage(pageType, p.shared || {});
+  p.pages.push(pg); upsertProject(p);
+  return pg;
+}
+
+export function deletePage(projectId, pageId){
+  const p = getProject(projectId); if(!p) return;
+  p.pages = p.pages.filter(x => x.id !== pageId); upsertProject(p);
 }
