@@ -1,73 +1,53 @@
-# MIDAS Web Generator — 앱 디자인 시스템 (셸 크롬)
+# MIDAS Web Generator — 앱 디자인 시스템 (v2, Webflow-inspired)
 
-> **작성일**: 2026-07-22
-> 앱(제너레이터 도구) 자체의 UI DS. **생성 출력 스타일 팩(에테르/바이올렛/엠버)과 별개.**
-> 구현: `app/ds.css` — 진입·대시보드·워크스페이스가 공유.
+> **개정**: 2026-07-22
+> 앱(제너레이터 도구) 셸 크롬 DS. **생성 출력 스타일 팩(에테르/바이올렛/엠버)과 별개.**
+> 구현: `app/ds.css` + `app/theme.js` — 진입·프로젝트·워크스페이스 공유.
 
 ## 원칙
 
-1. **하나의 시스템, 두 테마.** 같은 토큰·타이포·컴포넌트, 색만 테마로 바뀜.
-   - **light** = 진입/온보딩/대시보드 (밝고 깔끔, 소프트 그라디언트)
-   - **dark** = 워크스페이스/생성 (몰입형 에디터, 글로우)
-   - `<html data-theme="light|dark">`로 전환. 컴포넌트는 제네릭 토큰(`--bg`,`--ink`,`--accent`…)만 참조 → 두 화면이 한 제품처럼 느껴짐.
-2. **타이포 = Manrope**(전 화면 공통) + Pretendard(한글 폴백).
-3. **브랜드 워드마크** = `MIDAS` 볼드 + `Web Generator` 연하게. 로고 이미지 없음(타이포).
-4. 출력물(생성 페이지)은 이 크롬 DS를 따르지 않음 — 선택한 **스타일 팩**이 지배.
+1. **near-black + 화이트 캔버스.** 주 CTA·헤딩·워드마크 = `#080808`(라이트). 배경 = 화이트. 절제된 엔지니어링 무드(Webflow 참고).
+2. **하나의 시스템, 라이트/다크 두 테마.** `<html data-theme="light|dark">`. 컴포넌트는 제네릭 토큰(`--canvas`,`--ink`,`--primary`,`--hairline`,`--accent`)만 참조 → 진입~생성 채팅까지 한 제품. 토글 = `theme.js`(localStorage `midas-theme`).
+3. **타이포 = Inter**(WF Visual Sans 대체) 400/500/600. **weight 상한 600**(700+ 금지). 디스플레이 네거티브 트래킹. 대문자 eyebrow.
+4. **shape 절제.** 버튼·인풋·칩·배지 = **4px**(`--r-sm`). 카드 = **8px**(`--r-md`). pill은 아이콘 컨테이너·진행점만.
+5. **5색 크로매틱 액센트**(purple/pink/blue/orange/green) = 표면 채우기·카테고리용. 주 CTA엔 안 씀(near-black 유지).
+6. 출력물(생성 페이지)은 이 크롬 DS 안 따름 — 선택 스타일 팩이 지배.
 
 ## 토큰 (`app/ds.css`)
 
-### 타이포
-`--font`(Manrope+Pretendard) · display 40 / h1 24 / h2 18 / h3 15 / body 14 / sm 13 / xs 11
-weight: reg 400 · med 500 · semi 600 · bold 700 · black 800
+**타이포:** `--font`(Inter+Pretendard), mono(Inconsolata). display-xxl 64 / xl 52 / lg 44 / md 32 / sm 24 / xs 20, eyebrow 13(대문자·트래킹 .12em), body-lg 20 / body 16 / body-sm 14, caption 12.8/550, button. weight reg400·med500·semi600.
+**스페이싱:** 4·8·12·16·20·24·32·40·48·64.
+**라디우스:** xs2·sm4(버튼)·md8(카드)·pill.
+**크로매틱:** `--a-purple #7a3dff · a-pink #ed52cb · a-blue #3b89ff · a-orange #ff6b00 · a-green #00d722` + info #146ef5 / yellow #ffae13 / red #ee1d36.
+**섀도우:** `--shadow-2`(카드 리프트), `--shadow-3`(강조).
 
-### 스페이싱
-`--sp-1..16` = 4·8·12·16·20·24·32·40·64
+### 테마별 색
 
-### 라운드
-`--r-sm 8 · md 12 · lg 16 · xl 20 · pill 999`
-
-### 색 (테마별)
 | 토큰 | light | dark |
-|------|-------|------|
-| `--bg` | #ffffff | #070a12 |
-| `--surface` | #fff | rgba(255,255,255,.05) (글래스) |
-| `--surface-2` | #f7f8fb | rgba(255,255,255,.035) |
-| `--line` / `--line-2` | #eceaf0 / #dcd9e4 | white/.10 / white/.18 |
-| `--ink` / `-2` / `-3` | #160211 / #5b5566 / #948e9e | white .92 / .55 / .35 |
-| `--accent` | #5b5bf5 (인디고) | #818cf8 (밝은 바이올렛) |
-| `--accent-soft` | indigo/.14 | violet/.16 |
-| `--scrim` | 핑크·퍼플 소프트 그라디언트 | none(글로우 오브는 화면별) |
+|---|---|---|
+| `--canvas` / `--canvas-2` | #fff / #fafafa | #080808 / #101010 |
+| `--surface` | #fff | #111 |
+| `--hairline` / `-strong` | #e2e2e2 / #d0d0d0 | white/.14 / .24 |
+| `--ink` / `--body` / `--mute` | #080808 / #363636 / #898989 | #fff / white.74 / white.42 |
+| `--primary` / `--on-primary` (주 CTA) | #080808 / #fff | #fff / #080808 |
+| `--accent` (포커스·링크) | #146ef5 | #4d92ff |
 
-브랜드 그라디언트(로고·CTA): `--brand-1 #22d3ee → --brand-2 #818cf8`.
+## 컴포넌트 (`ds-*` 클래스)
 
-### 모션
-`--ease cubic-bezier(.22,1,.36,1)` · `--dur .22s`
+`.ds-body` · `.ds-wordmark`(MIDAS 볼드 + Web Generator 뮤트) · `.ds-eyebrow`(대문자) · `.ds-btn`(`.primary`=near-black/화이트, `.ghost`, 4px) · `.ds-input`(4px, 포커스 accent 링) · `.ds-card`(8px, hairline) · `.ds-chip`(`.on`=primary) · `.ds-badge`(`.soft`) · `.ds-dots` · `.ds-theme`(테마 토글).
 
-## 컴포넌트 (ds.css 클래스)
+## 적용
 
-- `.ds-body` — 베이스(폰트·색·배경)
-- `.ds-wordmark` — 브랜드 워드마크
-- `.ds-btn` (`.primary` 잉크 / `.accent` 강조 / `.ghost`)
-- `.ds-input` — 텍스트 입력 (focus = accent 링)
-- `.ds-chip` (`.on` 선택) — 선택 칩(사업군 등)
-- `.ds-dots` (`i.on`) — 스텝 진행 점
-- `.ds-badge` — 배지(예: "★ SK 추천")
+| 화면 | 파일 | 비고 |
+|---|---|---|
+| 온보딩(종류→정보→스타일) | `app/index.html` | 카드 썸네일(단일=1장/다중=팬), 사업군(전사·SK·엔솔·개인), 사업군별 스타일 추천 배지 |
+| 내 프로젝트 | `app/projects.html` | **실제 페이지 라이브 렌더 썸네일** · 이름변경 · 삭제 |
+| 워크스페이스·제너레이터 | `app/studio/studio.html` | 좌 페이지레일 + 챗 + 프리뷰. 크롬 flat near-black, 프리뷰만 다크글로우 출력 |
 
-## 적용 현황
+라이트/다크 토글은 세 화면 모두 상단에 있고 상태 공유.
 
-| 화면 | 테마 | 파일 |
-|------|------|------|
-| 온보딩(종류→정보→스타일) | light | `app/index.html` |
-| 내 프로젝트 | light | `app/projects.html` |
-| 워크스페이스·제너레이터 | dark | `app/studio/studio.html` |
+## 후속
 
-## 온보딩 흐름 (참고)
-
-1. **종류** — 단일/다중 카드(미니 페이지 목업 썸네일)
-2. **정보** — 프로젝트명 + 제품명(선택) + **사업군**(전사·SK·엔솔·개인작업)
-3. **스타일** — 3팩. **사업군별 추천 배지** (전사/개인→에테르, SK→엠버, 엔솔→바이올렛)
-
-## 미정/후속
-
-- dark 워크스페이스의 글로우 오브·팩 스와치는 아직 인라인(ds.css 밖). 점진 이관.
-- 배지·추천 로직 확장(사업군별 기본 모션·볼륨 프리셋 등).
+- 스튜디오 프리뷰의 pack 스와치/출력은 스타일 팩 영역(별개 유지).
+- 크로매틱 5색을 사업군/카테고리에 더 매핑(현재 진입 카드 tint에만).
+- 배포·클라우드 저장.
