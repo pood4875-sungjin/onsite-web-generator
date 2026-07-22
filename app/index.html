@@ -3,116 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ONSITE Studio</title>
+<title>새 프로젝트 · ONSITE Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  :root{ --ink:#14151a; --ink2:#5b6270; --ink3:#8a8f9c; --line:#e9ebf0; --bg:#fff; --surf:#f7f8fb; --accent:#5b5bf5; }
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+  :root{ --ink:#160211; --ink2:#5b5566; --ink3:#948e9e; --line:#eceaf0; --accent:#5b5bf5; }
   *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",system-ui,sans-serif;color:var(--ink);
-    background:radial-gradient(1200px 700px at 85% -5%, rgba(120,110,255,.10), transparent 60%),
-               radial-gradient(900px 600px at 5% 10%, rgba(90,160,255,.06), transparent 55%), #fff;
-    min-height:100vh;-webkit-font-smoothing:antialiased}
-  .top{display:flex;align-items:center;gap:10px;padding:20px 28px}
-  .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#22d3ee,#818cf8)}
-  .top b{font-size:15px;font-weight:700}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 80px}
-  .hero{text-align:center;padding:70px 0 30px}
-  .hero h1{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0}
-  .prompt{max-width:720px;margin:26px auto 0;background:#fff;border:1px solid var(--line);border-radius:20px;
-    box-shadow:0 12px 40px rgba(20,24,29,.06);padding:18px 20px}
-  .prompt input{width:100%;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--ink);background:none;padding:2px 0 14px}
-  .prompt input::placeholder{color:var(--ink3)}
-  .prow{display:flex;align-items:center;gap:8px}
-  .pbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink2);cursor:pointer;font-size:16px}
-  .make{margin-left:auto;border:none;border-radius:100px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;padding:9px 20px;cursor:pointer}
-  .make:hover{filter:brightness(1.15)}
-  .sec{margin-top:52px}
-  .sec .shd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-  .sec .shd h2{font-size:15px;font-weight:600;margin:0}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-  .card{cursor:pointer;text-align:left;border:none;background:none;padding:0}
-  .thumb{height:150px;border-radius:14px;overflow:hidden;border:1px solid var(--line);position:relative;transition:.18s}
-  .card:hover .thumb{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,24,29,.10)}
-  .thumb .mini{position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;gap:8px}
-  .thumb .mini .mh{height:8px;width:40%;border-radius:4px;background:rgba(255,255,255,.85)}
-  .thumb .mini .mt{height:14px;width:70%;border-radius:5px;background:rgba(255,255,255,.95)}
-  .thumb .mini .mb{height:8px;width:55%;border-radius:4px;background:rgba(255,255,255,.6)}
-  .thumb .mini .mrow{display:flex;gap:6px;margin-top:auto}
-  .thumb .mini .mrow i{flex:1;height:34px;border-radius:8px;background:rgba(255,255,255,.5)}
-  .card .tt{font-size:14px;font-weight:600;margin:12px 2px 2px}
-  .card .ts{font-size:12px;color:var(--ink3);margin:0 2px}
-  .empty{color:var(--ink3);font-size:14px;padding:30px;text-align:center;border:1px dashed var(--line);border-radius:14px}
-  .del{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:8px;border:none;background:rgba(0,0,0,.35);color:#fff;cursor:pointer;opacity:0;transition:.15s;font-size:13px}
-  .card:hover .del{opacity:1} .del:hover{background:rgba(220,38,38,.85)}
+  body{margin:0;font-family:'Manrope',-apple-system,"Pretendard",system-ui,sans-serif;color:var(--ink);min-height:100vh;overflow:hidden;
+    background:
+      radial-gradient(620px 380px at 44% 108%, rgba(246,150,238,.55), transparent 62%),
+      radial-gradient(560px 360px at 66% 112%, rgba(168,150,255,.50), transparent 62%),
+      radial-gradient(520px 340px at 26% 116%, rgba(255,158,214,.45), transparent 60%),
+      radial-gradient(700px 420px at 82% 120%, rgba(150,180,255,.35), transparent 60%),
+      #fff}
+  .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:18px 26px;z-index:5}
+  .brand{display:flex;align-items:center;gap:9px}.logo{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#22d3ee,#818cf8)}
+  .brand b{font-size:14px;font-weight:700}
+  .navlink{color:var(--ink2);font-size:13px;font-weight:600;text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.6);border-radius:100px;padding:7px 14px;backdrop-filter:blur(6px)}
+  .navlink:hover{color:var(--ink);background:#fff}
+
+  .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 90px;position:relative}
+  .step{display:none;width:100%;max-width:620px;text-align:center;animation:fade .35s cubic-bezier(.22,1,.36,1)}
+  .step.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  h1{font-size:40px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
+  .sub{font-size:18px;color:var(--ink);opacity:.72;margin:0 0 34px}
+
+  /* 카드 (Figma: 반투명 흰 + 흰 테두리 + radius 8) */
+  .cards{display:flex;gap:20px;justify-content:center}
+  .kc{width:290px;height:186px;background:rgba(255,255,255,.5);border:1px solid #fff;border-radius:8px;padding:22px;cursor:pointer;
+    display:flex;flex-direction:column;justify-content:center;text-align:left;backdrop-filter:blur(8px);transition:.18s cubic-bezier(.22,1,.36,1);box-shadow:0 6px 24px rgba(120,80,160,.06)}
+  .kc:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(120,80,160,.14);background:rgba(255,255,255,.68)}
+  .kc.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,91,245,.16)}
+  .kc .kt{font-size:16px;font-weight:600;margin-bottom:5px}
+  .kc .kd{font-size:13px;color:var(--ink2)}
+
+  /* 스텝2 폼 */
+  .fields{max-width:420px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:11px}
+  .fields label{font-size:12px;font-weight:600;color:var(--ink2);margin:6px 0 -5px}
+  .opt{color:var(--ink3);font-weight:400}
+  .inp{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;background:rgba(255,255,255,.7)}
+  .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,91,245,.12);background:#fff}
+
+  /* 스텝3 스타일 */
+  .styles{display:flex;gap:14px;justify-content:center}
+  .sc{width:180px;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;transition:.18s}
+  .sc:hover{transform:translateY(-2px)}.sc.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,91,245,.16)}
+  .sc .sw{height:100px}.sc .cap{padding:11px 13px;font-size:13px;font-weight:600;text-align:left}
+
+  .navbtns{margin-top:34px;display:flex;gap:10px;justify-content:center}
+  .btn{border:1px solid var(--line);background:rgba(255,255,255,.7);border-radius:100px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink);font-family:inherit;backdrop-filter:blur(6px)}
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn.primary:hover{filter:brightness(1.2)}
+  .btn.ghost{border:none;background:none;color:var(--ink2)}
+  .dots{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
+  .dots i{width:7px;height:7px;border-radius:999px;background:#d9d2e2;transition:.2s}.dots i.on{width:22px;border-radius:10px;background:var(--ink)}
 </style>
 </head>
 <body>
-<div class="top"><div class="logo"></div><b>ONSITE Studio</b></div>
+<div class="nav">
+  <div class="brand"><div class="logo"></div><b>ONSITE Studio</b></div>
+  <a class="navlink" href="projects.html">내 프로젝트 →</a>
+</div>
+
 <div class="wrap">
-  <div class="hero">
-    <h1>무엇을 만들까요?</h1>
-    <div class="prompt">
-      <input id="idea" placeholder="아이디어를 설명하세요. (AI 추론은 고도화 예정 — 지금은 예시로 시작)">
-      <div class="prow">
-        <button class="pbtn" title="첨부">+</button>
-        <button class="make" id="makeBtn">새로 만들기 →</button>
-      </div>
+  <!-- 1: 카드 선택 -->
+  <div class="step on" id="st1">
+    <h1>어떤 걸 만들까요?</h1>
+    <p class="sub">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
+    <div class="cards">
+      <div class="kc" data-k="single"><div class="kt">단일 페이지</div><div class="kd">랜딩 · 공지 등 한 장</div></div>
+      <div class="kc" data-k="multi"><div class="kt">다중 페이지</div><div class="kd">메인·기능·요금… 사이트 구축</div></div>
     </div>
   </div>
 
-  <div class="sec">
-    <div class="shd"><h2>예시로 시작</h2></div>
-    <div class="grid" id="examples"></div>
+  <!-- 2: 이름 -->
+  <div class="step" id="st2">
+    <h1>프로젝트 이름</h1>
+    <p class="sub">모든 페이지가 공유할 기본값이에요.</p>
+    <div class="fields">
+      <label>프로젝트 이름</label><input class="inp" id="pname" placeholder="예: 온사이트 제품사이트">
+      <label>제품명 <span class="opt">(선택)</span></label><input class="inp" id="product" placeholder="예: Onsite">
+      <label>태그라인 <span class="opt">(선택)</span></label><input class="inp" id="tagline" placeholder="예: 현장의 모든 일을 하나로">
+      <label>주 버튼 CTA <span class="opt">(선택)</span></label><input class="inp" id="cta" placeholder="예: 무료로 시작하기">
+    </div>
+    <div class="navbtns"><button class="btn ghost" onclick="go(1)">← 이전</button><button class="btn primary" onclick="go(3)">다음 →</button></div>
   </div>
 
-  <div class="sec">
-    <div class="shd"><h2>내 프로젝트</h2></div>
-    <div class="grid" id="projects"></div>
+  <!-- 3: 스타일 -->
+  <div class="step" id="st3">
+    <h1>스타일을 선택하세요</h1>
+    <p class="sub">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
+    <div class="styles" id="styles"></div>
+    <div class="navbtns"><button class="btn ghost" onclick="go(2)">← 이전</button><button class="btn primary" onclick="finish()">시작하기 →</button></div>
   </div>
+
+  <div class="dots"><i class="on"></i><i></i><i></i></div>
 </div>
 
 <script type="module">
-  import { getProjects, createProject, deleteProject, PT_LABEL } from './store.js';
+  import { createProject, addPage } from './store.js';
+  import { DARK_PACKS } from '../core/packs/darkglow/packs.js';
 
-  const EXAMPLES = [
-    { pageType:'main', title:'제품 메인홈', desc:'히어로·기능·지표·배너', grad:'linear-gradient(135deg,#0e2a3a,#22d3ee)' },
-    { pageType:'features', title:'기능 소개', desc:'기능 중심 상세', grad:'linear-gradient(135deg,#1a1030,#a855f7)' },
-    { pageType:'pricing', title:'요금 비교', desc:'플랜·지표', grad:'linear-gradient(135deg,#3a1e05,#fb923c)' },
-    { pageType:'landing', title:'이벤트 랜딩', desc:'짧은 단일 페이지', grad:'linear-gradient(135deg,#0a1f16,#34d399)' },
-  ];
+  let kind='single', stylePack='aether';
+  window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
+    document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1)); };
 
-  const miniHTML = `<div class="mini"><div class="mh"></div><div class="mt"></div><div class="mb"></div><div class="mrow"><i></i><i></i><i></i></div></div>`;
+  // 카드 클릭 = 종류 선택 + 바로 다음
+  document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{ kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80); });
 
-  function openPage(proj){ const pg = proj.pages[0]; location.href = `studio/studio.html?p=${proj.id}&page=${pg.id}`; }
+  const sz=document.getElementById('styles');
+  DARK_PACKS.forEach((p,i)=>{ const c=document.createElement('div'); c.className='sc'+(i===0?' sel':'');
+    c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div><div class="cap">${p.name} · ${p.desc}</div>`;
+    c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
 
-  function start(pageType){ const p = createProject({ kind:'single', pageType }); openPage(p); }
-
-  document.getElementById('examples').innerHTML = '';
-  EXAMPLES.forEach(ex=>{
-    const c = document.createElement('button'); c.className='card';
-    c.innerHTML = `<div class="thumb" style="background:${ex.grad}">${miniHTML}</div><div class="tt">${ex.title}</div><div class="ts">${ex.desc}</div>`;
-    c.onclick = ()=>start(ex.pageType);
-    document.getElementById('examples').append(c);
-  });
-
-  document.getElementById('makeBtn').onclick = ()=>{ location.href='new.html'; };
-  document.getElementById('idea').addEventListener('keydown', e=>{ if(e.key==='Enter') location.href='new.html'; });
-
-  function renderProjects(){
-    const box = document.getElementById('projects');
-    const ps = getProjects();
-    if(!ps.length){ box.innerHTML = ''; box.append(Object.assign(document.createElement('div'),{className:'empty',textContent:'아직 프로젝트가 없어요. 위에서 예시로 시작하거나 새로 만들어보세요.'})); box.style.display='block'; return; }
-    box.style.display='grid'; box.innerHTML='';
-    ps.forEach(p=>{
-      const d = new Date(p.createdAt); const date = `${d.getMonth()+1}/${d.getDate()}`;
-      const kindLabel = p.kind==='multi' ? `사이트 · ${p.pages.length}페이지` : (PT_LABEL[p.pages[0]?.pageType]||'페이지');
-      const c = document.createElement('button'); c.className='card';
-      c.innerHTML = `<div class="thumb" style="background:linear-gradient(135deg,#0b0f1a,#1b2740)"><button class="del" title="삭제">✕</button>${miniHTML}</div><div class="tt">${p.name}</div><div class="ts">${kindLabel} · ${date}</div>`;
-      c.querySelector('.del').onclick = (e)=>{ e.stopPropagation(); if(confirm(`"${p.name}" 삭제할까요?`)){ deleteProject(p.id); renderProjects(); } };
-      c.onclick = ()=>openPage(p);
-      box.append(c);
-    });
-  }
-  renderProjects();
+  window.finish=()=>{
+    const shared={ productName:document.getElementById('product').value.trim(), tagline:document.getElementById('tagline').value.trim(), primaryCta:document.getElementById('cta').value.trim() };
+    const name=document.getElementById('pname').value.trim() || shared.productName || '무제 프로젝트';
+    const p=createProject({ kind, name, shared, stylePack });
+    let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
+    location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
+  };
 </script>
 </body>
 </html>
