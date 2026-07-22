@@ -21,6 +21,24 @@
   button{font-family:inherit;cursor:pointer}
   .orb{position:fixed;border-radius:999px;filter:blur(130px);z-index:0;pointer-events:none}
   .app{position:relative;z-index:1;display:flex;height:100vh}
+  /* 좌측 페이지 레일 (다중) */
+  .rail{width:212px;flex:0 0 212px;border-right:1px solid var(--line);background:rgba(255,255,255,.02);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:14px 12px;position:relative}
+  .rtop{display:flex;align-items:center;gap:8px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .rtop .rhome{color:var(--tx2);text-decoration:none;font-size:16px;line-height:1}
+  .rtop b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+  .prow2{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px}
+  .prow2:hover{background:rgba(255,255,255,.06);color:var(--tx)}
+  .prow2.on{background:rgba(34,211,238,.12);color:var(--tx)}
+  .prow2 .pt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prow2 .x{opacity:0;color:var(--tx3);font-size:12px;flex:0 0 auto}
+  .prow2:hover .x{opacity:1} .prow2 .x:hover{color:#f87171}
+  .raddbtn{margin-top:10px;border:1px dashed var(--line2);background:none;color:var(--tx2);border-radius:10px;padding:10px;font-size:13px;cursor:pointer}
+  .raddbtn:hover{color:var(--tx);border-color:var(--accent)}
+  .ptmenu{position:absolute;left:12px;right:12px;bottom:56px;background:rgba(18,22,32,.98);border:1px solid var(--line2);border-radius:12px;padding:6px;display:none;z-index:40;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .ptmenu.open{display:block;animation:rise .18s var(--ease)}
+  .ptmenu button{display:block;width:100%;text-align:left;border:none;background:none;color:var(--tx);padding:9px 10px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+  .ptmenu button:hover{background:rgba(255,255,255,.08)}
 
   /* 좌: 챗 */
   .chat{width:440px;flex:0 0 440px;display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surf2);backdrop-filter:blur(20px)}
@@ -108,6 +126,12 @@
 <div class="orb" style="left:33%;bottom:-160px;width:480px;height:480px;background:rgba(139,92,246,.15)"></div>
 
 <div class="app">
+  <aside class="rail" id="rail" style="display:none">
+    <div class="rtop"><a class="rhome" href="../index.html" title="홈">←</a><b id="rname"></b></div>
+    <div class="rlist" id="rlist"></div>
+    <button class="raddbtn" id="addPage">+ 페이지 추가</button>
+    <div class="ptmenu" id="ptmenu"></div>
+  </aside>
   <aside class="chat">
     <div class="chead">
       <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" width="15" height="15" fill="#04141a"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8Z"/></svg></div><div><b>AX 웹 제너레이터</b><span>대화로 만드는 웹페이지</span></div></div>
@@ -136,7 +160,7 @@
 <script type="module">
   import { renderComposed } from '../../core/darkglow/render.js';
   import { DARK_PACKS } from '../../core/packs/darkglow/packs.js';
-  import { getProject, upsertProject } from '../store.js';
+  import { getProject, upsertProject, addPage, deletePage } from '../store.js';
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
   const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
@@ -309,8 +333,27 @@
     a.href=URL.createObjectURL(b); a.download=(data.productName||'page')+'.json'; a.click(); URL.revokeObjectURL(a.href);
   };
 
+  /* ---- 좌측 페이지 레일 (다중 프로젝트) ---- */
+  const PT_MENU=[['main','메인홈'],['features','제품 기능소개'],['pricing','요금 비교'],['landing','랜딩']];
+  function renderRail(){
+    if(!project || project.kind!=='multi') return;
+    document.getElementById('rail').style.display='flex';
+    document.getElementById('rname').textContent=project.name;
+    const rl=document.getElementById('rlist'); rl.innerHTML='';
+    project.pages.forEach(pg=>{
+      const r=el('div','prow2'+(pg.id===(pageRef&&pageRef.id)?' on':''),`<span class="pt">${pg.name}</span><span class="x" title="삭제">✕</span>`);
+      r.querySelector('.pt').onclick=()=>{ persist(); location.href='?p='+project.id+'&page='+pg.id; };
+      r.querySelector('.x').onclick=(e)=>{ e.stopPropagation(); if(project.pages.length<=1){alert('마지막 페이지는 삭제할 수 없어요');return;} if(!confirm(`"${pg.name}" 삭제할까요?`))return; deletePage(project.id,pg.id); const rest=getProject(project.id).pages; location.href='?p='+project.id+'&page='+rest[0].id; };
+      rl.append(r);
+    });
+    const menu=document.getElementById('ptmenu'); menu.innerHTML='';
+    PT_MENU.forEach(([id,label])=>{ const b=document.createElement('button'); b.textContent=label; b.onclick=()=>{ persist(); const pg=addPage(project.id,id); location.href='?p='+project.id+'&page='+pg.id; }; menu.append(b); });
+    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+    document.addEventListener('click',(e)=>{ if(!menu.contains(e.target) && e.target.id!=='addPage') menu.classList.remove('open'); });
+  }
+
   /* ---- init ---- */
-  buildDots();
+  buildDots(); renderRail();
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
