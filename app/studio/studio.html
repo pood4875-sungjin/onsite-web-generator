@@ -201,7 +201,7 @@
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
   const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
-  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{} };
+  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{}, sectionOrder:[] };
   let data = structuredClone(EMPTY), pack = DARK_PACKS[0], motion = 'subtle', generated = false;
   let pageType = 'main', volume = 'heavy';
 
@@ -301,10 +301,17 @@
       }; rd.readAsDataURL(f); };
     inp.click();
   }
+  const SECLABEL={hero:'히어로',features:'기능',metrics:'지표',banner:'배너'};
+  function currentMovable(){ const doc=frame.contentDocument; if(!doc) return []; return [...doc.querySelectorAll('[data-section]')].map(s=>s.getAttribute('data-section')).filter(t=>t!=='gnb'&&t!=='footer'); }
+  function moveSection(type,dir){ const order=currentMovable(); const i=order.indexOf(type), j=i+dir; if(i<0||j<0||j>=order.length) return; const tmp=order[i]; order[i]=order[j]; order[j]=tmp; data.sectionOrder=order; persist(); render(); }
   function applyEdit(){
     const doc=frame.contentDocument; if(!doc||!doc.body) return;
     if(!doc.getElementById('editcss')){ const st=doc.createElement('style'); st.id='editcss';
-      st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(122,61,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #7a3dff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #7a3dff;outline-offset:3px}';
+      st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(122,61,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #7a3dff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #7a3dff;outline-offset:3px}'
+        +'[data-editing] [data-section]{position:relative} [data-editing] [data-section]:hover{outline:1px dashed rgba(122,61,255,.4);outline-offset:-1px}'
+        +'.secctl{position:absolute;top:10px;right:10px;z-index:50;display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:999px;background:rgba(122,61,255,.94);box-shadow:0 4px 16px rgba(0,0,0,.35)}'
+        +'.secctl button{border:none;background:rgba(255,255,255,.22);color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;display:grid;place-items:center}'
+        +'.secctl button:hover{background:rgba(255,255,255,.42)} .secctl button:disabled{opacity:.35;cursor:default} .secctl .lbl{color:#fff;font-size:11px;font-weight:600;padding:0 4px}';
       doc.head.appendChild(st);
     }
     doc.body.toggleAttribute('data-editing', editMode);
@@ -317,6 +324,18 @@
     });
     doc.querySelectorAll('[data-img]').forEach(slot=>{ if(!slot.__wired){ slot.__wired=1;
       slot.addEventListener('click',(e)=>{ if(!editMode)return; e.preventDefault(); pickImage(slot.getAttribute('data-img')); }); }});
+    // 섹션 순서 컨트롤 (gnb·footer 제외)
+    const movable=currentMovable();
+    doc.querySelectorAll('[data-section]').forEach(sec=>{
+      const type=sec.getAttribute('data-section'); const old=sec.querySelector(':scope > .secctl'); if(old) old.remove();
+      if(!editMode || type==='gnb' || type==='footer') return;
+      const i=movable.indexOf(type);
+      const bar=doc.createElement('div'); bar.className='secctl';
+      bar.innerHTML='<button data-mv="up"'+(i<=0?' disabled':'')+' title="위로">↑</button><span class="lbl">'+(SECLABEL[type]||type)+'</span><button data-mv="down"'+(i>=movable.length-1?' disabled':'')+' title="아래로">↓</button>';
+      bar.querySelector('[data-mv=up]').onclick=(e)=>{ e.stopPropagation(); moveSection(type,-1); };
+      bar.querySelector('[data-mv=down]').onclick=(e)=>{ e.stopPropagation(); moveSection(type,1); };
+      sec.appendChild(bar);
+    });
   }
   frame.addEventListener('load', ()=>{ if(editMode) applyEdit(); });
   editBtn.onclick=()=>{
@@ -405,7 +424,7 @@
     }
     // done
     const d=el('div','card'); d.style.textAlign='center';
-    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">스타일 팩 점을 눌러 리스킨을 확인해보세요.</span>`));
+    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">우측 <b>✎ 편집</b>으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.</span>`));
     d.append(nextBtn('↺ 새로 만들기', reset));
     return d;
   }

@@ -225,9 +225,20 @@ const SECTIONS = {
 function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', volume = 'heavy') {
   const t = pack.tokens;
   const template = DG_TEMPLATES[pageType] || DG_TEMPLATES.main;
-  const body = template
-    .filter((s) => includesTier(volume, s.tier))
-    .map((s) => (SECTIONS[s.type] ? SECTIONS[s.type](data, t, motion) : ''))
+  let types = template.filter((s) => includesTier(volume, s.tier)).map((s) => s.type);
+
+  // 커스텀 섹션 순서 (편집모드) — gnb 최상단·footer 최하단 고정, body 섹션만 재정렬
+  if (data.sectionOrder && data.sectionOrder.length) {
+    const head = types.includes('gnb') ? ['gnb'] : [];
+    const foot = types.includes('footer') ? ['footer'] : [];
+    const movable = types.filter((x) => x !== 'gnb' && x !== 'footer');
+    const ordered = data.sectionOrder.filter((x) => movable.includes(x));
+    const rest = movable.filter((x) => !ordered.includes(x));
+    types = [...head, ...ordered, ...rest, ...foot];
+  }
+
+  const body = types
+    .map((type) => (SECTIONS[type] ? `<div data-section="${type}">${SECTIONS[type](data, t, motion)}</div>` : ''))
     .join('\n');
 
   const gridBg = `<div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(${t.grid} 1px,transparent 1px),linear-gradient(90deg,${t.grid} 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%)"></div>`;
@@ -334,7 +345,7 @@ const DARK_PACK_BY_ID = Object.fromEntries(DARK_PACKS.map((p) => [p.id, p]));
 const PROJECTS_KEY = 'onsite-projects-v2';
 
 const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
-const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{} });
+const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{}, sectionOrder:[] });
 
 function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
 function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
