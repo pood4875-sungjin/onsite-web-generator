@@ -13,7 +13,7 @@ export const krdsPack = {
   meta: {
     id: 'krds',
     name: 'KRDS',
-    desc: '대한민국 정부 디자인 시스템 v1.0.0 — 공공·정식, 정부블루 #256ef4, 저-radius 1px 헤어라인, Pretendard GOV',
+    desc: '밝은 신뢰 블루 — 라이트, 선명한 블루 강조 #256ef4, 저-radius 1px 헤어라인, Pretendard',
     source: 'KRDS v1.0.0 (Community) · Figma OILUy443EILgdjCdB0nIDY',
   },
   rootClass: 'krds',           // renderPage가 body를 이 클래스로 래핑 → 스코프 CSS

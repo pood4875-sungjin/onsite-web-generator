@@ -1,4 +1,4 @@
-/* AUTO-GENERATED — KRDS 팩(계약) classic 번들. 소스: core/packs/krds/*, contract.js. 편집금지 */
+/* AUTO-GENERATED — KRDS 팩(계약) classic 번들. 편집금지 */
 (function(){
   var includesTier = window.includesTier || function(v,t){var V={compact:0,mid:1,heavy:2},T={core:0,mid:1,rich:2};return T[t]<=V[v]};
 
@@ -365,7 +365,7 @@ const sections = {
   },
 
   hero(c, ctx) {
-    const eyebrow = ctx.esc(c.eyebrow || '공공 서비스 플랫폼');
+    const eyebrow = ctx.esc(c.eyebrow || '서비스 플랫폼');
     const title = ctx.esc(c.title || ctx.data.tagline || '필요한 서비스를\n한 곳에서 간편하게');
     const sub = ctx.esc(c.subcopy || ctx.data.subcopy || H);
     return `
@@ -527,7 +527,7 @@ const krdsPack = {
   meta: {
     id: 'krds',
     name: 'KRDS',
-    desc: '대한민국 정부 디자인 시스템 v1.0.0 — 공공·정식, 정부블루 #256ef4, 저-radius 1px 헤어라인, Pretendard GOV',
+    desc: '밝은 신뢰 블루 — 라이트, 선명한 블루 강조 #256ef4, 저-radius 1px 헤어라인, Pretendard',
     source: 'KRDS v1.0.0 (Community) · Figma OILUy443EILgdjCdB0nIDY',
   },
   rootClass: 'krds',           // renderPage가 body를 이 클래스로 래핑 → 스코프 CSS
@@ -558,9 +558,8 @@ const krdsPack = {
 
   var DEMO_TEMPLATE={ sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}] };
   window.KRDS_PACK = krdsPack;
-  window.KRDS_STYLE = { id:"krds", name:"밝은 신뢰 블루", desc:"정부·공공 신뢰감", swatch:"linear-gradient(135deg,#256ef4,#0b50d0)" };
-  window.renderKrdsPage = function(shared, opts){ opts=opts||{}; shared=shared||{};
-    var content={};
+  window.KRDS_STYLE = { id:"krds", name:"밝은 신뢰 블루", desc:"라이트 · 선명한 블루", swatch:"linear-gradient(135deg,#256ef4,#0b50d0)" };
+  window.renderKrdsPage = function(shared, opts){ opts=opts||{}; shared=shared||{}; var content={};
     if(shared.features&&shared.features.length) content.feature={ eyebrow:"FEATURES", title:"핵심 기능", items: shared.features.map(function(f){return {icon:f.icon||"check",title:f.title,desc:f.desc};}) };
     if(shared.stats&&shared.stats.length) content.stat={ items: shared.stats.map(function(s){return {value:s.value,label:s.label};}) };
     if(shared.bannerText) content.cta={ title:shared.bannerText, primaryCta:shared.bannerCta||shared.primaryCta, subcopy:shared.subcopy };

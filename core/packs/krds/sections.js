@@ -25,7 +25,7 @@ export const sections = {
   },
 
   hero(c, ctx) {
-    const eyebrow = ctx.esc(c.eyebrow || '공공 서비스 플랫폼');
+    const eyebrow = ctx.esc(c.eyebrow || '서비스 플랫폼');
     const title = ctx.esc(c.title || ctx.data.tagline || '필요한 서비스를\n한 곳에서 간편하게');
     const sub = ctx.esc(c.subcopy || ctx.data.subcopy || H);
     return `
