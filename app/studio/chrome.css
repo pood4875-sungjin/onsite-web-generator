@@ -1,0 +1,83 @@
+/* ============================================================
+   chrome.css — 제너레이터 껍데기(셸) 디자인 토큰
+   출처 참고: Agentra AI Chat UI Kit DS (색·타이포·스페이싱·라운드)
+   ※ 색은 스크린샷 근사치 — 데스크탑 변수로 정확값 스왑 예정
+   ※ 이건 "셸 크롬"용. 생성 출력 스타일 팩과 별개.
+   ============================================================ */
+:root{
+  /* Background */
+  --bg-primary:#ffffff; --bg-secondary:#f7f8fa; --bg-tertiary:#eef0f4; --bg-sidebar:#fafbfc;
+  /* Surface */
+  --sf-default:#ffffff; --sf-elevated:#ffffff; --sf-hover:#f4f5f8; --sf-pressed:#eaecf0;
+  /* Border */
+  --bd-default:#e6e8ec; --bd-strong:#d4d7de; --bd-subtle:#f0f1f4;
+  /* Text */
+  --tx-primary:#14151a; --tx-secondary:#5b5f6b; --tx-tertiary:#8a8f9c; --tx-placeholder:#a8adb8;
+  --tx-inverse:#ffffff; --tx-link:#2f80ed;
+  /* Icon / Accent */
+  --accent:#3b9eff; --accent-ink:#0b62c4;
+  /* Semantic */
+  --success:#35c486; --warning:#f5a63b; --error:#ef4b4b; --info:#3b6ff5; --selected:#e8f2ff;
+  /* Message (챗) */
+  --msg-user:#14151a; --msg-user-tx:#ffffff; --msg-ai:#f4f5f8; --msg-ai-tx:#14151a;
+  /* Code */
+  --code-bg:#1e1e2e;
+  /* Type scale */
+  --fs-display:32px; --fs-h1:24px; --fs-h2:20px; --fs-h3:16px; --fs-h4:14px;
+  --fs-body:14px; --fs-body-sm:12px; --fs-label:13px; --fs-label-sm:11px;
+  /* Spacing */
+  --sp-2:2px; --sp-4:4px; --sp-8:8px; --sp-12:12px; --sp-16:16px; --sp-20:20px;
+  --sp-24:24px; --sp-32:32px; --sp-40:40px; --sp-48:48px; --sp-64:64px;
+  /* Radius */
+  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-2xl:24px; --r-full:999px;
+  /* Motion */
+  --ease:cubic-bezier(.4,0,.2,1); --dur:.22s;
+  --font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard JP","Pretendard",system-ui,sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--font);color:var(--tx-primary);background:var(--bg-primary);
+  -webkit-font-smoothing:antialiased;font-size:var(--fs-body);line-height:1.5}
+button{font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--bd-default);background:var(--sf-default);
+  color:var(--tx-primary);border-radius:var(--r-full);padding:11px 20px;font-size:var(--fs-body);font-weight:600;
+  cursor:pointer;transition:var(--dur) var(--ease)}
+.btn:hover{background:var(--sf-hover);border-color:var(--bd-strong)}
+.btn.primary{background:var(--tx-primary);color:var(--tx-inverse);border-color:var(--tx-primary)}
+.btn.primary:hover{background:#000;filter:brightness(1.05)}
+.btn.accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.ghost{border-color:transparent;background:none;color:var(--tx-secondary)}
+.btn.ghost:hover{background:var(--sf-hover);color:var(--tx-primary)}
+.btn:active{transform:scale(.98)}
+
+/* 입력 */
+.input{width:100%;border:1px solid var(--bd-default);background:var(--sf-default);border-radius:var(--r-md);
+  padding:11px 14px;font-size:var(--fs-body);font-family:inherit;color:var(--tx-primary);outline:none;transition:var(--dur) var(--ease)}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,158,255,.14)}
+.input::placeholder{color:var(--tx-placeholder)}
+
+/* 선택 카드 */
+.pcard{background:var(--sf-default);border:1px solid var(--bd-default);border-radius:var(--r-xl);
+  padding:22px 18px;cursor:pointer;transition:var(--dur) var(--ease);text-align:left}
+.pcard:hover{border-color:var(--bd-strong);transform:translateY(-2px)}
+.pcard.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,158,255,.14)}
+
+/* 진행 점 */
+.dots{display:flex;gap:7px}
+.dots i{width:7px;height:7px;border-radius:var(--r-full);background:var(--bd-strong);transition:var(--dur) var(--ease)}
+.dots i.on{width:22px;background:var(--tx-primary)}
+
+/* 챗 말풍선 */
+.bubble{border-radius:var(--r-lg);padding:12px 15px;font-size:var(--fs-body);line-height:1.55;max-width:88%}
+.bubble.ai{background:var(--msg-ai);color:var(--msg-ai-tx)}
+.bubble.me{background:var(--msg-user);color:var(--msg-user-tx);margin-left:auto}
+
+/* 칩 */
+.chip{border:1px solid var(--bd-default);border-radius:var(--r-full);padding:7px 13px;font-size:var(--fs-label);
+  cursor:pointer;background:var(--sf-default);transition:var(--dur) var(--ease)}
+.chip:hover{background:var(--sf-hover)}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}

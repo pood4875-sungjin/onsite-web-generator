@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko" data-motion="subtle">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onsite</title>
+<style>
+  *{box-sizing:border-box} body{margin:0;background:#0c0906;color:#fef3e9;font-family:'Inter','Pretendard',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  
+    .rise{opacity:0;transform:translateY(16px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+    .rise.in{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.rise{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div style="position:relative;min-height:100vh;overflow-x:hidden">
+
+  <div style="position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%);
+    mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%)"></div>
+<div style="position:relative">
+
+  <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+    padding:16px 32px;backdrop-filter:blur(20px);background:#0c0906cc;border-bottom:1px solid rgba(255,255,255,0.08)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48)"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1a0f06"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8Z"/></svg></div>
+      <span style="font-weight:600">Onsite</span>
+    </div>
+    <nav style="display:flex;gap:28px;color:#b09585;font-size:14px">
+      <span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>
+    </nav>
+    <button style="padding:8px 16px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);color:#1a0f06;font-weight:700;border:none;border-radius:12px;cursor:pointer;border-radius:999px;font-size:14px">무료로 시작하기</button>
+  </header>
+  <section style="position:relative;overflow:hidden;padding:80px 32px 40px;text-align:center;background:radial-gradient(120% 90% at 50% -10%, rgba(251,146,60,0.22) 0%, rgba(244,63,94,0.10) 35%, rgba(12,9,6,0) 70%)">
+    <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:520px;height:320px;border-radius:999px;filter:blur(100px);background:rgba(251,146,60,0.35);pointer-events:none"></div>
+    <div class="rise" style="position:relative;max-width:680px;margin:0 auto">
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:rgba(251,146,60,0.15);border:1px solid rgba(255,255,255,0.08);color:#fb923c;font-size:12px;letter-spacing:.02em">
+        <span style="width:6px;height:6px;border-radius:999px;background:#fb923c"></span>Engine v2.0 · AX 웹 제너레이터</span>
+      <h1 style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">대화만으로 완성되는 웹페이지</h1>
+      <p style="max-width:520px;margin:20px auto 0;color:#b09585;font-size:18px;line-height:1.6">기획을 대화로 입력하면, 선택한 스타일 팩으로 온브랜드 웹페이지를 즉시 합성합니다. 추론 없는 결정론적 조립.</p>
+      <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:12px">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);color:#1a0f06;font-weight:700;border:none;border-radius:12px;cursor:pointer;box-shadow:0 8px 40px rgba(251,146,60,0.35)">무료로 시작하기 →</button>
+        <button style="padding:13px 24px;border-radius:12px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);color:#fef3e9;font-weight:600;cursor:pointer">문서 보기</button>
+      </div>
+    </div>
+    <div class="rise" style="position:relative;max-width:760px;margin:56px auto 0;overflow:hidden;border-radius:16px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);box-shadow:0 20px 80px rgba(251,146,60,0.35)">
+      <div style="display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08)">
+        <span style="width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.08)"></span>
+        <span style="width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.08)"></span>
+        <span style="width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.08)"></span>
+        <span style="margin-left:12px;font-size:12px;color:#b09585">onsite.app / console</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px">
+    <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:10px;background:rgba(251,146,60,0.15)">
+      <div style="height:8px;width:66%;border-radius:999px;background:#fb923c;opacity:.7"></div>
+      <div style="height:8px;width:100%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:8px;width:80%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:40px;border-radius:10px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);opacity:.85;margin-top:8px"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:10px;background:rgba(251,146,60,0.15)">
+      <div style="height:8px;width:66%;border-radius:999px;background:#fb923c;opacity:.7"></div>
+      <div style="height:8px;width:100%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:8px;width:80%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:40px;border-radius:10px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);opacity:.85;margin-top:8px"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:10px;background:rgba(251,146,60,0.15)">
+      <div style="height:8px;width:66%;border-radius:999px;background:#fb923c;opacity:.7"></div>
+      <div style="height:8px;width:100%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:8px;width:80%;border-radius:999px;background:rgba(255,255,255,0.08)"></div>
+      <div style="height:40px;border-radius:10px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);opacity:.85;margin-top:8px"></div>
+    </div></div>
+    </div>
+  </section>
+  <section style="position:relative;padding:40px 32px">
+    <div class="rise" style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;overflow:hidden;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.08)">
+      
+      <div style="padding:28px 24px;text-align:center;background:#0c0906">
+        <div style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);-webkit-background-clip:text;background-clip:text;color:transparent">3분</div>
+        <div style="margin-top:6px;color:#b09585;font-size:13px">평균 생성 시간</div>
+      </div>
+      <div style="padding:28px 24px;text-align:center;background:#0c0906">
+        <div style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);-webkit-background-clip:text;background-clip:text;color:transparent">8종</div>
+        <div style="margin-top:6px;color:#b09585;font-size:13px">페이지 타입</div>
+      </div>
+      <div style="padding:28px 24px;text-align:center;background:#0c0906">
+        <div style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);-webkit-background-clip:text;background-clip:text;color:transparent">0원</div>
+        <div style="margin-top:6px;color:#b09585;font-size:13px">MVP 운영비</div>
+      </div>
+    </div>
+  </section>
+  <section style="position:relative;padding:64px 32px">
+    <div class="rise" style="max-width:680px;margin:0 auto;text-align:center">
+      <div style="color:#fb923c;font-size:13px;letter-spacing:.08em;text-transform:uppercase">Features</div>
+      <h2 style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em">명료함과 성능을 위해 설계됨</h2>
+    </div>
+    <div style="max-width:900px;margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      
+      <div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:16px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08)">
+        <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:rgba(251,146,60,0.35);opacity:.35;pointer-events:none"></div>
+        <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(251,146,60,0.15);color:#fb923c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6Z"/></svg></div>
+        <h3 style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">대화형 입력</h3>
+        <p style="position:relative;margin:8px 0 0;color:#b09585;font-size:15px;line-height:1.6">스텝마다 질문에 답하면 슬롯이 채워집니다.</p>
+      </div>
+      <div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:16px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08)">
+        <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:rgba(251,146,60,0.35);opacity:.35;pointer-events:none"></div>
+        <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(251,146,60,0.15);color:#fb923c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg></div>
+        <h3 style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">스타일 팩</h3>
+        <p style="position:relative;margin:8px 0 0;color:#b09585;font-size:15px;line-height:1.6">팩만 바꾸면 전체 사이트가 즉시 리스킨.</p>
+      </div>
+      <div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:16px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08)">
+        <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:rgba(251,146,60,0.35);opacity:.35;pointer-events:none"></div>
+        <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(251,146,60,0.15);color:#fb923c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M5 12a7 7 0 0 1 14 0M8.5 12a3.5 3.5 0 0 1 7 0"/></svg></div>
+        <h3 style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">즉시 다운로드</h3>
+        <p style="position:relative;margin:8px 0 0;color:#b09585;font-size:15px;line-height:1.6">완성 즉시 자가포함 HTML로 내보냅니다.</p>
+      </div>
+    </div>
+  </section>
+  <section style="position:relative;padding:64px 32px">
+    <div class="rise" style="position:relative;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:hidden;padding:64px 40px;text-align:center;border-radius:16px;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08)">
+      <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 50% -10%, rgba(251,146,60,0.22) 0%, rgba(244,63,94,0.10) 35%, rgba(12,9,6,0) 70%);pointer-events:none"></div>
+      <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:384px;height:256px;border-radius:999px;filter:blur(90px);background:rgba(251,146,60,0.35);pointer-events:none"></div>
+      <h2 style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">지금 바로 첫 페이지를 만들어보세요</h2>
+      <button style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48);color:#1a0f06;font-weight:700;border:none;border-radius:12px;cursor:pointer;box-shadow:0 8px 40px rgba(251,146,60,0.35)">무료로 시작하기 →</button>
+    </div>
+  </section>
+  <footer style="position:relative;padding:40px 32px;border-top:1px solid rgba(255,255,255,0.08);color:#b09585;font-size:14px">
+    <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:8px;color:#fef3e9">
+        <div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#fb923c,#f43f5e,#e11d48)"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1a0f06"><path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8Z"/></svg></div>
+        <span style="font-weight:600">Onsite</span>
+      </div>
+      <div style="display:flex;gap:24px"><span>이용약관</span><span>개인정보처리방침</span><span>문의</span></div>
+      <span>© 2026 Onsite Labs</span>
+    </div>
+  </footer>
+</div>
+</div>
+
+    <script>
+    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'-40px'});
+    document.querySelectorAll('.rise').forEach((el,i)=>{io.observe(el)});
+    </script>
+</body>
+</html>

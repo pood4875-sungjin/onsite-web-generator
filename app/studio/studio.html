@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ONSITE Studio</title>
+<link rel="stylesheet" href="./chrome.css">
+<style>
+  .app{height:100vh;overflow:hidden}
+  .screen{display:none;height:100vh}
+  .screen.on{display:block;animation:fade .3s var(--ease)}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .stage{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;position:relative;
+    background:
+      radial-gradient(1100px 560px at 18% -5%, rgba(59,158,255,.10), transparent 60%),
+      radial-gradient(900px 640px at 92% 105%, rgba(120,110,255,.10), transparent 55%),
+      var(--bg-primary)}
+  .tag{position:absolute;top:22px;left:24px;font-size:var(--fs-label-sm);color:var(--tx-tertiary);
+    background:var(--sf-default);border:1px solid var(--bd-default);border-radius:var(--r-full);padding:5px 12px}
+  .mark{width:40px;height:40px;border-radius:var(--r-lg);background:linear-gradient(135deg,var(--accent),#8b5cf6);margin-bottom:24px}
+  .stage h1{font-size:var(--fs-display);font-weight:700;letter-spacing:-.02em;margin:0 0 6px;text-align:center}
+  .stage .sub{color:var(--tx-secondary);font-size:var(--fs-h3);margin:0 0 32px;text-align:center}
+  .grid3{display:grid;grid-template-columns:repeat(3,190px);gap:14px}
+  .seg{display:flex;gap:12px}
+  .seg .pcard{width:158px;text-align:center}
+  .ic{width:36px;height:36px;border-radius:var(--r-md);background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:19px}
+  .seg .ic{margin:0 auto 12px}
+  .pcard b{display:block;font-size:var(--fs-h3);margin-bottom:3px}
+  .pcard span{font-size:var(--fs-body-sm);color:var(--tx-secondary);line-height:1.4}
+  .nav{margin-top:32px;display:flex;gap:10px}
+  .foot-dots{position:absolute;bottom:32px}
+  .freeprompt{margin-top:18px;width:420px;max-width:90vw}
+  .freeprompt .input{border-radius:var(--r-full);opacity:.7}
+  .freeprompt .hint{font-size:var(--fs-label-sm);color:var(--tx-tertiary);text-align:center;margin-top:8px}
+
+  /* 스타일 썸네일 */
+  .styles{display:flex;gap:16px}
+  .st{width:216px;border:1px solid var(--bd-default);border-radius:var(--r-xl);overflow:hidden;cursor:pointer;background:var(--sf-default);transition:var(--dur) var(--ease)}
+  .st:hover{border-color:var(--bd-strong);transform:translateY(-2px)}
+  .st.sel{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,158,255,.14)}
+  .st .thumb{height:134px;padding:14px;display:flex;flex-direction:column;gap:7px}
+  .st .thumb .tbar{display:flex;gap:5px;margin-bottom:4px}.st .thumb .tbar i{width:7px;height:7px;border-radius:var(--r-full);background:#cfd6e0}
+  .st .thumb .ln{height:9px;border-radius:var(--r-sm);background:#e3e8ef}
+  .st .cap{padding:11px 14px;border-top:1px solid var(--bd-default);font-size:var(--fs-label);font-weight:600}
+  .st.onsite .thumb{background:#f7f8fb}.st.onsite .ln.a{width:55%;background:#cdd5e0}.st.onsite .ln.b{width:80%}.st.onsite .ln.c{width:40%;background:var(--accent);opacity:.6}
+  .st.modern .thumb{background:#0d0d0f}.st.modern .ln{background:#2a2a30}.st.modern .tbar i{background:#3a3a42}.st.modern .ln.a{width:60%;background:#4b4b55}.st.modern .ln.c{width:45%;background:#ff6a3d}
+  .st.soft .thumb{background:linear-gradient(135deg,#fef1f5,#eef4ff)}.st.soft .ln{background:#e7dced}.st.soft .ln.c{width:45%;background:#d4537e;opacity:.6}
+
+  /* 4막 분할 */
+  .split{display:flex;height:100vh}
+  .conv{width:400px;flex:0 0 400px;border-right:1px solid var(--bd-default);display:flex;flex-direction:column;background:var(--bg-primary)}
+  .conv .top{padding:16px 20px;border-bottom:1px solid var(--bd-default);display:flex;align-items:center;gap:10px;font-weight:700}
+  .conv .top .mk{width:26px;height:26px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--accent),#8b5cf6)}
+  .conv .top .back{margin-left:auto;font-size:var(--fs-label);color:var(--tx-secondary);cursor:pointer}
+  .conv .body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+  .lbl{font-size:var(--fs-label-sm);color:var(--tx-tertiary);margin:4px 0 -4px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .fields{display:flex;flex-direction:column;gap:10px;background:var(--sf-default);border:1px solid var(--bd-default);border-radius:var(--r-lg);padding:14px}
+  .fields label{font-size:var(--fs-label-sm);color:var(--tx-secondary);margin-bottom:-4px}
+  .fields textarea.input{min-height:60px;resize:vertical}
+  .compose{border-top:1px solid var(--bd-default);padding:14px;display:flex;gap:8px}
+  .compose .send{width:40px;height:40px;border-radius:var(--r-full);background:var(--tx-primary);color:#fff;border:none;cursor:pointer;font-size:16px;flex:0 0 40px}
+  .pv{flex:1;background:var(--bg-secondary);display:flex;flex-direction:column;min-width:0}
+  .pv .bar{height:48px;border-bottom:1px solid var(--bd-default);background:var(--bg-primary);display:flex;align-items:center;gap:12px;padding:0 16px;font-size:var(--fs-label);color:var(--tx-secondary)}
+  .pv .bar .grow{flex:1}
+  .pv .seg2{display:flex;border:1px solid var(--bd-default);border-radius:var(--r-md);overflow:hidden}
+  .pv .seg2 span{padding:5px 12px;font-size:var(--fs-label-sm);cursor:pointer}.pv .seg2 span.on{background:var(--tx-primary);color:#fff}
+  .pv .canvas{flex:1;padding:24px;overflow:hidden}
+  .pv iframe{width:100%;height:100%;border:1px solid var(--bd-default);border-radius:var(--r-lg);background:#fff;box-shadow:0 8px 30px rgba(20,24,29,.06)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1막 진입 -->
+  <section class="screen on" id="s1">
+    <div class="stage">
+      <div class="tag">1 · 진입</div>
+      <div class="mark"></div>
+      <h1>무엇을 만들까요?</h1>
+      <p class="sub">만들 페이지 종류를 골라주세요.</p>
+      <div class="grid3" id="kinds">
+        <div class="pcard sel" data-k="site"><div class="ic">🏠</div><b>제품 사이트</b><span>메인·기능·요금 등</span></div>
+        <div class="pcard" data-k="landing"><div class="ic">🎯</div><b>이벤트 랜딩</b><span>프로모션·행사</span></div>
+        <div class="pcard" data-k="notice"><div class="ic">📢</div><b>공지</b><span>안내·업데이트</span></div>
+      </div>
+      <div class="freeprompt">
+        <input class="input" placeholder="또는 자유롭게 설명하기…" disabled>
+        <div class="hint">자유 입력(AI)은 고도화 예정 · 지금은 카드로 시작</div>
+      </div>
+      <div class="nav"><button class="btn primary" onclick="go(2)">다음 →</button></div>
+      <div class="foot-dots"><div class="dots"><i class="on"></i><i></i><i></i></div></div>
+    </div>
+  </section>
+
+  <!-- 2막 볼륨 -->
+  <section class="screen" id="s2">
+    <div class="stage">
+      <div class="tag">2 · 볼륨</div>
+      <div class="mark"></div>
+      <h1>얼마나 꽉 채울까요?</h1>
+      <p class="sub">섹션 양을 골라주세요. 언제든 바꿀 수 있어요.</p>
+      <div class="seg" id="vols">
+        <div class="pcard" data-v="compact"><div class="ic">◔</div><b>컴팩트</b><span>핵심만</span></div>
+        <div class="pcard" data-v="mid"><div class="ic">◑</div><b>중간</b><span>적당히</span></div>
+        <div class="pcard sel" data-v="heavy"><div class="ic">●</div><b>헤비</b><span>풀옵션</span></div>
+      </div>
+      <div class="nav"><button class="btn ghost" onclick="go(1)">← 이전</button><button class="btn primary" onclick="go(3)">다음 →</button></div>
+      <div class="foot-dots"><div class="dots"><i></i><i class="on"></i><i></i></div></div>
+    </div>
+  </section>
+
+  <!-- 3막 스타일 -->
+  <section class="screen" id="s3">
+    <div class="stage">
+      <div class="tag">3 · 스타일</div>
+      <div class="mark"></div>
+      <h1>어떤 스타일로 뽑을까요?</h1>
+      <p class="sub">뒷단은 우리가 준비한 디자인 시스템으로 나옵니다.</p>
+      <div class="styles" id="stylez">
+        <div class="st onsite sel" data-s="onsite"><div class="thumb"><div class="tbar"><i></i><i></i><i></i></div><div class="ln a"></div><div class="ln b"></div><div class="ln c"></div></div><div class="cap">온사이트 · 클린</div></div>
+        <div class="st modern" data-s="modern"><div class="thumb"><div class="tbar"><i></i><i></i><i></i></div><div class="ln a"></div><div class="ln b"></div><div class="ln c"></div></div><div class="cap">모던 · 다크</div></div>
+        <div class="st soft" data-s="soft"><div class="thumb"><div class="tbar"><i></i><i></i><i></i></div><div class="ln a"></div><div class="ln b"></div><div class="ln c"></div></div><div class="cap">소프트 · 그라디언트</div></div>
+      </div>
+      <div class="nav"><button class="btn ghost" onclick="go(2)">← 이전</button><button class="btn accent" onclick="enterEdit()">생성하기 →</button></div>
+      <div class="foot-dots"><div class="dots"><i></i><i></i><i class="on"></i></div></div>
+    </div>
+  </section>
+
+  <!-- 4막 편집 -->
+  <section class="screen" id="s4">
+    <div class="split">
+      <div class="conv">
+        <div class="top"><div class="mk"></div>ONSITE Studio <span class="back" onclick="go(1)">↺ 처음</span></div>
+        <div class="body" id="convBody"></div>
+        <div class="compose">
+          <input class="input" id="composeInput" placeholder="선택한 항목 값을 입력…">
+          <button class="send" onclick="commitCompose()">↑</button>
+        </div>
+      </div>
+      <div class="pv">
+        <div class="bar">라이브 미리보기 · <span id="pvTitle">메인홈</span>
+          <span class="grow"></span>
+          <div class="seg2"><span class="on">데스크탑</span><span onclick="alert('모바일 프리뷰는 곧')">모바일</span></div>
+          <button class="btn" style="padding:6px 14px;font-size:12px" onclick="downloadHtml()">HTML 다운로드</button>
+        </div>
+        <div class="canvas"><iframe id="frame" title="preview"></iframe></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+  import { FIELD_SPECS } from '../field-specs.js';
+  import { defaultState, stateToContent } from '../generator-state.js';
+  import { buildPageDoc } from '../../core/template.js';
+  import { mainTemplate } from '../../core/templates/main.js';
+  import { includesTier } from '../../core/volume.js';
+  import { renderDocument } from '../../core/renderer.js';
+  import { samplePack } from '../../core/packs/sample/pack.js';
+
+  const SECTION_LABEL = { nav:'네비게이션', hero:'히어로', feature:'기능 소개', cta:'행동 유도', footer:'푸터' };
+  const KIND_LABEL = { site:'제품 사이트', landing:'이벤트 랜딩', notice:'공지' };
+  const VOL_LABEL = { compact:'컴팩트', mid:'중간', heavy:'헤비' };
+  const STYLE_LABEL = { onsite:'온사이트', modern:'모던', soft:'소프트' };
+
+  const S = { kind:'site', style:'onsite', active:null, gen:defaultState() };
+  S.gen.volume = 'heavy';
+  window.go = go; window.enterEdit = enterEdit; window.commitCompose = commitCompose; window.downloadHtml = downloadHtml;
+
+  function go(n){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); document.getElementById('s'+n).classList.add('on'); }
+
+  // 선택 카드 바인딩
+  bindPick('#kinds','.pcard','k', v=>S.kind=v);
+  bindPick('#vols','.pcard','v', v=>S.gen.volume=v);
+  bindPick('#stylez','.st','s', v=>S.style=v);
+  function bindPick(wrap, sel, attr, set){
+    document.querySelector(wrap).addEventListener('click', e=>{
+      const el=e.target.closest(sel); if(!el) return;
+      el.parentElement.querySelectorAll(sel).forEach(x=>x.classList.remove('sel')); el.classList.add('sel');
+      set(el.dataset[attr]);
+    });
+  }
+
+  // 현재 볼륨에 포함되는 섹션들
+  function activeSections(){ return mainTemplate.sections.filter(s=>includesTier(S.gen.volume, s.tier)).map(s=>s.type); }
+
+  function enterEdit(){ go(4); if(!S.active) S.active = activeSections()[1] || activeSections()[0]; buildConv(); render(); }
+
+  let lastHtml='';
+  function render(){
+    const content = stateToContent(S.gen);
+    const doc = buildPageDoc({ template: mainTemplate, volume: S.gen.volume, content, sharedFacts: content._shared });
+    lastHtml = renderDocument(doc, samplePack);
+    document.getElementById('frame').srcdoc = lastHtml;
+    document.getElementById('pvTitle').textContent = KIND_LABEL[S.kind]==='제품 사이트' ? '메인홈' : KIND_LABEL[S.kind];
+  }
+
+  function buildConv(){
+    const body = document.getElementById('convBody');
+    const secs = activeSections();
+    body.innerHTML = '';
+    body.append(bubble('me', `${KIND_LABEL[S.kind]} · ${VOL_LABEL[S.gen.volume]} · ${STYLE_LABEL[S.style]} 스타일로 만들어줘`));
+    body.append(bubble('ai', `좋아요. 오른쪽에 초안을 만들었어요 👉 어떤 섹션을 다듬을까요?`));
+    body.append(el('div','lbl','편집할 섹션'));
+    const chips = el('div','chips');
+    secs.forEach(t=>{
+      const c = el('div','chip'+(t===S.active?' on':''), SECTION_LABEL[t]||t);
+      c.onclick = ()=>{ S.active=t; buildConv(); };
+      chips.append(c);
+    });
+    body.append(chips);
+    body.append(buildFields(S.active));
+  }
+
+  function buildFields(type){
+    const wrap = el('div','fields');
+    const specs = FIELD_SPECS[type] || [];
+    if(!specs.length){ wrap.append(el('div','lbl','이 섹션은 편집 항목이 없어요')); return wrap; }
+    specs.forEach(f=>{
+      wrap.append(el('label',null,f.label));
+      const inp = f.kind==='lines' ? document.createElement('textarea') : document.createElement('input');
+      inp.className='input'; inp.placeholder=f.placeholder||''; inp.value=S.gen.sections[type][f.key]||'';
+      inp.addEventListener('input', ()=>{ S.gen.sections[type][f.key]=inp.value; render(); });
+      wrap.append(inp);
+    });
+    return wrap;
+  }
+
+  function commitCompose(){
+    const inp = document.getElementById('composeInput');
+    if(!inp.value.trim() || !S.active) return;
+    const first = (FIELD_SPECS[S.active]||[])[0];
+    if(first){ S.gen.sections[S.active][first.key] = inp.value; buildConv(); render(); }
+    inp.value='';
+  }
+
+  function downloadHtml(){
+    const blob = new Blob([lastHtml], {type:'text/html'});
+    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='page.html'; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function bubble(kind, txt){ const b=el('div','bubble '+kind); b.textContent=txt; return b; }
+  function el(tag, cls, txt){ const e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+</script>
+</body>
+</html>
