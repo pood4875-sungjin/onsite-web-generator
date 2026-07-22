@@ -201,7 +201,7 @@
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
   const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
-  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{}, sectionOrder:[] };
+  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[] };
   let data = structuredClone(EMPTY), pack = DARK_PACKS[0], motion = 'subtle', generated = false;
   let pageType = 'main', volume = 'heavy';
 
@@ -220,7 +220,7 @@
     upsertProject(project);
   }
 
-  const STEPS = ['kind','pageType','volume','facts','features','stats','banner','done'];
+  const STEPS = ['kind','pageType','volume','facts','features','stats','banner','footer','done'];
   const PROMPT = {
     kind:'안녕하세요 👋 어떤 종류의 프로젝트를 만들까요?',
     pageType:'좋아요! 어떤 페이지 타입으로 시작할까요?',
@@ -228,7 +228,8 @@
     facts:'이제 공유 사실을 입력할게요. 제품명과 태그라인을 알려주세요.',
     features:'핵심 기능 3가지를 입력해주세요.',
     stats:'신뢰를 더할 지표 3개를 알려주세요.',
-    banner:'마지막으로 하단 링크 배너 문구를 입력해주세요.',
+    banner:'하단 링크 배너 문구를 입력해주세요.',
+    footer:'마지막으로 푸터를 구성할게요. 링크와 저작권 문구를 알려주세요.',
     done:'🎉 모든 입력이 끝났어요. 오른쪽에서 완성된 페이지를 확인하세요!',
   };
   let idx = 0;
@@ -286,8 +287,10 @@
   let editMode=false;
   const editBtn=document.getElementById('editBtn');
   function setField(path,val){
-    if(path.includes('.')){ const [arr,i,key]=path.split('.'); data[arr]=data[arr]||[]; data[arr][+i]=data[arr][+i]||{}; data[arr][+i][key]=val; }
-    else data[path]=val;
+    const p=path.split('.');
+    if(p.length===1){ data[p[0]]=val; }
+    else if(p.length===2){ const [arr,i]=p; data[arr]=data[arr]||[]; data[arr][+i]=val; }   // 문자열 배열 (footerLinks 등)
+    else { const [arr,i,key]=p; data[arr]=data[arr]||[]; data[arr][+i]=data[arr][+i]||{}; data[arr][+i][key]=val; }
   }
   function pickImage(key){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
@@ -419,7 +422,16 @@
       const wrap=el('div','card');
       [['bannerText','배너 문구 — 예: 지금 바로 첫 페이지를 만들어보세요'],['bannerCta','배너 버튼 — 예: 무료로 시작하기']].forEach(([k,ph])=>{
         const i=el('input','inp'); i.placeholder=ph; i.value=data[k]; i.oninput=()=>{data[k]=i.value;render();}; wrap.append(i); });
-      wrap.append(nextBtn('✓ 생성하기', ()=>advance(data.bannerText||'배너 문구 입력')));
+      wrap.append(nextBtn('다음 →', ()=>advance(data.bannerText||'배너 문구 입력')));
+      return wrap;
+    }
+    if(step==='footer'){
+      const wrap=el('div','card');
+      const lk=el('input','inp'); lk.placeholder='푸터 링크 (쉼표로 구분) — 예: 이용약관, 개인정보처리방침, 문의'; lk.value=(data.footerLinks||[]).join(', ');
+      lk.oninput=()=>{ data.footerLinks=lk.value.split(',').map(s=>s.trim()).filter(Boolean); render(); };
+      const cp=el('input','inp'); cp.placeholder='저작권 문구 (선택) — 예: © 2026 Onsite Labs'; cp.value=data.footerCopyright||'';
+      cp.oninput=()=>{ data.footerCopyright=cp.value; render(); };
+      wrap.append(lk, cp, nextBtn('✓ 생성하기', ()=>advance('푸터 설정 완료')));
       return wrap;
     }
     // done

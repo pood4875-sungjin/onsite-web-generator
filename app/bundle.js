@@ -203,12 +203,14 @@ const SECTIONS = {
   },
 
   footer(d, t) {
+    const links = (d.footerLinks && d.footerLinks.length) ? d.footerLinks : ['이용약관', '개인정보처리방침', '문의'];
+    const copy = esc(d.footerCopyright || `© 2026 ${name(d)} Labs`);
     return `
     <footer style="position:relative;padding:40px 32px;border-top:1px solid ${t.surfaceBorder};color:${t.textMuted};font-size:14px">
       <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span style="font-weight:600">${name(d)}</span></div>
-        <div style="display:flex;gap:24px"><span>이용약관</span><span>개인정보처리방침</span><span>문의</span></div>
-        <span>© 2026 ${name(d)} Labs</span>
+        <div style="display:flex;gap:24px">${links.map((l, i) => `<span data-edit="footerLinks.${i}">${esc(l)}</span>`).join('')}</div>
+        <span data-edit="footerCopyright">${copy}</span>
       </div>
     </footer>`;
   },
@@ -345,7 +347,7 @@ const DARK_PACK_BY_ID = Object.fromEntries(DARK_PACKS.map((p) => [p.id, p]));
 const PROJECTS_KEY = 'onsite-projects-v2';
 
 const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
-const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{}, sectionOrder:[] });
+const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[] });
 
 function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
 function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
