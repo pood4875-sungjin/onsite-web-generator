@@ -179,7 +179,6 @@
     <div class="pvhead">
       <div class="l">▦ 실시간 프리뷰 <span class="badge" id="badge">에테르 · 은은</span></div>
       <div style="display:flex;align-items:center;gap:6px">
-        <div class="dots" id="dots"></div>
         <button class="dl" id="save">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
@@ -216,12 +215,11 @@
     upsertProject(project);
   }
 
-  const STEPS = ['kind','pageType','volume','motion','facts','features','stats','banner','done'];
+  const STEPS = ['kind','pageType','volume','facts','features','stats','banner','done'];
   const PROMPT = {
     kind:'안녕하세요 👋 어떤 종류의 프로젝트를 만들까요?',
     pageType:'좋아요! 어떤 페이지 타입으로 시작할까요?',
     volume:'페이지 볼륨(섹션 수)을 골라주세요.',
-    motion:'모션 레벨은 어떻게 할까요?',
     facts:'이제 공유 사실을 입력할게요. 제품명과 태그라인을 알려주세요.',
     features:'핵심 기능 3가지를 입력해주세요.',
     stats:'신뢰를 더할 지표 3개를 알려주세요.',
@@ -263,7 +261,7 @@
     const nav = buildNav();
     const rd = nav ? Object.assign({}, data, {nav}) : data;
     frame.srcdoc = renderComposed(rd, pack, motion, pageType, volume);
-    badge.textContent = `${pack.name} · ${MOT[motion]}`;
+    badge.textContent = `${pack.name} 스타일`;
     empty.classList.toggle('hide', generated);
     fitPreview();
   }
@@ -329,14 +327,6 @@
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(o.label));
     if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; render(); advance(o.label); });
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(o.label); });
-    if(step==='motion'){
-      const wrap=el('div','card'); const g=el('div','mopts');
-      [{id:'static',label:'정적',hint:'애니 없음'},{id:'subtle',label:'은은',hint:'스크롤 페이드'},{id:'rich',label:'리치',hint:'스태거'}].forEach(m=>{
-        const b=el('button','mo'+(m.id===motion?' sel':''),`<b>${m.label}</b><span>${m.hint}</span>`);
-        b.onclick=()=>{ motion=m.id; render(); g.querySelectorAll('.mo').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); }; g.append(b); });
-      wrap.append(g, nextBtn(`모션: ${MOT[motion]}`, ()=>advance(`모션: ${MOT[motion]}`)));
-      return wrap;
-    }
     if(step==='facts'){
       const wrap=el('div','card');
       const f=[['productName','제품명 — 예: Onsite'],['tagline','태그라인 — 예: 대화만으로 완성되는 웹페이지'],['subcopy','서브 카피 — 한 줄 설명'],['primaryCta','주 CTA — 예: 무료로 시작하기']];
@@ -374,18 +364,12 @@
     return wrap;
   }
 
-  function syncDots(){ document.querySelectorAll('#dots .dot').forEach(d=>d.classList.toggle('sel', d.dataset.p===pack.id)); }
-  function buildDots(){
-    const dz=document.getElementById('dots'); dz.innerHTML='';
-    DARK_PACKS.forEach(p=>{ const b=el('button','dot'+(p.id===pack.id?' sel':'')); b.dataset.p=p.id; b.style.background=p.swatch; b.title=p.name;
-      b.onclick=()=>{ pack=p; render(); syncDots(); }; dz.append(b); });
-  }
-
+  // 스타일(팩)은 진입 후 스튜디오에서 변경 불가 — '내 프로젝트' 관리에서만 변경(일관성 유지)
   function reset(){
     data=structuredClone(EMPTY); generated=false; volume='heavy';
     if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('volume'); msgs.innerHTML=''; botBubble(PROMPT.volume); mountWidget('volume'); }
     else { pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); }
-    buildDots(); render();
+    render();
   }
 
   document.getElementById('reset').onclick=reset;
@@ -507,7 +491,7 @@
   }
 
   /* ---- init ---- */
-  buildDots(); renderRail();
+  renderRail();
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
