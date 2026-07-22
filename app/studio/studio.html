@@ -74,7 +74,7 @@
   .dot{width:24px;height:24px;border-radius:999px;border:2px solid rgba(255,255,255,.2);cursor:pointer;transition:.2s;padding:0}
   .dot.sel{border-color:#fff;transform:scale(1.1)}
   .pvbox{position:relative;flex:1;overflow:hidden;border-radius:16px;border:1px solid var(--line);background:var(--bg);box-shadow:0 20px 60px rgba(34,211,238,.10)}
-  .pvbox iframe{width:100%;height:100%;border:0;background:var(--bg)}
+  .pvbox iframe{position:absolute;top:0;left:0;border:0;background:var(--bg);transform-origin:0 0}
   .empty{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;background:rgba(7,10,18,.7);backdrop-filter:blur(3px);transition:.4s}
   .empty.hide{opacity:0;pointer-events:none}
   .empty .big{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--cta);box-shadow:0 8px 30px rgba(34,211,238,.4)}
@@ -145,11 +145,21 @@
   function meBubble(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
   function scroll(){msgs.scrollTo({top:msgs.scrollHeight,behavior:'smooth'});}
 
+  const VW = 1280; // 가상 데스크탑 폭 — 페이지를 이 폭으로 렌더 후 프리뷰 칸에 맞게 축소
+  function fitPreview(){
+    const box = frame.parentElement;
+    const s = box.clientWidth / VW;
+    frame.style.width = VW + 'px';
+    frame.style.height = (box.clientHeight / s) + 'px';
+    frame.style.transform = 'scale(' + s + ')';
+  }
   function render(){
     frame.srcdoc = renderComposed(data, pack, motion, pageType, volume);
     badge.textContent = `${pack.name} · ${MOT[motion]}`;
     empty.classList.toggle('hide', generated);
+    fitPreview();
   }
+  window.addEventListener('resize', fitPreview);
 
   function advance(userText){
     if(userText) meBubble(userText);
