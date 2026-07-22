@@ -1,0 +1,88 @@
+/* ============================================================
+   ds.css — MIDAS Web Generator 앱 디자인 시스템 (셸 크롬)
+   하나의 시스템, 두 테마: [data-theme="light"](진입) / "dark"(생성)
+   ※ 이건 "앱 껍데기" DS. 생성 출력 스타일 팩(에테르 등)과 별개.
+   문서: docs/APP_DS.md
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+  /* Typography */
+  --font: 'Manrope','Pretendard',-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;
+  --fs-display:40px; --fs-h1:24px; --fs-h2:18px; --fs-h3:15px;
+  --fs-body:14px; --fs-sm:13px; --fs-xs:11px;
+  --fw-reg:400; --fw-med:500; --fw-semi:600; --fw-bold:700; --fw-black:800;
+
+  /* Spacing */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-16:64px;
+
+  /* Radius */
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+
+  /* Motion */
+  --ease:cubic-bezier(.22,1,.36,1); --dur:.22s;
+
+  /* Brand accent (양 테마 공유 계열 = 바이올렛) */
+  --brand-1:#22d3ee; --brand-2:#818cf8; /* 로고/그라디언트용 */
+}
+
+/* ---- LIGHT (진입·대시보드) ---- */
+:root[data-theme="light"]{
+  --bg:#ffffff;
+  --surface:#ffffff; --surface-2:#f7f8fb; --glass:rgba(255,255,255,.6);
+  --line:#eceaf0; --line-2:#dcd9e4;
+  --ink:#160211; --ink-2:#5b5566; --ink-3:#948e9e;
+  --accent:#5b5bf5; --accent-soft:rgba(91,91,245,.14); --on-accent:#ffffff;
+  --scrim:radial-gradient(620px 380px at 44% 108%,rgba(246,150,238,.5),transparent 62%),
+          radial-gradient(560px 360px at 66% 112%,rgba(168,150,255,.46),transparent 62%),
+          radial-gradient(520px 340px at 26% 116%,rgba(255,158,214,.4),transparent 60%),
+          radial-gradient(700px 420px at 82% 120%,rgba(150,180,255,.32),transparent 60%);
+}
+
+/* ---- DARK (생성·워크스페이스) ---- */
+:root[data-theme="dark"]{
+  --bg:#070a12;
+  --surface:rgba(255,255,255,.05); --surface-2:rgba(255,255,255,.035); --glass:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+  --ink:rgba(255,255,255,.92); --ink-2:rgba(255,255,255,.55); --ink-3:rgba(255,255,255,.35);
+  --accent:#818cf8; --accent-soft:rgba(129,140,248,.16); --on-accent:#0a0e1a;
+  --scrim:none;
+}
+
+/* ---- 공통 리셋/베이스 ---- */
+*{box-sizing:border-box}
+.ds-body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;font-size:var(--fs-body);line-height:1.5}
+.ds-wordmark{font-weight:var(--fw-black);letter-spacing:-.01em;font-size:15px;color:var(--ink)}
+.ds-wordmark span{font-weight:var(--fw-med);opacity:.55}
+
+/* 버튼 */
+.ds-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--glass);color:var(--ink);
+  border-radius:var(--r-pill);padding:11px 22px;font-size:var(--fs-body);font-weight:var(--fw-semi);cursor:pointer;font-family:inherit;
+  transition:var(--dur) var(--ease);backdrop-filter:blur(6px)}
+.ds-btn:hover{border-color:var(--line-2)}
+.ds-btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ds-btn.primary:hover{filter:brightness(1.15)}
+.ds-btn.accent{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.ds-btn.ghost{border-color:transparent;background:none;color:var(--ink-2)}
+.ds-btn:active{transform:scale(.98)}
+
+/* 입력 */
+.ds-input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-md);padding:12px 14px;
+  font-size:var(--fs-body);font-family:inherit;color:var(--ink);outline:none;transition:var(--dur) var(--ease)}
+.ds-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ds-input::placeholder{color:var(--ink-3)}
+
+/* 칩 */
+.ds-chip{border:1px solid var(--line);border-radius:var(--r-pill);padding:9px 15px;font-size:var(--fs-sm);cursor:pointer;
+  background:var(--surface);color:var(--ink);transition:var(--dur) var(--ease);font-family:inherit}
+.ds-chip:hover{border-color:var(--line-2)}
+.ds-chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* 진행 점 */
+.ds-dots{display:flex;gap:7px}
+.ds-dots i{width:7px;height:7px;border-radius:var(--r-pill);background:var(--line-2);transition:var(--dur) var(--ease)}
+.ds-dots i.on{width:22px;background:var(--ink)}
+
+/* 배지(추천 등) */
+.ds-badge{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-xs);font-weight:var(--fw-semi);
+  padding:3px 9px;border-radius:var(--r-pill);background:var(--accent-soft);color:var(--accent)}

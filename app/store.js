@@ -35,11 +35,12 @@ export function newPage(pageType='main', shared={}){
   return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', data };
 }
 
-export function createProject({ name, kind='single', shared={}, stylePack='aether' } = {}){
+export function createProject({ name, kind='single', shared={}, stylePack='aether', org='' } = {}){
   const p = {
     id: uid('pr'),
     name: name || shared.productName || '무제 프로젝트',
     kind,
+    org,
     shared,
     stylePack,
     motion: 'subtle',
