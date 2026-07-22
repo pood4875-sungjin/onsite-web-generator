@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>내 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
-<script src="guard.js"></script>
+<script src="bundle.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh;background:var(--canvas)}
@@ -41,11 +41,7 @@
   <div class="grid" id="projects"></div>
 </div>
 
-<script type="module">
-  import { getProjects, saveProjects, deleteProject } from './store.js';
-  import { renderComposed } from '../core/darkglow/render.js';
-  import { DARK_PACK_BY_ID } from '../core/packs/darkglow/packs.js';
-  import { mountThemeToggle } from './theme.js';
+<script>
   mountThemeToggle(document.getElementById('themeBtn'));
 
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};

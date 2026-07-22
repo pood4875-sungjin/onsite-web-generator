@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>새 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
-<script src="guard.js"></script>
+<script src="bundle.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh;overflow-y:auto;background:var(--scrim),var(--canvas);background-attachment:fixed}
@@ -109,10 +109,7 @@
   <div class="ds-dots dots"><i class="on"></i><i></i><i></i></div>
 </div>
 
-<script type="module">
-  import { createProject, addPage } from './store.js';
-  import { DARK_PACKS } from '../core/packs/darkglow/packs.js';
-  import { mountThemeToggle } from './theme.js';
+<script>
   mountThemeToggle(document.getElementById('themeBtn'));
 
   const ORGS=[{id:'enterprise',label:'전사',rec:'aether'},{id:'sk',label:'SK',rec:'ember'},{id:'ensol',label:'엔솔',rec:'violet'},{id:'personal',label:'개인작업',rec:'aether'}];

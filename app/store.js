@@ -4,13 +4,13 @@
    Page{ id, name, pageType, volume, data(SiteData) }
    대시보드·페이지관리·스튜디오 공용.
    ============================================================ */
-const KEY = 'onsite-projects-v2';
+const PROJECTS_KEY = 'onsite-projects-v2';
 
 export const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
 export const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'' });
 
-export function getProjects(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch{ return []; } }
-export function saveProjects(a){ localStorage.setItem(KEY, JSON.stringify(a)); }
+export function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
+export function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
 export function getProject(id){ return getProjects().find(p => p.id === id) || null; }
 
 export function upsertProject(p){
