@@ -79,7 +79,27 @@
   .empty.hide{opacity:0;pointer-events:none}
   .empty .big{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--cta);box-shadow:0 8px 30px rgba(34,211,238,.4)}
   .empty b{font-weight:600;color:rgba(255,255,255,.9)} .empty span{font-size:13px;color:var(--tx2)}
-  .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px;margin-left:8px}
+  .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
+  .dl:hover{background:rgba(255,255,255,.1)}
+  .preview{position:relative}
+  .panel{position:absolute;top:44px;right:16px;z-index:30;width:300px;max-height:60vh;overflow-y:auto;
+    border:1px solid var(--line2);border-radius:14px;background:rgba(16,20,30,.96);backdrop-filter:blur(20px);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);padding:12px;display:none}
+  .panel.open{display:block;animation:rise .2s var(--ease)}
+  .phd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .phd b{font-size:13px}
+  .pact{display:flex;gap:6px}
+  .pact button{border:1px solid var(--line);background:var(--surf);color:var(--tx2);border-radius:8px;padding:4px 9px;font-size:11px;cursor:pointer}
+  .pact button:hover{color:var(--tx);background:rgba(255,255,255,.08)}
+  .plist{display:flex;flex-direction:column;gap:6px}
+  .prow{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surf);cursor:pointer}
+  .prow:hover{background:rgba(255,255,255,.08);border-color:var(--line2)}
+  .prow .pmeta{flex:1;min-width:0}
+  .prow .pmeta b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prow .pmeta span{font-size:10px;color:var(--tx3)}
+  .prow .del{flex:0 0 auto;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
+  .prow .del:hover{color:#f87171;background:rgba(248,113,113,.12)}
+  .pempty{color:var(--tx3);font-size:12px;text-align:center;padding:16px}
 </style>
 </head>
 <body>
@@ -99,10 +119,17 @@
   <main class="preview">
     <div class="pvhead">
       <div class="l">▦ 실시간 프리뷰 <span class="badge" id="badge">에테르 · 은은</span></div>
-      <div style="display:flex;align-items:center">
+      <div style="display:flex;align-items:center;gap:6px">
         <div class="dots" id="dots"></div>
-        <button class="dl" id="dl">HTML 다운로드</button>
+        <button class="dl" id="save">저장</button>
+        <button class="dl" id="projBtn">프로젝트 ▾</button>
+        <button class="dl" id="dl">HTML</button>
       </div>
+    </div>
+    <div class="panel" id="panel">
+      <div class="phd"><b>프로젝트</b><div class="pact"><button id="expBtn">JSON 내보내기</button><button id="impBtn">불러오기</button></div></div>
+      <div class="plist" id="plist"></div>
+      <input type="file" id="impFile" accept="application/json" style="display:none">
     </div>
     <div class="pvbox">
       <div class="empty" id="empty"><div class="big"></div><b>왼쪽 대화를 채우면</b><span>이곳에 페이지가 실시간으로 완성됩니다</span></div>
@@ -253,6 +280,43 @@
 
   document.getElementById('reset').onclick=reset;
   document.getElementById('dl').onclick=()=>{ const b=new Blob([renderComposed(data,pack,motion,pageType,volume)],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='page.html'; a.click(); URL.revokeObjectURL(a.href); };
+
+  /* ---- 프로젝트 저장 (localStorage + JSON) ---- */
+  const KEY='onsite-projects';
+  const getProjects=()=>{ try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]} };
+  const setProjects=(a)=>localStorage.setItem(KEY,JSON.stringify(a));
+  const snapshot=(name)=>({ id:'p'+Date.now(), name:name||data.productName||'무제 프로젝트', ts:Date.now(), data:structuredClone(data), pack:pack.id, motion, pageType, volume });
+  const fmtDate=(ts)=>{ const d=new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+
+  const panel=document.getElementById('panel'), plist=document.getElementById('plist');
+  function renderList(){
+    const ps=getProjects();
+    plist.innerHTML = ps.length ? '' : '<div class="pempty">저장된 프로젝트가 없어요</div>';
+    ps.forEach(p=>{
+      const row=el('div','prow',`<div class="pmeta"><b>${p.name}</b><span>${PAGETYPE_LABEL(p.pageType)} · ${p.pack} · ${fmtDate(p.ts)}</span></div><button class="del" title="삭제">✕</button>`);
+      row.querySelector('.pmeta').onclick=()=>loadProject(p);
+      row.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); setProjects(getProjects().filter(x=>x.id!==p.id)); renderList(); };
+      plist.append(row);
+    });
+  }
+  const PAGETYPE_LABEL=(k)=>({main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩'}[k]||k);
+
+  function saveCurrent(){ const a=getProjects(); a.unshift(snapshot()); setProjects(a); renderList();
+    const b=document.getElementById('save'); const o=b.textContent; b.textContent='저장됨 ✓'; setTimeout(()=>b.textContent=o,1200); }
+
+  function loadProject(p){
+    data=structuredClone(p.data); motion=p.motion; pageType=p.pageType; volume=p.volume;
+    pack=DARK_PACKS.find(x=>x.id===p.pack)||DARK_PACKS[0]; generated=true; idx=STEPS.indexOf('done');
+    msgs.innerHTML=''; botBubble(`📂 "${p.name}" 프로젝트를 불러왔어요. 오른쪽에서 확인하세요.`); mountWidget('done');
+    buildDots(); render(); panel.classList.remove('open');
+  }
+
+  document.getElementById('save').onclick=saveCurrent;
+  document.getElementById('projBtn').onclick=()=>{ renderList(); panel.classList.toggle('open'); };
+  document.getElementById('expBtn').onclick=()=>{ const b=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=(data.productName||'project')+'.json'; a.click(); URL.revokeObjectURL(a.href); };
+  document.getElementById('impBtn').onclick=()=>document.getElementById('impFile').click();
+  document.getElementById('impFile').onchange=(e)=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ try{ loadProject(JSON.parse(r.result)); }catch{ alert('불러올 수 없는 파일이에요'); } }; r.readAsText(f); e.target.value=''; };
+  document.addEventListener('click',(e)=>{ if(!panel.contains(e.target) && e.target.id!=='projBtn' && panel.classList.contains('open')) panel.classList.remove('open'); });
 
   // init
   buildDots(); botBubble(PROMPT.kind); mountWidget('kind'); render();
