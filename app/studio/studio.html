@@ -133,6 +133,8 @@
   .empty b{font-weight:600;color:rgba(255,255,255,.9)} .empty span{font-size:13px;color:var(--tx2)}
   .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
   .dl:hover{background:rgba(255,255,255,.1)}
+  .dl.on{background:var(--grad-cta);color:#fff;border-color:transparent}
+  .pvbox.editing{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:-2px}
   .preview{position:relative}
   .panel{position:absolute;top:44px;right:16px;z-index:30;width:300px;max-height:60vh;overflow-y:auto;
     border:1px solid var(--line2);border-radius:14px;background:rgba(16,20,30,.96);backdrop-filter:blur(20px);
@@ -180,6 +182,7 @@
     <div class="pvhead">
       <div class="l">▦ 실시간 프리뷰 <span class="badge" id="badge">에테르 · 은은</span></div>
       <div style="display:flex;align-items:center;gap:6px">
+        <button class="dl" id="editBtn" title="텍스트·이미지 편집">✎ 편집</button>
         <button class="dl" id="save">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
@@ -198,7 +201,7 @@
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
   const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
-  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'' };
+  const EMPTY = { productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{} };
   let data = structuredClone(EMPTY), pack = DARK_PACKS[0], motion = 'subtle', generated = false;
   let pageType = 'main', volume = 'heavy';
 
@@ -211,6 +214,7 @@
   function persist(){
     if(!project || !pageRef) return;
     pageRef.data = structuredClone(data); pageRef.pageType = pageType; pageRef.volume = volume;
+    pageRef.chat = { log: chatLog, idx, generated };
     project.stylePack = pack.id; project.motion = motion;
     if((!project.name || project.name==='무제 프로젝트') && data.productName) project.name = data.productName;
     upsertProject(project);
@@ -234,8 +238,13 @@
   const badge = document.getElementById('badge');
 
   function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
-  function botBubble(txt){const r=el('div','row');r.append(el('div','bub bot',txt));msgs.append(r);}
-  function meBubble(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
+  // 대화 로그 — 나갔다 와도 대화 유지 (pageRef.chat에 저장)
+  let chatLog = [];
+  function addBot(txt){const r=el('div','row');r.append(el('div','bub bot',txt));msgs.append(r);}
+  function addMe(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
+  function saveChat(){ if(!project||!pageRef) return; pageRef.chat={log:chatLog, idx, generated}; upsertProject(project); }
+  function botBubble(txt){ addBot(txt); chatLog.push({r:'bot',t:txt}); saveChat(); }
+  function meBubble(txt){ addMe(txt); chatLog.push({r:'me',t:txt}); saveChat(); }
   function scroll(){msgs.scrollTo({top:msgs.scrollHeight,behavior:'smooth'});}
 
   const VW = 1280; // 가상 데스크탑 폭 — 페이지를 이 폭으로 렌더 후 프리뷰 칸에 맞게 축소
@@ -272,6 +281,51 @@
     fitPreview();
   }
   window.addEventListener('resize', fitPreview);
+
+  /* ---- 편집 모드: 프리뷰에서 텍스트 직접 편집 + 이미지 영역 첨부/교체 ---- */
+  let editMode=false;
+  const editBtn=document.getElementById('editBtn');
+  function setField(path,val){
+    if(path.includes('.')){ const [arr,i,key]=path.split('.'); data[arr]=data[arr]||[]; data[arr][+i]=data[arr][+i]||{}; data[arr][+i][key]=val; }
+    else data[path]=val;
+  }
+  function pickImage(key){
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
+      const rd=new FileReader(); rd.onload=()=>{ data.images=data.images||{}; data.images[key]=rd.result; persist();
+        const doc=frame.contentDocument, slot=doc&&doc.querySelector('[data-img="'+key+'"]');
+        if(slot){ if(slot.tagName==='IMG'){ slot.src=rd.result; } else {
+          slot.outerHTML='<img data-img="'+key+'" src="'+rd.result+'" alt="" style="display:block;position:relative;max-width:760px;width:100%;margin:56px auto 0;border-radius:'+pack.tokens.radius+';box-shadow:0 20px 80px '+pack.tokens.glow+'">';
+          applyEdit();
+        } }
+      }; rd.readAsDataURL(f); };
+    inp.click();
+  }
+  function applyEdit(){
+    const doc=frame.contentDocument; if(!doc||!doc.body) return;
+    if(!doc.getElementById('editcss')){ const st=doc.createElement('style'); st.id='editcss';
+      st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(122,61,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #7a3dff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #7a3dff;outline-offset:3px}';
+      doc.head.appendChild(st);
+    }
+    doc.body.toggleAttribute('data-editing', editMode);
+    doc.querySelectorAll('[data-edit]').forEach(elm=>{
+      if(editMode) elm.setAttribute('contenteditable','true'); else elm.removeAttribute('contenteditable');
+      if(!elm.__wired){ elm.__wired=1;
+        elm.addEventListener('blur',()=>{ if(!editMode)return; setField(elm.getAttribute('data-edit'), elm.textContent.replace(/\s+/g,' ').trim()); persist(); });
+        elm.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && elm.tagName!=='P'){ e.preventDefault(); elm.blur(); } });
+      }
+    });
+    doc.querySelectorAll('[data-img]').forEach(slot=>{ if(!slot.__wired){ slot.__wired=1;
+      slot.addEventListener('click',(e)=>{ if(!editMode)return; e.preventDefault(); pickImage(slot.getAttribute('data-img')); }); }});
+  }
+  frame.addEventListener('load', ()=>{ if(editMode) applyEdit(); });
+  editBtn.onclick=()=>{
+    if(!generated){ editBtn.textContent='먼저 생성하세요'; setTimeout(()=>editBtn.textContent='✎ 편집',1200); return; }
+    editMode=!editMode;
+    editBtn.classList.toggle('on',editMode); editBtn.textContent = editMode?'✓ 완료':'✎ 편집';
+    document.querySelector('.pvbox').classList.toggle('editing',editMode);
+    applyEdit();
+  };
 
   /* ---- 대화창↔프리뷰 리사이저 ---- */
   (function(){
@@ -372,7 +426,7 @@
 
   // 스타일(팩)은 진입 후 스튜디오에서 변경 불가 — '내 프로젝트' 관리에서만 변경(일관성 유지)
   function reset(){
-    data=structuredClone(EMPTY); generated=false; volume='heavy';
+    data=structuredClone(EMPTY); generated=false; volume='heavy'; chatLog=[];
     if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('volume'); msgs.innerHTML=''; botBubble(PROMPT.volume); mountWidget('volume'); }
     else { pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); }
     render();
@@ -420,9 +474,8 @@
     const rl=document.getElementById('rlist'); rl.innerHTML='';
 
     const rowOf=(pg,depth)=>{
-      const twig = depth>0 ? '<span class="tw">›</span>' : '';
       const r=el('div','prow2'+(pg.id===(pageRef&&pageRef.id)?' on':''),
-        `<span class="dh" title="드래그로 이동">⠿</span>${twig}<span class="pt">${pg.name}</span><span class="ren" title="이름 변경">✎</span><span class="x" title="삭제">✕</span>`);
+        `<span class="dh" title="드래그로 이동">⠿</span><span class="pt">${pg.name}</span><span class="ren" title="이름 변경">✎</span><span class="x" title="삭제">✕</span>`);
       r.style.paddingLeft=(8+depth*15)+'px';
       r.draggable=true; r.dataset.id=pg.id;
       r.querySelector('.pt').onclick=()=>{ persist(); location.href='?p='+project.id+'&page='+pg.id; };
@@ -479,7 +532,7 @@
     document.querySelectorAll('.rinp').forEach(x=>x.closest('.prow2')?.remove()); // 기존 입력 정리
     const depth = parentId!=null ? depthOf(parentId)+1 : 0;
     const row=el('div','prow2'); row.style.paddingLeft=(8+depth*15)+'px';
-    row.innerHTML=(depth>0?'<span class="tw">›</span>':'')+'<input class="rinp" maxlength="40" placeholder="페이지 이름 → Enter">';
+    row.innerHTML='<input class="rinp" maxlength="40" placeholder="페이지 이름 → Enter">';
     if(afterRow) afterRow.after(row); else document.getElementById('rlist').append(row);
     const inp=row.querySelector('.rinp'); inp.focus();
     let done=false;
@@ -513,10 +566,20 @@
     data = structuredClone(pageRef.data || EMPTY);
     pack = (project.stylePack==='krds' && typeof KRDS_STYLE!=='undefined') ? KRDS_STYLE : (DARK_PACKS.find(x=>x.id===project.stylePack) || DARK_PACKS[0]);
     motion = project.motion || 'subtle';
-    const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
-    if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — 편집 중`); mountWidget('done'); }
-    else { idx=STEPS.indexOf('volume'); botBubble(PROMPT.volume); mountWidget('volume'); } // 종류·타입은 대시보드서 결정 → 볼륨부터
-    render();
+    if(pageRef.chat && pageRef.chat.log && pageRef.chat.log.length){
+      // 저장된 대화 복원 → 나갔다 와도 대화 살아있음
+      chatLog = pageRef.chat.log.slice(); idx = pageRef.chat.idx||0; generated = !!pageRef.chat.generated;
+      chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
+      const step = STEPS[idx] || 'done';
+      if(generated || step==='done'){ generated=true; mountWidget('done'); }
+      else mountWidget(step);
+      render(); scroll();
+    } else {
+      const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
+      if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — 편집 중`); mountWidget('done'); }
+      else { idx=STEPS.indexOf('volume'); botBubble(PROMPT.volume); mountWidget('volume'); } // 종류·타입은 대시보드서 결정 → 볼륨부터
+      render();
+    }
   } else {
     botBubble(PROMPT.kind); mountWidget('kind'); render();
   }

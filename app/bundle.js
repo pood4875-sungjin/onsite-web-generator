@@ -117,7 +117,7 @@ const SECTIONS = {
     <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;backdrop-filter:blur(20px);background:${t.bg}cc;border-bottom:1px solid ${t.surfaceBorder}">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:${t.ctaGradient}">${spark(t.accentText)}</div>
-        <span style="font-weight:600">${name(d)}</span>
+        <span data-edit="productName" style="font-weight:600">${name(d)}</span>
       </div>
       <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px">${nav}</nav>
       <button style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
@@ -139,20 +139,22 @@ const SECTIONS = {
       <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:520px;height:320px;border-radius:999px;filter:blur(100px);background:${t.glow};pointer-events:none"></div>
       <div class="rise" style="position:relative;max-width:680px;margin:0 auto">
         <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span>Engine v2.0 · AX 웹 제너레이터</span>
-        <h1 style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
-        <p style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
+        <h1 data-edit="tagline" style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
+        <p data-edit="subcopy" style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
         <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:12px">
-          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${cta(d)} →</button>
+          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}"><span data-edit="primaryCta">${cta(d)}</span> →</button>
           <button style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">문서 보기</button>
         </div>
       </div>
-      <div class="rise" style="position:relative;max-width:760px;margin:56px auto 0;overflow:hidden;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder};box-shadow:0 20px 80px ${t.glow}">
+      ${(d.images && d.images.hero)
+        ? `<img class="rise" data-img="hero" src="${esc(d.images.hero)}" alt="" style="display:block;position:relative;max-width:760px;width:100%;margin:56px auto 0;border-radius:${t.radius};box-shadow:0 20px 80px ${t.glow}">`
+        : `<div class="rise" data-img="hero" style="position:relative;max-width:760px;margin:56px auto 0;overflow:hidden;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder};box-shadow:0 20px 80px ${t.glow}">
         <div style="display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid ${t.surfaceBorder}">
           <span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span><span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span><span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span>
           <span style="margin-left:12px;font-size:12px;color:${t.textMuted}">${name(d).toLowerCase()}.app / console</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px">${dash}</div>
-      </div>
+      </div>`}
     </section>`;
   },
 
@@ -161,9 +163,9 @@ const SECTIONS = {
     return `
     <section style="position:relative;padding:40px 32px">
       <div class="rise" style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;overflow:hidden;border-radius:${t.radius};background:${t.surfaceBorder};border:1px solid ${t.surfaceBorder}">
-        ${stats.map((s) => `<div style="padding:28px 24px;text-align:center;background:${t.bg}">
-          <div style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:${t.ctaGradient};-webkit-background-clip:text;background-clip:text;color:transparent">${esc(s.value)}</div>
-          <div style="margin-top:6px;color:${t.textMuted};font-size:13px">${esc(s.label)}</div></div>`).join('')}
+        ${stats.map((s, i) => `<div style="padding:28px 24px;text-align:center;background:${t.bg}">
+          <div data-edit="stats.${i}.value" style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:${t.ctaGradient};-webkit-background-clip:text;background-clip:text;color:transparent">${esc(s.value)}</div>
+          <div data-edit="stats.${i}.label" style="margin-top:6px;color:${t.textMuted};font-size:13px">${esc(s.label)}</div></div>`).join('')}
       </div>
     </section>`;
   },
@@ -180,8 +182,8 @@ const SECTIONS = {
         ${features.map((f, i) => `<div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
           <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:${t.glow};opacity:.35;pointer-events:none"></div>
           <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
-          <h3 style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">${esc(f.title)}</h3>
-          <p style="position:relative;margin:8px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`).join('')}
+          <h3 data-edit="features.${i}.title" style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">${esc(f.title)}</h3>
+          <p data-edit="features.${i}.desc" style="position:relative;margin:8px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`).join('')}
       </div>
     </section>`;
   },
@@ -194,7 +196,7 @@ const SECTIONS = {
       <div class="rise" style="position:relative;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:hidden;padding:64px 40px;text-align:center;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
         <div style="position:absolute;inset:0;background:${t.heroGradient};pointer-events:none"></div>
         <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:384px;height:256px;border-radius:999px;filter:blur(90px);background:${t.glow};pointer-events:none"></div>
-        <h2 style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
+        <h2 data-edit="bannerText" style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
         <button style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta} →</button>
       </div>
     </section>`;
@@ -332,7 +334,7 @@ const DARK_PACK_BY_ID = Object.fromEntries(DARK_PACKS.map((p) => [p.id, p]));
 const PROJECTS_KEY = 'onsite-projects-v2';
 
 const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
-const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'' });
+const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', images:{} });
 
 function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
 function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
