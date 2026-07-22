@@ -29,13 +29,30 @@ const btnCta = (t) => `background:${t.ctaGradient};color:${t.accentText};font-we
 
 export const SECTIONS = {
   gnb(d, t) {
+    // d.nav = 사이트 메뉴트리 [{name, active, children:[{name, active}]}] (스튜디오 레일에서 주입)
+    // 없으면 기본 플레이스홀더.
+    let nav;
+    if (d.nav && d.nav.length) {
+      nav = d.nav.map((it) => {
+        const on = it.active ? `color:${t.text};font-weight:600` : '';
+        const hasKids = it.children && it.children.length;
+        const sub = hasKids
+          ? `<div class="nsub" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;padding:6px;min-width:150px;border-radius:12px;background:${t.bg};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 40px rgba(0,0,0,.4)">
+              ${it.children.map((c) => `<span style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
+            </div>`
+          : '';
+        return `<div class="nvi" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
+      }).join('');
+    } else {
+      nav = `<span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>`;
+    }
     return `
     <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;backdrop-filter:blur(20px);background:${t.bg}cc;border-bottom:1px solid ${t.surfaceBorder}">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:${t.ctaGradient}">${spark(t.accentText)}</div>
         <span style="font-weight:600">${name(d)}</span>
       </div>
-      <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px"><span>기능</span><span>가격</span><span>문서</span><span>고객사례</span></nav>
+      <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px">${nav}</nav>
       <button style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
     </header>`;
   },

@@ -34,6 +34,7 @@ export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'm
 <title>${esc(data.productName || '제품명')}</title>
 <style>
   *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
+  .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
   ${motionCss}
 </style>
 </head>

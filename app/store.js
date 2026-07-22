@@ -52,11 +52,19 @@ export function createProject({ name, kind='single', shared={}, stylePack='aethe
   return upsertProject(p);
 }
 
-export function addPage(projectId, pageType='main', parentId=null){
+export function addPage(projectId, pageType='main', parentId=null, name=null){
   const p = getProject(projectId); if(!p) return null;
   const pg = newPage(pageType, p.shared || {}, parentId);
+  if(name && name.trim()) pg.name = name.trim();
   p.pages.push(pg); upsertProject(p);
   return pg;
+}
+
+export function renamePage(projectId, pageId, name){
+  const p = getProject(projectId); if(!p) return;
+  const pg = p.pages.find(x => x.id === pageId); if(!pg) return;
+  const t = (name || '').trim(); if(!t) return;
+  pg.name = t; upsertProject(p);
 }
 
 // 한 페이지 + 모든 하위 자손 id 집합

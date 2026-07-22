@@ -37,9 +37,9 @@
   .prow2:hover .dh{opacity:.65} .prow2 .dh:active{cursor:grabbing}
   .prow2 .tw{flex:0 0 auto;color:var(--tx3);font-size:10px;width:10px;text-align:center}
   .prow2 .pt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
-  .prow2 .addc,.prow2 .x{flex:0 0 auto;opacity:0;color:var(--tx3);font-size:13px;line-height:1;width:18px;height:18px;display:grid;place-items:center;border-radius:6px;transition:var(--dur)}
-  .prow2:hover .addc,.prow2:hover .x{opacity:.8}
-  .prow2 .addc:hover{opacity:1;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .prow2 .ren,.prow2 .addc,.prow2 .x{flex:0 0 auto;opacity:0;color:var(--tx3);font-size:12px;line-height:1;width:18px;height:18px;display:grid;place-items:center;border-radius:6px;transition:var(--dur)}
+  .prow2:hover .ren,.prow2:hover .addc,.prow2:hover .x{opacity:.75}
+  .prow2 .ren:hover,.prow2 .addc:hover{opacity:1;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
   .prow2 .x:hover{opacity:1;color:#f87171;background:color-mix(in srgb,#f87171 14%,transparent)}
   /* DnD 상태 */
   .prow2.dragging{opacity:.35}
@@ -50,6 +50,7 @@
   .rhint{font-size:10.5px;color:var(--tx3);padding:2px 8px 8px;line-height:1.4}
   .raddbtn{margin-top:10px;border:1px dashed var(--line2);background:none;color:var(--tx2);border-radius:10px;padding:10px;font-size:13px;cursor:pointer}
   .raddbtn:hover{color:var(--tx);border-color:var(--accent)}
+  .rinp{flex:1;min-width:0;background:var(--surf);border:1px solid var(--accent);border-radius:7px;color:var(--tx);font-family:inherit;font-size:13px;padding:5px 8px;outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
   .ptmenu{position:absolute;left:12px;right:12px;bottom:56px;background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:6px;display:none;z-index:40;box-shadow:var(--shadow-3)}
   .ptmenu.open{display:block;animation:rise .18s var(--ease)}
   .ptmenu button{display:block;width:100%;text-align:left;border:none;background:none;color:var(--tx);padding:9px 10px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
@@ -246,8 +247,22 @@
     frame.style.height = (box.clientHeight / s) + 'px';
     frame.style.transform = 'scale(' + s + ')';
   }
+  // 다중 사이트: 레일 메뉴트리 → GNB nav 항목 (홈=로고라 최상위 메인홈은 제외)
+  function buildNav(){
+    if(!project || project.kind!=='multi') return null;
+    const cur = pageRef && pageRef.id;
+    const isActive = (id)=> id===cur;
+    const tops = pageTree(project.pages).filter(n=> n.pageType!=='main');
+    if(!tops.length) return null;
+    return tops.map(n=>({
+      name:n.name, active:isActive(n.id),
+      children:(n.children||[]).map(c=>({ name:c.name, active:isActive(c.id) }))
+    }));
+  }
   function render(){
-    frame.srcdoc = renderComposed(data, pack, motion, pageType, volume);
+    const nav = buildNav();
+    const rd = nav ? Object.assign({}, data, {nav}) : data;
+    frame.srcdoc = renderComposed(rd, pack, motion, pageType, volume);
     badge.textContent = `${pack.name} · ${MOT[motion]}`;
     empty.classList.toggle('hide', generated);
     fitPreview();
@@ -408,10 +423,11 @@
       const twig = depth>0 ? '<span class="tw">›</span>' : '';
       const addBtn = depth<MAX_DEPTH ? '<span class="addc" title="하위 페이지 추가">＋</span>' : '';
       const r=el('div','prow2'+(pg.id===(pageRef&&pageRef.id)?' on':''),
-        `<span class="dh" title="드래그로 이동">⠿</span>${twig}<span class="pt">${pg.name}</span>${addBtn}<span class="x" title="삭제">✕</span>`);
+        `<span class="dh" title="드래그로 이동">⠿</span>${twig}<span class="pt">${pg.name}</span><span class="ren" title="이름 변경">✎</span>${addBtn}<span class="x" title="삭제">✕</span>`);
       r.style.paddingLeft=(8+depth*15)+'px';
       r.draggable=true; r.dataset.id=pg.id;
       r.querySelector('.pt').onclick=()=>{ persist(); location.href='?p='+project.id+'&page='+pg.id; };
+      r.querySelector('.ren').onclick=(e)=>{ e.stopPropagation(); startRename(pg,r); };
       r.querySelector('.x').onclick=(e)=>{ e.stopPropagation();
         if(project.pages.length<=1){ alert('마지막 페이지는 삭제할 수 없어요'); return; }
         const d=countDesc(pg.id);
@@ -423,7 +439,7 @@
         else renderRail();
       };
       const ac=r.querySelector('.addc');
-      if(ac) ac.onclick=(e)=>{ e.stopPropagation(); pendingParent=pg.id; menu.classList.add('open'); };
+      if(ac) ac.onclick=(e)=>{ e.stopPropagation(); startNameEntry(pg.id, r); };
 
       r.addEventListener('dragstart',(e)=>{ dragId=pg.id; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',pg.id); setTimeout(()=>r.classList.add('dragging'),0); });
       r.addEventListener('dragend',()=>{ r.classList.remove('dragging'); dragId=null; clearDnd(); });
@@ -454,10 +470,40 @@
     rl.ondragleave=(e)=>{ if(e.target===rl) rl.classList.remove('droproot'); };
     rl.ondrop=(e)=>{ e.preventDefault(); clearDnd(); if(!dragId) return; persist(); movePage(project.id,dragId,null,null); project=getProject(project.id); renderRail(); };
 
-    const menu=document.getElementById('ptmenu'); menu.innerHTML='';
-    PT_MENU.forEach(([id,label])=>{ const b=document.createElement('button'); b.textContent=label; b.onclick=()=>{ persist(); const pg=addPage(project.id,id,pendingParent); location.href='?p='+project.id+'&page='+pg.id; }; menu.append(b); });
-    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); pendingParent=null; menu.classList.toggle('open'); };
-    document.addEventListener('click',(e)=>{ if(!menu.contains(e.target) && e.target.id!=='addPage' && !e.target.classList.contains('addc')) menu.classList.remove('open'); });
+    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); startNameEntry(null, null); };
+  }
+
+  // 페이지 이름 인라인 입력 (추가) — 타입 선택 없이 이름부터. 추가 페이지 기본 타입=features
+  function depthOf(id){ let d=0, cur=project.pages.find(x=>x.id===id); const seen=new Set(); while(cur&&cur.parentId){ d++; if(seen.has(cur.id))break; seen.add(cur.id); cur=project.pages.find(x=>x.id===cur.parentId); } return d; }
+  function startNameEntry(parentId, afterRow){
+    document.querySelectorAll('.rinp').forEach(x=>x.closest('.prow2')?.remove()); // 기존 입력 정리
+    const depth = parentId!=null ? depthOf(parentId)+1 : 0;
+    const row=el('div','prow2'); row.style.paddingLeft=(8+depth*15)+'px';
+    row.innerHTML=(depth>0?'<span class="tw">›</span>':'')+'<input class="rinp" maxlength="40" placeholder="페이지 이름 → Enter">';
+    if(afterRow) afterRow.after(row); else document.getElementById('rlist').append(row);
+    const inp=row.querySelector('.rinp'); inp.focus();
+    let done=false;
+    const finish=(commit)=>{ if(done) return; done=true; const v=inp.value.trim();
+      if(commit && v){ persist(); const pg=addPage(project.id,'features',parentId,v); location.href='?p='+project.id+'&page='+pg.id; }
+      else row.remove();
+    };
+    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onblur=()=>finish(true);
+  }
+  // 페이지 이름 인라인 수정
+  function startRename(pg,row){
+    const span=row.querySelector('.pt'); if(!span) return;
+    const inp=el('input','rinp'); inp.value=pg.name; inp.maxLength=40;
+    span.replaceWith(inp); inp.focus(); inp.select();
+    row.draggable=false;
+    let done=false;
+    const finish=(commit)=>{ if(done) return; done=true;
+      const v=inp.value.trim();
+      if(commit && v && v!==pg.name){ renamePage(project.id,pg.id,v); project=getProject(project.id); if(pageRef&&pageRef.id===pg.id) pageRef=project.pages.find(x=>x.id===pg.id); render(); }
+      renderRail();
+    };
+    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onblur=()=>finish(true);
   }
 
   /* ---- init ---- */
