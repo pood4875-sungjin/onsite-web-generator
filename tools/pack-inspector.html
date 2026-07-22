@@ -85,6 +85,7 @@ import { templatePack } from '../core/packs/_template/pack.js';
 const ALL = [...PACKS, templatePack];              // 스캐폴드도 확인용으로 노출
 const PACK_BY_ID = Object.fromEntries(ALL.map((p) => [p.meta.id, p]));
 const $ = (s) => document.querySelector(s);
+const LABEL = { darkglow:'다크 글로우', krds:'밝은 신뢰 블루', template:'_Template' };
 const REFS = [
   { src:'refs/krds/side-nav.png', cap:'Side navigation · Pretendard GOV · 정부블루 강조' },
   { src:'refs/krds/palette-blue.png', cap:'System / Blue 램프' },
@@ -92,7 +93,7 @@ const REFS = [
 ];
 
 const sel = $('#packSel');
-ALL.forEach((p) => { const o = document.createElement('option'); o.value = p.meta.id; o.textContent = p.meta.name; sel.appendChild(o); });
+ALL.forEach((p) => { const o = document.createElement('option'); o.value = p.meta.id; o.textContent = LABEL[p.meta.id] || p.meta.name; sel.appendChild(o); });
 sel.value = PACK_BY_ID.krds ? 'krds' : PACKS[0].meta.id;
 sel.addEventListener('change', () => applyPack(sel.value));
 

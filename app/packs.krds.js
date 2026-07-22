@@ -558,7 +558,7 @@ const krdsPack = {
 
   var DEMO_TEMPLATE={ sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}] };
   window.KRDS_PACK = krdsPack;
-  window.KRDS_STYLE = { id:"krds", name:"KRDS", desc:"대한민국 정부 DS", swatch:"linear-gradient(135deg,#256ef4,#0b50d0)" };
+  window.KRDS_STYLE = { id:"krds", name:"밝은 신뢰 블루", desc:"정부·공공 신뢰감", swatch:"linear-gradient(135deg,#256ef4,#0b50d0)" };
   window.renderKrdsPage = function(shared, opts){ opts=opts||{}; shared=shared||{};
     var content={};
     if(shared.features&&shared.features.length) content.feature={ eyebrow:"FEATURES", title:"핵심 기능", items: shared.features.map(function(f){return {icon:f.icon||"check",title:f.title,desc:f.desc};}) };
