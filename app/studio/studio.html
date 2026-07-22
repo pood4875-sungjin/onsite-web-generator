@@ -340,7 +340,15 @@
       sec.appendChild(bar);
     });
   }
-  frame.addEventListener('load', ()=>{ if(editMode) applyEdit(); });
+  frame.addEventListener('load', ()=>{
+    // 프리뷰 네비게이션 가드 — 미리보기 안의 링크/폼이 iframe을 다른 페이지로 이동시키지 않게
+    const doc=frame.contentDocument;
+    if(doc){
+      doc.addEventListener('click', e=>{ const a=e.target && e.target.closest && e.target.closest('a[href]'); if(a){ e.preventDefault(); } }, true);
+      doc.addEventListener('submit', e=>e.preventDefault(), true);
+    }
+    if(editMode) applyEdit();
+  });
   editBtn.onclick=()=>{
     if(!generated){ editBtn.textContent='먼저 생성하세요'; setTimeout(()=>editBtn.textContent='✎ 편집',1200); return; }
     editMode=!editMode;
