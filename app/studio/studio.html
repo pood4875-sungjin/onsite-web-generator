@@ -8,7 +8,8 @@
 <script src="../bundle.js"></script>
 <script src="../packs.krds.js"></script>
 <script src="../packs.midas.js"></script>
-<script src="packs.edm.js"></script>
+<script src="../packs.edm.js"></script>
+<script src="../edm/promo01.js"></script>
 <script src="../modal.js"></script>
 <script src="../i18n.js"></script>
 <link rel="stylesheet" href="../ds.css">
@@ -368,6 +369,7 @@
   // 팩별 출력 — KRDS는 계약 렌더(renderKrdsPage), 그 외는 darkglow(renderComposed)
   function renderWith(d, pt, vol, nav, mot){
     const rd = nav ? Object.assign({}, d, {nav}) : d;
+    if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume:vol, motion:mot});
     return renderComposed(rd, pack, mot, pt, vol);
@@ -821,7 +823,8 @@
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
-    pack = (project.stylePack==='krds' && typeof KRDS_STYLE!=='undefined') ? KRDS_STYLE
+    pack = (project.stylePack==='edm') ? {id:'edm', name:'eDM'}
+         : (project.stylePack==='krds' && typeof KRDS_STYLE!=='undefined') ? KRDS_STYLE
          : (project.stylePack==='midas' && typeof MIDAS_STYLE!=='undefined') ? MIDAS_STYLE
          : (DARK_PACKS.find(x=>x.id===project.stylePack) || DARK_PACKS[0]);
     motion = project.motion || 'subtle';
