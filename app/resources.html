@@ -8,6 +8,7 @@
 <script src="bundle.js"></script>
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
 <script src="templates.js"></script>
 <script src="i18n.js"></script>
 <script src="icons.js"></script>
@@ -71,14 +72,15 @@
   function renderForStyle(sp, pg){ const d=pg.data||{};
     if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
-  function styleName(sp){ if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function fit(wrap, iframe, wide){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; iframe.style.width='1280px'; iframe.style.height=(wrap.clientHeight/s)+'px'; iframe.style.transform='scale('+s+')'; }); }
 
   const grid=document.getElementById('grid');
   const LL=(ko)=>window.L?L(ko):ko;
-  const TAG_LABEL={ website:'웹사이트', landing:'랜딩페이지', event:'이벤트 페이지', ppt:'PPT' };
-  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['event','이벤트 페이지'],['ppt','PPT']];
+  const TAG_LABEL={ website:'웹사이트', landing:'랜딩페이지', event:'이벤트 페이지', edm:'이메일(eDM)', ppt:'PPT' };
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['event','이벤트 페이지'],['edm','이메일(eDM)'],['ppt','PPT']];
   let filter='all';
 
   function renderFilters(){

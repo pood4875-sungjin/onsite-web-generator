@@ -75,5 +75,27 @@
         }),
       ],
     },
+    {
+      key: 'edm-promo01', name: '프로모션 안내 · eDM', desc: 'eDM · 이메일 디자인 · 760px', tag: 'edm',
+      stylePack: 'edm', kind: 'single',
+      pages: [
+        { name: 'eDM', pageType: 'edm', volume: 'heavy', parentId: null, data: { sections: [
+          { type: 'hero', eyebrow: 'MIDAS PROMOTION', title: '온라인 세미나 기념\n프로모션 혜택 안내', subcopy: '지반 안전 진단 솔루션을 지금 특별가로 만나보세요.', cta: '혜택 신청하기', image: IMG('edmhero') },
+          { type: 'overview', eyebrow: 'ABOUT', title: '왜 지금인가요?', body: '상반기 한정으로 진행되는 프로모션입니다. 신규 도입 고객에게는 무상 교육까지 지원합니다.' },
+          { type: 'promotion', eyebrow: 'BENEFIT', title: '이번 프로모션 혜택', items: [
+            { value: '10%', title: '최대 할인', desc: '비탈면·수리시설 안전 진단 패키지' },
+            { value: '+', title: '모듈 추가 할인', desc: '암반·보강토·연약지반 모듈 구매 시' },
+            { value: '무상', title: '신규 고객 교육', desc: '프로그램 시작일 지정 + 교육 지원' },
+          ] },
+          { type: 'step', eyebrow: 'HOW TO', title: '신청 방법', steps: [
+            { title: '혜택 신청서 작성', desc: '아래 버튼에서 간단한 정보 입력' },
+            { title: '담당자 상담', desc: '영업일 기준 1일 내 연락' },
+            { title: '프로모션 적용', desc: '계약과 함께 혜택·교육 확정' },
+          ] },
+          { type: 'btn', title: '지금 혜택을 신청하세요', body: '2026 상반기 이내 신청 시 무상 교육 지원', label: '혜택 신청하기', href: '#' },
+          { type: 'contact', brand: 'MIDAS', body: '문의: promo@midasit.com · 02-000-0000', links: ['이용안내', '문의', '수신거부'], copyright: '© 2026 MIDAS' },
+        ] } },
+      ],
+    },
   ];
 })();
