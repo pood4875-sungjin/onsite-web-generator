@@ -27,10 +27,13 @@
   .orb{display:none}
   .app{position:relative;z-index:1;display:flex;height:100vh}
   /* 좌측 페이지 레일 (다중) */
-  .rail{width:212px;flex:0 0 212px;border-right:1px solid var(--line);background:var(--surf2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:14px 12px;position:relative}
-  .rtop{display:flex;align-items:center;gap:8px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .rail{width:212px;flex:0 0 212px;border-right:1px solid var(--line);background:var(--surf2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:flex;flex-direction:column;padding:0 12px 14px;position:relative}
+  /* 레일 타이틀 헤더 높이를 챗 헤더(.chead 60px)와 맞춤 — 두 타이틀 수직 정렬 */
+  .rtop{display:flex;align-items:center;gap:8px;height:60px;box-sizing:border-box;padding:0 4px;border-bottom:1px solid var(--line);margin-bottom:10px}
   .rtop .rhome{color:var(--tx2);text-decoration:none;font-size:16px;line-height:1}
-  .rtop b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rtop b{font-size:16px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;padding:5px 7px;margin:-5px -7px;border-radius:8px;transition:background var(--dur) var(--ease)}
+  .rtop b:hover{background:var(--surf)}
+  .rtop input.rinp{font-size:16px;font-weight:700;width:100%}
   .rlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
   .pnode{position:relative}
   .prow2{position:relative;display:flex;align-items:center;gap:6px;padding:8px 8px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px;transition:background var(--dur) var(--ease)}
@@ -79,7 +82,14 @@
   .brand .wg{font-size:16px;color:var(--tx);font-weight:var(--fw-semi)}
   .reset{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);color:var(--tx2);border-radius:999px;padding:6px 12px;font-size:12px}
   .reset:hover{background:rgba(255,255,255,.1)}
-  .msgs{flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:16px}
+  .msgs{flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.2) transparent}
+  .msgs::-webkit-scrollbar{width:10px}
+  .msgs::-webkit-scrollbar-track{background:transparent}
+  .msgs::-webkit-scrollbar-thumb{background:rgba(0,0,0,.16);border-radius:8px;border:3px solid transparent;background-clip:padding-box}
+  .msgs:hover::-webkit-scrollbar-thumb{background:rgba(0,0,0,.28);background-clip:padding-box}
+  :root[data-theme="dark"] .msgs{scrollbar-color:rgba(255,255,255,.16) transparent}
+  :root[data-theme="dark"] .msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);background-clip:padding-box}
+  :root[data-theme="dark"] .msgs:hover::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);background-clip:padding-box}
   .row{display:flex}.row.me{justify-content:flex-end}
   .bub{max-width:85%;border-radius:16px;padding:10px 15px;font-size:14px;line-height:1.5;animation:rise .35s var(--ease)}
   .bub.bot{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-bottom-left-radius:6px}
@@ -203,12 +213,12 @@
 
   <main class="preview">
     <div class="pvhead">
-      <div class="l" style="position:relative">▦ 실시간 프리뷰 <button class="badge" id="badge" title="스타일 변경 (프로젝트 전체 일괄)">에테르 스타일 ▾</button>
+      <div class="l" style="position:relative"><svg class="pvicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 20h8M12 17v3"/></svg>실시간 프리뷰 <button class="badge" id="badge" title="스타일 변경 (프로젝트 전체 일괄)">에테르 스타일 ▾</button>
         <div class="stylemenu" id="stylemenu"></div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
-        <button class="dl" id="editBtn" title="텍스트·이미지 편집">✎ 편집</button>
-        <button class="dl" id="previewBtn" title="생성된 페이지를 새 창에서 미리보기">↗ 미리보기</button>
+        <button class="dl" id="editBtn" title="텍스트·이미지 편집">편집</button>
+        <button class="dl" id="previewBtn" title="생성된 페이지를 새 창에서 미리보기">미리보기</button>
         <button class="dl" id="save">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
@@ -256,7 +266,7 @@
     stats:'숫자는 가장 강력한 신뢰 장치예요. 사용자 수·만족도·처리 건수처럼 자랑할 만한 지표 3개를 보여주세요.',
     banner:'행동을 유도할 한마디를 넣어볼까요? 하단 배너에 들어갈 짧고 강한 문구를 적어주세요.',
     footer:'거의 끝났어요! 마지막으로 푸터에 들어갈 링크와 저작권 문구를 정리할게요.',
-    done:'🎉 완성됐어요! 오른쪽에서 페이지를 확인하고, ✎ 편집으로 자유롭게 다듬어보세요.',
+    done:'🎉 완성됐어요! 오른쪽에서 페이지를 확인하고, 편집 버튼으로 자유롭게 다듬어보세요.',
   };
   let idx = 0;
   const msgs = document.getElementById('msgs');
@@ -355,9 +365,9 @@
   function applyEdit(){
     const doc=frame.contentDocument; if(!doc||!doc.body) return;
     if(!doc.getElementById('editcss')){ const st=doc.createElement('style'); st.id='editcss';
-      st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(122,61,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #7a3dff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #7a3dff;outline-offset:3px}'
-        +'[data-editing] [data-section]{position:relative} [data-editing] [data-section]:hover{outline:1px dashed rgba(122,61,255,.4);outline-offset:-1px}'
-        +'.secctl{position:absolute;top:10px;right:10px;z-index:50;display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:999px;background:rgba(122,61,255,.94);box-shadow:0 4px 16px rgba(0,0,0,.35)}'
+      st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(108,43,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #6c2bff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #6c2bff;outline-offset:3px}'
+        +'[data-editing] [data-section]{position:relative} [data-editing] [data-section]:hover{outline:1px dashed rgba(108,43,255,.4);outline-offset:-1px}'
+        +'.secctl{position:absolute;top:10px;right:10px;z-index:50;display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:999px;background:rgba(108,43,255,.94);box-shadow:0 4px 16px rgba(0,0,0,.35)}'
         +'.secctl button{border:none;background:rgba(255,255,255,.22);color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;display:grid;place-items:center}'
         +'.secctl button:hover{background:rgba(255,255,255,.42)} .secctl button:disabled{opacity:.35;cursor:default} .secctl .lbl{color:#fff;font-size:11px;font-weight:600;padding:0 4px} .secctl .hd:hover{background:rgba(255,90,90,.9)}';
       doc.head.appendChild(st);
@@ -406,9 +416,9 @@
     if(editMode) applyEdit();
   });
   editBtn.onclick=()=>{
-    if(!generated){ editBtn.textContent='먼저 생성하세요'; setTimeout(()=>editBtn.textContent='✎ 편집',1200); return; }
+    if(!generated){ editBtn.textContent='먼저 생성하세요'; setTimeout(()=>editBtn.textContent='편집',1200); return; }
     editMode=!editMode;
-    editBtn.classList.toggle('on',editMode); editBtn.textContent = editMode?'✓ 완료':'✎ 편집';
+    editBtn.classList.toggle('on',editMode); editBtn.textContent = editMode?'완료':'편집';
     document.querySelector('.pvbox').classList.toggle('editing',editMode);
     applyEdit();
   };
@@ -512,7 +522,7 @@
     }
     // done
     const d=el('div','card'); d.style.textAlign='center';
-    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">우측 <b>✎ 편집</b>으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.</span>`));
+    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">우측 <b>편집</b> 버튼으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.</span>`));
     d.append(nextBtn('↺ 새로 만들기', reset));
     return d;
   }
@@ -595,10 +605,25 @@
   }
   function clearDnd(){ document.querySelectorAll('.prow2').forEach(x=>x.classList.remove('dbefore','dafter','din')); document.getElementById('rlist').classList.remove('droproot'); }
 
+  // 레일 상단 프로젝트명 인라인 수정
+  function editProjectName(bEl){
+    if(!project || bEl.querySelector('input')) return;
+    const cur=project.name; const inp=el('input','rinp'); inp.value=cur; inp.maxLength=50;
+    bEl.textContent=''; bEl.append(inp); inp.focus(); inp.select();
+    let done=false;
+    const finish=(commit)=>{ if(done)return; done=true; const v=inp.value.trim();
+      if(commit && v && v!==cur){ project.name=v; upsertProject(project); }
+      renderRail();
+    };
+    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onblur=()=>finish(true);
+  }
+
   function renderRail(){
     if(!project || project.kind!=='multi') return;
     document.getElementById('rail').style.display='flex';
-    document.getElementById('rname').textContent=project.name;
+    const rn=document.getElementById('rname'); rn.textContent=project.name; rn.title='클릭해서 이름 수정';
+    rn.onclick=()=>editProjectName(rn);
     const rl=document.getElementById('rlist'); rl.innerHTML='';
 
     const rowOf=(pg,depth)=>{

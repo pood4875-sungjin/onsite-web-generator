@@ -8,6 +8,7 @@
 <script src="bundle.js"></script>
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
+<script src="modal.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh;overflow-y:auto}
@@ -36,17 +37,29 @@
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
   /* mini page */
-  .pg{width:92px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:8px;display:flex;flex-direction:column;gap:5px}
+  .pg{width:92px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:8px;display:flex;flex-direction:column;gap:5px}
   .pg .d3{display:flex;gap:3px;margin-bottom:2px}.pg .d3 i{width:4px;height:4px;border-radius:50%;background:var(--hairline-strong)}
   .pg .ln{height:5px;border-radius:2px;background:var(--hairline)}.pg .ln.t{width:60%;height:7px;background:var(--hairline-strong)}
   .pg .g2{display:flex;gap:4px;margin-top:2px}.pg .g2 span{flex:1;height:14px;border-radius:3px;background:var(--canvas-2)}
   .single .pg .ln.c{width:42%;background:var(--a-blue);opacity:.75}
   .multi .pg .ln.c{width:42%;background:var(--a-purple);opacity:.75}
   .fan{position:relative;width:126px;height:112px}
-  .fan .pg{position:absolute;left:50%;top:50%}
+  .fan .pg{position:absolute;left:50%;top:50%;transition:transform .5s var(--ease),opacity .4s var(--ease)}
   .fan .f1{transform:translate(-50%,-50%);z-index:3}
-  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;opacity:.9;height:98px}
-  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;opacity:.75;height:98px}
+  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;height:98px;filter:brightness(.92)}
+  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;height:98px;filter:brightness(.84)}
+
+  /* 썸네일 모션 — 단일=은은한 플로트+생성 라인, 다중=카드 부채 브리딩, hover 시 강조 */
+  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes thmGen{0%{width:20%;opacity:.5}50%{width:52%;opacity:1}100%{width:20%;opacity:.5}}
+  .kc.single .thumb .pg{animation:thmFloat 3.6s var(--ease) infinite}
+  .kc.single .thumb .pg .ln.c{animation:thmGen 2.4s var(--ease) infinite}
+  .kc.single:hover .thumb .pg{transform:translateY(-7px) scale(1.03)}
+  .kc.multi .fan{animation:thmFloat 4s var(--ease) infinite}
+  .kc.multi:hover .fan .f1{transform:translate(-50%,-54%)}
+  .kc.multi:hover .fan .f2{transform:translate(-86%,-44%) rotate(-13deg)}
+  .kc.multi:hover .fan .f3{transform:translate(-14%,-44%) rotate(13deg)}
+  @media (prefers-reduced-motion:reduce){.kc.single .thumb .pg,.kc.single .thumb .pg .ln.c,.kc.multi .fan{animation:none}}
 
   /* step2 */
   .fields{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px}
@@ -58,7 +71,11 @@
   .styles{display:flex;gap:16px;justify-content:center}
   .sc{position:relative;width:190px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
   .sc:hover{border-color:var(--hairline-strong);transform:translateY(-2px)}.sc.sel{border-color:var(--ink)}
-  .sc .sw{height:108px}.sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left}
+  .sc .sw{height:132px;position:relative;overflow:hidden;background:var(--canvas-2)}
+  .sc .sw iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
+  .sc .sw .fallback{position:absolute;inset:0}
+  .sc:hover .sw iframe{filter:saturate(1.05)}
+  .sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left;border-top:1px solid var(--hairline)}
   .sc .rec{position:absolute;top:10px;right:10px}
 
   .navbtns{margin-top:36px;display:flex;gap:10px;justify-content:center}
@@ -137,9 +154,25 @@
     ];
     if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
     STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div><div class="cap">${p.name} · ${p.desc}</div>`;
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div></div><div class="cap">${p.name} · ${p.desc}</div>`;
+      const sw=c.querySelector('.sw');
+      // 실제 팩으로 렌더한 페이지를 축소해 살짝 보여줌 (렌더 실패 시 그라데이션 폴백 유지)
+      try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); sw.append(f); fitThumb(sw,f); }catch(e){}
       c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
   }
+  // 미니 프리뷰용 샘플 데이터 + 팩별 렌더
+  function styleThumb(id){
+    const d=Object.assign((typeof emptyData==='function'?emptyData():{}), {
+      productName:'MIDAS AX', tagline:'Design Once.\nScale with AX.',
+      subcopy:'사람과 AX가 함께 활용하는 온브랜드 페이지.', primaryCta:'시작하기',
+      features:[{title:'빠른 생성',desc:'대화만으로 완성'},{title:'온브랜드',desc:'스타일 팩 적용'},{title:'멀티페이지',desc:'사이트 구축'}],
+      stats:[{value:'98%',label:'만족도'},{value:'3분',label:'생성 시간'},{value:'12k+',label:'사용자'}],
+    });
+    if(id==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:'compact',motion:'static'});
+    if(id==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:'compact',motion:'static'});
+    return renderComposed(d, (DARK_PACK_BY_ID[id]||DARK_PACK_BY_ID.aether), 'static', 'main', 'compact');
+  }
+  function fitThumb(wrap, f){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
 
   let leaving=false;
   window.finish=()=>{
@@ -151,14 +184,18 @@
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };
 
-  window.leaveGuard=(e)=>{ if(leaving) return true; if(confirm('프로젝트 생성을 종료할까요?\n입력한 내용은 저장되지 않아요.')){ leaving=true; return true; } e.preventDefault(); return false; };
+  // 종료 확인 — 디자인 모달(센터 딤). confirm은 동기라 못 쓰므로 항상 막고 async로 처리.
+  function confirmLeave(){ return uiConfirm('입력한 내용은 저장되지 않아요.', { title:'프로젝트 생성을 종료할까요?', okText:'나가기', danger:true }); }
+  window.leaveGuard=(e)=>{ if(leaving) return true; e.preventDefault();
+    confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
+    return false; };
 
-  /* 생성 중 뒤로가기 → 확인 팝업 */
+  /* 생성 중 뒤로가기 → 디자인 확인 모달 */
   history.pushState(null,'',location.href);
   window.addEventListener('popstate', ()=>{
     if(leaving) return;
-    if(confirm('프로젝트 생성을 종료할까요?\n입력한 내용은 저장되지 않아요.')){ leaving=true; history.back(); }
-    else { history.pushState(null,'',location.href); }
+    history.pushState(null,'',location.href); // 일단 페이지 유지
+    confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
   });
 </script>
 </body>

@@ -27,13 +27,13 @@
   --r-xs:6px; --r-sm:12px; --r-md:20px; --r-lg:28px; --r-pill:9999px;
 
   /* Chromatic accents (5-stop, 표면 채우기·그라디언트용) */
-  --a-purple:#7a3dff; --a-pink:#ed52cb; --a-blue:#3b89ff; --a-orange:#ff6b00; --a-green:#00d722;
+  --a-purple:#6c2bff; --a-pink:#ed52cb; --a-blue:#3b89ff; --a-orange:#ff6b00; --a-green:#00d722;
   --a-info:#146ef5; --a-yellow:#ffae13; --a-red:#ee1d36;
 
   /* 글래스 공통 */
   --blur:20px; --blur-strong:32px;
-  --grad-cta:linear-gradient(135deg,#7a3dff 0%,#5b6bff 50%,#3b89ff 100%);
-  --grad-brand:linear-gradient(135deg,#7a3dff,#3b89ff);
+  --grad-cta:linear-gradient(135deg,#6c2bff 0%,#5b6bff 50%,#3b89ff 100%);
+  --grad-brand:linear-gradient(135deg,#6c2bff,#3b89ff);
 
   --ease:cubic-bezier(.4,0,.2,1); --dur:.2s;
 }
@@ -45,8 +45,8 @@
   --ink:#13173a; --ink-strong:#0b0e28; --body:#3a3f63; --body-mid:#5c6187; --mute:#7f84a6; --mute-soft:#a6aac6;
   --primary:#171719; --on-primary:#f7f7f8;              /* chip.on·dots 등 솔리드용 */
   --brand:#1b1c1e; --brand-hover:#000000; --brand-weak:rgba(112,115,124,.08); --on-brand:#f7f7f8; /* MIDAS AX */
-  --point:#7a3dff; --point-hover:#6a2ff0; --point-weak:rgba(122,61,255,.10); --on-point:#ffffff; /* 서비스 포인트=보라 */
-  --accent:#7a3dff;
+  --point:#6c2bff; --point-hover:#5a1fe6; --point-weak:rgba(108,43,255,.10); --on-point:#ffffff; /* 서비스 포인트=쨍한 보라 */
+  --accent:#6c2bff;
   --glass-hi:inset 0 1px 0 rgba(255,255,255,.7);         /* 상단 하이라이트 */
   --shadow-2:0 10px 34px rgba(23,23,25,.08),0 3px 10px rgba(23,23,25,.05);
   --shadow-3:0 24px 60px rgba(23,23,25,.14),0 8px 24px rgba(23,23,25,.08);
@@ -65,14 +65,14 @@
   --ink:#f4f6ff; --ink-strong:#ffffff; --body:rgba(255,255,255,.76); --body-mid:rgba(255,255,255,.58); --mute:rgba(255,255,255,.44); --mute-soft:rgba(255,255,255,.30);
   --primary:#ffffff; --on-primary:#0a0b18;
   --brand:#ffffff; --brand-hover:#eef0f6; --brand-weak:rgba(255,255,255,.10); --on-brand:#0a0b18;
-  --point:#a98bff; --point-hover:#b79bff; --point-weak:rgba(169,139,255,.16); --on-point:#150a2e;
+  --point:#7a33ff; --point-hover:#8c4dff; --point-weak:rgba(122,51,255,.18); --on-point:#ffffff;
   --accent:#b79bff;
   --glass-hi:inset 0 1px 0 rgba(255,255,255,.14);
   --shadow-2:0 12px 36px rgba(0,0,0,.42),0 3px 10px rgba(0,0,0,.34);
   --shadow-3:0 28px 70px rgba(0,0,0,.55),0 10px 28px rgba(0,0,0,.40);
-  --cta-glow:0 10px 34px rgba(122,61,255,.42);
+  --cta-glow:0 10px 34px rgba(108,43,255,.42);
   --scrim:
-    radial-gradient(900px 520px at 10% -8%, rgba(122,61,255,.30), transparent 60%),
+    radial-gradient(900px 520px at 10% -8%, rgba(108,43,255,.30), transparent 60%),
     radial-gradient(820px 520px at 96% -2%, rgba(59,137,255,.24), transparent 55%),
     radial-gradient(760px 620px at 50% 118%, rgba(237,82,203,.18), transparent 62%);
 }
@@ -151,6 +151,8 @@ a{color:inherit;text-decoration:none}
 .snb a.item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;color:var(--body);font-size:14px;font-weight:var(--fw-med);text-decoration:none;transition:var(--dur) var(--ease)}
 .snb a.item:hover{background:var(--brand-weak);color:var(--ink)}
 .snb a.item.on{background:var(--point-weak);color:var(--point);font-weight:var(--fw-semi)}
+/* 다크 테마 SNB: 어두운 배경에서 활성 항목이 잘 보이도록 밝은 보라 */
+:root[data-theme="dark"] .snb a.item.on{color:#b89cff;background:rgba(122,51,255,.20)}
 .snb a.item svg{width:17px;height:17px;flex:0 0 auto;opacity:.8}
 .snb-foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--hairline)}
 .snb-foot .tl{font-size:13px;color:var(--body);font-weight:var(--fw-med)}
