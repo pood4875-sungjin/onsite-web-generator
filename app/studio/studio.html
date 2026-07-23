@@ -71,6 +71,8 @@
   body.resizing iframe{pointer-events:none}
   .chead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:10px}
+  .hbtn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--tx2);text-decoration:none;transition:var(--dur) var(--ease)}
+  .hbtn:hover{color:var(--tx);border-color:var(--line2);background:var(--brand-weak)}
   .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--grad-brand);box-shadow:var(--cta-glow)}
   .brand b{font-size:16px;color:var(--tx);line-height:1.2}
   .brand .wg{font-size:16px;color:var(--tx);font-weight:var(--fw-semi)}
@@ -183,14 +185,14 @@
 
 <div class="app">
   <aside class="rail" id="rail" style="display:none">
-    <div class="rtop"><a class="rhome" href="../dashboard.html" title="홈">←</a><b id="rname"></b></div>
+    <div class="rtop"><b id="rname"></b></div>
     <div class="rlist" id="rlist"></div>
     <button class="raddbtn" id="addPage">+ 페이지 추가</button>
     <div class="ptmenu" id="ptmenu"></div>
   </aside>
   <aside class="chat">
     <div class="chead">
-      <div class="brand"><b class="ds-wordmark">MIDAS <span class="wg">WEB AX</span></b></div>
+      <div class="brand"><a class="hbtn" href="../dashboard.html" title="홈으로"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a><b class="ds-wordmark">MIDAS <span class="wg">WEB AX</span></b></div>
       <div style="display:flex;gap:8px;align-items:center"><button class="reset" id="reset">↺ 다시</button></div>
     </div>
     <div class="msgs" id="msgs"></div>
@@ -468,7 +470,7 @@
 
   function buildWidget(step){
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(o.label));
-    if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; render(); advance(o.label); });
+    if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(o.label); });
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(o.label); });
     if(step==='facts'){
       const wrap=el('div','card');
@@ -519,7 +521,7 @@
   // 스타일(팩)은 진입 후 스튜디오에서 변경 불가 — '내 프로젝트' 관리에서만 변경(일관성 유지)
   function reset(){
     data=structuredClone(EMPTY); generated=false; volume='heavy'; chatLog=[];
-    if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('volume'); msgs.innerHTML=''; botBubble(PROMPT.volume); mountWidget('volume'); }
+    if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('pageType'); msgs.innerHTML=''; botBubble(PROMPT.pageType); mountWidget('pageType'); }
     else { pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); }
     render();
   }
@@ -617,7 +619,7 @@
     rl.ondragleave=(e)=>{ if(e.target===rl) rl.classList.remove('droproot'); };
     rl.ondrop=(e)=>{ e.preventDefault(); clearDnd(); if(!dragId||!canDrop(dragId,null)) return; persist(); movePage(project.id,dragId,null,null); project=getProject(project.id); renderRail(); render(); };
 
-    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); startNameEntry(null, null); };
+    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); persist(); const pg=addPage(project.id,'features',null,'새 페이지'); location.href='?p='+project.id+'&page='+pg.id; };
   }
 
   // 페이지 이름 인라인 입력 (추가) — 타입 선택 없이 이름부터. 추가 페이지 기본 타입=features
@@ -673,7 +675,7 @@
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — 편집 중`); mountWidget('done'); }
-      else { idx=STEPS.indexOf('volume'); botBubble(PROMPT.volume); mountWidget('volume'); } // 종류·타입은 대시보드서 결정 → 볼륨부터
+      else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // 페이지 타입부터(템플릿·섹션 결정)
       render();
     }
   } else {
