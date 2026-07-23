@@ -209,7 +209,11 @@
     '확인': ['OK', '確認', '确定'],
     '알림': ['Notice', 'お知らせ', '提示'],
     '사업군에 맞춰 골라보세요.': ['— pick a style to match.', 'に合わせて選んでください。', '— 选择匹配的样式。'],
-    '다크·글로우': ['Dark · glow', 'ダーク·グロウ', '暗色·辉光']
+    '다크·글로우': ['Dark · glow', 'ダーク·グロウ', '暗色·辉光'],
+    // 아이콘 갤러리
+    '아이콘': ['Icons', 'アイコン', '图标'],
+    '아이콘 리드': ['Icon resources on the platform. Click to copy a name.', 'プラットフォームのアイコン。クリックで名前をコピー。', '平台图标资源。点击复制名称。'],
+    '아이콘 검색 (예: home, arrow, search)': ['Search icons (e.g. home, arrow)', 'アイコン検索 (例: home, arrow)', '搜索图标（例：home, arrow）']
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }

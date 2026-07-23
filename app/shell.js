@@ -9,7 +9,10 @@
   var SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>';
   var GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>';
   var GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>';
-  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['projects', 'projects.html', '프로젝트', FOLDER], ['resources', 'resources.html', '템플릿', GRID], ['settings', '#', '설정', GEAR]];
+  var SHAPES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="3.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><path d="M8 14l4 6H4z"/><rect x="13.5" y="14" width="6.5" height="6.5" rx="1.5"/></svg>';
+  // 아이콘 레지스트리(icons.js)가 있으면 거기서, 없으면 인라인 폴백
+  function ic(name, fb) { return (window.icon && window.ICON && window.ICON[name]) ? window.icon(name, {}) : fb; }
+  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['icons', 'icons.html', '아이콘', SHAPES], ['settings', '#', '설정', ic('settings', GEAR)]];
 
   function tt(ko) { return (window.L ? window.L(ko) : ko); }
   function curCode() { var l = (window.I18N ? I18N.getLang() : 'ko'); var m = { ko: 'KO', en: 'EN', ja: 'JA', zh: 'ZH' }; return m[l] || l.toUpperCase(); }
@@ -31,12 +34,12 @@
     }).join('');
     return '<div class="snb-foot">'
       + '<button id="themeBtn" class="foot-ic" title="Theme" aria-label="Theme"></button>'
-      + '<div class="lang-wrap"><button id="langBtn" class="foot-ic" title="' + tt('언어') + '" aria-haspopup="true">' + GLOBE + '<span class="lang-cur">' + curCode() + '</span></button>'
+      + '<div class="lang-wrap"><button id="langBtn" class="foot-ic" title="' + tt('언어') + '" aria-haspopup="true">' + ic('globe', GLOBE) + '<span class="lang-cur">' + curCode() + '</span></button>'
       + '<div class="lang-pop" id="langPop">' + langs + '</div></div>'
       + '</div>';
   }
   function gnbHTML(searchValue) {
-    return '<div class="gnb-bar"><div class="search">' + SEARCH
+    return '<div class="gnb-bar"><div class="search">' + ic('search', SEARCH)
       + '<input id="shellSearch" data-i18n-ph="프로젝트 검색" placeholder="' + tt('프로젝트 검색') + '" value="' + (searchValue || '').replace(/"/g, '&quot;') + '"></div>'
       + '<a class="ds-btn primary" href="index.html" style="padding:9px 16px;font-size:14px"><span data-i18n="＋ 새 프로젝트 생성">' + tt('＋ 새 프로젝트 생성') + '</span></a></div>';
   }
