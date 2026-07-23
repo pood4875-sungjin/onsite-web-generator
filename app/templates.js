@@ -6,7 +6,7 @@
 
   window.APP_TEMPLATES = [
     {
-      key: 'midas-nova', name: 'Nova · AX 플랫폼', desc: 'MIDAS AX · 모노크롬 · 다중 페이지',
+      key: 'midas-nova', name: 'Nova · AX 플랫폼', desc: 'MIDAS AX · 모노크롬 · 웹사이트', tag: 'website',
       stylePack: 'midas', kind: 'multi',
       pages: [
         page('메인홈', 'main', {
@@ -21,7 +21,7 @@
       ],
     },
     {
-      key: 'krds-gov', name: '공공서비스 포털', desc: 'KRDS · 밝은 신뢰 블루 · 다중 페이지',
+      key: 'krds-gov', name: '공공서비스 포털', desc: 'KRDS · 밝은 신뢰 블루 · 웹사이트', tag: 'website',
       stylePack: 'krds', kind: 'multi',
       pages: [
         page('메인홈', 'main', {
@@ -35,7 +35,7 @@
       ],
     },
     {
-      key: 'aether-product', name: '제품 랜딩 · 에테르', desc: '다크 글로우 · 시안 · 다중 페이지',
+      key: 'aether-product', name: '제품 랜딩 · 에테르', desc: '다크 글로우 · 시안 · 웹사이트', tag: 'website',
       stylePack: 'aether', kind: 'multi',
       pages: [
         page('메인홈', 'main', {
@@ -47,6 +47,32 @@
         }),
         page('기능', 'features', { productName: 'Onsite', tagline: '명료함과 성능을 위해 설계됨', subcopy: '결정론적 생성으로 일관된 결과.', features: [{ title: '결정론 렌더', desc: '추론 없는 안정적 출력.' }, { title: '스타일 팩', desc: '브랜드별 룩앤필 교체.' }, { title: '섹션 조립', desc: '볼륨·순서 자유 편집.' }], stats: [{ value: '0ms', label: '추론 비용' }], bannerText: '지금 만들어보세요', images: { hero: IMG('onsitefeat') } }),
         page('요금', 'pricing', { productName: 'Onsite', tagline: '합리적인 요금제', subcopy: '필요한 만큼만.', stats: [{ value: 'Free', label: '무료' }, { value: 'Pro', label: '전문가' }, { value: 'Team', label: '팀' }], bannerText: '시작하기', images: {} }),
+      ],
+    },
+    {
+      key: 'midas-promo', name: '프로모션 랜딩 · SoilWorks', desc: 'MIDAS AX · 프로모션 · 랜딩페이지', tag: 'landing',
+      stylePack: 'midas', kind: 'single',
+      pages: [
+        page('랜딩', 'landing', {
+          productName: 'SoilWorks', tagline: '온라인 세미나 기념\n프로모션 혜택 안내', subcopy: '지반 안전 진단 솔루션을 지금 특별가로 만나보세요.',
+          primaryCta: '혜택 신청하기', bannerText: '2026 상반기 이내 신청 시 무상 교육 지원', bannerCta: '지금 신청하기',
+          features: [{ title: '최대 10% OFF', desc: '비탈면 및 수리시설 안전 진단 패키지' }, { title: '모듈 추가 할인', desc: '암반·보강토·연약지반 등 추가 모듈 구매 시' }, { title: '신규 고객 혜택', desc: '프로그램 시작일 지정 + 무상 교육 지원' }],
+          stats: [{ value: '10%', label: '최대 할인' }, { value: '500만원', label: '프로모션가' }, { value: '상반기', label: '신청 기한' }],
+          footerLinks: ['문의', '이용안내'], footerCopyright: '© 2026 MIDAS', images: { hero: IMG('soilworks') },
+        }),
+      ],
+    },
+    {
+      key: 'krds-webinar', name: '온라인 세미나 · 웨비나', desc: '밝은 신뢰 블루 · 이벤트 · 랜딩페이지', tag: 'event',
+      stylePack: 'krds', kind: 'single',
+      pages: [
+        page('이벤트', 'landing', {
+          productName: 'MIDAS 웨비나', tagline: '온라인 세미나\n지금 등록하세요', subcopy: '실무 전문가와 함께하는 라이브 교육 세션에 무료로 참여하세요.',
+          primaryCta: '무료 등록', bannerText: '선착순 마감 · 지금 등록하세요', bannerCta: '등록하기',
+          features: [{ title: '라이브 Q&A', desc: '전문가에게 실시간으로 질문하세요.' }, { title: '실습 자료 제공', desc: '세미나 후 자료·다시보기 영상 제공.' }, { title: '수료증 발급', desc: '참여 완료 시 수료증을 드립니다.' }],
+          stats: [{ value: '90분', label: '세션 시간' }, { value: '무료', label: '참가비' }, { value: '선착순', label: '모집 방식' }],
+          footerLinks: ['문의', '안내'], footerCopyright: '© 2026 MIDAS', images: { hero: IMG('webinar') },
+        }),
       ],
     },
   ];

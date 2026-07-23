@@ -70,14 +70,14 @@
 
   /* step3 */
   .styles{display:flex;gap:16px;justify-content:center}
-  .sc{position:relative;width:190px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
+  .sc{position:relative;width:218px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
   .sc:hover{border-color:var(--hairline-strong);transform:translateY(-2px)}.sc.sel{border-color:var(--ink)}
   .sc .sw{height:132px;position:relative;overflow:hidden;background:var(--canvas-2)}
   .sc .sw iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
   .sc .sw .fallback{position:absolute;inset:0}
   .sc:hover .sw iframe{filter:saturate(1.05)}
   .sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left;border-top:1px solid var(--hairline)}
-  .sc .rec{position:absolute;top:10px;right:10px}
+  .sc .rec{position:absolute;top:9px;right:9px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:var(--point);box-shadow:0 4px 12px rgba(108,43,255,.4)}
 
   .navbtns{margin-top:36px;display:flex;gap:10px;justify-content:center}
   .dots{position:fixed;bottom:36px;left:50%;transform:translateX(-50%)}
@@ -96,11 +96,11 @@
     <div class="cards">
       <button class="kc single" data-k="single">
         <div class="thumb"><div class="pg"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
-        <div class="lab"><div class="kt" data-i18n="단일 페이지">단일 페이지</div><div class="kd" data-i18n="랜딩 · 공지 등 한 장">랜딩 · 공지 등 한 장</div></div>
+        <div class="lab"><div class="kt" data-i18n="랜딩페이지">랜딩페이지</div><div class="kd" data-i18n="단일페이지 · 랜딩·공지 한 장">단일페이지 · 랜딩·공지 한 장</div></div>
       </button>
       <button class="kc multi" data-k="multi">
         <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
-        <div class="lab"><div class="kt" data-i18n="다중 페이지">다중 페이지</div><div class="kd" data-i18n="메인·기능·요금… 사이트 구축">메인·기능·요금… 사이트 구축</div></div>
+        <div class="lab"><div class="kt" data-i18n="웹사이트">웹사이트</div><div class="kd" data-i18n="다중페이지 · 메인·기능·요금…">다중페이지 · 메인·기능·요금…</div></div>
       </button>
     </div>
   </div>
@@ -131,7 +131,7 @@
 
 <script>
 
-  const ORGS=[{id:'enterprise',label:'전사',rec:'aether'},{id:'sk',label:'SK',rec:'ember'},{id:'ensol',label:'엔솔',rec:'violet'},{id:'personal',label:'개인작업',rec:'aether'}];
+  const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
   let kind='single', stylePack='aether', org='';
 
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
@@ -163,7 +163,8 @@
     ];
     if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
     STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div></div><div class="cap">${_L(p.name)} · ${_L(p.desc)}</div>`;
+      const recStyle=(ORGS.find(o=>o.id===org)||{}).rec;
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)} · ${_L(p.desc)}</div>`;
       const sw=c.querySelector('.sw');
       // 실제 팩으로 렌더한 페이지를 축소해 살짝 보여줌 (렌더 실패 시 그라데이션 폴백 유지)
       try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); sw.append(f); fitThumb(sw,f); }catch(e){}

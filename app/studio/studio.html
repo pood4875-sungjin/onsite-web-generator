@@ -592,7 +592,7 @@
     return wrap;
   }
   function buildWidget(step){
-    if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(tL(o.label)));
+    if(step==='kind') return chips([{id:'single',label:'랜딩페이지',hint:'단일페이지 · 랜딩·공지'},{id:'multi',label:'웹사이트',hint:'다중페이지 · 여러 페이지'}], o=>advance(tL(o.label)));
     if(step==='pageType') return chips(['제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'features'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(tL(o.label)); });
     if(step==='mainSections') return mainSectionPicker();
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(tL(o.label)); });

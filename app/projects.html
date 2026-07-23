@@ -80,7 +80,7 @@
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
   const box=document.getElementById('projects');
-  const FILTERS=[['all','전체'],['single','단일 페이지'],['multi','다중 페이지']];
+  const FILTERS=[['all','전체'],['single','랜딩페이지'],['multi','웹사이트']];
   let filter='all';
 
   function renderForStyle(sp, pg){ const d=pg.data||{};
@@ -91,7 +91,7 @@
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
     const isMulti=project.kind==='multi';
-    const tag=document.createElement('span'); tag.className='tag '+(isMulti?'multi':'single'); tag.textContent=isMulti?LL('다중 페이지'):LL('단일 페이지'); wrap.append(tag);
+    const tag=document.createElement('span'); tag.className='tag '+(isMulti?'multi':'single'); tag.textContent=isMulti?LL('웹사이트'):LL('랜딩페이지'); wrap.append(tag);
     const pg=project.pages[0];
     if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(project.stylePack, pg); wrap.append(f);
       requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }

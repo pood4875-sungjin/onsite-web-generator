@@ -230,7 +230,20 @@
     'FAQ (Accordion)': ['FAQ (Accordion)', 'FAQ (Accordion)', 'FAQ (Accordion)'],
     '질문을 접고 펼쳐 안내': ['Expandable Q&A', '質問を開閉して案内', '可折叠问答'],
     '배너 CTA': ['Banner CTA', 'バナー CTA', '横幅 CTA'],
-    '행동을 유도하는 배너': ['A call-to-action banner', '行動を促すバナー', '行动号召横幅']
+    '행동을 유도하는 배너': ['A call-to-action banner', '行動を促すバナー', '行动号召横幅'],
+    // 템플릿 태그/필터
+    '웹사이트': ['Website', 'ウェブサイト', '网站'],
+    '랜딩페이지': ['Landing page', 'ランディング', '落地页'],
+    '이벤트 페이지': ['Event page', 'イベント', '活动页'],
+    'PPT': ['PPT', 'PPT', 'PPT'],
+    '아직 준비된 템플릿이 없어요.': ['No templates here yet.', 'まだテンプレートがありません。', '还没有模板。'],
+    '추천': ['Recommended', 'おすすめ', '推荐'],
+    // 종류 워딩 통일 (웹사이트=다중 / 랜딩페이지=단일)
+    '단일페이지 · 랜딩·공지 한 장': ['Single page · landing, notice', '単一ページ · ランディング・お知らせ', '单页 · 落地页·公告'],
+    '다중페이지 · 메인·기능·요금…': ['Multi-page · home, features, pricing…', '複数ページ · メイン・機能・料金…', '多页 · 主页·功能·价格…'],
+    '단일페이지 · 랜딩·공지': ['Single page · landing, notice', '単一ページ · ランディング', '单页 · 落地页·公告'],
+    '다중페이지 · 여러 페이지': ['Multi-page · multiple pages', '複数ページ', '多页'],
+    '개 페이지 · 웹사이트': [' pages · website', 'ページ · ウェブサイト', ' 页 · 网站']
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }

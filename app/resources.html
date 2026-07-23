@@ -17,6 +17,10 @@
   html,body{background:var(--canvas)}
   .page h1{font-family:var(--font-display);font-size:var(--fs-display-sm);font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
   .page .lead{color:var(--mute);font-size:15px;margin:0 0 26px}
+  .tpl-filters{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
+  .tpl-filters .ds-chip{box-shadow:none}
+  .tpl .cat{position:absolute;top:10px;right:10px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .tpl-empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--mute);border:1px dashed var(--hairline);border-radius:var(--r-md)}
   .tpl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
   @media (max-width:1180px){.tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media (max-width:720px){.tpl-grid{grid-template-columns:1fr}}
@@ -55,6 +59,7 @@
   <div class="page">
     <h1 data-i18n="템플릿">템플릿</h1>
     <p class="lead" data-i18n="템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.">템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.</p>
+    <div class="tpl-filters" id="filters"></div>
     <div class="tpl-grid" id="grid"></div>
   </div>
 </div>
@@ -71,16 +76,34 @@
   function fit(wrap, iframe, wide){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; iframe.style.width='1280px'; iframe.style.height=(wrap.clientHeight/s)+'px'; iframe.style.transform='scale('+s+')'; }); }
 
   const grid=document.getElementById('grid');
-  TPLS.forEach(tpl=>{
-    const card=document.createElement('div'); card.className='tpl';
-    const thumb=document.createElement('div'); thumb.className='thumb';
-    const badge=document.createElement('span'); badge.className='badge2'; badge.textContent=styleName(tpl.stylePack); thumb.append(badge);
-    const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
-    card.append(thumb);
-    card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
-    card.onclick=()=>openModal(tpl);
-    grid.append(card);
-  });
+  const LL=(ko)=>window.L?L(ko):ko;
+  const TAG_LABEL={ website:'웹사이트', landing:'랜딩페이지', event:'이벤트 페이지', ppt:'PPT' };
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['event','이벤트 페이지'],['ppt','PPT']];
+  let filter='all';
+
+  function renderFilters(){
+    const fb=document.getElementById('filters'); fb.innerHTML='';
+    FILTERS.forEach(([id,label])=>{ const n=id==='all'?TPLS.length:TPLS.filter(t=>t.tag===id).length;
+      const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${LL(label)} ${n}`;
+      b.onclick=()=>{ filter=id; renderFilters(); renderGrid(); }; fb.append(b); });
+  }
+  function renderGrid(){
+    grid.innerHTML='';
+    const list=TPLS.filter(t=> filter==='all' || t.tag===filter);
+    if(!list.length){ grid.innerHTML='<div class="tpl-empty">'+LL('아직 준비된 템플릿이 없어요.')+'</div>'; return; }
+    list.forEach(tpl=>{
+      const card=document.createElement('div'); card.className='tpl';
+      const thumb=document.createElement('div'); thumb.className='thumb';
+      const badge=document.createElement('span'); badge.className='badge2'; badge.textContent=styleName(tpl.stylePack); thumb.append(badge);
+      if(tpl.tag){ const cat=document.createElement('span'); cat.className='cat'; cat.textContent=LL(TAG_LABEL[tpl.tag]||tpl.tag); thumb.append(cat); }
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
+      card.append(thumb);
+      card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
+      card.onclick=()=>openModal(tpl);
+      grid.append(card);
+    });
+  }
+  renderFilters(); renderGrid();
 
   /* 프리뷰 모달 */
   function openModal(tpl){
