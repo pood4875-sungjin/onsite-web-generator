@@ -79,6 +79,20 @@ function descendantIds(pages, rootId){
 }
 
 // 삭제 = 해당 페이지와 그 하위 트리 전체 제거
+// 템플릿 → 프로젝트 복사 (전 페이지 생성완료 상태). 스튜디오 편집모드로 바로 진입.
+export function createProjectFromTemplate(tpl){
+  if(!tpl) return null;
+  const p = createProject({ kind: tpl.kind||'single', name: tpl.name||'무제 프로젝트', shared:{ productName: (tpl.pages && tpl.pages[0] && tpl.pages[0].data && tpl.pages[0].data.productName) || '' }, stylePack: tpl.stylePack });
+  const full = getProject(p.id);
+  full.pages = (tpl.pages||[]).map(pg => ({
+    id: uid('pg'), name: pg.name||'페이지', pageType: pg.pageType||'main', volume: pg.volume||'heavy', parentId: pg.parentId||null,
+    data: Object.assign(emptyData(), JSON.parse(JSON.stringify(pg.data||{}))),
+    chat: { log:[{r:'bot',t:'📂 템플릿에서 시작했어요. 편집 모드에서 바로 수정하세요.'}], idx:8, generated:true },
+  }));
+  upsertProject(full);
+  return full;
+}
+
 export function deletePage(projectId, pageId){
   const p = getProject(projectId); if(!p) return;
   const kill = descendantIds(p.pages, pageId);

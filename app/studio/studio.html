@@ -681,6 +681,9 @@
   } else {
     botBubble(PROMPT.kind); mountWidget('kind'); render();
   }
+
+  // 템플릿에서 시작 → 편집모드 자동 진입
+  if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 </script>
 </body>
 </html>

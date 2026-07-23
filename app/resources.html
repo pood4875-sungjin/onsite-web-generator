@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>리소스 · MIDAS Web Generator</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
+<script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="templates.js"></script>
+<script src="shell.js"></script>
+<link rel="stylesheet" href="ds.css">
+<style>
+  html,body{background:var(--canvas)}
+  .page h1{font-family:var(--font-display);font-size:var(--fs-display-sm);font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .page .lead{color:var(--mute);font-size:15px;margin:0 0 26px}
+  .tpl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+  @media (max-width:1180px){.tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:720px){.tpl-grid{grid-template-columns:1fr}}
+  .tpl{cursor:pointer}
+  .tpl .thumb{height:210px;border-radius:var(--r-md);overflow:hidden;position:relative;border:1px solid var(--hairline);background:var(--canvas-2);transition:var(--dur) var(--ease)}
+  .tpl:hover .thumb{border-color:var(--hairline-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .tpl .thumb iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
+  .tpl .badge2{position:absolute;top:10px;left:10px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .tpl .nm{font-size:15px;font-weight:var(--fw-semi);margin:12px 2px 2px}
+  .tpl .ds{font-size:13px;color:var(--mute);margin:0 2px}
+  /* 프리뷰 모달 */
+  .tm-scrim{position:fixed;inset:0;z-index:999;display:grid;place-items:center;padding:28px;background:color-mix(in srgb,var(--canvas) 25%,rgba(10,11,24,.6));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}
+  .tm-scrim.on{opacity:1}
+  .tm{width:100%;max-width:1040px;height:min(84vh,720px);display:flex;flex-direction:column;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-md);box-shadow:var(--shadow-3);overflow:hidden;transform:scale(.96);transition:transform .2s cubic-bezier(.22,1,.36,1)}
+  .tm-scrim.on .tm{transform:none}
+  .tm-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--hairline);flex:0 0 auto}
+  .tm-h .t{font-family:var(--font-display);font-size:16px;font-weight:600}
+  .tm-h .t span{color:var(--mute);font-weight:var(--fw-med);font-size:13px;margin-left:8px}
+  .tm-h .r{display:flex;gap:8px;align-items:center}
+  .tm-close{width:32px;height:32px;border:1px solid var(--hairline);background:var(--surface-solid);border-radius:var(--r-pill);color:var(--body);cursor:pointer;display:grid;place-items:center}
+  .tm-close:hover{color:var(--ink);border-color:var(--hairline-strong)}
+  .tm-body{flex:1;display:flex;min-height:0}
+  .tm-pages{flex:0 0 176px;border-right:1px solid var(--hairline);overflow-y:auto;padding:12px}
+  .tm-pg{border:1px solid var(--hairline);border-radius:10px;padding:9px 11px;font-size:13px;color:var(--body);cursor:pointer;margin-bottom:8px;font-weight:var(--fw-med)}
+  .tm-pg.on{border-color:var(--point);background:var(--point-weak);color:var(--point)}
+  .tm-view{flex:1;position:relative;overflow:hidden;background:#070a12}
+  .tm-view iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0}
+  .ds-btn.sm{padding:9px 16px;font-size:14px}
+</style>
+</head>
+<body class="ds-body app-grid">
+<div data-snb></div>
+<div class="content">
+  <div data-gnb></div>
+  <div class="page">
+    <h1>리소스</h1>
+    <p class="lead">템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.</p>
+    <div class="tpl-grid" id="grid"></div>
+  </div>
+</div>
+
+<script>
+  mountShell('resources', {});
+  const TPLS = window.APP_TEMPLATES || [];
+
+  function renderForStyle(sp, pg){ const d=pg.data||{};
+    if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
+    return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
+  function styleName(sp){ if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function fit(wrap, iframe, wide){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; iframe.style.width='1280px'; iframe.style.height=(wrap.clientHeight/s)+'px'; iframe.style.transform='scale('+s+')'; }); }
+
+  const grid=document.getElementById('grid');
+  TPLS.forEach(tpl=>{
+    const card=document.createElement('div'); card.className='tpl';
+    const thumb=document.createElement('div'); thumb.className='thumb';
+    const badge=document.createElement('span'); badge.className='badge2'; badge.textContent=styleName(tpl.stylePack); thumb.append(badge);
+    const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
+    card.append(thumb);
+    card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
+    card.onclick=()=>openModal(tpl);
+    grid.append(card);
+  });
+
+  /* 프리뷰 모달 */
+  function openModal(tpl){
+    const scrim=document.createElement('div'); scrim.className='tm-scrim';
+    scrim.innerHTML=`<div class="tm">
+      <div class="tm-h"><div class="t">${tpl.name}<span>${styleName(tpl.stylePack)} · ${tpl.kind==='multi'?tpl.pages.length+'개 페이지':'단일 페이지'}</span></div>
+        <div class="r"><a class="ds-btn primary sm" id="tmUse">이 템플릿으로 시작</a><button class="tm-close" id="tmClose">✕</button></div></div>
+      <div class="tm-body"><div class="tm-pages" id="tmPages"></div><div class="tm-view" id="tmView"></div></div>
+    </div>`;
+    document.body.append(scrim);
+    const view=scrim.querySelector('#tmView'); const pagesBox=scrim.querySelector('#tmPages');
+    function show(i){ view.innerHTML=''; const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[i]); view.append(f); fit(view,f);
+      pagesBox.querySelectorAll('.tm-pg').forEach((x,j)=>x.classList.toggle('on',j===i)); }
+    tpl.pages.forEach((pg,i)=>{ const b=document.createElement('div'); b.className='tm-pg'; b.textContent=pg.name; b.onclick=()=>show(i); pagesBox.append(b); });
+    show(0);
+    function close(){ scrim.classList.remove('on'); setTimeout(()=>scrim.remove(),190); }
+    scrim.querySelector('#tmClose').onclick=close;
+    scrim.onclick=(e)=>{ if(e.target===scrim) close(); };
+    scrim.querySelector('#tmUse').onclick=()=>{ const p=createProjectFromTemplate(tpl); const pg=p.pages[0]; location.href='studio/studio.html?p='+p.id+'&page='+pg.id+'&edit=1'; };
+    requestAnimationFrame(()=>scrim.classList.add('on'));
+  }
+</script>
+</body>
+</html>

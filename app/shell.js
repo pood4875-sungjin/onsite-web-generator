@@ -7,7 +7,8 @@
   var GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>';
   var SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>';
 
-  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['projects', 'projects.html', '프로젝트', FOLDER], ['settings', '#', '설정', GEAR]];
+  var GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>';
+  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['resources', 'resources.html', '리소스', GRID], ['projects', 'projects.html', '프로젝트', FOLDER], ['settings', '#', '설정', GEAR]];
 
   function snbHTML(active) {
     var nav = ITEMS.map(function (it) {

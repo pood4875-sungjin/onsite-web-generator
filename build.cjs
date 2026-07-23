@@ -28,7 +28,7 @@ const PUBLICS = [
   'DARK_PACKS', 'DARK_PACK_BY_ID',
   'PT_LABEL', 'emptyData', 'getProjects', 'saveProjects', 'getProject',
   'upsertProject', 'deleteProject', 'newPage', 'createProject', 'addPage', 'deletePage',
-  'movePage', 'pageTree', 'renamePage',
+  'movePage', 'pageTree', 'renamePage', 'createProjectFromTemplate',
   'currentTheme', 'setTheme', 'toggleTheme', 'mountThemeToggle', 'applySavedTheme',
 ];
 
