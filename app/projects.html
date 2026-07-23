@@ -81,7 +81,10 @@
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
   const box=document.getElementById('projects');
-  const FILTERS=[['all','전체'],['multi','웹사이트'],['single','랜딩페이지']];
+  // 템플릿 탭과 동일한 필터 리스트/카테고리
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
+  const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
+  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : p.kind==='multi'?'website':'landing';
   let filter='all';
 
   function renderForStyle(sp, pg){ const d=pg.data||{};
@@ -93,7 +96,7 @@
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
     const isMulti=project.kind==='multi';
-    const tag=document.createElement('span'); tag.className='tag '+(isMulti?'multi':'single'); tag.textContent=isMulti?LL('웹사이트'):LL('랜딩페이지'); wrap.append(tag);
+    const cat=catOfProject(project); const tag=document.createElement('span'); tag.className='tag '+(cat==='website'?'multi':'single'); tag.textContent=LL(CAT_LABEL[cat]); wrap.append(tag);
     const pg=project.pages[0];
     if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(project.stylePack, pg); wrap.append(f);
       requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
@@ -105,7 +108,7 @@
   // 다중 선택 → 일괄 삭제
   const selected=new Set();
   const CHK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>';
-  function matches(p){ const q=(searchVal||'').trim().toLowerCase(); if(q && !p.name.toLowerCase().includes(q)) return false; if(filter==='single') return p.kind!=='multi'; if(filter==='multi') return p.kind==='multi'; return true; }
+  function matches(p){ const q=(searchVal||'').trim().toLowerCase(); if(q && !p.name.toLowerCase().includes(q)) return false; return filter==='all' || catOfProject(p)===filter; }
   function visibleProjects(){ return getProjects().filter(matches); }
   function toggleSel(id){ if(selected.has(id)) selected.delete(id); else selected.add(id); syncSel(); }
   function syncSel(){ document.querySelectorAll('.card').forEach(c=>c.classList.toggle('sel', selected.has(c.dataset.id)));
@@ -117,7 +120,7 @@
   function renderFilters(){
     const fb=document.getElementById('filters'); fb.innerHTML='';
     const ps=getProjects();
-    const counts={all:ps.length, single:ps.filter(p=>p.kind!=='multi').length, multi:ps.filter(p=>p.kind==='multi').length};
+    const counts={all:ps.length}; FILTERS.forEach(([id])=>{ if(id!=='all') counts[id]=ps.filter(p=>catOfProject(p)===id).length; });
     FILTERS.forEach(([id,label])=>{ const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${(window.L?L(label):label)} ${counts[id]}`; b.onclick=()=>{ filter=id; render(); }; fb.append(b); });
   }
 

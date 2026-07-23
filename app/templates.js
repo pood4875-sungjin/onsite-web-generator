@@ -80,7 +80,7 @@
       stylePack: 'edm', kind: 'single',
       pages: [
         { name: 'eDM', pageType: 'edm', volume: 'heavy', parentId: null, data: { sections: [
-          { type: 'hero', eyebrow: 'MIDAS PROMOTION', title: '온라인 세미나 기념\n프로모션 혜택 안내', subcopy: '지반 안전 진단 솔루션을 지금 특별가로 만나보세요.', cta: '혜택 신청하기', image: IMG('edmhero') },
+          { type: 'raw', html: (window.EDM_PROMO01 && window.EDM_PROMO01.hero) || '' },
           { type: 'overview', eyebrow: 'ABOUT', title: '왜 지금인가요?', body: '상반기 한정으로 진행되는 프로모션입니다. 신규 도입 고객에게는 무상 교육까지 지원합니다.' },
           { type: 'promotion', eyebrow: 'BENEFIT', title: '이번 프로모션 혜택', items: [
             { value: '10%', title: '최대 할인', desc: '비탈면·수리시설 안전 진단 패키지' },

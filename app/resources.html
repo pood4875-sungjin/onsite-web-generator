@@ -9,6 +9,7 @@
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
 <script src="packs.edm.js"></script>
+<script src="edm/promo01.js"></script>
 <script src="templates.js"></script>
 <script src="i18n.js"></script>
 <script src="icons.js"></script>
@@ -79,25 +80,27 @@
 
   const grid=document.getElementById('grid');
   const LL=(ko)=>window.L?L(ko):ko;
-  const TAG_LABEL={ website:'웹사이트', landing:'랜딩페이지', event:'이벤트 페이지', edm:'이메일(eDM)', ppt:'PPT' };
-  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['event','이벤트 페이지'],['edm','이메일(eDM)'],['ppt','PPT']];
+  // 필터 카테고리 통일(랜딩+이벤트 = 랜딩페이지). 카드 태그도 이 카테고리 라벨만 노출.
+  const CAT_OF=(t)=>({website:'website',landing:'landing',event:'landing',edm:'edm',ppt:'ppt'}[t]||t);
+  const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
   let filter='all';
 
   function renderFilters(){
     const fb=document.getElementById('filters'); fb.innerHTML='';
-    FILTERS.forEach(([id,label])=>{ const n=id==='all'?TPLS.length:TPLS.filter(t=>t.tag===id).length;
+    FILTERS.forEach(([id,label])=>{ const n=id==='all'?TPLS.length:TPLS.filter(t=>CAT_OF(t.tag)===id).length;
       const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${LL(label)} ${n}`;
       b.onclick=()=>{ filter=id; renderFilters(); renderGrid(); }; fb.append(b); });
   }
   function renderGrid(){
     grid.innerHTML='';
-    const list=TPLS.filter(t=> filter==='all' || t.tag===filter);
+    const list=TPLS.filter(t=> filter==='all' || CAT_OF(t.tag)===filter);
     if(!list.length){ grid.innerHTML='<div class="tpl-empty">'+LL('아직 준비된 템플릿이 없어요.')+'</div>'; return; }
     list.forEach(tpl=>{
       const card=document.createElement('div'); card.className='tpl';
       const thumb=document.createElement('div'); thumb.className='thumb';
       const badge=document.createElement('span'); badge.className='badge2'; badge.textContent=styleName(tpl.stylePack); thumb.append(badge);
-      if(tpl.tag){ const cat=document.createElement('span'); cat.className='cat'; cat.textContent=LL(TAG_LABEL[tpl.tag]||tpl.tag); thumb.append(cat); }
+      if(tpl.tag){ const cat=document.createElement('span'); cat.className='cat'; cat.textContent=LL(CAT_LABEL[CAT_OF(tpl.tag)]||tpl.tag); thumb.append(cat); }
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
       card.append(thumb);
       card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);

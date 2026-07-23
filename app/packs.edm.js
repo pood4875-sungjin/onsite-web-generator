@@ -184,6 +184,9 @@
       (c.detail ? '<div data-edit style="font-size:13px;color:' + T.sub + ';margin-top:4px;white-space:pre-line">' + esc0(c.detail) + '</div>' : '')) + '</td></tr>';
   };
 
+  // raw — Figma 실측 프래그먼트 그대로 통과(그대로 구현용). c.html = <tr>...</tr> 또는 콘텐츠.
+  S.raw = function (c) { return c.html || ''; };
+
   /* ---- 조립 -------------------------------------------------- */
   function renderEdmPage(data, opts) {
     data = data || {}; opts = opts || {};
@@ -196,7 +199,9 @@
 
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<style>body{margin:0;background:' + T.canvas + ';font-family:' + T.font + '} .edm-btn:hover{opacity:.92} img{max-width:100%}' +
+      '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">' +
+      '<style>@font-face{font-family:\'Gmarket Sans\';font-weight:700;src:url(https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff) format(\'woff\')}' +
+      'body{margin:0;background:' + T.canvas + ';font-family:' + T.font + '} .edm-btn:hover{opacity:.92} img{max-width:100%}' +
       '@media (max-width:620px){.edm-shell{width:100%!important}}</style></head>' +
       '<body><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' + T.canvas + '"><tr><td align="center" style="padding:24px 0">' +
       '<table role="presentation" class="edm-shell" width="' + T.w + '" cellpadding="0" cellspacing="0" style="width:' + T.w + 'px;max-width:100%;background:' + T.bg + ';border-radius:' + T.radius + 'px;overflow:hidden;border:1px solid ' + T.line + '">' +
