@@ -63,9 +63,10 @@
   .chat{width:var(--chat-w,440px);flex:0 0 var(--chat-w,440px);display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surf2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
   /* 대화창↔프리뷰 리사이저 */
   .splitter{flex:0 0 10px;cursor:col-resize;position:relative;z-index:15;align-self:stretch;background:transparent}
-  .splitter::before{content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:2px;border-radius:2px;background:transparent;transition:background var(--dur) var(--ease)}
+  /* 라인·grip을 시각적 거터(chat 끝 ~ 프리뷰 카드 시작) 중앙에 맞춤 — 프리뷰 좌패딩(16px) 절반만큼 오른쪽으로 */
+  .splitter::before{content:'';position:absolute;top:0;bottom:0;left:calc(50% + 8px);transform:translateX(-50%);width:2px;border-radius:2px;background:transparent;transition:background var(--dur) var(--ease)}
   .splitter:hover::before,.splitter.drag::before{background:var(--accent)}
-  .splitter::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:36px;border-radius:6px;background:var(--surface);border:1px solid var(--line2);opacity:0;transition:opacity var(--dur) var(--ease)}
+  .splitter::after{content:'';position:absolute;top:50%;left:calc(50% + 8px);transform:translate(-50%,-50%);width:10px;height:36px;border-radius:6px;background:var(--surface);border:1px solid var(--line2);opacity:0;transition:opacity var(--dur) var(--ease)}
   .splitter:hover::after,.splitter.drag::after{opacity:1}
   body.resizing{cursor:col-resize;user-select:none}
   body.resizing iframe{pointer-events:none}
@@ -247,15 +248,15 @@
 
   const STEPS = ['kind','pageType','volume','facts','features','stats','banner','footer','done'];
   const PROMPT = {
-    kind:'안녕하세요 👋 어떤 종류의 프로젝트를 만들까요?',
-    pageType:'좋아요! 어떤 페이지 타입으로 시작할까요?',
-    volume:'페이지 볼륨(섹션 수)을 골라주세요.',
-    facts:'이제 공유 사실을 입력할게요. 제품명과 태그라인을 알려주세요.',
-    features:'핵심 기능 3가지를 입력해주세요.',
-    stats:'신뢰를 더할 지표 3개를 알려주세요.',
-    banner:'하단 링크 배너 문구를 입력해주세요.',
-    footer:'마지막으로 푸터를 구성할게요. 링크와 저작권 문구를 알려주세요.',
-    done:'🎉 모든 입력이 끝났어요. 오른쪽에서 완성된 페이지를 확인하세요!',
+    kind:'안녕하세요 👋 먼저 무엇을 만들지 정해볼까요? 한 장으로 끝나는 페이지인지, 여러 페이지로 이어지는 사이트인지 골라주세요.',
+    pageType:'이 페이지는 어떤 유형인가요? 성격에 맞춰 알맞은 템플릿과 섹션을 자동으로 불러올게요.',
+    volume:'페이지에 담을 정보량을 골라주세요. 핵심만 간결하게 갈지, 풍성하게 채울지에 따라 섹션 수가 달라져요.',
+    facts:'좋아요! 이제 페이지의 얼굴을 만들 차례예요. 제품명과 한 줄 슬로건, 짧은 소개 문구를 적어주세요. 방문자가 3초 안에 “무엇인지” 감 잡게 하는 게 핵심이에요.',
+    features:'핵심 기능은 딱 3가지만 보여주는 게 좋아요. 너무 많으면 오히려 안 읽히거든요. 각 기능을 큰 제목 + 짧은 설명으로 적으면 고객이 한눈에 가치를 파악해요.',
+    stats:'숫자는 가장 강력한 신뢰 장치예요. 사용자 수·만족도·처리 건수처럼 자랑할 만한 지표 3개를 보여주세요.',
+    banner:'행동을 유도할 한마디를 넣어볼까요? 하단 배너에 들어갈 짧고 강한 문구를 적어주세요.',
+    footer:'거의 끝났어요! 마지막으로 푸터에 들어갈 링크와 저작권 문구를 정리할게요.',
+    done:'🎉 완성됐어요! 오른쪽에서 페이지를 확인하고, ✎ 편집으로 자유롭게 다듬어보세요.',
   };
   let idx = 0;
   const msgs = document.getElementById('msgs');
