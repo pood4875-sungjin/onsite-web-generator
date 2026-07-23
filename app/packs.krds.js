@@ -354,7 +354,7 @@ const sections = {
     return `
     <header class="nav">
       <div class="container nav__in">
-        <a class="nav__brand" href="#">${name(ctx)}</a>
+        <a class="nav__brand" href="#" data-edit="productName">${name(ctx)}</a>
         <nav class="nav__menu hide-sm">${links.map((l) => `<a href="#">${ctx.esc(l)}</a>`).join('')}</nav>
         <div class="nav__act">
           ${C.button(ctx.esc(c.secondaryCta || '로그인'), { variant: 'ghost', size: 'sm' })}
@@ -373,22 +373,24 @@ const sections = {
       <div class="container hero__grid">
         <div class="hero__copy rise">
           ${C.eyebrow(eyebrow)}
-          <h1 class="hero__title">${title.replace(/\n/g, '<br>')}</h1>
-          <p class="hero__sub">${sub}</p>
+          <h1 class="hero__title" data-edit="tagline">${title.replace(/\n/g, '<br>')}</h1>
+          <p class="hero__sub" data-edit="subcopy">${sub}</p>
           <div class="hero__cta">
             ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg' })}
             ${C.link(ctx.esc(c.secondaryCta || '이용안내 보기'), { arrow: true })}
           </div>
         </div>
-        <div class="hero__visual rise" aria-hidden="true">
-          <div class="mock">
+        <div class="hero__visual rise" data-img="hero">
+          ${(ctx.data.images && ctx.data.images.hero)
+            ? `<img src="${ctx.esc(ctx.data.images.hero)}" alt="" style="width:100%;border-radius:16px;display:block">`
+            : `<div class="mock">
             <div class="mock__bar"><i></i><i></i><i></i></div>
             <div class="mock__body">
               <span class="mock__ln mock__ln--t"></span>
               <span class="mock__ln"></span><span class="mock__ln" style="width:72%"></span>
               <div class="mock__row"><span></span><span></span></div>
             </div>
-          </div>
+          </div>`}
         </div>
       </div>
     </section>`;
@@ -408,10 +410,10 @@ const sections = {
           <h2 class="sec-title">${ctx.esc(c.title || '핵심 기능')}</h2>
         </div>
         <div class="grid cols-3" style="margin-top:32px">
-          ${items.map((it) => C.card(
+          ${items.map((it, i) => C.card(
             `${C.icon(ICONS[it.icon] || ICONS.check)}
-             <h3 class="feat__t">${ctx.esc(it.title)}</h3>
-             <p class="feat__d">${ctx.esc(it.desc || H)}</p>`,
+             <h3 class="feat__t" data-edit="features.${i}.title">${ctx.esc(it.title)}</h3>
+             <p class="feat__d" data-edit="features.${i}.desc">${ctx.esc(it.desc || H)}</p>`,
           ).replace('class="card', 'class="card rise')).join('')}
         </div>
       </div>
@@ -427,7 +429,7 @@ const sections = {
     return `
     <section class="band">
       <div class="container grid cols-3 stat">
-        ${items.map((s) => `<div class="stat__it rise"><div class="stat__v">${ctx.esc(s.value)}</div><div class="stat__l">${ctx.esc(s.label)}</div></div>`).join('')}
+        ${items.map((s, i) => `<div class="stat__it rise"><div class="stat__v" data-edit="stats.${i}.value">${ctx.esc(s.value)}</div><div class="stat__l" data-edit="stats.${i}.label">${ctx.esc(s.label)}</div></div>`).join('')}
       </div>
     </section>`;
   },
@@ -436,7 +438,7 @@ const sections = {
     return `
     <section class="band band--alt cta">
       <div class="container cta__in rise">
-        <h2 class="cta__t">${ctx.esc(c.title || '지금 바로 이용해 보세요')}</h2>
+        <h2 class="cta__t" data-edit="bannerText">${ctx.esc(c.title || '지금 바로 이용해 보세요')}</h2>
         <p class="cta__s">${ctx.esc(c.subcopy || H)}</p>
         <div class="cta__act">
           ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg' })}
@@ -455,7 +457,7 @@ const sections = {
     return `
     <footer class="ft">
       <div class="container ft__in">
-        <div class="ft__brand">${name(ctx)}</div>
+        <div class="ft__brand" data-edit="productName">${name(ctx)}</div>
         <div class="ft__cols">
           ${cols.map((col) => `<div><div class="ft__h">${ctx.esc(col.h)}</div>${col.items.map((i) => `<a class="ft__l" href="#">${ctx.esc(i)}</a>`).join('')}</div>`).join('')}
         </div>
