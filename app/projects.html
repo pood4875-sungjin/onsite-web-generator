@@ -6,6 +6,8 @@
 <title>내 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh}
@@ -65,14 +67,26 @@
   const FILTERS=[['all','전체'],['single','단일 페이지'],['multi','다중 페이지']];
   let filter='all';
 
+  // 스타일별 렌더러 — krds/midas는 전용 렌더, 그 외 darkglow
+  function renderForStyle(sp, pg){
+    const d=pg.data||{};
+    if(sp==='krds' && window.renderKrdsPage) return renderKrdsPage(d, {volume:pg.volume, motion:'static'});
+    if(sp==='midas' && window.renderMidasPage) return renderMidasPage(d, {volume:pg.volume, motion:'static'});
+    const pack=DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether;
+    return renderComposed(d, pack, 'static', pg.pageType, pg.volume);
+  }
+  function styleName(sp){
+    if(sp==='krds' && window.KRDS_STYLE) return window.KRDS_STYLE.name;
+    if(sp==='midas' && window.MIDAS_STYLE) return window.MIDAS_STYLE.name;
+    return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name;
+  }
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
     const isMulti=project.kind==='multi';
     const tag=document.createElement('span'); tag.className='tag '+(isMulti?'multi':'single'); tag.textContent=isMulti?'다중 페이지':'단일 페이지'; wrap.append(tag);
     const pg=project.pages[0];
     if(pg){
-      const pack=DARK_PACK_BY_ID[project.stylePack]||DARK_PACK_BY_ID.aether;
-      const html=renderComposed(pg.data||{}, pack, 'static', pg.pageType, pg.volume);
+      const html=renderForStyle(project.stylePack, pg);
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=html; wrap.append(f);
       requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; });
     }
@@ -120,7 +134,7 @@
     ps.forEach(p=>{
       const d=new Date(p.createdAt); const date=`${d.getMonth()+1}/${d.getDate()}`;
       const detail=p.kind==='multi'?`${p.pages.length}개 페이지`:(PTL[p.pages[0]?.pageType]||'페이지');
-      const styName=(DARK_PACK_BY_ID[p.stylePack]||DARK_PACK_BY_ID.aether).name;
+      const styName=styleName(p.stylePack);
       const card=document.createElement('div'); card.className='card';
       card.append(thumbnail(p));
       const meta=document.createElement('div'); meta.className='meta';

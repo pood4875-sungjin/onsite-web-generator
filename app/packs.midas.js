@@ -52,7 +52,7 @@ function renderPage(pageDoc = {}, pack, { motion = 'subtle' } = {}) {
     .map(({ type, slotValues }) => {
       const render = pack.sections && pack.sections[type];
       if (!render) { console.warn(`[pack ${pack.meta?.id}] no section renderer: ${type}`); return ''; }
-      try { return render(slotValues || {}, ctx); }
+      try { return `<div data-section="${esc(type)}">${render(slotValues || {}, ctx)}</div>`; }
       catch (e) { console.error(`[pack ${pack.meta?.id}] section '${type}' failed`, e); return ''; }
     })
     .join('\n');
@@ -213,27 +213,27 @@ const sections = {
     <div class="pg pg--top" aria-hidden="true"><img class="pg__img" src="${SITE}/hero-gradient-v2.png" alt=""></div>
     <div class="pg pg--bottom" aria-hidden="true"><img class="pg__img" src="${SITE}/hero-gradient-bottom.png" alt=""></div>
     <header class="gnb"><div class="gnb__inner">
-      <a class="gnb__logo" href="#">${sparkle}<span>${name(ctx)}</span></a>
+      <a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a>
       <nav class="gnb__nav hide-sm">${(c.links || ['Get Started', 'Foundation', 'Components', 'Pattern']).map((l, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ''}>${esc(l)}</a>`).join('')}</nav>
       <a class="btn-pill btn-pill--md" href="#">${esc(c.primaryCta || ctx.data.primaryCta || '시작하기')}</a>
     </div></header>`,
   hero: (c, ctx) => `
     <section class="hero"><div class="hero__content">
-      <h1 class="hero__t">${esc(c.title || ctx.data.tagline || 'Design Once.\nScale with AX.').replace(/\n/g, '<br>')}</h1>
-      <p class="hero__lead rise">${esc(c.subcopy || ctx.data.subcopy || '사람과 AX가 함께 활용할 수 있도록\n패턴·정책·구조까지 연결된 시스템.').replace(/\n/g, '<br>')}</p>
+      <h1 class="hero__t" data-edit="tagline">${esc(c.title || ctx.data.tagline || 'Design Once.\nScale with AX.').replace(/\n/g, '<br>')}</h1>
+      <p class="hero__lead rise" data-edit="subcopy">${esc(c.subcopy || ctx.data.subcopy || '사람과 AX가 함께 활용할 수 있도록\n패턴·정책·구조까지 연결된 시스템.').replace(/\n/g, '<br>')}</p>
       <div class="hero__cta rise">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.link(esc(c.secondaryCta), { arrow: true }) : ''}</div>
     </div></section>`,
   feature: (c, ctx) => `
     <section class="container section"><div class="rise">${c.eyebrow ? `<div class="badge">${esc(c.eyebrow)}</div>` : ''}<h2 class="sec-title">${esc(c.title || '핵심 기능')}</h2></div>
-      <div class="card-grid" style="margin-top:40px">${(c.items || [{ icon: 'layers', title: 'Design Once', desc: PH }, { icon: 'sync', title: 'Scale with AX', desc: PH }, { icon: 'bolt', title: 'Connected System', desc: PH }]).map((it) => `<div class="p-card rise"><div class="p-card__media">${C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title">${esc(it.title)}</h3><p class="p-card__desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`,
+      <div class="card-grid" style="margin-top:40px">${(c.items || [{ icon: 'layers', title: 'Design Once', desc: PH }, { icon: 'sync', title: 'Scale with AX', desc: PH }, { icon: 'bolt', title: 'Connected System', desc: PH }]).map((it, i) => `<div class="p-card rise"><div class="p-card__media">${C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="p-card__desc" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`,
   stat: (c, ctx) => `
-    <section class="container section"><div class="card-grid stat">${(c.items || [{ value: '2.4ms', label: '렌더 지연' }, { value: '8종', label: '페이지 타입' }, { value: '99.9%', label: '일관성' }]).map((s) => `<div class="stat__it rise"><div class="stat__v">${esc(s.value)}</div><div class="stat__l">${esc(s.label)}</div></div>`).join('')}</div></section>`,
+    <section class="container section"><div class="card-grid stat">${(c.items || [{ value: '2.4ms', label: '렌더 지연' }, { value: '8종', label: '페이지 타입' }, { value: '99.9%', label: '일관성' }]).map((s, i) => `<div class="stat__it rise"><div class="stat__v" data-edit="stats.${i}.value">${esc(s.value)}</div><div class="stat__l" data-edit="stats.${i}.label">${esc(s.label)}</div></div>`).join('')}</div></section>`,
   cta: (c, ctx) => `
-    <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t">${esc(c.title || '지금 시작해 보세요')}</h2><p class="cta__s">${esc(c.subcopy || PH)}</p>
+    <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t" data-edit="bannerText">${esc(c.title || '지금 시작해 보세요')}</h2><p class="cta__s">${esc(c.subcopy || PH)}</p>
       <div class="cta__act">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.button(esc(c.secondaryCta), { variant: 'ghost', size: 'lg' }) : ''}</div></div></section>`,
   footer: (c, ctx) => `
     <footer class="footer"><div class="footer__inner">
-      <div class="footer__l"><a class="gnb__logo" href="#">${sparkle}<span>${name(ctx)}</span></a><span class="badge">AX Design System</span></div>
+      <div class="footer__l"><a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a><span class="badge">AX Design System</span></div>
       <div class="footer__links">${(c.columns ? c.columns.flatMap((col) => col.items) : ['이용약관', '개인정보', '문의']).map((l) => `<a href="#">${esc(l)}</a>`).join('')}<span class="footer__copy">© 2026 ${name(ctx)}</span></div>
     </div></footer>`,
 };
@@ -321,9 +321,19 @@ const midasPack = {
 
   var DEMO_TEMPLATE={sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}]};
   window.MIDAS_PACK=midasPack; window.MIDAS_STYLE={id:"midas",name:"MIDAS AX",desc:"모노크롬 · 라이트 · Poppins",swatch:"linear-gradient(135deg,#e9eaec 0%,#1b1c1e 100%)"};
+  window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",cta:"CTA"} };
   window.renderMidasPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
     if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"bolt",title:f.title,desc:f.desc}})};
     if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
     if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.subcopy};
-    return renderPage(buildPageDoc({template:DEMO_TEMPLATE,volume:opts.volume||"heavy",content:content,sharedFacts:shared}),midasPack,{motion:opts.motion||"subtle"});};
+    // 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
+    var vol=opts.volume||"heavy", tpl=DEMO_TEMPLATE.sections, fixedT=window.MIDAS_SECTION_SPEC.fixed;
+    var head=tpl.filter(function(s){return s.type==="nav"}), foot=tpl.filter(function(s){return s.type==="footer"});
+    var bodyTpl=tpl.filter(function(s){return fixedT.indexOf(s.type)<0});
+    var hidden=shared.hiddenSections||[], shown=shared.shownSections||[];
+    var vis=bodyTpl.filter(function(s){var def=includesTier(vol,s.tier);return def?hidden.indexOf(s.type)<0:shown.indexOf(s.type)>=0;});
+    var order=shared.sectionOrder||[];
+    if(order.length){ var by={}; vis.forEach(function(s){by[s.type]=s}); var ord=[]; order.forEach(function(t){if(by[t])ord.push(by[t])}); vis.forEach(function(s){if(order.indexOf(s.type)<0)ord.push(s)}); vis=ord; }
+    var effTpl={ sections: head.concat(vis, foot) };
+    return renderPage(buildPageDoc({template:effTpl,volume:"heavy",content:content,sharedFacts:shared}),midasPack,{motion:opts.motion||"subtle"});};
 })();

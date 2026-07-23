@@ -316,6 +316,7 @@
   // 스타일별 섹션 스펙 (darkglow=gnb/footer 고정, KRDS=nav/footer 고정)
   function sectionSpec(){
     if(pack && pack.id==='krds' && window.KRDS_SECTION_SPEC) return window.KRDS_SECTION_SPEC;
+    if(pack && pack.id==='midas' && window.MIDAS_SECTION_SPEC) return window.MIDAS_SECTION_SPEC;
     return { template:(DG_TEMPLATES[pageType]||DG_TEMPLATES.main), fixed:['gnb','footer'], labels:SECLABEL };
   }
   function secLabel(type){ return sectionSpec().labels[type] || type; }
