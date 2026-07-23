@@ -71,8 +71,8 @@
   .chead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:10px}
   .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--grad-brand);box-shadow:var(--cta-glow)}
-  .brand b{font-weight:600;font-size:14px;color:var(--tx);display:block;line-height:1.2}
-  .brand span{font-size:11px;color:var(--tx3)}
+  .brand b{font-size:16px;color:var(--tx);line-height:1.2}
+  .brand .wg{font-size:16px;color:var(--tx);font-weight:var(--fw-semi)}
   .reset{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);color:var(--tx2);border-radius:999px;padding:6px 12px;font-size:12px}
   .reset:hover{background:rgba(255,255,255,.1)}
   .msgs{flex:1;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:16px}
@@ -183,8 +183,8 @@
   </aside>
   <aside class="chat">
     <div class="chead">
-      <div class="brand"><div><b>MIDAS Web Generator</b><span>대화로 만드는 웹페이지</span></div></div>
-      <div style="display:flex;gap:8px;align-items:center"><button id="themeBtn"></button><a class="reset" href="../dashboard.html">← 홈</a><button class="reset" id="reset">↺ 다시</button></div>
+      <div class="brand"><b class="ds-wordmark">MIDAS <span class="wg">WEB AX</span></b></div>
+      <div style="display:flex;gap:8px;align-items:center"><a class="reset" href="../dashboard.html">← 홈</a><button class="reset" id="reset">↺ 다시</button></div>
     </div>
     <div class="msgs" id="msgs"></div>
   </aside>
@@ -213,7 +213,6 @@
 </div>
 
 <script>
-  mountThemeToggle(document.getElementById('themeBtn'));
 
   const MOT = { static:'정적', subtle:'은은', rich:'리치' };
   const PAGETYPE = { '메인홈':'main', '제품 기능소개':'features', '요금 비교':'pricing', '랜딩':'landing' };
