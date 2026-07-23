@@ -142,7 +142,7 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .empty .et{font-size:24px;font-weight:600;color:#fff;background:linear-gradient(90deg,#fff 25%,var(--accent) 50%,#fff 75%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:et-shimmer 2.8s linear infinite}
   .empty .et::after{content:'';display:inline-block;width:2px;height:.95em;background:var(--accent);margin-left:4px;vertical-align:-2px;animation:et-caret 1s steps(1) infinite;-webkit-text-fill-color:initial}
-  .empty .es{font-size:15px;color:rgba(255,255,255,.62)}
+  .empty .es{font-size:24px;font-weight:600;line-height:1.35;max-width:16em;background:linear-gradient(90deg,#fff 25%,var(--accent) 50%,#fff 75%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:et-shimmer 2.8s linear infinite}
   @keyframes et-shimmer{to{background-position:-220% 0}}
   @keyframes et-caret{50%{opacity:0}}
   .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
@@ -211,7 +211,7 @@
     </div>
     <div class="secadd" id="secAdd"></div>
     <div class="pvbox">
-      <div class="empty" id="empty"><div class="ai-orb"></div><b class="et">대화를 시작하면</b><span class="es">AI가 실시간으로 페이지를 완성합니다</span></div>
+      <div class="empty" id="empty"><div class="ai-orb"></div><b class="et">대화를 시작하면</b><span class="es">대화창을 통해 AI가 실시간으로<br>페이지를 완성합니다</span></div>
       <div class="genning" id="genning"><div class="gspin"></div><b>페이지 생성 중</b><span class="gtext" id="gtext">기획 내용 분석 중…</span><div class="gbar"><i></i></div></div>
       <iframe id="frame" title="preview"></iframe>
     </div>
