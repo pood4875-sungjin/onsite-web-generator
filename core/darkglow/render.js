@@ -52,6 +52,20 @@ export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'm
 <style>
   *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
   .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
+  img{max-width:100%;height:auto}
+  /* 반응형 세이프티 넷 — 인라인 스타일(고정폭) 팩을 좁은 뷰포트서 정렬 */
+  @media (max-width:900px){
+    [style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr 1fr!important}
+  }
+  @media (max-width:640px){
+    [style*="grid-template-columns:repeat(3"],[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
+    [style*="padding:80px 32px"]{padding:56px 20px!important}
+    [style*="padding:64px 32px"]{padding:44px 20px!important}
+    [style*="padding:40px 32px"]{padding:32px 20px!important}
+    [style*="padding:16px 32px"]{padding:14px 18px!important}
+    header nav{display:none!important}
+    h1,[style*="font-size:56"],[style*="font-size:52"],[style*="font-size:48"]{font-size:34px!important;line-height:1.15!important}
+  }
   ${motionCss}
 </style>
 </head>
