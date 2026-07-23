@@ -13,7 +13,8 @@
   body{min-height:100vh}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px}
   .nav .r{display:flex;align-items:center;gap:10px}
-  .newbtn{border:none;border-radius:var(--r-sm);background:var(--primary);color:var(--on-primary);font-weight:var(--fw-med);font-size:var(--fs-body-sm);padding:9px 16px;cursor:pointer;text-decoration:none}
+  .newbtn{border:none;border-radius:var(--r-pill);background:var(--brand);color:var(--on-brand);font-weight:var(--fw-semi);font-size:var(--fs-body-sm);padding:10px 18px;cursor:pointer;text-decoration:none;transition:background .25s}
+  .newbtn:hover{background:var(--brand-hover)}
   .wrap{max-width:1080px;margin:0 auto;padding:20px 32px 90px}
   h1{font-size:var(--fs-display-sm);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);margin:8px 0 20px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}

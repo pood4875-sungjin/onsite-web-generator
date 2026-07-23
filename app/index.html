@@ -6,13 +6,15 @@
 <title>새 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh;overflow-y:auto}
   .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;z-index:5}
   .nav .r{display:flex;align-items:center;gap:10px}
-  .navlink{color:var(--body);font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-decoration:none;border:1px solid var(--hairline);background:var(--surface);border-radius:var(--r-sm);padding:8px 14px}
-  .navlink:hover{color:var(--ink);border-color:var(--hairline-strong)}
+  .navlink{color:var(--body);font-size:var(--fs-body-sm);font-weight:var(--fw-semi);text-decoration:none;border:1px solid var(--hairline);background:transparent;border-radius:var(--r-pill);padding:9px 16px;transition:var(--dur) var(--ease)}
+  .navlink:hover{color:var(--ink);background:var(--brand-weak);border-color:transparent}
 
   .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:104px 24px 96px}
   .step{display:none;width:100%;max-width:660px;text-align:center;margin-top:auto;margin-bottom:auto;animation:fade .3s var(--ease)}
@@ -126,11 +128,18 @@
 
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
-    const rec=(ORGS.find(o=>o.id===org)||{}).rec, orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
-    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군 추천을 표시했어요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
-    DARK_PACKS.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      const rb=(p.id===rec)?`<span class="ds-badge rec">★ ${orgLabel} 추천</span>`:'';
-      c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div>${rb}<div class="cap">${p.name} · ${p.desc}</div>`;
+    const orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
+    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군에 맞춰 골라보세요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
+    // 스타일팩 = Glow(다크글로우) + KRDS(정부 DS). KRDS는 packs.krds.js 계약 팩.
+    const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{id:'aether',name:'Glow',desc:'다크·글로우',swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
+    const STYLES=[
+      { id:'aether', name:'다크 글로우', desc:'다크 · 네온 글로우', swatch:glow.swatch },
+      { id:'krds', name:'밝은 신뢰 블루', desc:'라이트 · 선명한 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
+      { id:'midas', name:'MIDAS AX', desc:'모노크롬 · Poppins', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
+    ];
+    if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
+    STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
+      c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div><div class="cap">${p.name} · ${p.desc}</div>`;
       c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
   }
 
