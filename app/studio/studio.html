@@ -128,11 +128,9 @@
   .pvbox iframe{position:absolute;top:0;left:0;border:0;background:var(--bg);transform-origin:0 0}
   .empty{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;background:rgba(6,8,16,.82);backdrop-filter:blur(5px);transition:.4s}
   .empty.hide{opacity:0;pointer-events:none}
-  .ai-orb{width:66px;height:66px;border-radius:20px;position:relative;display:grid;place-items:center}
-  .ai-orb::before{content:'';position:absolute;inset:0;border-radius:20px;padding:2px;background:conic-gradient(from 0deg,transparent 0%,var(--accent) 40%,#3b89ff 60%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:orb-spin 2.4s linear infinite}
-  .ai-orb::after{content:'';width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--accent),#3b89ff);box-shadow:0 0 22px var(--accent);animation:orb-pulse 1.7s ease-in-out infinite}
-  @keyframes orb-spin{to{transform:rotate(360deg)}}
-  @keyframes orb-pulse{0%,100%{transform:scale(.8);opacity:.75}50%{transform:scale(1.18);opacity:1}}
+  .ai-orb{width:66px;height:66px;position:relative;display:grid;place-items:center}
+  .ai-orb::after{content:'';width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--accent),#3b89ff);box-shadow:0 0 30px var(--accent);animation:orb-pulse 1.7s ease-in-out infinite}
+  @keyframes orb-pulse{0%,100%{transform:scale(.72);opacity:.72}50%{transform:scale(1.1);opacity:1}}
   /* AI 생성 오버레이 */
   .genning{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:13px;text-align:center;background:rgba(7,10,18,.84);backdrop-filter:blur(8px)}
   .genning.on{display:flex;animation:rise .3s var(--ease)}
