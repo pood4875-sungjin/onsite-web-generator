@@ -495,7 +495,7 @@
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
-  badge.onclick=(e)=>{ e.stopPropagation(); const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
+  badge.onclick=(e)=>{ e.stopPropagation(); if(project && project.stylePack==='edm') return; const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
   document.addEventListener('click',(e)=>{ const m=document.getElementById('stylemenu'); if(m && !m.contains(e.target) && e.target.id!=='badge') m.classList.remove('open'); });
 
   /* ---- 대화창↔프리뷰 리사이저 ---- */
@@ -626,6 +626,11 @@
     }
     // done
     const d=el('div','card'); d.style.textAlign='center';
+    if(project && project.stylePack==='edm'){
+      // eDM은 재생성 불가 — 기존 템플릿 구성 그대로 편집만
+      d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.')}</span>`));
+      return d;
+    }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
     d.append(nextBtn(tL('↺ 새로 만들기'), reset));
     return d;
@@ -836,6 +841,9 @@
       if(generated || step==='done'){ generated=true; mountWidget('done'); }
       else mountWidget(step);
       render(); scroll();
+    } else if(project && project.stylePack==='edm'){
+      // eDM: 생성 플로우 없이 기존 구성 그대로 편집
+      generated=true; idx=STEPS.indexOf('done'); botBubble(`📧 ${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
@@ -850,7 +858,14 @@
 
   // 템플릿에서 시작 → 편집모드 자동 진입
   if(window.I18N) I18N.apply(document);   // 정적 마크업(data-i18n) 로컬라이징
-  if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
+  // eDM = 재생성 불가·편집전용: 재생성 UI 숨김 + 스타일 배지 잠금 + 편집모드 자동 진입
+  const _isEdm = project && project.stylePack==='edm';
+  if(_isEdm){
+    generated=true;
+    const rs=document.getElementById('reset'); if(rs) rs.style.display='none';
+    badge.style.cursor='default';
+    setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
+  } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 </script>
 </body>
 </html>

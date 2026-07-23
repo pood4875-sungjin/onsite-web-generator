@@ -237,6 +237,7 @@
     '이벤트 페이지': ['Event page', 'イベント', '活动页'],
     '이메일(eDM)': ['Email (eDM)', 'メール(eDM)', '邮件(eDM)'],
     '이메일': ['Email', 'メール', '邮件'],
+    '이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.': ['This email template is edit-only. Use the Edit button on the right to modify its content.', 'このメールテンプレートは編集のみ可能です。右の編集ボタンで内容を修正してください。', '此邮件模板仅可编辑。请使用右侧的编辑按钮修改内容。'],
     'PPT': ['PPT', 'PPT', 'PPT'],
     '아직 준비된 템플릿이 없어요.': ['No templates here yet.', 'まだテンプレートがありません。', '还没有模板。'],
     '추천': ['Recommended', 'おすすめ', '推荐'],
