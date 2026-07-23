@@ -52,8 +52,8 @@
 <div class="content">
   <div data-gnb></div>
   <div class="page">
-    <h1 data-i18n="res.title">템플릿</h1>
-    <p class="lead" data-i18n="res.lead">템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.</p>
+    <h1 data-i18n="템플릿">템플릿</h1>
+    <p class="lead" data-i18n="템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.">템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.</p>
     <div class="tpl-grid" id="grid"></div>
   </div>
 </div>
@@ -85,8 +85,8 @@
   function openModal(tpl){
     const scrim=document.createElement('div'); scrim.className='tm-scrim';
     scrim.innerHTML=`<div class="tm">
-      <div class="tm-h"><div class="t">${tpl.name}<span>${styleName(tpl.stylePack)} · ${tpl.kind==='multi'?tpl.pages.length+'개 페이지':'단일 페이지'}</span></div>
-        <div class="r"><a class="ds-btn primary sm" id="tmUse">이 템플릿으로 시작</a><button class="tm-close" id="tmClose">✕</button></div></div>
+      <div class="tm-h"><div class="t">${tpl.name}<span>${styleName(tpl.stylePack)} · ${tpl.kind==='multi'?tpl.pages.length+(window.L?L('개 페이지'):'개 페이지'):(window.L?L('단일 페이지'):'단일 페이지')}</span></div>
+        <div class="r"><a class="ds-btn primary sm" id="tmUse">${window.L?L('이 템플릿으로 시작'):'이 템플릿으로 시작'}</a><button class="tm-close" id="tmClose">✕</button></div></div>
       <div class="tm-body"><div class="tm-pages" id="tmPages"></div><div class="tm-view" id="tmView"></div></div>
     </div>`;
     document.body.append(scrim);

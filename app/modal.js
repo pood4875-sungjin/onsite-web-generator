@@ -4,6 +4,7 @@
    window.uiAlert(msg,{title}) -> Promise */
 (function () {
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function L(k){ return window.L ? window.L(k) : k; }
   function open(opts) {
     return new Promise(function (resolve) {
       var scrim = document.createElement('div'); scrim.className = 'modal-scrim';
@@ -13,8 +14,8 @@
         (opts.message ? '<div class="modal-b">' + esc(opts.message) + '</div>' : '') +
         (opts.input ? '<input class="ds-input modal-i" placeholder="' + esc(opts.placeholder || '') + '">' : '') +
         '<div class="modal-f">' +
-          (opts.cancel === false ? '' : '<button class="ds-btn ghost modal-cancel">' + esc(opts.cancelText || '취소') + '</button>') +
-          '<button class="ds-btn primary modal-ok' + (opts.danger ? ' danger' : '') + '">' + esc(opts.okText || '확인') + '</button>' +
+          (opts.cancel === false ? '' : '<button class="ds-btn ghost modal-cancel">' + esc(opts.cancelText || L('취소')) + '</button>') +
+          '<button class="ds-btn primary modal-ok' + (opts.danger ? ' danger' : '') + '">' + esc(opts.okText || L('확인')) + '</button>' +
         '</div>';
       scrim.appendChild(m); document.body.appendChild(scrim);
       var inp = m.querySelector('.modal-i');
@@ -29,7 +30,7 @@
       requestAnimationFrame(function () { scrim.classList.add('on'); });
     });
   }
-  window.uiConfirm = function (message, opts) { opts = opts || {}; return open({ title: opts.title || '확인', message: message, okText: opts.okText || '확인', cancelText: opts.cancelText, danger: opts.danger }); };
-  window.uiPrompt = function (message, opts) { opts = opts || {}; return open({ title: opts.title || message, message: opts.title ? message : '', input: true, value: opts.value, placeholder: opts.placeholder, okText: opts.okText || '저장' }); };
-  window.uiAlert = function (message, opts) { opts = opts || {}; return open({ title: opts.title || '알림', message: message, cancel: false, okText: '확인' }); };
+  window.uiConfirm = function (message, opts) { opts = opts || {}; return open({ title: opts.title || L('확인'), message: message, okText: opts.okText || L('확인'), cancelText: opts.cancelText, danger: opts.danger }); };
+  window.uiPrompt = function (message, opts) { opts = opts || {}; return open({ title: opts.title || message, message: opts.title ? message : '', input: true, value: opts.value, placeholder: opts.placeholder, okText: opts.okText || L('저장') }); };
+  window.uiAlert = function (message, opts) { opts = opts || {}; return open({ title: opts.title || L('알림'), message: message, cancel: false, okText: L('확인') }); };
 })();

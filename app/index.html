@@ -85,45 +85,45 @@
 </head>
 <body class="ds-body">
 <div class="nav">
-  <a class="homebtn" href="dashboard.html" title="홈으로" onclick="return leaveGuard(event)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a>
+  <a class="homebtn" href="dashboard.html" data-i18n-title="홈으로" title="홈으로" onclick="return leaveGuard(event)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a>
 </div>
 
 <div class="wrap">
   <div class="step on" id="st1">
-    <div class="ds-eyebrow eyebrow">새 프로젝트</div>
-    <h1>어떤 걸 만들까요?</h1>
-    <p class="sub">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
+    <div class="ds-eyebrow eyebrow" data-i18n="새 프로젝트">새 프로젝트</div>
+    <h1 data-i18n="어떤 걸 만들까요?">어떤 걸 만들까요?</h1>
+    <p class="sub" data-i18n="단일 페이지 하나, 아니면 여러 페이지 사이트.">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
     <div class="cards">
       <button class="kc single" data-k="single">
         <div class="thumb"><div class="pg"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
-        <div class="lab"><div class="kt">단일 페이지</div><div class="kd">랜딩 · 공지 등 한 장</div></div>
+        <div class="lab"><div class="kt" data-i18n="단일 페이지">단일 페이지</div><div class="kd" data-i18n="랜딩 · 공지 등 한 장">랜딩 · 공지 등 한 장</div></div>
       </button>
       <button class="kc multi" data-k="multi">
         <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
-        <div class="lab"><div class="kt">다중 페이지</div><div class="kd">메인·기능·요금… 사이트 구축</div></div>
+        <div class="lab"><div class="kt" data-i18n="다중 페이지">다중 페이지</div><div class="kd" data-i18n="메인·기능·요금… 사이트 구축">메인·기능·요금… 사이트 구축</div></div>
       </button>
     </div>
   </div>
 
   <div class="step" id="st2">
-    <div class="ds-eyebrow eyebrow">1 / 2 · 프로젝트 정보</div>
-    <h1>프로젝트 정보</h1>
-    <p class="sub">이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.</p>
+    <div class="ds-eyebrow eyebrow" data-i18n="1 / 2 · 프로젝트 정보">1 / 2 · 프로젝트 정보</div>
+    <h1 data-i18n="프로젝트 정보">프로젝트 정보</h1>
+    <p class="sub" data-i18n="이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.">이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.</p>
     <div class="fields">
-      <label>프로젝트 이름</label><input class="ds-input" id="pname" placeholder="예: 온사이트 제품사이트">
-      <label>제품명 <span class="opt">(선택)</span></label><input class="ds-input" id="product" placeholder="예: Onsite">
-      <label>사업군</label><div class="orgchips" id="orgchips"></div>
-      <label>사이트 언어 <span class="opt">(생성될 페이지 언어)</span></label><div class="orgchips" id="langchips"></div>
+      <label data-i18n="프로젝트 이름">프로젝트 이름</label><input class="ds-input" id="pname" data-i18n-ph="예: 온사이트 제품사이트" placeholder="예: 온사이트 제품사이트">
+      <label><span data-i18n="제품명 ">제품명 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="product" data-i18n-ph="예: Onsite" placeholder="예: Onsite">
+      <label data-i18n="사업군">사업군</label><div class="orgchips" id="orgchips"></div>
+      <label><span data-i18n="사이트 언어 ">사이트 언어 </span><span class="opt" data-i18n="(생성될 페이지 언어)">(생성될 페이지 언어)</span></label><div class="orgchips" id="langchips"></div>
     </div>
-    <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)">← 이전</button><button class="ds-btn primary" onclick="go(3)">다음 →</button></div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="go(3)" data-i18n="다음 →">다음 →</button></div>
   </div>
 
   <div class="step" id="st3">
-    <div class="ds-eyebrow eyebrow">2 / 2 · 스타일</div>
-    <h1>스타일을 선택하세요</h1>
-    <p class="sub" id="st3sub">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
+    <div class="ds-eyebrow eyebrow" data-i18n="2 / 2 · 스타일">2 / 2 · 스타일</div>
+    <h1 data-i18n="스타일을 선택하세요">스타일을 선택하세요</h1>
+    <p class="sub" id="st3sub" data-i18n="생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
     <div class="styles" id="styles"></div>
-    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)">← 이전</button><button class="ds-btn primary" onclick="finish()">시작하기 →</button></div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="finish()" data-i18n="시작하기 →">시작하기 →</button></div>
   </div>
 
   <div class="ds-dots dots"><i class="on"></i><i></i><i></i></div>
@@ -139,8 +139,9 @@
 
   document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{ kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80); });
 
+  const _L=(k)=>window.L?window.L(k):k;
   const oc=document.getElementById('orgchips');
-  ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=o.label;
+  ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=_L(o.label);
     b.onclick=()=>{ org=o.id; oc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); stylePack=o.rec; }; oc.append(b); });
 
   // 사이트(출력) 언어 — 앱 UI 언어와 별개, 프로젝트에 저장
@@ -152,7 +153,7 @@
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
     const orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
-    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군에 맞춰 골라보세요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
+    document.getElementById('st3sub').textContent = org ? `${_L(orgLabel)} ${_L('사업군에 맞춰 골라보세요.')}` : _L('생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.');
     // 스타일팩 = Glow(다크글로우) + KRDS(정부 DS). KRDS는 packs.krds.js 계약 팩.
     const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{id:'aether',name:'Glow',desc:'다크·글로우',swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
     const STYLES=[
@@ -162,7 +163,7 @@
     ];
     if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
     STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div></div><div class="cap">${p.name} · ${p.desc}</div>`;
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div></div><div class="cap">${_L(p.name)} · ${_L(p.desc)}</div>`;
       const sw=c.querySelector('.sw');
       // 실제 팩으로 렌더한 페이지를 축소해 살짝 보여줌 (렌더 실패 시 그라데이션 폴백 유지)
       try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); sw.append(f); fitThumb(sw,f); }catch(e){}
@@ -193,8 +194,10 @@
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };
 
+  if(window.I18N) I18N.apply(document);   // 정적 마크업 로컬라이징
+
   // 종료 확인 — 디자인 모달(센터 딤). confirm은 동기라 못 쓰므로 항상 막고 async로 처리.
-  function confirmLeave(){ return uiConfirm('입력한 내용은 저장되지 않아요.', { title:'프로젝트 생성을 종료할까요?', okText:'나가기', danger:true }); }
+  function confirmLeave(){ return uiConfirm(_L('입력한 내용은 저장되지 않아요.'), { title:_L('프로젝트 생성을 종료할까요?'), okText:_L('나가기'), danger:true }); }
   window.leaveGuard=(e)=>{ if(leaving) return true; e.preventDefault();
     confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
     return false; };

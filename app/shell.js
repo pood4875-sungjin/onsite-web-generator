@@ -9,19 +9,19 @@
   var SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>';
   var GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>';
   var GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>';
-  var ITEMS = [['home', 'dashboard.html', HOME], ['projects', 'projects.html', FOLDER], ['resources', 'resources.html', GRID], ['settings', '#', GEAR]];
+  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['projects', 'projects.html', '프로젝트', FOLDER], ['resources', 'resources.html', '템플릿', GRID], ['settings', '#', '설정', GEAR]];
 
-  function tt(k) { return (window.t ? window.t(k) : k); }
+  function tt(ko) { return (window.L ? window.L(ko) : ko); }
   function curCode() { var l = (window.I18N ? I18N.getLang() : 'ko'); var m = { ko: 'KO', en: 'EN', ja: 'JA', zh: 'ZH' }; return m[l] || l.toUpperCase(); }
 
   function snbHTML(active) {
     var nav = ITEMS.map(function (it) {
       var on = it[0] === active ? ' on' : '';
       var noop = it[1] === '#' ? ' onclick="return false"' : '';
-      return '<a class="item' + on + '" href="' + it[1] + '"' + noop + '>' + it[2] + '<span data-i18n="menu.' + it[0] + '">' + tt('menu.' + it[0]) + '</span></a>';
+      return '<a class="item' + on + '" href="' + it[1] + '"' + noop + '>' + it[3] + '<span data-i18n="' + it[2] + '">' + tt(it[2]) + '</span></a>';
     }).join('');
     return '<aside class="snb"><b class="ds-wordmark">MIDAS <span>WEB AX</span></b>'
-      + '<nav class="grp"><div class="gl" data-i18n="menu.menu">' + tt('menu.menu') + '</div>' + nav + '</nav>'
+      + '<nav class="grp"><div class="gl" data-i18n="메뉴">' + tt('메뉴') + '</div>' + nav + '</nav>'
       + footHTML() + '</aside>';
   }
   function footHTML() {
@@ -31,14 +31,14 @@
     }).join('');
     return '<div class="snb-foot">'
       + '<button id="themeBtn" class="foot-ic" title="Theme" aria-label="Theme"></button>'
-      + '<div class="lang-wrap"><button id="langBtn" class="foot-ic" title="' + tt('foot.lang') + '" aria-haspopup="true">' + GLOBE + '<span class="lang-cur">' + curCode() + '</span></button>'
+      + '<div class="lang-wrap"><button id="langBtn" class="foot-ic" title="' + tt('언어') + '" aria-haspopup="true">' + GLOBE + '<span class="lang-cur">' + curCode() + '</span></button>'
       + '<div class="lang-pop" id="langPop">' + langs + '</div></div>'
       + '</div>';
   }
   function gnbHTML(searchValue) {
     return '<div class="gnb-bar"><div class="search">' + SEARCH
-      + '<input id="shellSearch" data-i18n-ph="search.ph" placeholder="' + tt('search.ph') + '" value="' + (searchValue || '').replace(/"/g, '&quot;') + '"></div>'
-      + '<a class="ds-btn primary" href="index.html" style="padding:9px 16px;font-size:14px"><span data-i18n="gnb.new">' + tt('gnb.new') + '</span></a></div>';
+      + '<input id="shellSearch" data-i18n-ph="프로젝트 검색" placeholder="' + tt('프로젝트 검색') + '" value="' + (searchValue || '').replace(/"/g, '&quot;') + '"></div>'
+      + '<a class="ds-btn primary" href="index.html" style="padding:9px 16px;font-size:14px"><span data-i18n="＋ 새 프로젝트 생성">' + tt('＋ 새 프로젝트 생성') + '</span></a></div>';
   }
 
   window.mountShell = function (active, opts) {
