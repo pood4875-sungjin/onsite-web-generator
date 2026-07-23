@@ -21,7 +21,10 @@
   .page .lead{color:var(--mute);font-size:15px;margin:0 0 26px}
   .tpl-filters{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
   .tpl-filters .ds-chip{box-shadow:none}
-  .tpl .cat{position:absolute;top:10px;right:10px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  /* 프로젝트 카드와 동일한 태그 표현(좌상단·카테고리 색) */
+  .tpl .cat{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tpl .cat.multi{background:color-mix(in srgb,var(--a-purple) 80%,transparent)}
+  .tpl .cat.single{background:color-mix(in srgb,var(--a-blue) 80%,transparent)}
   .tpl-empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--mute);border:1px dashed var(--hairline);border-radius:var(--r-md)}
   .tpl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
   @media (max-width:1180px){.tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -99,8 +102,7 @@
     list.forEach(tpl=>{
       const card=document.createElement('div'); card.className='tpl';
       const thumb=document.createElement('div'); thumb.className='thumb';
-      const badge=document.createElement('span'); badge.className='badge2'; badge.textContent=styleName(tpl.stylePack); thumb.append(badge);
-      if(tpl.tag){ const cat=document.createElement('span'); cat.className='cat'; cat.textContent=LL(CAT_LABEL[CAT_OF(tpl.tag)]||tpl.tag); thumb.append(cat); }
+      if(tpl.tag){ const c=CAT_OF(tpl.tag); const cat=document.createElement('span'); cat.className='cat '+(c==='website'?'multi':'single'); cat.textContent=LL(CAT_LABEL[c]||tpl.tag); thumb.append(cat); }
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
       card.append(thumb);
       card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
