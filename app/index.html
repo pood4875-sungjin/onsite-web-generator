@@ -140,13 +140,23 @@
       c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
   }
 
+  let leaving=false;
   window.finish=()=>{
     const shared={ productName:document.getElementById('product').value.trim() };
     const name=document.getElementById('pname').value.trim() || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
+    leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };
+
+  /* 생성 중 뒤로가기 → 확인 팝업 */
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate', ()=>{
+    if(leaving) return;
+    if(confirm('프로젝트 생성을 종료할까요?\n입력한 내용은 저장되지 않아요.')){ leaving=true; history.back(); }
+    else { history.pushState(null,'',location.href); }
+  });
 </script>
 </body>
 </html>
