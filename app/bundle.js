@@ -105,10 +105,10 @@ const SECTIONS = {
         const hasKids = it.children && it.children.length;
         const sub = hasKids
           ? `<div class="nsub" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;padding:6px;min-width:150px;border-radius:12px;background:${t.bg};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 40px rgba(0,0,0,.4)">
-              ${it.children.map((c) => `<span style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
+              ${it.children.map((c) => `<span data-nav-page="${c.id || ''}" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
             </div>`
           : '';
-        return `<div class="nvi" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
+        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
       }).join('');
     } else {
       nav = `<span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>`;

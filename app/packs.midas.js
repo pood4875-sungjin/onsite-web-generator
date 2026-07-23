@@ -208,13 +208,26 @@ const C = components;
 const name = (ctx) => esc(ctx.data.productName || ctx.data.name || 'MIDAS AX');
 const PH = '설명 텍스트가 들어갑니다. 기획 내용에 맞춰 교체됩니다.';
 const sparkle = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.3L20 10l-6.1 1.7L12 18l-1.9-6.3L4 10l6.1-1.7Z"/></svg>';
+// 스튜디오 레일 위계(ctx.data.nav) → GNB 메뉴. 없으면 정적 데모 링크.
+const navLinks = (c, ctx) => {
+  const nv = ctx.data && ctx.data.nav;
+  if (nv && nv.length) return nv.map((it) => {
+    const cur = it.active ? ' aria-current="page"' : '';
+    if (it.children && it.children.length) {
+      const sub = it.children.map((ch) => `<a class="gnb__subitem" href="#" data-nav-page="${ch.id || ''}"${ch.active ? ' aria-current="page"' : ''}>${esc(ch.name)}</a>`).join('');
+      return `<span class="gnb__grp"><a href="#" data-nav-page="${it.id || ''}"${cur}>${esc(it.name)} ▾</a><span class="gnb__sub">${sub}</span></span>`;
+    }
+    return `<a href="#" data-nav-page="${it.id || ''}"${cur}>${esc(it.name)}</a>`;
+  }).join('');
+  return (c.links || ['Get Started', 'Foundation', 'Components', 'Pattern']).map((l, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ''}>${esc(l)}</a>`).join('');
+};
 const sections = {
   nav: (c, ctx) => `
     <div class="pg pg--top" aria-hidden="true"><img class="pg__img" src="${SITE}/hero-gradient-v2.png" alt=""></div>
     <div class="pg pg--bottom" aria-hidden="true"><img class="pg__img" src="${SITE}/hero-gradient-bottom.png" alt=""></div>
     <header class="gnb"><div class="gnb__inner">
       <a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a>
-      <nav class="gnb__nav hide-sm">${(c.links || ['Get Started', 'Foundation', 'Components', 'Pattern']).map((l, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ''}>${esc(l)}</a>`).join('')}</nav>
+      <nav class="gnb__nav hide-sm">${navLinks(c, ctx)}</nav>
       <a class="btn-pill btn-pill--md" href="#">${esc(c.primaryCta || ctx.data.primaryCta || '시작하기')}</a>
     </div></header>`,
   hero: (c, ctx) => `
@@ -256,6 +269,11 @@ const sectionsCss = () => `
   .midas .gnb__nav{display:flex;align-items:center;gap:16px}
   .midas .gnb__nav a{padding:12px 10px;font-size:15px;font-weight:600;letter-spacing:.144px;color:var(--muted);white-space:nowrap;transition:color .2s}
   .midas .gnb__nav a:hover,.midas .gnb__nav a[aria-current="page"]{color:var(--ink)}
+  .midas .gnb__grp{position:relative;display:inline-flex}
+  .midas .gnb__sub{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(4px);display:none;flex-direction:column;min-width:160px;padding:6px;background:var(--surface,#fff);border:1px solid var(--line-2,#e5e5e5);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.12);z-index:40}
+  .midas .gnb__grp:hover .gnb__sub{display:flex}
+  .midas .gnb__subitem{padding:9px 12px;font-size:14px;font-weight:500;border-radius:8px;color:var(--muted)}
+  .midas .gnb__subitem:hover,.midas .gnb__subitem[aria-current="page"]{color:var(--ink);background:var(--bg-2,#f5f5f5)}
   /* Hero (source: Poppins 72/-4, padding 240, char wave) */
   .midas .hero{position:relative;padding:200px 0 160px;text-align:center}
   .midas .hero__content{max-width:${layout.container};margin:0 auto;padding:0 40px}

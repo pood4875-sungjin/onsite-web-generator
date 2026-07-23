@@ -8,7 +8,7 @@
   var SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>';
 
   var GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>';
-  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['resources', 'resources.html', '리소스', GRID], ['projects', 'projects.html', '프로젝트', FOLDER], ['settings', '#', '설정', GEAR]];
+  var ITEMS = [['home', 'dashboard.html', '홈', HOME], ['projects', 'projects.html', '프로젝트', FOLDER], ['resources', 'resources.html', '템플릿', GRID], ['settings', '#', '설정', GEAR]];
 
   function snbHTML(active) {
     var nav = ITEMS.map(function (it) {

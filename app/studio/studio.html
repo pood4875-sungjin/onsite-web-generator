@@ -207,6 +207,7 @@
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <button class="dl" id="editBtn" title="텍스트·이미지 편집">✎ 편집</button>
+        <button class="dl" id="previewBtn" title="생성된 페이지를 새 창에서 미리보기">↗ 미리보기</button>
         <button class="dl" id="save">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
@@ -281,25 +282,28 @@
     frame.style.transform = 'scale(' + s + ')';
   }
   // 다중 사이트: 레일 메뉴트리 → GNB nav 항목 (홈=로고라 최상위 메인홈은 제외)
-  function buildNav(){
+  // curId 인자로 활성 페이지 지정(미리보기에서 페이지별 렌더 시 사용). 없으면 현재 pageRef.
+  function buildNav(curId){
     if(!project || project.kind!=='multi') return null;
-    const cur = pageRef && pageRef.id;
+    const cur = curId || (pageRef && pageRef.id);
     const isActive = (id)=> id===cur;
     const tops = pageTree(project.pages).filter(n=> n.pageType!=='main');
     if(!tops.length) return null;
     return tops.map(n=>({
-      name:n.name, active:isActive(n.id),
-      children:(n.children||[]).map(c=>({ name:c.name, active:isActive(c.id) }))
+      id:n.id, name:n.name, active:isActive(n.id),
+      children:(n.children||[]).map(c=>({ id:c.id, name:c.name, active:isActive(c.id) }))
     }));
   }
   // 팩별 출력 — KRDS는 계약 렌더(renderKrdsPage), 그 외는 darkglow(renderComposed)
-  function pageHtml(){
-    const nav = buildNav();
-    const rd = nav ? Object.assign({}, data, {nav}) : data;
-    if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume, motion});
-    if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume, motion});
-    return renderComposed(rd, pack, motion, pageType, volume);
+  function renderWith(d, pt, vol, nav, mot){
+    const rd = nav ? Object.assign({}, d, {nav}) : d;
+    if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume:vol, motion:mot});
+    if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume:vol, motion:mot});
+    return renderComposed(rd, pack, mot, pt, vol);
   }
+  function pageHtml(){ return renderWith(data, pageType, volume, buildNav(), motion); }
+  // 프로젝트 내 임의 페이지 렌더(미리보기용) — 해당 페이지 기준 nav 활성/데이터 사용, 모션 정적
+  function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), 'static'); }
   function render(){
     frame.srcdoc = pageHtml();
     badge.textContent = `${pack.name} 스타일 ▾`;
@@ -322,10 +326,9 @@
     inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
       const rd=new FileReader(); rd.onload=()=>{ data.images=data.images||{}; data.images[key]=rd.result; persist();
         const doc=frame.contentDocument, slot=doc&&doc.querySelector('[data-img="'+key+'"]');
-        if(slot){ if(slot.tagName==='IMG'){ slot.src=rd.result; } else {
-          slot.outerHTML='<img data-img="'+key+'" src="'+rd.result+'" alt="" style="display:block;position:relative;max-width:760px;width:100%;margin:56px auto 0;border-radius:'+pack.tokens.radius+';box-shadow:0 20px 80px '+pack.tokens.glow+'">';
-          applyEdit();
-        } }
+        // 이미 <img>면 src만 교체(깜빡임 없음). placeholder 등 그 외엔 팩별 마크업으로 전체 리렌더.
+        if(slot && slot.tagName==='IMG'){ slot.src=rd.result; }
+        else { render(); }
       }; rd.readAsDataURL(f); };
     inp.click();
   }
@@ -387,7 +390,16 @@
     // 프리뷰 네비게이션 가드 — 미리보기 안의 링크/폼이 iframe을 다른 페이지로 이동시키지 않게
     const doc=frame.contentDocument;
     if(doc){
-      doc.addEventListener('click', e=>{ const a=e.target && e.target.closest && e.target.closest('a[href]'); if(a){ e.preventDefault(); } }, true);
+      doc.addEventListener('click', e=>{
+        const t=e.target;
+        // 프리뷰 GNB 메뉴(레일 위계 반영) 클릭 → 해당 페이지로 이동
+        const navEl = t && t.closest && t.closest('[data-nav-page]');
+        if(navEl){ e.preventDefault();
+          const id=navEl.getAttribute('data-nav-page');
+          if(project && id && !(pageRef&&pageRef.id===id)){ persist(); location.href='?p='+project.id+'&page='+id; }
+          return; }
+        const a=t && t.closest && t.closest('a[href]'); if(a){ e.preventDefault(); }
+      }, true);
       doc.addEventListener('submit', e=>e.preventDefault(), true);
     }
     if(editMode) applyEdit();
@@ -470,7 +482,7 @@
 
   function buildWidget(step){
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(o.label));
-    if(step==='pageType') return chips(['메인홈','제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'main'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(o.label); });
+    if(step==='pageType') return chips(['제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'features'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(o.label); });
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(o.label); });
     if(step==='facts'){
       const wrap=el('div','card');
@@ -528,6 +540,27 @@
 
   document.getElementById('reset').onclick=reset;
   document.getElementById('dl').onclick=()=>{ const b=new Blob([pageHtml()],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='page.html'; a.click(); URL.revokeObjectURL(a.href); };
+
+  /* ---- 미리보기: 생성된 페이지를 새 창에서 확인 (편집 UI 없는 실제 화면) ----
+     다중 페이지면 모든 페이지를 한 문서에 담고 GNB 메뉴로 서로 이동 가능(정적). */
+  function previewHtml(){
+    persist();
+    const pages = (project && project.kind==='multi' && project.pages.length) ? project.pages : [ {id:'single', data, pageType, volume} ];
+    const cur = (pageRef && pageRef.id) || pages[0].id;
+    const dp = new DOMParser();
+    let headHTML=''; const secs=[];
+    pages.forEach((pg,i)=>{ const doc=dp.parseFromString(renderProjectPage(pg),'text/html');
+      if(i===0) headHTML=doc.head.innerHTML;
+      secs.push('<div data-ppage="'+pg.id+'"'+(pg.id===cur?'':' hidden')+'>'+doc.body.innerHTML+'</div>'); });
+    const swap='<scr'+'ipt>document.addEventListener("click",function(e){var n=e.target.closest&&e.target.closest("[data-nav-page]");if(n){e.preventDefault();var t=document.querySelector(\'[data-ppage="\'+n.getAttribute("data-nav-page")+\'"]\');if(t){document.querySelectorAll("[data-ppage]").forEach(function(s){s.hidden=true});t.hidden=false;window.scrollTo(0,0);}return;}var a=e.target.closest&&e.target.closest(\'a[href^="#"]\');if(a)e.preventDefault();},true);document.addEventListener("submit",function(e){e.preventDefault()},true);</scr'+'ipt>';
+    return '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(data.productName||'미리보기')+'</title>'+headHTML+'</head><body>'+secs.join('')+swap+'</body></html>';
+  }
+  document.getElementById('previewBtn').onclick=async ()=>{
+    if(!generated){ await uiAlert('먼저 페이지를 생성해주세요.'); return; }
+    const w=window.open('','_blank');
+    if(!w){ await uiAlert('팝업이 차단됐어요. 브라우저에서 이 사이트의 팝업을 허용해주세요.'); return; }
+    w.document.open(); w.document.write(previewHtml()); w.document.close();
+  };
 
   /* ---- 저장: 현재 페이지를 프로젝트에 저장 ---- */
   function saveCurrent(){

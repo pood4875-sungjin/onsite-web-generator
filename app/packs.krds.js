@@ -350,12 +350,22 @@ const name = (ctx) => ctx.esc(ctx.data.productName || ctx.data.name || 'ONSITE')
 
 const sections = {
   nav(c, ctx) {
-    const links = c.links || ['서비스', '기능', '이용안내', '고객지원'];
+    const nv = ctx.data && ctx.data.nav;
+    const menu = (nv && nv.length)
+      ? nv.map((it) => {
+          const cur = it.active ? ' aria-current="page"' : '';
+          if (it.children && it.children.length) {
+            const sub = it.children.map((ch) => `<a class="nav__subitem" href="#" data-nav-page="${ch.id || ''}"${ch.active ? ' aria-current="page"' : ''}>${ctx.esc(ch.name)}</a>`).join('');
+            return `<span class="nav__grp"><a href="#" data-nav-page="${it.id || ''}"${cur}>${ctx.esc(it.name)} ▾</a><span class="nav__sub">${sub}</span></span>`;
+          }
+          return `<a href="#" data-nav-page="${it.id || ''}"${cur}>${ctx.esc(it.name)}</a>`;
+        }).join('')
+      : (c.links || ['서비스', '기능', '이용안내', '고객지원']).map((l) => `<a href="#">${ctx.esc(l)}</a>`).join('');
     return `
     <header class="nav">
       <div class="container nav__in">
         <a class="nav__brand" href="#" data-edit="productName">${name(ctx)}</a>
-        <nav class="nav__menu hide-sm">${links.map((l) => `<a href="#">${ctx.esc(l)}</a>`).join('')}</nav>
+        <nav class="nav__menu hide-sm">${menu}</nav>
         <div class="nav__act">
           ${C.button(ctx.esc(c.secondaryCta || '로그인'), { variant: 'ghost', size: 'sm' })}
           ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '신청하기'), { variant: 'primary', size: 'sm' })}
@@ -474,8 +484,13 @@ function sectionsCss() {
   .krds .nav{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-bottom:var(--bw) solid var(--line)}
   .krds .nav__in{display:flex;align-items:center;justify-content:space-between;height:64px}
   .krds .nav__brand{font-size:var(--fs-h3);font-weight:800;color:var(--ink);letter-spacing:-.02em}
-  .krds .nav__menu{display:flex;gap:28px;font-size:var(--fs-body-sm);font-weight:600;color:var(--muted)}
-  .krds .nav__menu a:hover{color:var(--brand)}
+  .krds .nav__menu{display:flex;align-items:center;gap:28px;font-size:var(--fs-body-sm);font-weight:600;color:var(--muted)}
+  .krds .nav__menu a:hover,.krds .nav__menu a[aria-current="page"]{color:var(--brand)}
+  .krds .nav__grp{position:relative;display:inline-flex}
+  .krds .nav__sub{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(4px);display:none;flex-direction:column;min-width:170px;padding:6px;background:#fff;border:var(--bw) solid var(--line);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.1);z-index:40}
+  .krds .nav__grp:hover .nav__sub{display:flex}
+  .krds .nav__subitem{padding:9px 12px;font-size:var(--fs-body-sm);font-weight:600;border-radius:8px;color:var(--muted)}
+  .krds .nav__subitem:hover,.krds .nav__subitem[aria-current="page"]{color:var(--brand);background:var(--brand-weak,#eef3ff)}
   .krds .nav__act{display:flex;gap:8px}
   /* hero */
   .krds .hero{position:relative;overflow:hidden}
