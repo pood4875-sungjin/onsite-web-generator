@@ -8,12 +8,12 @@
   var GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>';
   var SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>';
   var GRID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>';
-  var GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>';
+  var GLOBE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><ellipse cx="12" cy="12" rx="4.1" ry="9"/><path d="M5.6 7.2c3.9 1.7 9 1.7 12.9 0"/><path d="M5.6 16.8c3.9-1.7 9-1.7 12.9 0"/></svg>';
   var SHAPES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="3.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><path d="M8 14l4 6H4z"/><rect x="13.5" y="14" width="6.5" height="6.5" rx="1.5"/></svg>';
   // 아이콘 레지스트리(icons.js)가 있으면 거기서, 없으면 인라인 폴백
   function ic(name, fb) { return (window.icon && window.ICON && window.ICON[name]) ? window.icon(name, {}) : fb; }
   // 아이콘은 SNB 메뉴로 노출하지 않음 — 레지스트리(icons.js)는 백그라운드에서 플랫폼 아이콘 소스로만 사용.
-  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['settings', '#', '설정', ic('settings', GEAR)]];
+  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)]];
 
   function tt(ko) { return (window.L ? window.L(ko) : ko); }
   function curCode() { var l = (window.I18N ? I18N.getLang() : 'ko'); var m = { ko: 'KO', en: 'EN', ja: 'JA', zh: 'ZH' }; return m[l] || l.toUpperCase(); }
