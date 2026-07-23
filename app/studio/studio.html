@@ -313,17 +313,23 @@
     inp.click();
   }
   const SECLABEL={hero:'히어로',features:'기능',metrics:'지표',banner:'배너'};
-  function currentMovable(){ const doc=frame.contentDocument; if(!doc) return []; return [...doc.querySelectorAll('[data-section]')].map(s=>s.getAttribute('data-section')).filter(t=>t!=='gnb'&&t!=='footer'); }
+  // 스타일별 섹션 스펙 (darkglow=gnb/footer 고정, KRDS=nav/footer 고정)
+  function sectionSpec(){
+    if(pack && pack.id==='krds' && window.KRDS_SECTION_SPEC) return window.KRDS_SECTION_SPEC;
+    return { template:(DG_TEMPLATES[pageType]||DG_TEMPLATES.main), fixed:['gnb','footer'], labels:SECLABEL };
+  }
+  function secLabel(type){ return sectionSpec().labels[type] || type; }
+  function currentMovable(){ const doc=frame.contentDocument; if(!doc) return []; const fx=sectionSpec().fixed; return [...doc.querySelectorAll('[data-section]')].map(s=>s.getAttribute('data-section')).filter(t=>fx.indexOf(t)<0); }
   function moveSection(type,dir){ const order=currentMovable(); const i=order.indexOf(type), j=i+dir; if(i<0||j<0||j>=order.length) return; const tmp=order[i]; order[i]=order[j]; order[j]=tmp; data.sectionOrder=order; persist(); render(); }
   // 섹션 숨김/추가
-  function bodyPalette(){ return (DG_TEMPLATES[pageType]||DG_TEMPLATES.main).filter(s=>s.type!=='gnb'&&s.type!=='footer').map(s=>s.type); }
-  function secVisible(type){ const s=(DG_TEMPLATES[pageType]||DG_TEMPLATES.main).find(x=>x.type===type); const def=s&&includesTier(volume,s.tier); const hid=(data.hiddenSections||[]).includes(type); const shw=(data.shownSections||[]).includes(type); return def?!hid:shw; }
+  function bodyPalette(){ const sp=sectionSpec(); return sp.template.filter(s=>sp.fixed.indexOf(s.type)<0).map(s=>s.type); }
+  function secVisible(type){ const sp=sectionSpec(); const s=sp.template.find(x=>x.type===type); const def=s&&includesTier(volume,s.tier); const hid=(data.hiddenSections||[]).includes(type); const shw=(data.shownSections||[]).includes(type); return def?!hid:shw; }
   function hideSection(type){ data.hiddenSections=[...new Set([...(data.hiddenSections||[]),type])]; data.shownSections=(data.shownSections||[]).filter(x=>x!==type); persist(); render(); renderSectionAdd(); }
   function showSection(type){ data.shownSections=[...new Set([...(data.shownSections||[]),type])]; data.hiddenSections=(data.hiddenSections||[]).filter(x=>x!==type); persist(); render(); renderSectionAdd(); }
   function renderSectionAdd(){ const bar=document.getElementById('secAdd'); const hiddenTypes=bodyPalette().filter(t=>!secVisible(t));
     if(!editMode || !hiddenTypes.length){ bar.classList.remove('on'); bar.innerHTML=''; return; }
     bar.classList.add('on'); bar.innerHTML='<span class="t">숨긴 섹션</span>';
-    hiddenTypes.forEach(tp=>{ const b=document.createElement('button'); b.className='sa'; b.textContent='+ '+(SECLABEL[tp]||tp); b.onclick=()=>showSection(tp); bar.append(b); }); }
+    hiddenTypes.forEach(tp=>{ const b=document.createElement('button'); b.className='sa'; b.textContent='+ '+secLabel(tp); b.onclick=()=>showSection(tp); bar.append(b); }); }
   function applyEdit(){
     const doc=frame.contentDocument; if(!doc||!doc.body) return;
     if(!doc.getElementById('editcss')){ const st=doc.createElement('style'); st.id='editcss';
@@ -345,13 +351,13 @@
     doc.querySelectorAll('[data-img]').forEach(slot=>{ if(!slot.__wired){ slot.__wired=1;
       slot.addEventListener('click',(e)=>{ if(!editMode)return; e.preventDefault(); pickImage(slot.getAttribute('data-img')); }); }});
     // 섹션 순서 컨트롤 (gnb·footer 제외)
-    const movable=currentMovable();
+    const movable=currentMovable(); const fx=sectionSpec().fixed;
     doc.querySelectorAll('[data-section]').forEach(sec=>{
       const type=sec.getAttribute('data-section'); const old=sec.querySelector(':scope > .secctl'); if(old) old.remove();
-      if(!editMode || type==='gnb' || type==='footer') return;
+      if(!editMode || fx.indexOf(type)>=0) return;
       const i=movable.indexOf(type);
       const bar=doc.createElement('div'); bar.className='secctl';
-      bar.innerHTML='<button data-mv="up"'+(i<=0?' disabled':'')+' title="위로">↑</button><span class="lbl">'+(SECLABEL[type]||type)+'</span><button data-mv="down"'+(i>=movable.length-1?' disabled':'')+' title="아래로">↓</button><button class="hd" data-mv="hide" title="숨기기">✕</button>';
+      bar.innerHTML='<button data-mv="up"'+(i<=0?' disabled':'')+' title="위로">↑</button><span class="lbl">'+secLabel(type)+'</span><button data-mv="down"'+(i>=movable.length-1?' disabled':'')+' title="아래로">↓</button><button class="hd" data-mv="hide" title="숨기기">✕</button>';
       bar.querySelector('[data-mv=up]').onclick=(e)=>{ e.stopPropagation(); moveSection(type,-1); };
       bar.querySelector('[data-mv=down]').onclick=(e)=>{ e.stopPropagation(); moveSection(type,1); };
       bar.querySelector('[data-mv=hide]').onclick=(e)=>{ e.stopPropagation(); hideSection(type); };

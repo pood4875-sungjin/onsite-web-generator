@@ -52,7 +52,7 @@ function renderPage(pageDoc = {}, pack, { motion = 'subtle' } = {}) {
     .map(({ type, slotValues }) => {
       const render = pack.sections && pack.sections[type];
       if (!render) { console.warn(`[pack ${pack.meta?.id}] no section renderer: ${type}`); return ''; }
-      try { return render(slotValues || {}, ctx); }
+      try { return `<div data-section="${esc(type)}">${render(slotValues || {}, ctx)}</div>`; }
       catch (e) { console.error(`[pack ${pack.meta?.id}] section '${type}' failed`, e); return ''; }
     })
     .join('\n');
@@ -564,9 +564,23 @@ const krdsPack = {
 
   var DEMO_TEMPLATE={ sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}] };
   window.KRDS_PACK=krdsPack; window.KRDS_STYLE={id:"krds",name:"밝은 신뢰 블루",desc:"라이트 · 선명한 블루",swatch:"linear-gradient(135deg,#256ef4,#0b50d0)"};
+  // 스튜디오 편집모드(섹션 순서/숨김)용 섹션 스펙 — nav/footer 고정, body=hero/feature/stat/cta
+  window.KRDS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",cta:"CTA"} };
   window.renderKrdsPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
     if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"check",title:f.title,desc:f.desc}})};
     if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
     if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.subcopy};
-    return renderPage(buildPageDoc({template:DEMO_TEMPLATE,volume:opts.volume||"heavy",content:content,sharedFacts:shared}),krdsPack,{motion:opts.motion||"subtle"});};
+    // 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
+    var vol=opts.volume||"heavy";
+    var tpl=DEMO_TEMPLATE.sections, fixedT=window.KRDS_SECTION_SPEC.fixed;
+    var head=tpl.filter(function(s){return s.type==="nav"});
+    var foot=tpl.filter(function(s){return s.type==="footer"});
+    var bodyTpl=tpl.filter(function(s){return fixedT.indexOf(s.type)<0});
+    var hidden=shared.hiddenSections||[], shown=shared.shownSections||[];
+    var vis=bodyTpl.filter(function(s){var def=includesTier(vol,s.tier); return def?hidden.indexOf(s.type)<0:shown.indexOf(s.type)>=0;});
+    var order=shared.sectionOrder||[];
+    if(order.length){ var by={}; vis.forEach(function(s){by[s.type]=s}); var ord=[]; order.forEach(function(t){if(by[t])ord.push(by[t])}); vis.forEach(function(s){if(order.indexOf(s.type)<0)ord.push(s)}); vis=ord; }
+    var effTpl={ sections: head.concat(vis, foot) };
+    // 이미 가시성 반영했으니 buildPageDoc의 tier 필터는 통과되게 volume=heavy
+    return renderPage(buildPageDoc({template:effTpl,volume:"heavy",content:content,sharedFacts:shared}),krdsPack,{motion:opts.motion||"subtle"});};
 })();
