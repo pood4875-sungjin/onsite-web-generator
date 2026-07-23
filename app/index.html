@@ -9,6 +9,7 @@
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
 <script src="modal.js"></script>
+<script src="i18n.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   body{min-height:100vh;overflow-y:auto}
@@ -112,6 +113,7 @@
       <label>프로젝트 이름</label><input class="ds-input" id="pname" placeholder="예: 온사이트 제품사이트">
       <label>제품명 <span class="opt">(선택)</span></label><input class="ds-input" id="product" placeholder="예: Onsite">
       <label>사업군</label><div class="orgchips" id="orgchips"></div>
+      <label>사이트 언어 <span class="opt">(생성될 페이지 언어)</span></label><div class="orgchips" id="langchips"></div>
     </div>
     <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)">← 이전</button><button class="ds-btn primary" onclick="go(3)">다음 →</button></div>
   </div>
@@ -140,6 +142,12 @@
   const oc=document.getElementById('orgchips');
   ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=o.label;
     b.onclick=()=>{ org=o.id; oc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); stylePack=o.rec; }; oc.append(b); });
+
+  // 사이트(출력) 언어 — 앱 UI 언어와 별개, 프로젝트에 저장
+  let siteLang = (window.I18N ? I18N.getLang() : 'ko');
+  const lc=document.getElementById('langchips');
+  (window.I18N ? I18N.LANGS : [['ko','한국어']]).forEach(L=>{ const b=document.createElement('button'); b.className='ds-chip'+(L[0]===siteLang?' on':''); b.textContent=L[1];
+    b.onclick=()=>{ siteLang=L[0]; lc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; lc.append(b); });
 
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
@@ -179,6 +187,7 @@
     const shared={ productName:document.getElementById('product').value.trim() };
     const name=document.getElementById('pname').value.trim() || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });
+    p.lang=siteLang; upsertProject(p);   // 사이트 출력 언어 저장
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
     leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;

@@ -8,6 +8,7 @@
 <script src="bundle.js"></script>
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
+<script src="i18n.js"></script>
 <script src="shell.js"></script>
 <script src="modal.js"></script>
 <link rel="stylesheet" href="ds.css">
@@ -58,7 +59,7 @@
 <div class="content">
   <div data-gnb></div>
   <div class="page">
-    <h1>내 프로젝트</h1>
+    <h1 data-i18n="proj.title">내 프로젝트</h1>
     <div class="filters" id="filters"></div>
     <div class="selbar" id="selbar">
       <span class="cnt" id="selcnt">0개 선택됨</span>
@@ -113,7 +114,7 @@
     const fb=document.getElementById('filters'); fb.innerHTML='';
     const ps=getProjects();
     const counts={all:ps.length, single:ps.filter(p=>p.kind!=='multi').length, multi:ps.filter(p=>p.kind==='multi').length};
-    FILTERS.forEach(([id,label])=>{ const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${label} ${counts[id]}`; b.onclick=()=>{ filter=id; render(); }; fb.append(b); });
+    FILTERS.forEach(([id,label])=>{ const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${(window.t?t('filter.'+id):label)} ${counts[id]}`; b.onclick=()=>{ filter=id; render(); }; fb.append(b); });
   }
 
   function render(){

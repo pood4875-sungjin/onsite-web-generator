@@ -8,6 +8,7 @@
 <script src="bundle.js"></script>
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
+<script src="i18n.js"></script>
 <script src="shell.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -53,9 +54,9 @@
     <div class="head">
       <div class="greet-big">안녕하세요,<br>오늘도 좋은 작업 되세요 <span class="wave">👋</span></div>
     </div>
-    <h2 class="sec-h">프로젝트 현황</h2>
+    <h2 class="sec-h" data-i18n="dash.status">프로젝트 현황</h2>
     <div class="stats" id="stats"></div>
-    <h2 class="sec-h">최근 프로젝트</h2>
+    <h2 class="sec-h" data-i18n="dash.recent">최근 프로젝트</h2>
     <div class="recent" id="recent"></div>
   </div>
 </div>
@@ -94,11 +95,12 @@
     const total=ps.length, done=ps.filter(isDone).length, prog=total-done;
     const now=new Date();
     const month=ps.filter(p=>{ const d=new Date(p.createdAt); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).length;
+    const T=(k,ko)=>window.t?t(k):ko;
     document.getElementById('stats').innerHTML=
-      statCard('전체 프로젝트', total, `진행 중 ${prog}개 · 완료 ${done}개`)+
-      statCard('이번 달 생성', month, `${now.getMonth()+1}월 기준`)+
-      statCard('배포 완료', 0, '배포 기능 준비 중')+
-      statCard('HTML 내보내기', done, '생성 완료 시 가능');
+      statCard(T('dash.total','전체 프로젝트'), total, `${T('dash.total.sub','진행 중 · 완료')} ${prog} · ${done}`)+
+      statCard(T('dash.month','이번 달 생성'), month, T('dash.month.sub','이번 달 기준'))+
+      statCard(T('dash.deploy','배포 완료'), 0, T('dash.deploy.sub','배포 기능 준비 중'))+
+      statCard(T('dash.html','HTML 내보내기'), done, T('dash.html.sub','생성 완료 시 가능'));
 
     const box=document.getElementById('recent');
     const q=(searchVal||'').trim().toLowerCase();
