@@ -11,17 +11,23 @@ import { DG_TEMPLATES } from './templates.js';
 export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', volume = 'heavy') {
   const t = pack.tokens;
   const template = DG_TEMPLATES[pageType] || DG_TEMPLATES.main;
-  let types = template.filter((s) => includesTier(volume, s.tier)).map((s) => s.type);
 
-  // 커스텀 섹션 순서 (편집모드) — gnb 최상단·footer 최하단 고정, body 섹션만 재정렬
+  // body 섹션 = gnb/footer 제외. 볼륨 기본 노출(defaultOn) + 편집모드 숨김/추가 반영
+  const bodyTpl = template.filter((s) => s.type !== 'gnb' && s.type !== 'footer');
+  const hasGnb = template.some((s) => s.type === 'gnb');
+  const hasFooter = template.some((s) => s.type === 'footer');
+  const defaultOn = new Set(bodyTpl.filter((s) => includesTier(volume, s.tier)).map((s) => s.type));
+  const hidden = new Set(data.hiddenSections || []);
+  const shown = new Set(data.shownSections || []);
+  let bodyTypes = bodyTpl.map((s) => s.type).filter((tp) => (defaultOn.has(tp) ? !hidden.has(tp) : shown.has(tp)));
+
+  // 커스텀 순서
   if (data.sectionOrder && data.sectionOrder.length) {
-    const head = types.includes('gnb') ? ['gnb'] : [];
-    const foot = types.includes('footer') ? ['footer'] : [];
-    const movable = types.filter((x) => x !== 'gnb' && x !== 'footer');
-    const ordered = data.sectionOrder.filter((x) => movable.includes(x));
-    const rest = movable.filter((x) => !ordered.includes(x));
-    types = [...head, ...ordered, ...rest, ...foot];
+    const ordered = data.sectionOrder.filter((x) => bodyTypes.includes(x));
+    const rest = bodyTypes.filter((x) => !ordered.includes(x));
+    bodyTypes = [...ordered, ...rest];
   }
+  const types = [...(hasGnb ? ['gnb'] : []), ...bodyTypes, ...(hasFooter ? ['footer'] : [])];
 
   const body = types
     .map((type) => (SECTIONS[type] ? `<div data-section="${type}">${SECTIONS[type](data, t, motion)}</div>` : ''))
