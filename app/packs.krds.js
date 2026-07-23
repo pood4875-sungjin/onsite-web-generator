@@ -1,4 +1,4 @@
-/* AUTO-GENERATED — KRDS 팩(계약) classic 번들. 편집금지 */
+/* AUTO-GENERATED classic 번들. 편집금지 */
 (function(){
   var includesTier = window.includesTier || function(v,t){var V={compact:0,mid:1,heavy:2},T={core:0,mid:1,rich:2};return T[t]<=V[v]};
 
@@ -476,6 +476,10 @@ function sectionsCss() {
   .krds .nav__menu a:hover{color:var(--brand)}
   .krds .nav__act{display:flex;gap:8px}
   /* hero */
+  .krds .hero{position:relative;overflow:hidden}
+  .krds .hero::before{content:"";position:absolute;inset:0 0 auto 0;height:460px;pointer-events:none;
+    background:radial-gradient(70% 120% at 78% -10%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 70%)}
+  .krds .hero > .container{position:relative;z-index:1}
   .krds .hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
   .krds .hero__title{font-size:var(--fs-display);font-weight:800;letter-spacing:-.03em}
   .krds .hero__sub{margin-top:18px;font-size:var(--fs-h3);color:var(--muted);max-width:30em}
@@ -557,12 +561,10 @@ const krdsPack = {
 
 
   var DEMO_TEMPLATE={ sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}] };
-  window.KRDS_PACK = krdsPack;
-  window.KRDS_STYLE = { id:"krds", name:"밝은 신뢰 블루", desc:"라이트 · 선명한 블루", swatch:"linear-gradient(135deg,#256ef4,#0b50d0)" };
-  window.renderKrdsPage = function(shared, opts){ opts=opts||{}; shared=shared||{}; var content={};
-    if(shared.features&&shared.features.length) content.feature={ eyebrow:"FEATURES", title:"핵심 기능", items: shared.features.map(function(f){return {icon:f.icon||"check",title:f.title,desc:f.desc};}) };
-    if(shared.stats&&shared.stats.length) content.stat={ items: shared.stats.map(function(s){return {value:s.value,label:s.label};}) };
-    if(shared.bannerText) content.cta={ title:shared.bannerText, primaryCta:shared.bannerCta||shared.primaryCta, subcopy:shared.subcopy };
-    var doc=buildPageDoc({template:DEMO_TEMPLATE,volume:opts.volume||"heavy",content:content,sharedFacts:shared});
-    return renderPage(doc, krdsPack, {motion:opts.motion||"subtle"}); };
+  window.KRDS_PACK=krdsPack; window.KRDS_STYLE={id:"krds",name:"밝은 신뢰 블루",desc:"라이트 · 선명한 블루",swatch:"linear-gradient(135deg,#256ef4,#0b50d0)"};
+  window.renderKrdsPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
+    if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"check",title:f.title,desc:f.desc}})};
+    if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
+    if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.subcopy};
+    return renderPage(buildPageDoc({template:DEMO_TEMPLATE,volume:opts.volume||"heavy",content:content,sharedFacts:shared}),krdsPack,{motion:opts.motion||"subtle"});};
 })();

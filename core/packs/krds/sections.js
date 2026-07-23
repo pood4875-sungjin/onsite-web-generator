@@ -136,6 +136,10 @@ export function sectionsCss() {
   .krds .nav__menu a:hover{color:var(--brand)}
   .krds .nav__act{display:flex;gap:8px}
   /* hero */
+  .krds .hero{position:relative;overflow:hidden}
+  .krds .hero::before{content:"";position:absolute;inset:0 0 auto 0;height:460px;pointer-events:none;
+    background:radial-gradient(70% 120% at 78% -10%, color-mix(in srgb, var(--brand) 12%, transparent), transparent 70%)}
+  .krds .hero > .container{position:relative;z-index:1}
   .krds .hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
   .krds .hero__title{font-size:var(--fs-display);font-weight:800;letter-spacing:-.03em}
   .krds .hero__sub{margin-top:18px;font-size:var(--fs-h3);color:var(--muted);max-width:30em}

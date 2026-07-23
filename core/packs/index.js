@@ -5,11 +5,12 @@
 import { renderPage, renderSectionsOnly, SECTION_TYPES } from './contract.js';
 import { buildPageDoc } from '../template.js';
 import { krdsPack } from './krds/pack.js';
+import { midasPack } from './midas/pack.js';
 import { darkglowPack } from './darkglow-pack.js';
 
 export { renderPage, renderSectionsOnly, SECTION_TYPES };
 
-export const PACKS = [krdsPack, darkglowPack];
+export const PACKS = [krdsPack, midasPack, darkglowPack];
 export const PACK_BY_ID = Object.fromEntries(PACKS.map((p) => [p.meta.id, p]));
 
 /** 데모/인스펙터용 표준 페이지 템플릿 (의미 섹션 순서 + 볼륨 티어) */
