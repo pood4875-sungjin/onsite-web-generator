@@ -9,6 +9,7 @@
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
 <script src="shell.js"></script>
+<script src="modal.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
   html,body{background:var(--canvas)}
@@ -92,7 +93,7 @@
     return wrap;
   }
   function open(p){ const pg=p.pages[0]; if(!pg){ location.href='index.html'; return; } location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`; }
-  function rename(p){ const nn=prompt('프로젝트 이름', p.name); if(nn==null) return; const t=nn.trim(); if(!t) return; const all=getProjects(); const t2=all.find(x=>x.id===p.id); if(t2){ t2.name=t; saveProjects(all); render(); } }
+  function rename(p){ uiPrompt('새 프로젝트 이름을 입력하세요.', {title:'이름 변경', value:p.name, placeholder:'프로젝트 이름'}).then(nn=>{ if(nn==null) return; const t=nn.trim(); if(!t) return; const all=getProjects(); const t2=all.find(x=>x.id===p.id); if(t2){ t2.name=t; saveProjects(all); render(); } }); }
 
   // 다중 선택 → 일괄 삭제
   const selected=new Set();
@@ -104,7 +105,7 @@
     const bar=document.getElementById('selbar'); bar.classList.toggle('on', selected.size>0); document.getElementById('selcnt').textContent=selected.size+'개 선택됨'; }
   document.getElementById('selall').onclick=()=>{ visibleProjects().forEach(p=>selected.add(p.id)); syncSel(); };
   document.getElementById('selclear').onclick=()=>{ selected.clear(); syncSel(); };
-  document.getElementById('seldel').onclick=()=>{ if(!selected.size) return; if(!confirm(`선택한 ${selected.size}개 프로젝트를 삭제할까요?`)) return; selected.forEach(id=>deleteProject(id)); selected.clear(); render(); };
+  document.getElementById('seldel').onclick=()=>{ if(!selected.size) return; uiConfirm(`선택한 ${selected.size}개 프로젝트를 삭제할까요?\n삭제하면 되돌릴 수 없어요.`,{title:'프로젝트 삭제',okText:'삭제',danger:true}).then(ok=>{ if(!ok) return; selected.forEach(id=>deleteProject(id)); selected.clear(); render(); }); };
 
   function renderFilters(){
     const fb=document.getElementById('filters'); fb.innerHTML='';
@@ -132,7 +133,7 @@
         <div class="acts"><button class="ren" title="이름 변경"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2 2 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
         <button class="del" title="삭제"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>`;
       meta.querySelector('.ren').onclick=(e)=>{ e.stopPropagation(); rename(p); };
-      meta.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); if(confirm(`"${p.name}" 삭제할까요?`)){ selected.delete(p.id); deleteProject(p.id); render(); } };
+      meta.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); uiConfirm(`"${p.name}"을(를) 삭제할까요?`,{title:'프로젝트 삭제',okText:'삭제',danger:true}).then(ok=>{ if(ok){ selected.delete(p.id); deleteProject(p.id); render(); } }); };
       card.append(meta); card.onclick=()=>open(p); box.append(card);
     });
     syncSel();

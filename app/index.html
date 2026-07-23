@@ -67,6 +67,7 @@
 </head>
 <body class="ds-body">
 <div class="nav">
+  <a class="homebtn" href="dashboard.html" title="홈으로" onclick="return leaveGuard(event)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a>
 </div>
 
 <div class="wrap">
@@ -149,6 +150,8 @@
     leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };
+
+  window.leaveGuard=(e)=>{ if(leaving) return true; if(confirm('프로젝트 생성을 종료할까요?\n입력한 내용은 저장되지 않아요.')){ leaving=true; return true; } e.preventDefault(); return false; };
 
   /* 생성 중 뒤로가기 → 확인 팝업 */
   history.pushState(null,'',location.href);

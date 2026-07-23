@@ -92,9 +92,8 @@ a{color:inherit;text-decoration:none}
 .ds-body h1,.ds-body h2{font-family:var(--font-display);letter-spacing:-.03em}
 
 .ds-eyebrow{font-size:var(--fs-eyebrow);font-weight:var(--fw-med);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--mute)}
-.ds-wordmark{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
-.ds-wordmark::before{content:'';width:22px;height:22px;flex:0 0 auto;
-  background:url("https://pood4875-sungjin.github.io/MIDAS-AX-Design-System/assets/images/logo-sparkle.png") center/contain no-repeat}
+.ds-wordmark{font-family:var(--font-display);font-weight:var(--fw-semi);letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+.ds-wordmark span{font-weight:var(--fw-semi);color:var(--ink)}
 .ds-wordmark span{font-weight:var(--fw-semi);color:var(--ink)}
 
 /* 버튼 — MIDAS AX btn-pill (fill → hover 반전) */
@@ -161,6 +160,18 @@ a{color:inherit;text-decoration:none}
 .gnb-bar .search input{border:none;background:none;outline:none;flex:1;font-family:inherit;font-size:14px;color:var(--ink)}
 .page{flex:1;overflow-y:auto;padding:28px 32px 80px}
 @media (max-width:1000px){ .app-grid{grid-template-columns:1fr} .snb{display:none} }
+
+/* ============ 디자인 모달 (modal.js) ============ */
+.modal-scrim{position:fixed;inset:0;z-index:999;display:grid;place-items:center;padding:24px;background:color-mix(in srgb,var(--canvas) 30%,rgba(10,11,24,.55));-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);opacity:0;transition:opacity .17s ease}
+.modal-scrim.on{opacity:1}
+.modal{width:100%;max-width:400px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-md);box-shadow:var(--shadow-3);padding:22px 22px 18px;transform:scale(.94) translateY(8px);transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.modal-scrim.on .modal{transform:none}
+.modal-h{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.modal-b{margin-top:8px;font-size:14px;color:var(--body);line-height:1.6;white-space:pre-line}
+.modal-i{margin-top:15px}
+.modal-f{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.modal-f .ds-btn{padding:9px 18px;font-size:14px}
+.modal-ok.danger{background:var(--a-red);color:#fff}.modal-ok.danger:hover{background:#d61a30}
 
 /* 접근성: 블러 미지원/모션 최소화 */
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
