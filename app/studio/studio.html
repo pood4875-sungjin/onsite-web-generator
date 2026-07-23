@@ -104,6 +104,17 @@
   .chip b{display:block;font-size:14px;font-weight:600}
   .chip span{font-size:10px;color:var(--tx3)}
   .card{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);background:var(--surf);border-radius:16px;padding:14px}
+  /* 메인홈 섹션 멀티선택 */
+  .seclist{gap:6px}
+  .secrow{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;cursor:pointer;background:var(--surf);transition:var(--dur) var(--ease)}
+  .secrow:hover{border-color:var(--hairline-strong)}
+  .secrow.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  .secrow.locked{cursor:default;opacity:.85}
+  .secrow .cbx{flex:0 0 auto;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);display:grid;place-items:center;font-size:12px;color:#fff;background:transparent}
+  .secrow .cbx.on{background:var(--accent);border-color:transparent}
+  .secrow .sl{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .secrow .sl b{font-size:13.5px;font-weight:600;color:var(--tx)}
+  .secrow .sl span{font-size:11.5px;color:var(--tx3)}
   .packs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .pk{overflow:hidden;border-radius:14px;border:1px solid var(--line);text-align:left;background:none}
   .pk.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
@@ -271,10 +282,21 @@
     upsertProject(project);
   }
 
-  const STEPS = ['kind','pageType','volume','facts','features','stats','banner','footer','done'];
+  const STEPS = ['kind','pageType','mainSections','volume','facts','features','stats','banner','footer','done'];
+  // 메인홈 섹션 선택지 (Header·Hero는 필수 고정). key=섹션타입, 입력스텝 매핑은 SEC_STEP.
+  const MAIN_SECTIONS = [
+    {type:'feature', label:'제품 핵심기능', desc:'주요 기능을 카드로 소개'},
+    {type:'comparison', label:'비교 (Comparison)', desc:'기존 방식 등과 비교'},
+    {type:'testimonial', label:'고객사례 (Case Study)', desc:'사용 사례·고객 신뢰'},
+    {type:'blog', label:'블로그·자료 (Blog)', desc:'콘텐츠·자료 탐색'},
+    {type:'faq', label:'FAQ (Accordion)', desc:'질문을 접고 펼쳐 안내'},
+    {type:'cta', label:'배너 CTA', desc:'행동을 유도하는 배너'},
+  ];
+  const SEC_STEP = { feature:'features', stat:'stats', cta:'banner' }; // 섹션→입력스텝
   const PROMPT = {
     kind:'안녕하세요 👋 먼저 무엇을 만들지 정해볼까요? 한 장으로 끝나는 페이지인지, 여러 페이지로 이어지는 사이트인지 골라주세요.',
     pageType:'이 페이지는 어떤 유형인가요? 성격에 맞춰 알맞은 템플릿과 섹션을 자동으로 불러올게요.',
+    mainSections:'메인 홈을 구성해볼게요. 헤더와 히어로는 기본으로 들어가요. 그 아래 어떤 섹션을 보여줄지 골라주세요 (여러 개 선택 가능).',
     volume:'페이지에 담을 정보량을 골라주세요. 핵심만 간결하게 갈지, 풍성하게 채울지에 따라 섹션 수가 달라져요.',
     facts:'좋아요! 이제 페이지의 얼굴을 만들 차례예요. 제품명과 한 줄 슬로건, 짧은 소개 문구를 적어주세요. 방문자가 3초 안에 “무엇인지” 감 잡게 하는 게 핵심이에요.',
     features:'핵심 기능은 딱 3가지만 보여주는 게 좋아요. 너무 많으면 오히려 안 읽히거든요. 각 기능을 큰 제목 + 짧은 설명으로 적으면 고객이 한눈에 가치를 파악해요.',
@@ -505,10 +527,23 @@
     }, 1900);
   }
 
+  function isMainPage(){ return project && project.kind==='multi' && pageType==='main'; }
+  function shouldSkip(step){
+    if(!step) return false;
+    if(step==='mainSections') return !isMainPage();          // 메인홈에서만 섹션 선택
+    if(isMainPage()){                                        // 메인홈: 미선택 섹션 입력스텝 스킵
+      const sel=new Set(data.shownSections||[]);
+      if(step==='features') return !sel.has('feature');
+      if(step==='stats')    return true;                     // 지표는 메인홈 선택지 아님
+      if(step==='banner')   return !sel.has('cta');
+    }
+    return false;
+  }
   function advance(userText){
     if(userText) meBubble(userText);
     idx++;
-    const step = STEPS[idx];
+    let step = STEPS[idx];
+    while(shouldSkip(step)){ idx++; step = STEPS[idx]; }
     botBubble(PROMPT[step]);
     mountWidget(step);
     if(step==='done'){ runGenerate(); }
@@ -529,9 +564,37 @@
   }
   function nextBtn(label, fn){ const b=el('button','next',label||tL('다음 →')); b.onclick=fn; return b; }
 
+  function applyMainSel(sel){
+    data.shownSections = [...sel];
+    // 메인홈 선택지에 없는 본문 섹션(stat 등)도 미선택 시 숨김
+    const optional = [...MAIN_SECTIONS.map(s=>s.type), 'stat'];
+    data.hiddenSections = optional.filter(t=>!sel.has(t));
+    render();
+  }
+  function mainSectionPicker(){
+    pageType='main';
+    if(project&&pageRef){ pageRef.pageType='main'; if(!pageRef.name||pageRef.name==='새 페이지') pageRef.name='메인홈'; }
+    const seeded = (data.shownSections&&data.shownSections.length) ? new Set(data.shownSections) : new Set(['feature','cta']);
+    applyMainSel(seeded);
+    const wrap=el('div','card seclist');
+    // 고정: 헤더·히어로
+    ['헤더','히어로'].forEach(l=>{ const r=el('label','secrow locked'); r.innerHTML=`<span class="cbx on" aria-hidden="true">✓</span><span class="sl"><b>${tL(l==='헤더'?'헤더':'히어로')}</b><span>${tL('필수')}</span></span>`; wrap.append(r); });
+    MAIN_SECTIONS.forEach(s=>{
+      const on=seeded.has(s.type);
+      const r=el('label','secrow'+(on?' sel':''));
+      r.innerHTML=`<span class="cbx${on?' on':''}">${on?'✓':''}</span><span class="sl"><b>${tL(s.label)}</b><span>${tL(s.desc)}</span></span>`;
+      r.onclick=(e)=>{ e.preventDefault(); if(seeded.has(s.type)) seeded.delete(s.type); else seeded.add(s.type);
+        r.classList.toggle('sel',seeded.has(s.type)); const c=r.querySelector('.cbx'); c.classList.toggle('on',seeded.has(s.type)); c.textContent=seeded.has(s.type)?'✓':'';
+        applyMainSel(seeded); };
+      wrap.append(r);
+    });
+    wrap.append(nextBtn(tL('다음 →'), ()=>{ applyMainSel(seeded); if(project&&pageRef){ upsertProject(project); renderRail(); } advance(`${tL('메인홈')} · ${seeded.size}${tL('개 섹션')}`); }));
+    return wrap;
+  }
   function buildWidget(step){
     if(step==='kind') return chips([{id:'single',label:'단일 페이지',hint:'랜딩 · 공지'},{id:'multi',label:'다중 사이트',hint:'여러 페이지 구축'}], o=>advance(tL(o.label)));
     if(step==='pageType') return chips(['제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'features'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(tL(o.label)); });
+    if(step==='mainSections') return mainSectionPicker();
     if(step==='volume') return chips([{id:'compact',label:'컴팩트',hint:'핵심만'},{id:'mid',label:'중간',hint:'균형'},{id:'heavy',label:'헤비',hint:'풍성'}], o=>{ volume=o.id; render(); advance(tL(o.label)); });
     if(step==='facts'){
       const wrap=el('div','card');
@@ -772,6 +835,8 @@
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
+      else if(project && project.kind==='multi' && (pageRef.pageType==='main' || (project.pages[0]&&project.pages[0].id===pageRef.id))){
+        pageType='main'; idx=STEPS.indexOf('mainSections'); botBubble(PROMPT.mainSections); mountWidget('mainSections'); } // 다중=메인홈부터 섹션 선택
       else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // 페이지 타입부터(템플릿·섹션 결정)
       render();
     }

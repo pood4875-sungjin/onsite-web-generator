@@ -248,6 +248,27 @@ const sections = {
   cta: (c, ctx) => `
     <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t" data-edit="bannerText">${esc(c.title || '지금 시작해 보세요')}</h2><p class="cta__s">${esc(c.subcopy || PH)}</p>
       <div class="cta__act">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.button(esc(c.secondaryCta), { variant: 'ghost', size: 'lg' }) : ''}</div></div></section>`,
+  comparison: (c, ctx) => {
+    const rows = c.items || (ctx.data.comparison && ctx.data.comparison.length ? ctx.data.comparison : [{ label: '온브랜드 일관성', a: '자동 보장', b: '수작업' }, { label: '생성 속도', a: '수 분', b: '수 일' }, { label: '유지보수', a: '토큰 한 곳', b: '페이지마다' }]);
+    return `<section class="container section"><div class="rise"><div class="badge">Comparison</div><h2 class="sec-title" data-edit="compareTitle">${esc(c.title || ctx.data.compareTitle || '기존 방식과의 차이')}</h2></div>
+      <div class="cmp rise"><div class="cmp__row cmp__head"><span></span><span class="cmp__us">${esc(ctx.data.productName || 'AX')}</span><span class="cmp__them">기존 방식</span></div>
+      ${rows.map((r, i) => `<div class="cmp__row"><span class="cmp__k" data-edit="comparison.${i}.label">${esc(r.label)}</span><span class="cmp__v cmp__v--us" data-edit="comparison.${i}.a">✓ ${esc(r.a)}</span><span class="cmp__v" data-edit="comparison.${i}.b">${esc(r.b)}</span></div>`).join('')}</div></section>`;
+  },
+  testimonial: (c, ctx) => {
+    const items = c.items || (ctx.data.testimonials && ctx.data.testimonials.length ? ctx.data.testimonials : [{ quote: '도입 후 페이지 제작이 며칠에서 몇 분으로 줄었어요.', who: '김기획 · 프로덕트' }, { quote: '브랜드 일관성 걱정이 사라졌습니다.', who: '이디자인 · 디자인' }, { quote: '개발 리소스 없이 사이트를 냈어요.', who: '박사업 · 사업개발' }]);
+    return `<section class="container section"><div class="rise"><div class="badge">Case Study</div><h2 class="sec-title" data-edit="caseTitle">${esc(c.title || ctx.data.caseTitle || '고객이 말하는 가치')}</h2></div>
+      <div class="card-grid" style="margin-top:40px">${items.map((t, i) => `<div class="p-card rise quote"><p class="quote__t" data-edit="testimonials.${i}.quote">"${esc(t.quote)}"</p><div class="quote__w" data-edit="testimonials.${i}.who">${esc(t.who)}</div></div>`).join('')}</div></section>`;
+  },
+  blog: (c, ctx) => {
+    const posts = c.items || (ctx.data.posts && ctx.data.posts.length ? ctx.data.posts : [{ tag: 'Guide', title: '디자인 토큰 시작하기', desc: PH }, { tag: 'Story', title: 'AX로 사이트 만든 이야기', desc: PH }, { tag: 'Update', title: '9월 릴리즈 노트', desc: PH }]);
+    return `<section class="container section"><div class="rise"><div class="badge">Blog</div><h2 class="sec-title" data-edit="blogTitle">${esc(c.title || ctx.data.blogTitle || '콘텐츠 · 자료실')}</h2></div>
+      <div class="card-grid" style="margin-top:40px">${posts.map((p, i) => `<a class="p-card rise post" href="#"><div class="p-card__media post__thumb"></div><div class="p-card__body"><span class="post__tag" data-edit="posts.${i}.tag">${esc(p.tag || 'Post')}</span><h3 class="p-card__title" data-edit="posts.${i}.title">${esc(p.title)}</h3><p class="p-card__desc" data-edit="posts.${i}.desc">${esc(p.desc || PH)}</p></div></a>`).join('')}</div></section>`;
+  },
+  faq: (c, ctx) => {
+    const items = c.items || (ctx.data.faqs && ctx.data.faqs.length ? ctx.data.faqs : [{ q: '도입에 개발이 필요한가요?', a: '아니요. 대화로 값만 채우면 됩니다.' }, { q: '디자인을 바꿀 수 있나요?', a: '스타일 팩을 교체하면 전체 룩이 바뀝니다.' }, { q: '다국어를 지원하나요?', a: '한국어·영어·일본어·중국어를 지원합니다.' }]);
+    return `<section class="container section"><div class="rise"><div class="badge">FAQ</div><h2 class="sec-title" data-edit="faqTitle">${esc(c.title || ctx.data.faqTitle || '자주 묻는 질문')}</h2></div>
+      <div class="faq rise" style="margin-top:32px">${items.map((f, i) => `<details class="faq__it"${i === 0 ? ' open' : ''}><summary class="faq__q" data-edit="faqs.${i}.q">${esc(f.q)}</summary><div class="faq__a" data-edit="faqs.${i}.a">${esc(f.a)}</div></details>`).join('')}</div></section>`;
+  },
   footer: (c, ctx) => `
     <footer class="footer"><div class="footer__inner">
       <div class="footer__l"><a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a><span class="badge">AX Design System</span></div>
@@ -290,6 +311,28 @@ const sectionsCss = () => `
   .midas .section > .rise{text-align:center}
   /* stat */
   .midas .stat{text-align:center}.midas .stat__v{font-family:var(--font-display);font-size:56px;font-weight:600;color:var(--ink);letter-spacing:-2px}.midas .stat__l{margin-top:8px;color:var(--muted)}
+  /* comparison */
+  .midas .cmp{margin-top:40px;border:1px solid var(--line-2);border-radius:var(--radius-lg);overflow:hidden;text-align:left}
+  .midas .cmp__row{display:grid;grid-template-columns:1.4fr 1fr 1fr;align-items:center;padding:16px 24px;border-top:1px solid var(--line-2);font-size:15px}
+  .midas .cmp__row:first-child{border-top:0}
+  .midas .cmp__head{background:var(--bg-2);font-weight:600;color:var(--muted);font-size:13px}
+  .midas .cmp__us{color:var(--ink)} .midas .cmp__k{font-weight:600;color:var(--ink)}
+  .midas .cmp__v{color:var(--muted)} .midas .cmp__v--us{color:var(--ink);font-weight:500}
+  /* testimonial */
+  .midas .p-card.quote{gap:16px;justify-content:space-between}
+  .midas .quote__t{font-size:17px;line-height:1.55;color:var(--ink)} .midas .quote__w{color:var(--muted);font-size:14px;font-weight:500}
+  /* blog */
+  .midas .p-card.post{text-decoration:none;overflow:hidden}
+  .midas .post__thumb{height:150px;background:linear-gradient(135deg,var(--bg-2),var(--line-2));border-radius:var(--radius-md);margin-bottom:16px}
+  .midas .post__tag{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
+  /* faq */
+  .midas .faq{max-width:760px;margin-left:auto;margin-right:auto;text-align:left}
+  .midas .faq__it{border-bottom:1px solid var(--line-2)}
+  .midas .faq__q{font-size:17px;font-weight:600;color:var(--ink);padding:20px 4px;cursor:pointer;list-style:none;position:relative;padding-right:32px}
+  .midas .faq__q::-webkit-details-marker{display:none}
+  .midas .faq__q::after{content:'+';position:absolute;right:6px;top:18px;font-size:22px;font-weight:400;color:var(--muted);transition:transform .2s}
+  .midas .faq__it[open] .faq__q::after{content:'−'}
+  .midas .faq__a{padding:0 4px 20px;color:var(--muted);font-size:15px;line-height:1.6}
   /* cta */
   .midas .cta__in{text-align:center;max-width:640px;margin:0 auto}
   .midas .cta__t{font-family:var(--font-display);font-size:var(--fs-h1);font-weight:600;letter-spacing:-.97px}
@@ -344,9 +387,9 @@ const midasPack = {
 
 
 
-  var DEMO_TEMPLATE={sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}]};
+  var DEMO_TEMPLATE={sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"comparison",tier:"rich"},{type:"testimonial",tier:"rich"},{type:"blog",tier:"rich"},{type:"faq",tier:"rich"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}]};
   window.MIDAS_PACK=midasPack; window.MIDAS_STYLE={id:"midas",name:"MIDAS AX",desc:"모노크롬 · 라이트 · Poppins",swatch:"linear-gradient(135deg,#e9eaec 0%,#1b1c1e 100%)"};
-  window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",cta:"CTA"} };
+  window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",comparison:"비교",testimonial:"고객사례",blog:"블로그",faq:"FAQ",cta:"CTA"} };
   window.renderMidasPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
     if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"bolt",title:f.title,desc:f.desc}})};
     if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};

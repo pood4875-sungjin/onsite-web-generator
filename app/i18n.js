@@ -213,7 +213,24 @@
     // 아이콘 갤러리
     '아이콘': ['Icons', 'アイコン', '图标'],
     '아이콘 리드': ['Icon resources on the platform. Click to copy a name.', 'プラットフォームのアイコン。クリックで名前をコピー。', '平台图标资源。点击复制名称。'],
-    '아이콘 검색 (예: home, arrow, search)': ['Search icons (e.g. home, arrow)', 'アイコン検索 (例: home, arrow)', '搜索图标（例：home, arrow）']
+    '아이콘 검색 (예: home, arrow, search)': ['Search icons (e.g. home, arrow)', 'アイコン検索 (例: home, arrow)', '搜索图标（例：home, arrow）'],
+    // 메인홈 섹션 선택
+    '메인 홈을 구성해볼게요. 헤더와 히어로는 기본으로 들어가요. 그 아래 어떤 섹션을 보여줄지 골라주세요 (여러 개 선택 가능).': ['Let’s build the home page. Header and Hero are always included. Choose which sections to show below (pick several).', 'ホームを構成しましょう。ヘッダーとヒーローは基本で入ります。その下に表示するセクションを選んでください（複数選択可）。', '来搭建首页。页头和主视觉默认包含。请选择下方要展示的板块（可多选）。'],
+    '필수': ['Required', '必須', '必填'],
+    '헤더': ['Header', 'ヘッダー', '页头'],
+    '개 섹션': [' sections', 'セクション', ' 个板块'],
+    '제품 핵심기능': ['Key features', '主要機能', '核心功能'],
+    '주요 기능을 카드로 소개': ['Highlight features as cards', '主要機能をカードで紹介', '用卡片展示功能'],
+    '비교 (Comparison)': ['Comparison', '比較 (Comparison)', '对比 (Comparison)'],
+    '기존 방식 등과 비교': ['Compare vs. the old way', '従来の方法と比較', '与传统方式对比'],
+    '고객사례 (Case Study)': ['Case Study', '導入事例 (Case Study)', '客户案例 (Case Study)'],
+    '사용 사례·고객 신뢰': ['Real use & trust', '利用事例・信頼', '使用案例·信任'],
+    '블로그·자료 (Blog)': ['Blog / Resources', 'ブログ・資料 (Blog)', '博客·资料 (Blog)'],
+    '콘텐츠·자료 탐색': ['Explore content & resources', 'コンテンツ・資料を探索', '浏览内容与资料'],
+    'FAQ (Accordion)': ['FAQ (Accordion)', 'FAQ (Accordion)', 'FAQ (Accordion)'],
+    '질문을 접고 펼쳐 안내': ['Expandable Q&A', '質問を開閉して案内', '可折叠问答'],
+    '배너 CTA': ['Banner CTA', 'バナー CTA', '横幅 CTA'],
+    '행동을 유도하는 배너': ['A call-to-action banner', '行動を促すバナー', '行动号召横幅']
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }

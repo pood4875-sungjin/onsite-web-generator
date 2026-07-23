@@ -12,7 +12,8 @@
   var SHAPES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="7.5" r="3.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><path d="M8 14l4 6H4z"/><rect x="13.5" y="14" width="6.5" height="6.5" rx="1.5"/></svg>';
   // 아이콘 레지스트리(icons.js)가 있으면 거기서, 없으면 인라인 폴백
   function ic(name, fb) { return (window.icon && window.ICON && window.ICON[name]) ? window.icon(name, {}) : fb; }
-  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['icons', 'icons.html', '아이콘', SHAPES], ['settings', '#', '설정', ic('settings', GEAR)]];
+  // 아이콘은 SNB 메뉴로 노출하지 않음 — 레지스트리(icons.js)는 백그라운드에서 플랫폼 아이콘 소스로만 사용.
+  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['settings', '#', '설정', ic('settings', GEAR)]];
 
   function tt(ko) { return (window.L ? window.L(ko) : ko); }
   function curCode() { var l = (window.I18N ? I18N.getLang() : 'ko'); var m = { ko: 'KO', en: 'EN', ja: 'JA', zh: 'ZH' }; return m[l] || l.toUpperCase(); }
