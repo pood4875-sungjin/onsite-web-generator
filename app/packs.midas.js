@@ -222,7 +222,11 @@ const sections = {
       <h1 class="hero__t" data-edit="tagline">${esc(c.title || ctx.data.tagline || 'Design Once.\nScale with AX.').replace(/\n/g, '<br>')}</h1>
       <p class="hero__lead rise" data-edit="subcopy">${esc(c.subcopy || ctx.data.subcopy || '사람과 AX가 함께 활용할 수 있도록\n패턴·정책·구조까지 연결된 시스템.').replace(/\n/g, '<br>')}</p>
       <div class="hero__cta rise">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.link(esc(c.secondaryCta), { arrow: true }) : ''}</div>
-    </div></section>`,
+    </div>
+    <div class="hero__media rise" data-img="hero">${(ctx.data.images && ctx.data.images.hero)
+      ? `<img src="${esc(ctx.data.images.hero)}" alt="">`
+      : `<div class="hero__ph">이미지 영역 · 편집에서 교체</div>`}</div>
+    </section>`,
   feature: (c, ctx) => `
     <section class="container section"><div class="rise">${c.eyebrow ? `<div class="badge">${esc(c.eyebrow)}</div>` : ''}<h2 class="sec-title">${esc(c.title || '핵심 기능')}</h2></div>
       <div class="card-grid" style="margin-top:40px">${(c.items || [{ icon: 'layers', title: 'Design Once', desc: PH }, { icon: 'sync', title: 'Scale with AX', desc: PH }, { icon: 'bolt', title: 'Connected System', desc: PH }]).map((it, i) => `<div class="p-card rise"><div class="p-card__media">${C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="p-card__desc" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`,
@@ -259,6 +263,9 @@ const sectionsCss = () => `
   .midas .hero__t .ch{display:inline-block;opacity:0;transform:translateY(20px);animation:midas-wave 1.21s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--ci,0)*26ms + 110ms)}
   .midas .hero__lead{margin:28px auto 0;font-size:20px;line-height:1.6;color:var(--muted);max-width:36em}
   .midas .hero__cta{margin-top:40px;display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .midas .hero__media{max-width:920px;margin:56px auto 0;padding:0 40px}
+  .midas .hero__media img{display:block;width:100%;border-radius:var(--radius-lg);border:var(--bw) solid var(--line)}
+  .midas .hero__ph{height:340px;border-radius:var(--radius-lg);border:1px dashed var(--line-2);background:var(--bg-2);display:grid;place-items:center;color:var(--soft);font-size:14px}
   /* section titles */
   .midas .sec-title{font-family:var(--font-display);font-size:var(--fs-h1);font-weight:600;letter-spacing:-.97px;text-align:center}
   .midas .badge{margin-bottom:16px}
