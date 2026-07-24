@@ -6,7 +6,7 @@
   /* 팀 공용 프록시(관리자 키 1개, proxy/README.md로 배포) 주소.
      채우면 전원 프록시 모드(개별 키 불필요·모델 서버 고정·일일 제한 서버 적용).
      비우면 BYOK(각자 키) 모드. 로컬 테스트: localStorage 'onsite-ai-proxy'로 오버라이드 가능. */
-  var PROXY_URL = '';
+  var PROXY_URL = 'https://webgen-ppt-proxy.ksj0225.workers.dev';
 
   var KEY_LS = 'onsite-ai-key', MODEL_LS = 'onsite-ai-model', PROXY_LS = 'onsite-ai-proxy';
   var DEFAULT_MODEL = 'claude-sonnet-5';

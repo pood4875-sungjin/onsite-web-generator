@@ -7,4 +7,4 @@ compatibility_date = "2026-07-01"
 # 출력된 id를 아래에 붙여넣기.
 [[kv_namespaces]]
 binding = "RATE_KV"
-id = "<KV_NAMESPACE_ID_붙여넣기>"
+id = "96139687e5e44434813b6ffd1dc6d7a4"
