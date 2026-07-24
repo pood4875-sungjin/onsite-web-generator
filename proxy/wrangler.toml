@@ -1,0 +1,10 @@
+name = "webgen-ppt-proxy"
+main = "worker.js"
+compatibility_date = "2026-07-01"
+
+# IP당 일일 호출 카운트 저장용 KV.
+# 배포 전 1회: npx wrangler kv namespace create RATE_KV
+# 출력된 id를 아래에 붙여넣기.
+[[kv_namespaces]]
+binding = "RATE_KV"
+id = "<KV_NAMESPACE_ID_붙여넣기>"

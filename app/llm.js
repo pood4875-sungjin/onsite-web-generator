@@ -3,7 +3,12 @@
    브라우저에서 api.anthropic.com 직접 호출(anthropic-dangerous-direct-browser-access 헤더로 CORS 허용).
    키는 서버로 전송되지 않으며 이 기기 로컬에만 존재. window.LLM 노출. */
 (function () {
-  var KEY_LS = 'onsite-ai-key', MODEL_LS = 'onsite-ai-model';
+  /* 팀 공용 프록시(관리자 키 1개, proxy/README.md로 배포) 주소.
+     채우면 전원 프록시 모드(개별 키 불필요·모델 서버 고정·일일 제한 서버 적용).
+     비우면 BYOK(각자 키) 모드. 로컬 테스트: localStorage 'onsite-ai-proxy'로 오버라이드 가능. */
+  var PROXY_URL = '';
+
+  var KEY_LS = 'onsite-ai-key', MODEL_LS = 'onsite-ai-model', PROXY_LS = 'onsite-ai-proxy';
   var DEFAULT_MODEL = 'claude-sonnet-5';
   var MODELS = [
     { id: 'claude-sonnet-5', name: 'Sonnet 5 · 균형(권장)' },
@@ -17,6 +22,10 @@
   function setModel(v) { try { v ? localStorage.setItem(MODEL_LS, v) : localStorage.removeItem(MODEL_LS); } catch (e) {} }
   function hasKey() { return !!getKey(); }
   function maskKey(k) { k = k || getKey(); if (!k) return ''; return k.length <= 12 ? '••••' : k.slice(0, 7) + '…' + k.slice(-4); }
+  function proxyUrl() { var o = ''; try { o = localStorage.getItem(PROXY_LS) || ''; } catch (e) {} return (o || PROXY_URL || '').replace(/\/$/, ''); }
+  function usingProxy() { return !!proxyUrl(); }
+  // AI 사용 가능? 프록시(팀 공용) 또는 개인 키
+  function aiAvailable() { return usingProxy() || hasKey(); }
 
   // 저수준: 단일 유저 메시지 + 시스템 프롬프트 → 텍스트 응답
   async function messages(opts) {
@@ -75,6 +84,19 @@
   // 브리프 → 덱 JSON (LLM 생성). 세부 문구까지 채움.
   async function composeDeck(brief) {
     brief = brief || {};
+    // 프록시 모드: 서버가 프롬프트 조립·모델 고정·일일 제한 적용. 키 불필요.
+    if (usingProxy()) {
+      var pres = await fetch(proxyUrl() + '/compose', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', outline: brief.outline || [] }),
+      });
+      var pj = null; try { pj = await pres.json(); } catch (e) {}
+      if (!pres.ok) throw new Error((pj && (pj.message || pj.error)) || ('HTTP ' + pres.status));
+      var pdeck = parseDeck(pj.text);
+      pdeck.style = brief.style || pdeck.style || 'ax';
+      pdeck.accent = pdeck.accent || 'blue';
+      return pdeck;
+    }
     var sys =
       '너는 시니어 발표 장표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
       '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
@@ -98,5 +120,6 @@
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
     hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, parseDeck: parseDeck,
+    proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();
