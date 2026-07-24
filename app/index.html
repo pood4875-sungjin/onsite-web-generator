@@ -37,44 +37,40 @@
   .kc{width:300px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
   .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
   .kc.sel{border-color:var(--ink)}
-  .kc .thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative}
-  .kc.single .thumb{background:color-mix(in srgb,var(--a-blue) 12%,var(--canvas))}
-  .kc.multi .thumb{background:color-mix(in srgb,var(--a-purple) 12%,var(--canvas))}
-  .kc.email .thumb{background:color-mix(in srgb,var(--a-green,#03C75A) 12%,var(--canvas))}
-  .kc.email .env{position:relative;width:104px;height:70px;border:1.5px solid color-mix(in srgb,var(--a-green,#03C75A) 55%,var(--ink));border-radius:8px;background:var(--surface);transition:var(--dur) var(--ease)}
-  .kc.email .env .flap{position:absolute;top:0;left:0;right:0;height:34px;border-bottom:1.5px solid color-mix(in srgb,var(--a-green,#03C75A) 55%,var(--ink));clip-path:polygon(0 0,50% 78%,100% 0);opacity:.5}
-  .kc.email .env .eln{position:absolute;left:14px;right:14px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--a-green,#03C75A) 45%,transparent)}
-  .kc.email .env .e1{bottom:26px;right:44px}.kc.email .env .e2{bottom:17px}.kc.email .env .e3{bottom:8px;right:34px;opacity:.6}
-  .kc.email .env{animation:thmFloat 3.8s var(--ease) infinite}
-  .kc.email:hover .env{transform:translateY(-6px) scale(1.03)}
-  @media (prefers-reduced-motion:reduce){.kc.email .env{animation:none}}
+  .kc .thumb{height:150px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  /* 타입별 컬러 그라디언트 (Figma 시안 참고: 랜딩=블루·웹=보라·이메일=그린·PPT=레드) */
+  .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
+  .tb-web{background:radial-gradient(130% 130% at 50% -10%,#2e0a80 0%,#6d3bf5 44%,#d0bffb 100%)}
+  .tb-mail{background:radial-gradient(130% 130% at 50% -10%,#00401f 0%,#12b46a 46%,#c6f0da 100%)}
+  .tb-ppt{background:radial-gradient(130% 130% at 50% -10%,#5e0a0a 0%,#e23b3b 46%,#f7cfcf 100%)}
+  /* 프로스티드 글래스 창 */
+  .gw{position:relative;border-radius:12px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.2);overflow:hidden;padding:28px 12px 14px;display:flex;flex-direction:column;gap:8px}
+  .gwd{position:absolute;top:11px;left:12px;display:flex;gap:5px}.gwd i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.65)}
+  .gwhero{height:34px;border-radius:8px;flex:none;margin-bottom:3px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
+  .gwbar{height:8px;border-radius:5px;flex:none;background:rgba(255,255,255,.72)}
+  .w70{width:70%}.w60{width:60%}.w56{width:56%}.w52{width:52%}.w50{width:50%}.w40{width:40%}.cc{align-self:center}
+  .gw-land{width:158px;height:112px}
+  .gw-mail{width:108px;height:132px}
+  .gw-ppt{width:162px;height:100px}.gw-ppt .gwhero{height:30px}
+  /* 웹사이트 = 3겹 스택 */
+  .gwstack{position:relative;width:158px;height:120px}
+  .gws{position:absolute;left:0;bottom:0;width:150px;height:106px;border-radius:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .gws1{z-index:3;padding:26px 12px 12px;display:flex;flex-direction:column;gap:7px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  .gws2{z-index:2;transform:translate(8px,-9px);opacity:.62}
+  .gws3{z-index:1;transform:translate(16px,-18px);opacity:.36}
+  .gws1 .gwhero{height:30px;margin-bottom:2px}
+  /* 모션 */
+  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .tb-land .gw,.tb-mail .gw,.tb-ppt .gw{animation:thmFloat 3.8s var(--ease) infinite}
+  .tb-web .gwstack{animation:thmFloat 4.2s var(--ease) infinite}
+  .kc:hover .gw,.kc:hover .gwstack{filter:brightness(1.05)}
+  .kc.single:hover .gw-land,.kc.email:hover .gw-mail,.kc.ppt:hover .gw-ppt{box-shadow:0 18px 44px rgba(0,0,0,.28)}
+  .kc.multi:hover .gws2{transform:translate(14px,-13px)}
+  .kc.multi:hover .gws3{transform:translate(28px,-25px)}
+  @media (prefers-reduced-motion:reduce){.tb-land .gw,.tb-mail .gw,.tb-ppt .gw,.tb-web .gwstack{animation:none}}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
-  /* mini page */
-  .pg{width:92px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:8px;display:flex;flex-direction:column;gap:5px}
-  .pg .d3{display:flex;gap:3px;margin-bottom:2px}.pg .d3 i{width:4px;height:4px;border-radius:50%;background:var(--hairline-strong)}
-  .pg .ln{height:5px;border-radius:2px;background:var(--hairline)}.pg .ln.t{width:60%;height:7px;background:var(--hairline-strong)}
-  .pg .g2{display:flex;gap:4px;margin-top:2px}.pg .g2 span{flex:1;height:14px;border-radius:3px;background:var(--canvas-2)}
-  .single .pg .ln.c{width:42%;background:var(--a-blue);opacity:.75}
-  .multi .pg .ln.c{width:42%;background:var(--a-purple);opacity:.75}
-  .fan{position:relative;width:126px;height:112px}
-  .fan .pg{position:absolute;left:50%;top:50%;transition:transform .5s var(--ease),opacity .4s var(--ease)}
-  .fan .f1{transform:translate(-50%,-50%);z-index:3}
-  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;height:98px;filter:brightness(.92)}
-  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;height:98px;filter:brightness(.84)}
-
-  /* 썸네일 모션 — 단일=은은한 플로트+생성 라인, 다중=카드 부채 브리딩, hover 시 강조 */
-  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  @keyframes thmGen{0%{width:20%;opacity:.5}50%{width:52%;opacity:1}100%{width:20%;opacity:.5}}
-  .kc.single .thumb .pg{animation:thmFloat 3.6s var(--ease) infinite}
-  .kc.single .thumb .pg .ln.c{animation:thmGen 2.4s var(--ease) infinite}
-  .kc.single:hover .thumb .pg{transform:translateY(-7px) scale(1.03)}
-  .kc.multi .fan{animation:thmFloat 4s var(--ease) infinite}
-  .kc.multi:hover .fan .f1{transform:translate(-50%,-54%)}
-  .kc.multi:hover .fan .f2{transform:translate(-86%,-44%) rotate(-13deg)}
-  .kc.multi:hover .fan .f3{transform:translate(-14%,-44%) rotate(13deg)}
-  @media (prefers-reduced-motion:reduce){.kc.single .thumb .pg,.kc.single .thumb .pg .ln.c,.kc.multi .fan{animation:none}}
 
   /* step2 */
   .fields{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px}
@@ -109,16 +105,20 @@
     <p class="sub" data-i18n="단일 페이지 하나, 아니면 여러 페이지 사이트.">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
     <div class="cards">
       <button class="kc single" data-k="single">
-        <div class="thumb"><div class="pg"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
+        <div class="thumb tb-land"><div class="gw gw-land"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w70"></span><span class="gwbar w52"></span></div></div>
         <div class="lab"><div class="kt" data-i18n="랜딩페이지">랜딩페이지</div><div class="kd" data-i18n="단일페이지 · 랜딩·공지 한 장">단일페이지 · 랜딩·공지 한 장</div></div>
       </button>
       <button class="kc multi" data-k="multi">
-        <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
+        <div class="thumb tb-web"><div class="gwstack"><span class="gw gws gws3"></span><span class="gw gws gws2"></span><span class="gw gws gws1"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w40"></span><span class="gwbar w60"></span><span class="gwbar w50"></span></span></div></div>
         <div class="lab"><div class="kt" data-i18n="웹사이트">웹사이트</div><div class="kd" data-i18n="다중페이지 · 메인·기능·요금…">다중페이지 · 메인·기능·요금…</div></div>
       </button>
       <button class="kc email" data-k="edm">
-        <div class="thumb"><div class="env"><span class="flap"></span><span class="eln e1"></span><span class="eln e2"></span><span class="eln e3"></span></div></div>
+        <div class="thumb tb-mail"><div class="gw gw-mail"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w70"></span><span class="gwbar w70"></span><span class="gwbar w56"></span></div></div>
         <div class="lab"><div class="kt" data-i18n="이메일">이메일</div><div class="kd" data-i18n="eDM · 템플릿에서 시작">eDM · 템플릿에서 시작</div></div>
+      </button>
+      <button class="kc ppt" data-k="ppt">
+        <div class="thumb tb-ppt"><div class="gw gw-ppt"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar cc w50"></span><span class="gwbar cc w50"></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="PPT">PPT</div><div class="kd" data-i18n="발표 장표 · 16:9 슬라이드">발표 장표 · 16:9 슬라이드</div></div>
       </button>
     </div>
   </div>
