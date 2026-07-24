@@ -235,6 +235,15 @@
   .bub.bot.thinking i{display:inline-block;width:5px;height:5px;border-radius:99px;background:var(--tx3);margin:0 1.5px;animation:pctDot 1s ease-in-out infinite}
   .bub.bot.thinking i:nth-child(2){animation-delay:.15s}.bub.bot.thinking i:nth-child(3){animation-delay:.3s}
   @keyframes pctDot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  /* AI 작업중 버블 — 단계 + 경과시간 + 진행바 */
+  .bub.working{min-width:230px}
+  .wk-head{display:flex;align-items:center;gap:7px}
+  .wk-spin{width:13px;height:13px;flex:0 0 auto;border-radius:99px;border:2px solid var(--line2);border-top-color:var(--accent);animation:wkSpin .8s linear infinite}
+  @keyframes wkSpin{to{transform:rotate(360deg)}}
+  .wk-stage{font-size:12.5px;font-weight:600;color:var(--tx)}
+  .wk-meta{margin-top:5px;font-size:11px;color:var(--tx3)}
+  .wk-bar{margin-top:8px;height:4px;border-radius:99px;background:var(--line);overflow:hidden}
+  .wk-bar i{display:block;height:100%;width:6%;border-radius:99px;background:linear-gradient(90deg,var(--cta),var(--accent));transition:width .8s cubic-bezier(.22,1,.36,1)}
   .pptp-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
   .pptp-head b{font-size:13px;color:var(--tx)}
   .pptp-cnt{font-size:11px;color:var(--tx3);background:var(--surf2);border:1px solid var(--line);border-radius:20px;padding:1px 8px}
@@ -746,7 +755,23 @@
   // 슬라이드 패널을 채팅 위 도킹 영역에 고정(대화가 쌓여도 안 밀림)
   function mountPptDock(){ const d=document.getElementById('pptDock'); if(!d) return; d.style.display=''; d.innerHTML=''; d.append(buildPptPanel()); }
 
-  /* ---- PPT 내용수정 채팅 — AI가 문구·수치·톤만 수정(ops 패치). 디자인·구조 요청은 안내로 리다이렉트 ---- */
+  /* ---- PPT 내용수정 채팅 — 내용·구조(추가/분할/삭제/순서) AI 수정. 디자인만 안내로 리다이렉트 ---- */
+  // AI 작업중 버블: 단계 메시지 순환 + 경과초 + 진행바. 반환 {row, done()} — done()이 버블 제거.
+  function workingBubble(){
+    const stages=[ ['지시 해석 중…',12], ['관련 슬라이드 찾는 중…',38], ['문장 새로 쓰는 중…',66], ['덱에 반영 준비 중…',85] ];
+    const row=el('div','row');
+    const bub=el('div','bub bot working',
+      `<div class="wk-head"><span class="wk-spin"></span><span class="wk-stage">${tL(stages[0][0])}</span></div>`+
+      `<div class="wk-meta"><span class="wk-sec">0</span>${tL('초 경과 · 보통 10~25초 걸려요')}</div>`+
+      `<div class="wk-bar"><i></i></div>`);
+    row.append(bub); msgs.append(row); scroll();
+    const stEl=bub.querySelector('.wk-stage'), secEl=bub.querySelector('.wk-sec'), barEl=bub.querySelector('.wk-bar i');
+    let i=0, sec=0;
+    barEl.style.width=stages[0][1]+'%';
+    const stT=setInterval(()=>{ i++; if(i<stages.length){ stEl.textContent=tL(stages[i][0]); barEl.style.width=stages[i][1]+'%'; } else clearInterval(stT); }, 3500);
+    const scT=setInterval(()=>{ sec++; secEl.textContent=sec; }, 1000);
+    return { row, done(){ clearInterval(stT); clearInterval(scT); row.remove(); } };
+  }
   const _pptUndo=[];
   function initPptChat(){
     if(!(window.LLM && LLM.aiAvailable())) return;   // AI 없으면 컴포저 미노출(직접 편집만)
@@ -761,11 +786,11 @@
     async function doSend(){
       const t=inp.value.trim(); if(!t || send.disabled) return;
       meBubble(t); inp.value=''; send.disabled=true;
-      const think=el('div','row'); think.append(el('div','bub bot thinking','<i></i><i></i><i></i>')); msgs.append(think); scroll();
+      const wk=workingBubble();
       const snap=JSON.stringify(data.slides||[]);
       try{
         const res=await LLM.editDeck(data.slides||[], t);
-        think.remove();
+        wk.done();
         if(res.slides){
           _pptUndo.push(snap);
           data.slides=res.slides;
@@ -775,7 +800,7 @@
         } else {
           botBubble(res.message||tL('요청을 이해하지 못했어요. 슬라이드 내용 수정을 말씀해주세요.'));
         }
-      }catch(e){ think.remove(); botBubble(tL('수정에 실패했어요. 잠시 후 다시 시도해주세요.')+' ('+(e&&e.message||'')+')'); }
+      }catch(e){ wk.done(); botBubble(tL('수정에 실패했어요. 잠시 후 다시 시도해주세요.')+' ('+(e&&e.message||'')+')'); }
       finally{ send.disabled=false; scroll(); }
     }
     send.onclick=doSend;
