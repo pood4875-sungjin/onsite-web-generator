@@ -151,7 +151,6 @@
   const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
   let kind='single', stylePack='aether', org='';
 
-  const _L=(k)=>window.L?L(k):k;
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
     document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
     if(n===3){
