@@ -90,6 +90,8 @@
   const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
   const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
   let filter='all';
+  // 생성 플로우에서 이메일 선택 시 ?type=edm로 진입 → 해당 필터 프리셋
+  try{ const _t=new URLSearchParams(location.search).get('type'); if(_t && FILTERS.some(f=>f[0]===_t)) filter=_t; }catch(e){}
 
   function renderFilters(){
     const fb=document.getElementById('filters'); fb.innerHTML='';

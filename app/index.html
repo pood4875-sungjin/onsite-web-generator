@@ -29,13 +29,22 @@
   .sub{font-size:var(--fs-body-lg);color:var(--body-mid);margin:0 0 40px;letter-spacing:var(--tr-body)}
 
   /* 종류 카드 */
-  .cards{display:flex;gap:20px;justify-content:center}
+  .cards{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+  #st1{max-width:980px}
   .kc{width:300px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
   .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
   .kc.sel{border-color:var(--ink)}
   .kc .thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative}
   .kc.single .thumb{background:color-mix(in srgb,var(--a-blue) 12%,var(--canvas))}
   .kc.multi .thumb{background:color-mix(in srgb,var(--a-purple) 12%,var(--canvas))}
+  .kc.email .thumb{background:color-mix(in srgb,var(--a-green,#03C75A) 12%,var(--canvas))}
+  .kc.email .env{position:relative;width:104px;height:70px;border:1.5px solid color-mix(in srgb,var(--a-green,#03C75A) 55%,var(--ink));border-radius:8px;background:var(--surface);transition:var(--dur) var(--ease)}
+  .kc.email .env .flap{position:absolute;top:0;left:0;right:0;height:34px;border-bottom:1.5px solid color-mix(in srgb,var(--a-green,#03C75A) 55%,var(--ink));clip-path:polygon(0 0,50% 78%,100% 0);opacity:.5}
+  .kc.email .env .eln{position:absolute;left:14px;right:14px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--a-green,#03C75A) 45%,transparent)}
+  .kc.email .env .e1{bottom:26px;right:44px}.kc.email .env .e2{bottom:17px}.kc.email .env .e3{bottom:8px;right:34px;opacity:.6}
+  .kc.email .env{animation:thmFloat 3.8s var(--ease) infinite}
+  .kc.email:hover .env{transform:translateY(-6px) scale(1.03)}
+  @media (prefers-reduced-motion:reduce){.kc.email .env{animation:none}}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
@@ -104,6 +113,10 @@
         <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
         <div class="lab"><div class="kt" data-i18n="웹사이트">웹사이트</div><div class="kd" data-i18n="다중페이지 · 메인·기능·요금…">다중페이지 · 메인·기능·요금…</div></div>
       </button>
+      <button class="kc email" data-k="edm">
+        <div class="thumb"><div class="env"><span class="flap"></span><span class="eln e1"></span><span class="eln e2"></span><span class="eln e3"></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="이메일">이메일</div><div class="kd" data-i18n="eDM · 템플릿에서 시작">eDM · 템플릿에서 시작</div></div>
+      </button>
     </div>
   </div>
 
@@ -139,7 +152,10 @@
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
     document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1)); if(n===3) renderStyles(); };
 
-  document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{ kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80); });
+  document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{
+    if(c.dataset.k==='edm'){ location.href='resources.html?type=edm'; return; }  // 이메일=eDM 템플릿에서 시작
+    kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80);
+  });
 
   const _L=(k)=>window.L?window.L(k):k;
   const oc=document.getElementById('orgchips');
