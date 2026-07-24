@@ -61,12 +61,6 @@
     </div>
 
     <div class="card">
-      <h2 data-i18n="저장 항목">저장 항목</h2>
-      <p class="sub" data-i18n="이 사이트가 브라우저에 저장한 모든 데이터입니다. 사용 중이 아닌 항목(옛 버전 등)은 지워도 됩니다.">이 사이트가 브라우저에 저장한 모든 데이터입니다. 사용 중이 아닌 항목(옛 버전 등)은 지워도 됩니다.</p>
-      <div class="plist" id="klist"></div>
-    </div>
-
-    <div class="card">
       <h2 data-i18n="프로젝트 관리">프로젝트 관리</h2>
       <p class="sub" data-i18n="용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.">용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.</p>
       <div class="acts">
@@ -124,26 +118,7 @@
       box.append(row);
     });
   }
-  // 앱이 실제로 쓰는 키(보존). 나머지는 옛 버전/찌꺼기로 간주 → 삭제 가능
-  const CORE_KEYS = ['onsite-projects-v2','midas-theme','midas-lang'];
-  function allKeys(){ const out=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); out.push({k, kb:((k.length+(localStorage.getItem(k)||'').length)/1024)}); } return out.sort((a,b)=>b.kb-a.kb); }
-  function renderKeys(){
-    const box=document.getElementById('klist'); box.innerHTML='';
-    const ks=allKeys();
-    if(!ks.length){ box.innerHTML='<div class="empty">'+LL('저장된 데이터가 없어요.')+'</div>'; return; }
-    ks.forEach(({k,kb})=>{
-      const core=CORE_KEYS.indexOf(k)>=0;
-      const row=document.createElement('div'); row.className='prow';
-      row.innerHTML='<span class="nm">'+k+'</span>'
-        +'<span class="tag'+(core?'':' draft')+'">'+(core?LL('사용 중'):LL('기타'))+'</span>'
-        +'<span class="sz">'+kb.toFixed(0)+' KB</span>'
-        + (core?'<span style="width:28px"></span>':'<button class="del" title="'+LL('삭제')+'"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></button>');
-      const del=row.querySelector('.del');
-      if(del) del.onclick=()=>{ (window.uiConfirm?uiConfirm(LL('이 데이터를 삭제할까요?')+'\n'+k,{title:LL('저장 항목 삭제'),okText:LL('삭제'),danger:true}):Promise.resolve(confirm(k))).then(ok=>{ if(ok){ localStorage.removeItem(k); renderAll(); } }); };
-      box.append(row);
-    });
-  }
-  function renderAll(){ renderUsage(); renderKeys(); renderList(); }
+  function renderAll(){ renderUsage(); renderList(); }
 
   document.getElementById('cleanDraft').onclick=()=>{
     const drafts=getProjects().filter(p=>!isBuilt(p));
