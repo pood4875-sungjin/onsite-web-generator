@@ -10,6 +10,7 @@
 <script src="packs.midas.js"></script>
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
 <script src="i18n.js"></script>
 <script src="icons.js"></script>
 <script src="shell.js"></script>
@@ -82,12 +83,13 @@
 
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
-  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function renderForStyle(sp, pg){ const d=pg.data||{};
     if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
     if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
   function thumb(p){ const wrap=document.createElement('div'); wrap.className='thumb'; const pg=p.pages[0];
     if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(p.stylePack,pg); wrap.append(f);

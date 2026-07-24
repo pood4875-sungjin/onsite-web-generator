@@ -10,6 +10,7 @@
 <script src="../packs.midas.js"></script>
 <script src="../packs.edm.js"></script>
 <script src="../packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
 <script src="../edm/promo01.js"></script>
 <script src="../modal.js"></script>
 <script src="../i18n.js"></script>
@@ -372,6 +373,7 @@
     const rd = nav ? Object.assign({}, d, {nav}) : d;
     if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
+    if(pack && pack.id==='ppt' && typeof renderPptDeck==='function') return renderPptDeck(rd);
     if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume:vol, motion:mot});
     return renderComposed(rd, pack, mot, pt, vol);
@@ -508,8 +510,9 @@
     if(window.KRDS_STYLE) l.push({id:'krds',name:KRDS_STYLE.name,swatch:KRDS_STYLE.swatch});
     if(window.MIDAS_STYLE) l.push({id:'midas',name:MIDAS_STYLE.name,swatch:MIDAS_STYLE.swatch});
     if(window.AETHER_STYLE) l.push({id:'aglass',name:AETHER_STYLE.name,swatch:AETHER_STYLE.swatch});
+    if(window.PPT_STYLE) l.push({id:'ppt',name:PPT_STYLE.name,swatch:PPT_STYLE.swatch});
     return l; }
-  function packById(id){ if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
+  function packById(id){ if(id==='ppt'&&window.PPT_STYLE) return PPT_STYLE; if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
@@ -849,7 +852,8 @@
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
-    pack = (project.stylePack==='edm') ? {id:'edm', name:'eDM'}
+    pack = (project.stylePack==='ppt' && typeof PPT_STYLE!=='undefined') ? PPT_STYLE
+         : (project.stylePack==='edm') ? {id:'edm', name:'eDM'}
          : (project.stylePack==='aglass' && typeof AETHER_STYLE!=='undefined') ? AETHER_STYLE
          : (project.stylePack==='krds' && typeof KRDS_STYLE!=='undefined') ? KRDS_STYLE
          : (project.stylePack==='midas' && typeof MIDAS_STYLE!=='undefined') ? MIDAS_STYLE

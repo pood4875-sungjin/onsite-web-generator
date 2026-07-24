@@ -10,6 +10,7 @@
 <script src="packs.midas.js"></script>
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
 <script src="edm/promo01.js"></script>
 <script src="templates.js"></script>
 <script src="i18n.js"></script>
@@ -79,8 +80,9 @@
     if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
     if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
-  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function fit(wrap, iframe, wide){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; iframe.style.width='1280px'; iframe.style.height=(wrap.clientHeight/s)+'px'; iframe.style.transform='scale('+s+')'; }); }
 
   const grid=document.getElementById('grid');
