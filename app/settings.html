@@ -84,8 +84,8 @@
 
   function lsUsedKB(){ let n=0; try{ for(const k in localStorage){ if(Object.prototype.hasOwnProperty.call(localStorage,k)) n+=(k.length+(localStorage.getItem(k)||'').length); } }catch(e){} return n/1024; }
   function projKB(p){ try{ return JSON.stringify(p).length/1024; }catch(e){ return 0; } }
-  // 구축 여부: 페이지 중 생성 완료(chat.generated) 또는 실질 콘텐츠 존재
-  function isBuilt(p){ return (p.pages||[]).some(pg=>{ const c=pg.chat&&pg.chat.generated; const d=pg.data||{}; const has=(d.features&&d.features.length)||(d.stats&&d.stats.length)||d.bannerText||(d.sections&&d.sections.length); return c||has; }); }
+  // 구축 여부: '생성 완료(chat.generated)'된 페이지가 하나라도 있어야 구축. (콘텐츠 조금 있어도 미완성이면 미구축)
+  function isBuilt(p){ return (p.pages||[]).some(pg=> pg.chat && pg.chat.generated === true); }
 
   function styleLabel(sp){ if(sp==='edm')return 'eDM'; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; try{ return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }catch(e){ return sp; } }
 
