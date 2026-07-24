@@ -8,54 +8,56 @@
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
   var pad2 = function (n) { return String(n).padStart(2, '0'); };
   function kind(s, fb) { return esc((s.title || fb || s.type || 'Slide').replace(/\n/g, ' ')); }
-  function head(s) { return '<div class="s-head"><h2 class="s-title" data-edit>' + ml(s.title || '') + '</h2><span class="s-index">' + esc(s.index || '') + '</span></div>'; }
-  function colsBlock(cols) {
+  function de(path) { return ' data-edit="' + path + '"'; }   // slides.i.<path> 편집 훅
+  function head(s, P) { return '<div class="s-head"><h2 class="s-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h2><span class="s-index">' + esc(s.index || '') + '</span></div>'; }
+  function colsBlock(cols, P) {
     var n = cols.length, cls = n <= 2 ? 'cols2' : 'cols3';
-    return '<div class="' + cls + '">' + cols.map(function (c) {
-      var inner = '<h3 class="block-sub" data-edit>' + esc(c.sub || '') + '</h3>';
-      if (c.items && c.items.length) inner += '<ul class="block-list">' + c.items.map(function (li) { return '<li data-edit>' + ml(li) + '</li>'; }).join('') + '</ul>';
-      if (c.text) inner += '<p class="block-p" data-edit>' + ml(c.text) + '</p>';
+    return '<div class="' + cls + '">' + cols.map(function (c, j) {
+      var CP = P + '.' + j;
+      var inner = '<h3 class="block-sub"' + de(CP + '.sub') + '>' + esc(c.sub || '') + '</h3>';
+      if (c.items && c.items.length) inner += '<ul class="block-list">' + c.items.map(function (li, k) { return '<li' + de(CP + '.items.' + k) + '>' + ml(li) + '</li>'; }).join('') + '</ul>';
+      if (c.text) inner += '<p class="block-p"' + de(CP + '.text') + '>' + ml(c.text) + '</p>';
       return '<div>' + inner + '</div>';
     }).join('') + '</div>';
   }
   var R = {
-    cover: function (s) {
+    cover: function (s, P) {
       var meta = (s.meta || []);
       var cells = meta.map(function (m, i) { var sp = (meta.length > 1 && i === meta.length - 1) ? ' class="spacer"' : ''; return '<div' + sp + '><p class="meta-k">' + esc(m.k) + '</p><p class="meta-v">' + esc(m.v) + '</p></div>'; }).join('');
       return '<section class="slide dark cover" data-kind="Cover"><div class="cover-meta">' + cells + '</div><div class="cover-foot"><div>' +
         (s.eyebrow ? '<p class="meta-k" style="margin-bottom:18px;letter-spacing:.14em">' + esc(s.eyebrow) + '</p>' : '') +
-        '<h1 class="cover-title" data-edit>' + ml(s.title || '') + '</h1>' +
-        (s.subtitle ? '<p class="block-p" data-edit style="color:var(--muted-alt);margin-top:24px;max-width:600px">' + esc(s.subtitle) + '</p>' : '') +
+        '<h1 class="cover-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
+        (s.subtitle ? '<p class="block-p"' + de(P + '.subtitle') + ' style="color:var(--muted-alt);margin-top:24px;max-width:600px">' + esc(s.subtitle) + '</p>' : '') +
         '</div><div class="cover-arrow">→</div></div></section>';
     },
-    agenda: function (s) {
+    agenda: function (s, P) {
       var items = s.items || [];
       return '<section class="slide" data-kind="Agenda"><div class="agenda"><div class="agenda-title">' + esc(s.title || 'Agenda') + '</div><div class="agenda-list">' +
-        items.map(function (it, i) { return '<div class="agenda-row"><p class="agenda-label" data-edit>' + esc(it) + '</p><span class="agenda-badge">' + pad2(i + 1) + '</span></div>'; }).join('') + '</div></div></section>';
+        items.map(function (it, i) { return '<div class="agenda-row"><p class="agenda-label"' + de(P + '.items.' + i) + '>' + esc(it) + '</p><span class="agenda-badge">' + pad2(i + 1) + '</span></div>'; }).join('') + '</div></div></section>';
     },
-    rows: function (s) {
-      var rows = (s.rows || []).map(function (r) { return '<div class="row"><span class="row-num">' + esc(r.num || '') + '</span><h3 class="row-label" data-edit>' + esc(r.label || '') + '</h3><p class="row-desc" data-edit>' + ml(r.desc || '') + '</p></div>'; }).join('');
-      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s) + '<div class="s-body"><div class="rows">' + rows + '</div></div></section>';
+    rows: function (s, P) {
+      var rows = (s.rows || []).map(function (r, j) { return '<div class="row"><span class="row-num">' + esc(r.num || '') + '</span><h3 class="row-label"' + de(P + '.rows.' + j + '.label') + '>' + esc(r.label || '') + '</h3><p class="row-desc"' + de(P + '.rows.' + j + '.desc') + '>' + ml(r.desc || '') + '</p></div>'; }).join('');
+      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><div class="rows">' + rows + '</div></div></section>';
     },
-    cols: function (s) { return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s) + '<div class="s-body">' + colsBlock(s.cols || []) + '</div></section>'; },
-    bigstat: function (s) {
-      var sides = (s.sides || []).map(function (x) { return '<div><h3 class="block-sub" data-edit>' + esc(x.sub || '') + '</h3><p class="block-p" data-edit>' + ml(x.text || '') + '</p></div>'; }).join('');
-      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s) + '<div class="s-body"><div class="bigstat"><p class="bignum" data-edit>' + ml(s.big || '') + '</p><div class="bigstat-side">' + sides + '</div></div></div></section>';
+    cols: function (s, P) { return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body">' + colsBlock(s.cols || [], P + '.cols') + '</div></section>'; },
+    bigstat: function (s, P) {
+      var sides = (s.sides || []).map(function (x, j) { return '<div><h3 class="block-sub"' + de(P + '.sides.' + j + '.sub') + '>' + esc(x.sub || '') + '</h3><p class="block-p"' + de(P + '.sides.' + j + '.text') + '>' + ml(x.text || '') + '</p></div>'; }).join('');
+      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><div class="bigstat"><p class="bignum"' + de(P + '.big') + '>' + ml(s.big || '') + '</p><div class="bigstat-side">' + sides + '</div></div></div></section>';
     },
-    divider: function (s) {
-      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '"><div class="s-head"><h2 class="s-title" data-edit style="font-size:128px;line-height:.9">' + ml(s.title || '') + '</h2><span class="s-index">' + esc(s.index || '') + '</span></div><div class="s-body" style="margin-top:40px"><p class="block-p" data-edit style="font-size:22px;' + (s.dark ? 'color:var(--on-alt-soft)' : '') + '">' + ml(s.sub || '') + '</p></div></section>';
+    divider: function (s, P) {
+      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '"><div class="s-head"><h2 class="s-title"' + de(P + '.title') + ' style="font-size:128px;line-height:.9">' + ml(s.title || '') + '</h2><span class="s-index">' + esc(s.index || '') + '</span></div><div class="s-body" style="margin-top:40px"><p class="block-p"' + de(P + '.sub') + ' style="font-size:22px;' + (s.dark ? 'color:var(--on-alt-soft)' : '') + '">' + ml(s.sub || '') + '</p></div></section>';
     },
-    statement: function (s) {
-      var c = (s.cols && s.cols.length) ? colsBlock(s.cols) : '';
-      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s) + '<div class="s-body"><p class="block-p" data-edit style="font-size:26px;line-height:1.5;max-width:900px;margin-bottom:36px;' + (s.dark ? 'color:var(--on-alt-soft)' : '') + '">' + ml(s.text || '') + '</p>' + c + '</div></section>';
+    statement: function (s, P) {
+      var c = (s.cols && s.cols.length) ? colsBlock(s.cols, P + '.cols') : '';
+      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><p class="block-p"' + de(P + '.text') + ' style="font-size:26px;line-height:1.5;max-width:900px;margin-bottom:36px;' + (s.dark ? 'color:var(--on-alt-soft)' : '') + '">' + ml(s.text || '') + '</p>' + c + '</div></section>';
     },
-    closing: function (s) {
+    closing: function (s, P) {
       var contacts = s.contacts || [], fills = [0, 2, 4], cells = '';
       for (var i = 0; i < 6; i++) { var ci = fills.indexOf(i); if (ci > -1 && contacts[ci]) cells += '<div class="contact-cell fill"><p class="contact-k">' + esc(contacts[ci].k) + '</p><p class="contact-v">' + esc(contacts[ci].v) + '</p></div>'; else cells += '<div class="contact-cell"></div>'; }
-      return '<section class="slide dark contact" data-kind="Closing"><div class="contact-grid">' + cells + '</div><div class="contact-foot">' + (s.sub ? '<p class="contact-email">' + esc(s.sub) + '</p>' : '') + '<h2 class="contact-title" data-edit>' + ml(s.title || 'Thank you') + '</h2></div></section>';
+      return '<section class="slide dark contact" data-kind="Closing"><div class="contact-grid">' + cells + '</div><div class="contact-foot">' + (s.sub ? '<p class="contact-email">' + esc(s.sub) + '</p>' : '') + '<h2 class="contact-title"' + de(P + '.title') + '>' + ml(s.title || 'Thank you') + '</h2></div></section>';
     },
   };
-  function renderSlides(slides) { return (slides || []).map(function (s) { var fn = R[s.type] || R.rows; try { return fn(s); } catch (e) { return ''; } }).join('\n'); }
+  function renderSlides(slides) { return (slides || []).map(function (s, i) { var fn = R[s.type] || R.rows; try { return fn(s, 'slides.' + i); } catch (e) { return ''; } }).join('\n'); }
 
   /* ---- CSS: ppt-template tokens+deck 포팅 (뷰어 크롬 제거, 세로 스택) ---- */
   function css() {

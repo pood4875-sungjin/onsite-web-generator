@@ -406,10 +406,10 @@
     });
   }
   function setField(path,val){
-    const p=path.split('.');
-    if(p.length===1){ data[p[0]]=val; }
-    else if(p.length===2){ const [arr,i]=p; data[arr]=data[arr]||[]; data[arr][+i]=val; }   // 문자열 배열 (footerLinks 등)
-    else { const [arr,i,key]=p; data[arr]=data[arr]||[]; data[arr][+i]=data[arr][+i]||{}; data[arr][+i][key]=val; }
+    // 임의 깊이 경로 지원(예: slides.0.rows.1.label). 숫자 세그먼트=배열 인덱스.
+    const p=path.split('.'); let o=data;
+    for(let i=0;i<p.length-1;i++){ const k=/^\d+$/.test(p[i])?+p[i]:p[i]; const nextIsIdx=/^\d+$/.test(p[i+1]); if(o[k]==null) o[k]=nextIsIdx?[]:{}; o=o[k]; }
+    const last=p[p.length-1]; o[/^\d+$/.test(last)?+last:last]=val;
   }
   function pickImage(key){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
@@ -516,7 +516,7 @@
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
-  badge.onclick=(e)=>{ e.stopPropagation(); if(project && project.stylePack==='edm') return; const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
+  badge.onclick=(e)=>{ e.stopPropagation(); if(project && (project.stylePack==='edm'||project.stylePack==='ppt')) return; const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
   document.addEventListener('click',(e)=>{ const m=document.getElementById('stylemenu'); if(m && !m.contains(e.target) && e.target.id!=='badge') m.classList.remove('open'); });
 
   /* ---- 대화창↔프리뷰 리사이저 ---- */
@@ -650,6 +650,10 @@
     if(project && project.stylePack==='edm'){
       // eDM은 재생성 불가 — 기존 템플릿 구성 그대로 편집만
       d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.')}</span>`));
+      return d;
+    }
+    if(project && project.stylePack==='ppt'){
+      d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하세요.')}</span>`));
       return d;
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
@@ -885,7 +889,7 @@
   // 템플릿에서 시작 → 편집모드 자동 진입
   if(window.I18N) I18N.apply(document);   // 정적 마크업(data-i18n) 로컬라이징
   // eDM = 재생성 불가·편집전용: 재생성 UI 숨김 + 스타일 배지 잠금 + 편집모드 자동 진입
-  const _isEdm = project && project.stylePack==='edm';
+  const _isEdm = project && (project.stylePack==='edm'||project.stylePack==='ppt');
   if(_isEdm){
     generated=true;
     const rs=document.getElementById('reset'); if(rs) rs.style.display='none';
