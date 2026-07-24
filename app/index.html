@@ -6,45 +6,72 @@
 <title>새 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
+<script src="llm.js"></script>
+<script src="edm/promo01.js"></script>
+<script src="templates.js"></script>
+<script src="modal.js"></script>
+<script src="i18n.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
-  body{min-height:100vh;overflow-y:auto;background:var(--scrim),var(--canvas);background-attachment:fixed}
+  body{min-height:100vh;overflow-y:auto}
   .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;z-index:5}
   .nav .r{display:flex;align-items:center;gap:10px}
-  .navlink{color:var(--body);font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-decoration:none;border:1px solid var(--hairline);background:var(--surface);border-radius:var(--r-sm);padding:8px 14px}
-  .navlink:hover{color:var(--ink);border-color:var(--hairline-strong)}
+  .homebtn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:var(--r-pill);border:1px solid var(--hairline);background:var(--surface-solid);color:var(--body);text-decoration:none;transition:var(--dur) var(--ease)}
+  .homebtn:hover{color:var(--ink);border-color:var(--hairline-strong);background:var(--brand-weak)}
 
   .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:104px 24px 96px}
   .step{display:none;width:100%;max-width:660px;text-align:center;margin-top:auto;margin-bottom:auto;animation:fade .3s var(--ease)}
   .step.on{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .eyebrow{margin-bottom:14px}
-  h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:var(--lh-tight);margin:0 0 12px;color:var(--ink)}
+  h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0 0 40px;color:var(--ink)}
   .sub{font-size:var(--fs-body-lg);color:var(--body-mid);margin:0 0 40px;letter-spacing:var(--tr-body)}
 
   /* 종류 카드 */
-  .cards{display:flex;gap:20px;justify-content:center}
-  .kc{width:300px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
+  .cards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap}
+  #st1{max-width:980px}
+  .kc{flex:1 1 0;min-width:0;max-width:290px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
   .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
   .kc.sel{border-color:var(--ink)}
-  .kc .thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative}
-  .kc.single .thumb{background:color-mix(in srgb,var(--a-blue) 12%,var(--canvas))}
-  .kc.multi .thumb{background:color-mix(in srgb,var(--a-purple) 12%,var(--canvas))}
+  .kc .thumb{height:150px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  /* 타입별 컬러 그라디언트 (Figma 시안 참고: 랜딩=블루·웹=보라·이메일=그린·PPT=레드) */
+  .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
+  .tb-web{background:radial-gradient(130% 130% at 50% -10%,#2e0a80 0%,#6d3bf5 44%,#d0bffb 100%)}
+  .tb-mail{background:radial-gradient(130% 130% at 50% -10%,#00401f 0%,#12b46a 46%,#c6f0da 100%)}
+  .tb-ppt{background:radial-gradient(130% 130% at 50% -10%,#5e0a0a 0%,#e23b3b 46%,#f7cfcf 100%)}
+  /* 프로스티드 글래스 창 */
+  .gw{position:relative;border-radius:12px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.2);overflow:hidden;padding:28px 12px 14px;display:flex;flex-direction:column;gap:8px}
+  .gwd{position:absolute;top:11px;left:12px;display:flex;gap:5px}.gwd i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.65)}
+  .gwhero{height:34px;border-radius:8px;flex:none;margin-bottom:3px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
+  .gwbar{height:8px;border-radius:5px;flex:none;background:rgba(255,255,255,.72)}
+  .w70{width:70%}.w60{width:60%}.w56{width:56%}.w52{width:52%}.w50{width:50%}.w40{width:40%}.cc{align-self:center}
+  .gw-land{width:158px;height:112px}
+  .gw-mail{width:108px;height:132px}
+  .gw-ppt{width:162px;height:100px}.gw-ppt .gwhero{height:30px}
+  /* 웹사이트 = 3겹 스택 */
+  .gwstack{position:relative;width:158px;height:120px}
+  .gws{position:absolute;left:0;bottom:0;width:150px;height:106px;border-radius:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .gws1{z-index:3;padding:26px 12px 12px;display:flex;flex-direction:column;gap:7px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  .gws2{z-index:2;transform:translate(8px,-9px);opacity:.62}
+  .gws3{z-index:1;transform:translate(16px,-18px);opacity:.36}
+  .gws1 .gwhero{height:30px;margin-bottom:2px}
+  /* 모션 */
+  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .tb-land .gw,.tb-mail .gw,.tb-ppt .gw{animation:thmFloat 3.8s var(--ease) infinite}
+  .tb-web .gwstack{animation:thmFloat 4.2s var(--ease) infinite}
+  .kc:hover .gw,.kc:hover .gwstack{filter:brightness(1.05)}
+  .kc.single:hover .gw-land,.kc.email:hover .gw-mail,.kc.ppt:hover .gw-ppt{box-shadow:0 18px 44px rgba(0,0,0,.28)}
+  .kc.multi:hover .gws2{transform:translate(14px,-13px)}
+  .kc.multi:hover .gws3{transform:translate(28px,-25px)}
+  @media (prefers-reduced-motion:reduce){.tb-land .gw,.tb-mail .gw,.tb-ppt .gw,.tb-web .gwstack{animation:none}}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
-  /* mini page */
-  .pg{width:92px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:8px;display:flex;flex-direction:column;gap:5px}
-  .pg .d3{display:flex;gap:3px;margin-bottom:2px}.pg .d3 i{width:4px;height:4px;border-radius:50%;background:var(--hairline-strong)}
-  .pg .ln{height:5px;border-radius:2px;background:var(--hairline)}.pg .ln.t{width:60%;height:7px;background:var(--hairline-strong)}
-  .pg .g2{display:flex;gap:4px;margin-top:2px}.pg .g2 span{flex:1;height:14px;border-radius:3px;background:var(--canvas-2)}
-  .single .pg .ln.c{width:42%;background:var(--a-blue);opacity:.75}
-  .multi .pg .ln.c{width:42%;background:var(--a-purple);opacity:.75}
-  .fan{position:relative;width:126px;height:112px}
-  .fan .pg{position:absolute;left:50%;top:50%}
-  .fan .f1{transform:translate(-50%,-50%);z-index:3}
-  .fan .f2{transform:translate(-72%,-46%) rotate(-8deg);z-index:2;opacity:.9;height:98px}
-  .fan .f3{transform:translate(-28%,-46%) rotate(8deg);z-index:1;opacity:.75;height:98px}
 
   /* step2 */
   .fields{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:14px}
@@ -54,93 +81,259 @@
 
   /* step3 */
   .styles{display:flex;gap:16px;justify-content:center}
-  .sc{position:relative;width:190px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
+  .sc{position:relative;width:218px;border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:var(--surface);transition:var(--dur) var(--ease)}
   .sc:hover{border-color:var(--hairline-strong);transform:translateY(-2px)}.sc.sel{border-color:var(--ink)}
-  .sc .sw{height:108px}.sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left}
-  .sc .rec{position:absolute;top:10px;right:10px}
+  .sc .sw{height:132px;position:relative;overflow:hidden;background:var(--canvas-2)}
+  .sc .sw iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
+  .sc .sw .fallback{position:absolute;inset:0}
+  .sc:hover .sw iframe{filter:saturate(1.05)}
+  .sc .cap{padding:12px 14px;font-size:var(--fs-body-sm);font-weight:var(--fw-med);text-align:left;border-top:1px solid var(--hairline)}
+  .sc .rec{position:absolute;top:9px;right:9px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:var(--point);box-shadow:0 4px 12px rgba(108,43,255,.4)}
 
   .navbtns{margin-top:36px;display:flex;gap:10px;justify-content:center}
   .dots{position:fixed;bottom:36px;left:50%;transform:translateX(-50%)}
+  .pptbrief{max-width:560px;margin:0 auto 26px;text-align:left}
+  .pptbrief[hidden]{display:none}
+  .pb-fields{display:grid;gap:7px}
+  .pb-fields label{font-size:var(--fs-body-sm);font-weight:var(--fw-med);color:var(--body);margin-top:8px}
+  .pb-fields label:first-child{margin-top:0}
+  .pb-fields .opt{color:var(--mute);font-weight:400}
+  .pb-fields textarea.ds-input{resize:vertical;min-height:96px;line-height:1.5;font-family:inherit}
+  .pb-hint{margin-top:12px;font-size:12px;color:var(--mute);text-align:center}
+  .pb-ai{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:11px 14px;border:1px solid var(--hairline);border-radius:var(--r-sm);background:var(--surface)}
+  .pb-ai[hidden]{display:none}
+  .pb-aitog{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+  .pb-aitog input{accent-color:var(--primary);width:16px;height:16px}
+  .pb-aimeta{font-size:12px;color:var(--mute)}
+  @media (max-width:760px){ .cards{flex-wrap:wrap} .kc{flex:1 1 240px;max-width:none} }
 </style>
 </head>
 <body class="ds-body">
 <div class="nav">
-  <div class="brand"><b class="ds-wordmark">MIDAS <span>Web Generator</span></b></div>
-  <div class="r"><button id="themeBtn"></button><a class="navlink" href="projects.html">내 프로젝트 →</a></div>
+  <a class="homebtn" href="dashboard.html" data-i18n-title="홈으로" title="홈으로" onclick="return leaveGuard(event)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a>
 </div>
 
 <div class="wrap">
   <div class="step on" id="st1">
-    <div class="ds-eyebrow eyebrow">새 프로젝트</div>
-    <h1>어떤 걸 만들까요?</h1>
-    <p class="sub">단일 페이지 하나, 아니면 여러 페이지 사이트.</p>
+    <h1>어떤 종류의<br>프로젝트를 만들까요?</h1>
     <div class="cards">
       <button class="kc single" data-k="single">
-        <div class="thumb"><div class="pg"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div><div class="g2"><span></span><span></span></div></div></div>
-        <div class="lab"><div class="kt">단일 페이지</div><div class="kd">랜딩 · 공지 등 한 장</div></div>
+        <div class="thumb tb-land"><div class="gw gw-land"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w70"></span><span class="gwbar w52"></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="랜딩페이지">랜딩페이지</div><div class="kd" data-i18n="단일페이지 · 랜딩·공지 한 장">단일페이지 · 랜딩·공지 한 장</div></div>
       </button>
       <button class="kc multi" data-k="multi">
-        <div class="thumb"><div class="fan"><div class="pg f3"></div><div class="pg f2"></div><div class="pg f1"><div class="d3"><i></i><i></i><i></i></div><div class="ln t"></div><div class="ln"></div><div class="ln c"></div></div></div></div>
-        <div class="lab"><div class="kt">다중 페이지</div><div class="kd">메인·기능·요금… 사이트 구축</div></div>
+        <div class="thumb tb-web"><div class="gwstack"><span class="gw gws gws3"></span><span class="gw gws gws2"></span><span class="gw gws gws1"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w40"></span><span class="gwbar w60"></span><span class="gwbar w50"></span></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="웹사이트">웹사이트</div><div class="kd" data-i18n="다중페이지 · 메인·기능·요금…">다중페이지 · 메인·기능·요금…</div></div>
+      </button>
+      <button class="kc email" data-k="edm">
+        <div class="thumb tb-mail"><div class="gw gw-mail"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w70"></span><span class="gwbar w70"></span><span class="gwbar w56"></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="이메일">이메일</div><div class="kd" data-i18n="eDM · 템플릿에서 시작">eDM · 템플릿에서 시작</div></div>
+      </button>
+      <button class="kc ppt" data-k="ppt">
+        <div class="thumb tb-ppt"><div class="gw gw-ppt"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar cc w50"></span><span class="gwbar cc w50"></span></div></div>
+        <div class="lab"><div class="kt" data-i18n="PPT">PPT</div><div class="kd" data-i18n="발표 장표 · 16:9 슬라이드">발표 장표 · 16:9 슬라이드</div></div>
       </button>
     </div>
   </div>
 
   <div class="step" id="st2">
-    <div class="ds-eyebrow eyebrow">1 / 2 · 프로젝트 정보</div>
-    <h1>프로젝트 정보</h1>
-    <p class="sub">이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.</p>
+    <h1>프로젝트 정보를<br>입력해주세요.</h1>
     <div class="fields">
-      <label>프로젝트 이름</label><input class="ds-input" id="pname" placeholder="예: 온사이트 제품사이트">
-      <label>제품명 <span class="opt">(선택)</span></label><input class="ds-input" id="product" placeholder="예: Onsite">
-      <label>사업군</label><div class="orgchips" id="orgchips"></div>
+      <label data-i18n="프로젝트 이름">프로젝트 이름</label><input class="ds-input" id="pname" data-i18n-ph="예: 온사이트 제품사이트" placeholder="예: 온사이트 제품사이트">
+      <label><span data-i18n="제품명 ">제품명 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="product" data-i18n-ph="예: Onsite" placeholder="예: Onsite">
+      <label data-i18n="사업군">사업군</label><div class="orgchips" id="orgchips"></div>
+      <label><span data-i18n="사이트 언어 ">사이트 언어 </span><span class="opt" data-i18n="(생성될 페이지 언어)">(생성될 페이지 언어)</span></label><div class="orgchips" id="langchips"></div>
     </div>
-    <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)">← 이전</button><button class="ds-btn primary" onclick="go(3)">다음 →</button></div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(1)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="go(3)" data-i18n="다음 →">다음 →</button></div>
   </div>
 
   <div class="step" id="st3">
-    <div class="ds-eyebrow eyebrow">2 / 2 · 스타일</div>
-    <h1>스타일을 선택하세요</h1>
-    <p class="sub" id="st3sub">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
+    <h1>디자인 스타일을<br>선택해주세요.</h1>
+    <div class="pptbrief" id="pptBrief" hidden>
+      <div class="pb-fields">
+        <label data-i18n="발표 주제 · 제목">발표 주제 · 제목</label><input class="ds-input" id="pbTitle" data-i18n-ph="예: 2026 AX 제안 발표" placeholder="예: 2026 AX 제안 발표">
+        <label><span data-i18n="핵심 메시지 ">핵심 메시지 </span><span class="opt" data-i18n="(한 줄)">(한 줄)</span></label><input class="ds-input" id="pbMsg" data-i18n-ph="예: 반복 작업을 자동화해 시간을 절반으로." placeholder="예: 반복 작업을 자동화해 시간을 절반으로.">
+        <label><span data-i18n="대상 청중 ">대상 청중 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="pbAud" data-i18n-ph="예: 경영진 · 파트너사" placeholder="예: 경영진 · 파트너사">
+        <label><span data-i18n="목차 ">목차 </span><span class="opt" data-i18n="(한 줄에 하나 · 슬라이드로 자동 구성)">(한 줄에 하나 · 슬라이드로 자동 구성)</span></label><textarea class="ds-input" id="pbOutline" rows="5" data-i18n-ph="배경과 문제&#10;해결 방향&#10;핵심 기능&#10;기대 효과&#10;다음 단계" placeholder="배경과 문제&#10;해결 방향&#10;핵심 기능&#10;기대 효과&#10;다음 단계"></textarea>
+      </div>
+      <div class="pb-ai" id="pbAiRow" hidden>
+        <label class="pb-aitog"><input type="checkbox" id="pbAi" checked><span data-i18n="AI로 내용까지 채우기">AI로 내용까지 채우기</span></label>
+        <span class="pb-aimeta" id="pbAiMeta"></span>
+      </div>
+      <p class="pb-hint" id="pbHint" data-i18n="목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.">목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.</p>
+    </div>
     <div class="styles" id="styles"></div>
-    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)">← 이전</button><button class="ds-btn primary" onclick="finish()">시작하기 →</button></div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="finish()" data-i18n="시작하기 →">시작하기 →</button></div>
   </div>
 
   <div class="ds-dots dots"><i class="on"></i><i></i><i></i></div>
 </div>
 
 <script>
-  mountThemeToggle(document.getElementById('themeBtn'));
 
-  const ORGS=[{id:'enterprise',label:'전사',rec:'aether'},{id:'sk',label:'SK',rec:'ember'},{id:'ensol',label:'엔솔',rec:'violet'},{id:'personal',label:'개인작업',rec:'aether'}];
+  const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
   let kind='single', stylePack='aether', org='';
 
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
-    document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1)); if(n===3) renderStyles(); };
+    document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
+    if(n===3){
+      const isEdm=kind==='edm', isPpt=kind==='ppt';
+      const pb=document.getElementById('pptBrief'); if(pb) pb.hidden = !isPpt;
+      // AI 토글: 키 등록 시에만 노출(BYOK). 없으면 결정론 조립 그대로.
+      if(isPpt){
+        const row=document.getElementById('pbAiRow'), meta=document.getElementById('pbAiMeta');
+        const has=(window.LLM&&LLM.hasKey());
+        row.hidden=!has;
+        if(has){ const m=(LLM.MODELS.find(x=>x.id===LLM.getModel())||{}).name||LLM.getModel(); meta.textContent=m+' · '+LLM.maskKey(); }
+      }
+      if(isEdm) renderEdmTemplates(); else if(isPpt) renderPptStyles(); else renderStyles();
+    }
+  };
 
-  document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{ kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80); });
+  let pptStyle='ax';
+  function renderPptStyles(){
+    const sz=document.getElementById('styles'); sz.innerHTML='';
+    (window.PPT_STYLES||[]).forEach(s=>{
+      const c=document.createElement('div'); c.className='sc'+(s.id===pptStyle?' sel':'');
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`;
+      const sw=c.querySelector('.sw');
+      try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); sw.append(f); fitThumb(sw,f); }catch(e){}
+      c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); pptStyle=s.id; };
+      sz.append(c);
+    });
+  }
 
+  let edmTpl=null;
+  function renderEdmTemplates(){
+    const sz=document.getElementById('styles'); sz.innerHTML='';
+    const tpls=(window.APP_TEMPLATES||[]).filter(t=>t.tag==='edm');
+    if(!edmTpl && tpls.length) edmTpl=tpls[0];
+    tpls.forEach(tpl=>{
+      const c=document.createElement('div'); c.className='sc'+(tpl===edmTpl?' sel':'');
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:linear-gradient(135deg,#0B1220,#03C75A)"></div></div><div class="cap">${tpl.name}</div>`;
+      const sw=c.querySelector('.sw');
+      try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderEdmPage?renderEdmPage(tpl.pages[0].data,{}):''); sw.append(f); fitThumb(sw,f); }catch(e){}
+      c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); edmTpl=tpl; };
+      sz.append(c);
+    });
+  }
+
+  document.querySelectorAll('.kc').forEach(c=>c.onclick=()=>{
+    kind=c.dataset.k; go(2); setTimeout(()=>document.getElementById('pname').focus(),80);
+  });
+
+  const _L=(k)=>window.L?window.L(k):k;
   const oc=document.getElementById('orgchips');
-  ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=o.label;
+  ORGS.forEach(o=>{ const b=document.createElement('button'); b.className='ds-chip'; b.textContent=_L(o.label);
     b.onclick=()=>{ org=o.id; oc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); stylePack=o.rec; }; oc.append(b); });
+
+  // 사이트(출력) 언어 — 앱 UI 언어와 별개, 프로젝트에 저장
+  let siteLang = (window.I18N ? I18N.getLang() : 'ko');
+  const lc=document.getElementById('langchips');
+  (window.I18N ? I18N.LANGS : [['ko','한국어']]).forEach(L=>{ const b=document.createElement('button'); b.className='ds-chip'+(L[0]===siteLang?' on':''); b.textContent=L[1];
+    b.onclick=()=>{ siteLang=L[0]; lc.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; lc.append(b); });
 
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
-    const rec=(ORGS.find(o=>o.id===org)||{}).rec, orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
-    document.getElementById('st3sub').textContent = org ? `${orgLabel} 사업군 추천을 표시했어요.` : '생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.';
-    DARK_PACKS.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
-      const rb=(p.id===rec)?`<span class="ds-badge rec">★ ${orgLabel} 추천</span>`:'';
-      c.innerHTML=`<div class="sw" style="background:${p.swatch}"></div>${rb}<div class="cap">${p.name} · ${p.desc}</div>`;
+    // 스타일팩 = Glow(다크글로우) + KRDS(정부 DS). KRDS는 packs.krds.js 계약 팩.
+    const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{id:'aether',name:'Glow',desc:'다크·글로우',swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
+    const STYLES=[
+      { id:'aether', name:'다크 글로우', desc:'다크 · 네온 글로우', swatch:glow.swatch },
+      { id:'krds', name:'밝은 신뢰 블루', desc:'라이트 · 선명한 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
+      { id:'midas', name:'MIDAS AX', desc:'모노크롬 · Poppins', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
+      { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), desc:'다크 글래스 · 그린', swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
+    ];
+    if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
+    STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
+      const recStyle=(ORGS.find(o=>o.id===org)||{}).rec;
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)} · ${_L(p.desc)}</div>`;
+      const sw=c.querySelector('.sw');
+      // 실제 팩으로 렌더한 페이지를 축소해 살짝 보여줌 (렌더 실패 시 그라데이션 폴백 유지)
+      try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); sw.append(f); fitThumb(sw,f); }catch(e){}
       c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); stylePack=p.id; }; sz.append(c); });
   }
+  // 미니 프리뷰용 샘플 데이터 + 팩별 렌더
+  function styleThumb(id){
+    const d=Object.assign((typeof emptyData==='function'?emptyData():{}), {
+      productName:'MIDAS AX', tagline:'Design Once.\nScale with AX.',
+      subcopy:'사람과 AX가 함께 활용하는 온브랜드 페이지.', primaryCta:'시작하기',
+      features:[{title:'빠른 생성',desc:'대화만으로 완성'},{title:'온브랜드',desc:'스타일 팩 적용'},{title:'멀티페이지',desc:'사이트 구축'}],
+      stats:[{value:'98%',label:'만족도'},{value:'3분',label:'생성 시간'},{value:'12k+',label:'사용자'}],
+    });
+    if(id==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:'compact',motion:'static'});
+    if(id==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:'compact',motion:'static'});
+    if(id==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:'compact',motion:'static'});
+    return renderComposed(d, (DARK_PACK_BY_ID[id]||DARK_PACK_BY_ID.aether), 'static', 'main', 'compact');
+  }
+  function fitThumb(wrap, f){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
 
-  window.finish=()=>{
-    const shared={ productName:document.getElementById('product').value.trim() };
-    const name=document.getElementById('pname').value.trim() || shared.productName || '무제 프로젝트';
+  let leaving=false;
+  window.finish=async ()=>{
+    await storeReady();   // 저장소 준비(마이그레이션 포함) 후 생성 — 기존 프로젝트 덮어쓰기 방지
+    const prod=document.getElementById('product').value.trim();
+    const nm=document.getElementById('pname').value.trim();
+    // 이메일(eDM): 선택한 템플릿에서 시작 + 입력한 이름/제품명 반영
+    if(kind==='edm'){
+      const tpl=edmTpl||(window.APP_TEMPLATES||[]).find(t=>t.tag==='edm');
+      if(!tpl){ (window.uiAlert?uiAlert(_L('사용할 이메일 템플릿이 없어요.')):alert('no eDM template')); return; }
+      const p=createProjectFromTemplate(tpl);
+      if(nm) p.name=nm; if(prod){ p.shared=p.shared||{}; p.shared.productName=prod; } p.lang=siteLang; upsertProject(p);
+      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
+    }
+    // PPT: 브리프(기획)가 있으면 목차대로 조립, 없으면 기본 스타터 덱
+    if(kind==='ppt'){
+      const brief={
+        title:(document.getElementById('pbTitle').value||nm||prod||'').trim(),
+        message:(document.getElementById('pbMsg').value||'').trim(),
+        audience:(document.getElementById('pbAud').value||'').trim(),
+        outline:(document.getElementById('pbOutline').value||'').split('\n').map(s=>s.trim()).filter(Boolean),
+        style:pptStyle
+      };
+      const hasBrief = brief.outline.length || brief.message || (brief.title && brief.title!==(nm||prod));
+      // AI 생성(BYOK): 키 있고 토글 켜짐 + 브리프 있음 → LLM이 내용까지 채움. 실패·무키 시 결정론 조립 폴백.
+      let deck=null;
+      const wantAi = hasBrief && window.LLM && LLM.hasKey() && document.getElementById('pbAi').checked;
+      if(wantAi){
+        const btn=document.querySelector('#st3 .ds-btn.primary'); const orig=btn.textContent;
+        btn.disabled=true; btn.textContent=_L('AI 생성 중…');
+        try{ deck=await LLM.composeDeck(brief); }
+        catch(e){ console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+        finally{ btn.disabled=false; btn.textContent=orig; }
+      }
+      if(!deck) deck = (hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
+                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:pptStyle});
+      const p=createProject({ kind:'single', name:(nm||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:'ppt' });
+      const full=getProject(p.id); const pg0=full.pages[0];
+      pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
+      pg0.chat={ log:[{r:'bot',t:'📊 PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.'}], idx:8, generated:true };
+      full.lang=siteLang; upsertProject(full);
+      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
+    }
+    const shared={ productName:prod };
+    const name=nm || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });
+    p.lang=siteLang; upsertProject(p);   // 사이트 출력 언어 저장
+    await storeFlush();
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
+    leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };
+
+  if(window.I18N) I18N.apply(document);   // 정적 마크업 로컬라이징
+
+  // 종료 확인 — 디자인 모달(센터 딤). confirm은 동기라 못 쓰므로 항상 막고 async로 처리.
+  function confirmLeave(){ return uiConfirm(_L('입력한 내용은 저장되지 않아요.'), { title:_L('프로젝트 생성을 종료할까요?'), okText:_L('나가기'), danger:true }); }
+  window.leaveGuard=(e)=>{ if(leaving) return true; e.preventDefault();
+    confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
+    return false; };
+
+  /* 생성 중 뒤로가기 → 디자인 확인 모달 */
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate', ()=>{
+    if(leaving) return;
+    history.pushState(null,'',location.href); // 일단 페이지 유지
+    confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
+  });
 </script>
 </body>
 </html>

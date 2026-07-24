@@ -1,60 +1,58 @@
-# ONSITE Web Generator
+# MIDAS Web Generator
 
-기획 내용을 섹션 단위로 입력하면, 사전 정의된 디자인 시스템·컴포넌트·섹션 패턴을 기준으로
-**온사이트 제품소개·매뉴얼 웹페이지를 조립·생성**하는 빌드리스 웹앱.
+대화형 스튜디오로 **랜딩페이지 · 웹사이트 · 이메일(eDM) · PPT**를 생성·편집하는 빌드리스 정적 웹앱.
+스타일 팩(다크글로우·KRDS·MIDAS AX·Aether Glass·eDM·PPT)을 갈아끼우는 구조.
 
-> KR4 — AX 디자인 제너레이터 구축 · 7~12월 로드맵
-> 상세: [docs/SPEC.md](docs/SPEC.md) · 과제 원문: [docs/BRIEF.html](docs/BRIEF.html)
+> KR4 — AX 디자인 제너레이터 · 상세: [docs/PRD.md](docs/PRD.md)
 
----
-
-## 원칙 (비타협)
-
-**콘텐츠 모델(JSON) ↔ 렌더러(결정론 템플릿) 분리.**
-MVP = 사람이 폼으로 `PageDoc` 채움 · 고도화 = AI가 같은 `PageDoc` 채움 · 렌더러는 동일.
-→ 섹션/컴포넌트 CSS는 `styles/tokens.css`의 토큰만 참조. raw 값 금지.
-
-## 폴더 구조
-
-```
-onsite-web-generator/
-├─ docs/                  기준 문서 (7월 TASK1 산출물)
-│  ├─ BRIEF.html          과제 원문
-│  ├─ SPEC.md / .html     설계 스펙
-│  ├─ DESIGN_SYSTEM.md    DS 기준 (토큰 근거)
-│  ├─ SECTION_PATTERN.md  섹션 카탈로그 (variant·slot 정의)  ← 작성 중
-│  ├─ COMPONENT_RULE.md   컴포넌트 규칙
-│  ├─ CONTENT_SCHEMA.md   기획 입력 구조
-│  └─ TEMPLATE_STRUCTURE.md  템플릿 프리셋 구조
-├─ styles/
-│  ├─ tokens.css          DS v0 토큰 (primitive → semantic)
-│  └─ global.css          리셋 + 기본 타입 + 버튼
-├─ components/            기본 UI (Button·Card·Badge·Accordion …)   ← 8월
-├─ sections/             섹션 패턴 구현 (HeroSection·FeatureSection …) ← 8월
-├─ templates/            페이지 프리셋 (productIntro·manual .json)   ← 8월
-├─ sample/               샘플 콘텐츠 (onsite-product-intro.json …)
-└─ catalog/
-   └─ product-intro.html 제품소개 13섹션 실물 카탈로그 (미니멀 v0)
-```
-
-## 진행 상태
-
-| 시기 | 진척률 | 상태 |
-|---|---|---|
-| 7월 | 10% | 🟡 진행 — 섹션 분류(제품소개 13 확정), DS v0 토큰, 카탈로그 프리뷰 |
-| 8월 | 25% | ⚪ 렌더러 + 섹션 라이브러리 코드화 |
-| 9월 | 45% | ⚪ 웹앱 MVP + 매뉴얼 섹션 |
-
-### 지금까지 (7월)
-- ✅ 제품소개 섹션 분류 — 실물 3사 교차검증(네이버웍스·채널톡·두레이) → **13섹션**
-- ✅ DS v0 토큰 (`styles/tokens.css`) — 미니멀 흑백
-- ✅ 제품소개 카탈로그 실물 (`catalog/product-intro.html`)
-- ⬜ 매뉴얼 섹션 분류 (실물 검증 예정)
-- ⬜ `docs/SECTION_PATTERN.md` 풀스펙 (variant·slot)
-
-## 미리보기
+## 실행
 
 ```bash
-# 정적 파일 — 서버 불필요. 브라우저로 바로 열기
-open catalog/product-intro.html
+python3 serve.py          # http://127.0.0.1:4788 (포트 중복 주의 — localhost는 IPv6로 딴 서버 붙을 수 있음)
+# 또는 빌드 후 app/index.html 더블클릭(file://)
 ```
+
+## 빌드 (편집 후)
+
+```bash
+node build.cjs        # core/* + app/store.js·theme.js → app/bundle.js (classic 스크립트)
+node build-icons.cjs  # assets/icons → app/icons.js
+node build-edm.cjs    # assets/edm/promo01 → app/edm/promo01.js (이미지 data-URI 인라인)
+node --test test/     # esc·volume 단위 테스트
+```
+
+## 구조
+
+```
+app/                      라이브 앱 (전부 정적 — 백엔드 없음)
+├─ index.html             생성 흐름 (종류 → 정보 → 스타일/브리프)
+├─ dashboard/projects/resources/settings.html   셸 페이지 (shell.js SNB)
+├─ studio/studio.html     스튜디오 — 채팅 생성 + 편집 (packMode가 타입별 규칙 단일 진실)
+├─ store.js               IndexedDB 저장 (storeReady/storeFlush — 이동 전 flush 필수)
+├─ packs.*.js             스타일 팩: krds·midas·aether(aglass)·edm·ppt
+├─ llm.js                 BYOK LLM (사용자 API 키 → api.anthropic.com 직접 호출, PPT 내용 생성)
+├─ export-pptx.js         PPT → .pptx (PptxGenJS)
+├─ edm/promo01.js         eDM 템플릿 (build-edm.cjs 산출물)
+└─ bundle.js              build.cjs 산출물 — 직접 편집 금지
+core/                     번들 소스 + 팩 계약
+├─ darkglow/              다크글로우 렌더러 (renderComposed)
+├─ packs/contract.js      스타일팩 계약 (키스톤) · krds/·midas/ 팩 소스 · _template/ 새 팩 템플릿
+└─ esc.js · volume.js · template.js
+tools/pack-inspector.html 팩 계약 검사기
+assets/                   빌드 입력 (아이콘·eDM 이미지)
+docs/                     PRD·DS·팩 저작 가이드
+```
+
+## 데이터·저장
+
+- 프로젝트: IndexedDB `onsite-webgen` (오리진별 — `localhost` ≠ `127.0.0.1` 주의)
+- **변이 후 페이지 이동 전 `await storeFlush()`** — 안 하면 쓰기 경합으로 간헐 유실
+- AI 키(BYOK): `localStorage`(이 브라우저에만) — 설정 → AI 생성에서 등록, 없으면 결정론 조립 폴백
+
+## 타입별 스튜디오 규칙 — `packMode(stylePack)` (studio.html)
+
+| 팩 | 흐름 | persist | 디바이스 | 특수 |
+|---|---|---|---|---|
+| 웹/랜딩 (darkglow·krds·midas·aglass) | 생성 채팅 | fields | 반응형 토글 | 섹션 리오더·스타일 교체 |
+| edm | 편집전용 | raw(DOM 되쓰기) | 고정(760px) | 템플릿 시작 |
+| ppt | 편집전용 | fields | 고정(16:9) | 슬라이드 패널·브리프 생성·.pptx |

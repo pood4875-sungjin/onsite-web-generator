@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generator — 스타일팩 선택 (Glow / KRDS)</title>
+<style>
+  :root{ --ui-bg:#0f1216; --ui-panel:#161a20; --ui-line:#262c35; --ui-fg:#e7ecf3; --ui-dim:#94a0b0; --ui-acc:#5b9dff; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--ui-bg); color:var(--ui-fg);
+    font-family:"Pretendard Variable",Pretendard,system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif; }
+  .app{ display:grid; grid-template-columns:300px 1fr; height:100vh; }
+  .side{ border-right:1px solid var(--ui-line); padding:20px; overflow:auto; display:flex; flex-direction:column; gap:22px; }
+  .side h1{ font-size:15px; margin:0; } .side .tag{ font-size:11px; color:var(--ui-dim); }
+  .grp{ display:flex; flex-direction:column; gap:9px; }
+  .grp > label{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ui-dim); }
+  .packs{ display:flex; gap:10px; }
+  .packbtn{ flex:1; text-align:left; background:var(--ui-panel); border:1px solid var(--ui-line); border-radius:12px; padding:12px; cursor:pointer; color:var(--ui-fg); }
+  .packbtn.on{ border-color:var(--ui-acc); box-shadow:0 0 0 1px var(--ui-acc) inset; }
+  .packbtn b{ display:block; font-size:14px; } .packbtn small{ color:var(--ui-dim); font-size:11px; }
+  .packbtn .sw{ height:8px; border-radius:999px; margin-top:8px; }
+  input,select{ background:#0c0f13; color:var(--ui-fg); border:1px solid var(--ui-line); border-radius:8px; padding:9px 11px; font-size:13px; width:100%; }
+  .row{ display:flex; gap:8px; } .row > *{ flex:1; }
+  .seg{ display:flex; gap:6px; } .seg button{ flex:1; background:var(--ui-panel); color:var(--ui-fg); border:1px solid var(--ui-line); border-radius:8px; padding:7px; font-size:12px; cursor:pointer; }
+  .seg button.on{ background:var(--ui-acc); border-color:var(--ui-acc); color:#04121f; font-weight:700; }
+  .dl{ background:var(--ui-acc); color:#04121f; border:0; border-radius:10px; padding:12px; font-weight:800; cursor:pointer; font-size:14px; }
+  .main{ display:flex; flex-direction:column; }
+  .bar{ display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--ui-line); font-size:12px; color:var(--ui-dim); }
+  .bar .rz button{ background:var(--ui-panel); color:var(--ui-fg); border:1px solid var(--ui-line); border-radius:7px; padding:6px 10px; font-size:12px; cursor:pointer; }
+  .bar .rz button.on{ background:var(--ui-acc); border-color:var(--ui-acc); color:#04121f; font-weight:700; }
+  .stage{ flex:1; overflow:auto; padding:22px; display:flex; justify-content:center; background:#0b0e12; }
+  .framewrap{ width:100%; max-width:1280px; background:#fff; border:1px solid var(--ui-line); border-radius:12px; overflow:hidden; align-self:flex-start; transition:max-width .25s; }
+  iframe{ width:100%; height:78vh; border:0; display:block; background:#fff; }
+  .warn{ font-size:11px; color:#ffcf8a; line-height:1.5; border:1px solid #4a3a1a; background:#241b0d; border-radius:8px; padding:9px 11px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div><h1>Generator</h1><div class="tag">스타일팩 선택 → 실시간 조립</div></div>
+
+    <div class="grp"><label>스타일팩</label><div class="packs" id="packs"></div></div>
+
+    <div class="grp"><label>콘텐츠</label>
+      <input id="f-name" placeholder="제품/서비스 이름" value="ONSITE">
+      <input id="f-tag" placeholder="헤드라인" value="현장의 모든 일, 하나로">
+      <input id="f-sub" placeholder="설명" value="기획을 입력하면 선택한 팩으로 즉시 조립됩니다.">
+      <div class="row"><input id="f-cta1" placeholder="주 버튼" value="서비스 신청"><input id="f-cta2" placeholder="보조 버튼" value="이용안내"></div>
+    </div>
+
+    <div class="grp"><label>볼륨</label>
+      <div class="seg" id="vol">
+        <button data-v="compact">compact</button><button data-v="mid">mid</button><button data-v="heavy" class="on">heavy</button>
+      </div>
+    </div>
+    <div class="grp"><label>모션</label>
+      <div class="seg" id="mot">
+        <button data-m="static">static</button><button data-m="subtle" class="on">subtle</button><button data-m="rich">rich</button>
+      </div>
+    </div>
+
+    <button class="dl" id="dl">HTML 다운로드</button>
+    <div class="warn" id="warn"></div>
+  </aside>
+
+  <main class="main">
+    <div class="bar">
+      <span id="crumb"></span>
+      <span class="rz" style="margin-left:auto">
+        <button data-w="390">Mobile</button><button data-w="768">Tablet</button><button data-w="1280" class="on">Desktop</button>
+      </span>
+    </div>
+    <div class="stage"><div class="framewrap" id="wrap"><iframe id="frame" title="preview"></iframe></div></div>
+  </main>
+</div>
+
+<script type="module">
+import { PACKS, renderPage, buildDemoPageDoc } from '../core/packs/index.js';
+import { validatePack } from '../core/packs/spec.js';
+
+const $ = (s) => document.querySelector(s);
+// 표시 이름 정리: darkglow → "Glow"
+const LABEL = { darkglow: '다크 글로우', krds: '밝은 신뢰 블루' };
+const SW = { krds: 'linear-gradient(90deg,#256ef4,#0b50d0)', darkglow: 'linear-gradient(90deg,#22d3ee,#818cf8)' };
+
+let pack = PACKS.find((p) => p.meta.id === 'krds') || PACKS[0];
+let volume = 'heavy', motion = 'subtle', width = 1280;
+
+// 팩 버튼
+$('#packs').innerHTML = PACKS.map((p) => `
+  <button class="packbtn ${p===pack?'on':''}" data-id="${p.meta.id}">
+    <b>${LABEL[p.meta.id] || p.meta.name}</b><small>${p.meta.id}</small>
+    <div class="sw" style="background:${SW[p.meta.id]||'#888'}"></div></button>`).join('');
+$('#packs').addEventListener('click', (e) => {
+  const b = e.target.closest('.packbtn'); if (!b) return;
+  pack = PACKS.find((p) => p.meta.id === b.dataset.id);
+  document.querySelectorAll('.packbtn').forEach((x) => x.classList.toggle('on', x === b));
+  render();
+});
+
+// 세그먼트(볼륨/모션)
+function seg(id, on){ document.querySelectorAll(`#${id} button`).forEach((x) => x.classList.toggle('on', x===on)); }
+$('#vol').addEventListener('click', (e) => { const b=e.target.closest('button'); if(!b)return; volume=b.dataset.v; seg('vol',b); render(); });
+$('#mot').addEventListener('click', (e) => { const b=e.target.closest('button'); if(!b)return; motion=b.dataset.m; seg('mot',b); render(); });
+document.querySelector('.rz').addEventListener('click', (e) => { const b=e.target.closest('button'); if(!b)return; width=+b.dataset.w; document.querySelectorAll('.rz button').forEach(x=>x.classList.toggle('on',x===b)); $('#wrap').style.maxWidth=width+'px'; });
+
+['f-name','f-tag','f-sub','f-cta1','f-cta2'].forEach((id) => $('#'+id).addEventListener('input', render));
+
+function sharedFacts(){
+  return {
+    productName: $('#f-name').value, name: $('#f-name').value,
+    tagline: $('#f-tag').value, subcopy: $('#f-sub').value,
+    primaryCta: $('#f-cta1').value, secondaryCta: $('#f-cta2').value,
+  };
+}
+function html(){ return renderPage(buildDemoPageDoc({ volume, sharedFacts: sharedFacts() }), pack, { motion }); }
+
+function render(){
+  const f = $('#frame');
+  f.onload = () => { try{ f.contentDocument.querySelectorAll('.rise,.pk .rise').forEach((el)=>el.classList.add('in')); }catch(e){} };
+  f.srcdoc = html();
+  const v = validatePack(pack);
+  $('#crumb').textContent = `${LABEL[pack.meta.id]||pack.meta.name} · ${volume} · ${motion} · ${v.ok?'표준 준수 ✓':'레거시(비표준)'}`;
+  $('#warn').textContent = v.ok ? '' : `⚠ ${LABEL[pack.meta.id]||pack.meta.id}는 옛 어댑터(표준 미준수). 렌더는 되지만 신규 팩은 표준 따를 것.`;
+}
+$('#dl').addEventListener('click', () => {
+  const b = new Blob([html()], { type:'text/html' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+  a.download = ($('#f-name').value||'page') + '-' + pack.meta.id + '.html'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대시보드 · MIDAS Web Generator</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
+<script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
+<script src="i18n.js"></script>
+<script src="icons.js"></script>
+<script src="shell.js"></script>
+<link rel="stylesheet" href="ds.css">
+<style>
+  html,body{background:var(--canvas)}
+  /* 인사말 */
+  .head{margin-bottom:14px}
+  .greet-big{font-family:var(--font-display);font-size:var(--fs-display-lg);font-weight:600;letter-spacing:-.03em;line-height:1.18;color:var(--ink)}
+  .greet-big .ch{display:inline-block;opacity:0;transform:translateY(20px);animation:ch-drop .55s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--ci,0)*34ms + 100ms)}
+  .greet-big .wave{display:inline-block;transform-origin:70% 75%;opacity:0;animation:wave-in .4s ease forwards,wave 2.4s ease-in-out infinite;animation-delay:var(--wd,1s),calc(var(--wd,1s) + .4s)}
+  @keyframes ch-drop{to{opacity:1;transform:none}}
+  @keyframes wave-in{to{opacity:1}}
+  @keyframes wave{0%,55%,100%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-9deg)}30%{transform:rotate(15deg)}40%{transform:rotate(-4deg)}50%{transform:rotate(11deg)}}
+  @media (prefers-reduced-motion:reduce){.greet-big .ch,.greet-big .wave{animation:none;opacity:1;transform:none}}
+  .sec-h{font-size:16px;font-weight:var(--fw-semi);margin:22px 0 14px}
+  /* 통계 */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{border:1px solid var(--hairline);border-radius:var(--r-md);padding:18px 20px;background:var(--surface-solid)}
+  .stat .l{font-size:13px;color:var(--mute)}
+  .stat .v{font-size:34px;font-weight:var(--fw-semi);letter-spacing:-.02em;margin:6px 0 8px;font-family:var(--font-display)}
+  .stat .s{font-size:12px;color:var(--mute-soft)}
+  /* 최근 프로젝트 */
+  .recent{display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;align-items:center;gap:14px;border:1px solid var(--hairline);border-radius:var(--r-md);padding:12px 16px;cursor:pointer;transition:var(--dur) var(--ease);background:var(--surface-solid)}
+  .row:hover{border-color:var(--hairline-strong);box-shadow:var(--shadow-2)}
+  .row .thumb{flex:0 0 auto;width:72px;height:48px;border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--hairline);background:var(--canvas-2)}
+  .row .thumb iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
+  .row .info{flex:1;min-width:0}
+  .row .nm{font-size:14px;font-weight:var(--fw-semi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .sb{font-size:12.5px;color:var(--mute);margin-top:3px}
+  .row .st{font-size:11px;font-weight:var(--fw-semi);padding:3px 9px;border-radius:var(--r-pill);flex:0 0 auto}
+  .st.done{background:color-mix(in srgb,var(--a-green) 16%,transparent);color:#0a8a37}
+  .st.prog{background:var(--brand-weak);color:var(--body)}
+  .row .time{font-size:12px;color:var(--mute-soft);flex:0 0 auto}
+  .empty{border:1px dashed var(--hairline);border-radius:var(--r-md);padding:44px;text-align:center;color:var(--mute);font-size:14px}
+  @media (max-width:1000px){ .stats{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
+<body class="ds-body app-grid">
+<div data-snb></div>
+<div class="content">
+  <div data-gnb></div>
+  <div class="page">
+    <div class="head">
+      <div class="greet-big">안녕하세요,<br>오늘도 좋은 작업 되세요 <span class="wave">👋</span></div>
+    </div>
+    <h2 class="sec-h" data-i18n="프로젝트 현황">프로젝트 현황</h2>
+    <div class="stats" id="stats"></div>
+    <h2 class="sec-h" data-i18n="최근 프로젝트">최근 프로젝트</h2>
+    <div class="recent" id="recent"></div>
+  </div>
+</div>
+
+<script>
+  let searchVal='';
+  mountShell('home', { onSearch:function(q){ searchVal=q; render(); } });
+
+  // 인사말 — 글자 순차 드롭인 후 손 흔들기
+  (function(){ const g=document.querySelector('.greet-big'); if(!g) return; let i=0; const out=[];
+    g.childNodes.forEach(n=>{
+      if(n.nodeType===3){ let txt=n.textContent; const key=txt.replace(/\s+$/,''); if(key && window.L){ txt=L(key)+(txt!==key?' ':''); }
+        txt.split('').forEach(ch=>{ out.push(ch===' '?' ':`<span class="ch" style="--ci:${i++}">${ch}</span>`); }); }
+      else if(n.classList && n.classList.contains('wave')){ out.push('__WAVE__'); }
+      else { out.push(n.outerHTML||''); }
+    });
+    const wd=(i*34+100+380)/1000;
+    g.innerHTML=out.join('').replace('__WAVE__', `<span class="wave" style="--wd:${wd}s">👋</span>`);
+  })();
+
+  const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
+  const LL=(ko)=>window.L?L(ko):ko;
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function renderForStyle(sp, pg){ const d=pg.data||{};
+    if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
+    if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
+    return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
+  function thumb(p){ const wrap=document.createElement('div'); wrap.className='thumb'; const pg=p.pages[0];
+    if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(p.stylePack,pg); wrap.append(f);
+      requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
+    return wrap; }
+  function isDone(p){ return p.pages.some(pg=>(pg.chat&&pg.chat.generated) || (pg.data&&((pg.data.features&&pg.data.features.length)||pg.data.bannerText))); }
+  function relTime(ts){ const s=Math.floor((Date.now()-ts)/1000); if(s<60)return LL('방금'); const m=Math.floor(s/60); if(m<60)return m+LL('분 전'); const h=Math.floor(m/60); if(h<24)return h+LL('시간 전'); const d=Math.floor(h/24); if(d<7)return d+LL('일 전'); return Math.floor(d/7)+LL('주 전'); }
+  function statCard(l,v,s){ return `<div class="stat"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div></div>`; }
+
+  function render(){
+    const ps=getProjects().slice().sort((a,b)=>b.createdAt-a.createdAt);
+    const total=ps.length, done=ps.filter(isDone).length, prog=total-done;
+    const now=new Date();
+    const month=ps.filter(p=>{ const d=new Date(p.createdAt); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).length;
+    const T=(ko)=>window.L?L(ko):ko;
+    document.getElementById('stats').innerHTML=
+      statCard(T('전체 프로젝트'), total, `${T('진행 중')} ${prog} · ${T('완료')} ${done}`)+
+      statCard(T('이번 달 생성'), month, T('이번 달 기준'))+
+      statCard(T('배포 완료'), 0, T('배포 기능 준비 중'))+
+      statCard(T('HTML 내보내기'), done, T('생성 완료 시 가능'));
+
+    const box=document.getElementById('recent');
+    const q=(searchVal||'').trim().toLowerCase();
+    const list=ps.filter(p=>!q||p.name.toLowerCase().includes(q)).slice(0,8);
+    if(!list.length){ box.innerHTML='<div class="empty">'+(total?LL('검색 결과가 없어요.'):LL('아직 프로젝트가 없어요. ')+'<b>'+LL('＋ 새 프로젝트 생성')+'</b>'+LL('으로 시작해보세요.'))+'</div>'; return; }
+    box.innerHTML='';
+    list.forEach(p=>{
+      const d=isDone(p);
+      const detail=p.kind==='multi'?`${p.pages.length}${LL('개 페이지')}`:LL(PTL[p.pages[0]?.pageType]||'페이지');
+      const row=document.createElement('div'); row.className='row';
+      row.append(thumb(p));
+      const info=document.createElement('div'); info.className='info';
+      info.innerHTML=`<div class="nm">${p.name}</div><div class="sb">${d?LL('생성 완료'):LL('편집 중')} · ${detail} · ${styleName(p.stylePack)}</div>`;
+      const st=document.createElement('span'); st.className='st '+(d?'done':'prog'); st.textContent=d?LL('완료'):LL('진행 중');
+      const time=document.createElement('span'); time.className='time'; time.textContent=relTime(p.createdAt);
+      row.append(info, st, time);
+      row.onclick=()=>{ const pg=p.pages[0]; location.href = pg ? `studio/studio.html?p=${p.id}&page=${pg.id}` : 'index.html'; };
+      box.append(row);
+    });
+  }
+  storeReady().then(render);
+
+</script>
+</body>
+</html>

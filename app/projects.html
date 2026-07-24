@@ -6,16 +6,24 @@
 <title>내 프로젝트 · MIDAS Web Generator</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
+<script src="i18n.js"></script>
+<script src="icons.js"></script>
+<script src="shell.js"></script>
+<script src="modal.js"></script>
 <link rel="stylesheet" href="ds.css">
 <style>
-  body{min-height:100vh;background:var(--canvas)}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px}
-  .nav .r{display:flex;align-items:center;gap:10px}
-  .newbtn{border:none;border-radius:var(--r-sm);background:var(--primary);color:var(--on-primary);font-weight:var(--fw-med);font-size:var(--fs-body-sm);padding:9px 16px;cursor:pointer;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:20px 32px 90px}
-  h1{font-size:var(--fs-display-sm);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);margin:8px 0 20px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
-  .card{border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;background:var(--surface);transition:var(--dur) var(--ease);cursor:pointer}
+  html,body{background:var(--canvas)}
+  .page h1{font-family:var(--font-display);font-size:var(--fs-display-sm);font-weight:600;letter-spacing:-.02em;margin:0 0 20px}
+  .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+  @media (max-width:1280px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @media (max-width:900px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:560px){ .grid{grid-template-columns:1fr} }
+  .card{border:1px solid var(--hairline);border-radius:var(--r-md);overflow:hidden;background:var(--surface-solid);transition:var(--dur) var(--ease);cursor:pointer}
   .card:hover{border-color:var(--hairline-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
   .thumb{height:158px;position:relative;overflow:hidden;background:var(--canvas-2);border-bottom:1px solid var(--hairline)}
   .thumb iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none;background:#070a12}
@@ -29,60 +37,123 @@
   .acts button:hover{background:var(--canvas-2);color:var(--ink)}
   .acts .del:hover{color:var(--a-red);background:color-mix(in srgb,var(--a-red) 12%,transparent)}
   .empty{grid-column:1/-1;color:var(--mute);font-size:var(--fs-body);padding:60px;text-align:center;border:1px dashed var(--hairline);border-radius:var(--r-md)}
+  .filters{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
+  /* 상단 inset 하이라이트가 보더와 겹쳐 2px처럼 보이던 것 제거 → 깔끔한 1px */
+  .filters .ds-chip{box-shadow:none}
+  .tag{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r-pill);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tag.single{color:#fff;background:color-mix(in srgb,var(--a-blue) 80%,transparent)}
+  .tag.multi{color:#fff;background:color-mix(in srgb,var(--a-purple) 80%,transparent)}
+  .chk{position:absolute;top:8px;right:8px;z-index:3;width:24px;height:24px;border-radius:6px;border:1.5px solid rgba(255,255,255,.7);background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;opacity:0;transition:var(--dur)}
+  .card:hover .chk,.card.sel .chk{opacity:1}
+  .card.sel .chk{background:var(--primary);border-color:var(--primary)}
+  .card.sel{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
+  .chk svg{opacity:0} .card.sel .chk svg{opacity:1;color:var(--on-primary)}
+  .selbar{display:none;align-items:center;gap:12px;margin:0 0 18px;padding:10px 14px;border:1px solid var(--hairline-strong);border-radius:var(--r-md);background:var(--surface-solid)}
+  .selbar.on{display:flex}
+  .selbar .cnt{font-size:var(--fs-body-sm);font-weight:var(--fw-semi)}
+  .selbar .sp{flex:1}
+  .selbar button{border:1px solid var(--hairline);background:var(--surface-solid);color:var(--body);border-radius:var(--r-sm);padding:7px 14px;font-size:var(--fs-body-sm);cursor:pointer;font-family:inherit}
+  .selbar button:hover{border-color:var(--hairline-strong);color:var(--ink)}
+  .selbar .delsel{color:#fff;background:var(--a-red);border-color:var(--a-red)}
+  .selbar .delsel:hover{filter:brightness(1.08);color:#fff}
 </style>
 </head>
-<body class="ds-body">
-<div class="nav">
-  <div class="brand"><b class="ds-wordmark">MIDAS <span>Web Generator</span></b></div>
-  <div class="r"><button id="themeBtn"></button><a class="newbtn" href="index.html">+ 새로 만들기</a></div>
-</div>
-<div class="wrap">
-  <h1>내 프로젝트</h1>
-  <div class="grid" id="projects"></div>
+<body class="ds-body app-grid">
+<div data-snb></div>
+<div class="content">
+  <div data-gnb></div>
+  <div class="page">
+    <h1 data-i18n="내 프로젝트">내 프로젝트</h1>
+    <div class="filters" id="filters"></div>
+    <div class="selbar" id="selbar">
+      <span class="cnt" id="selcnt">0개 선택됨</span>
+      <button id="selall" data-i18n="전체 선택">전체 선택</button>
+      <button id="selclear" data-i18n="선택 해제">선택 해제</button>
+      <span class="sp"></span>
+      <button class="delsel" id="seldel" data-i18n="선택 삭제">선택 삭제</button>
+    </div>
+    <div class="grid" id="projects"></div>
+  </div>
 </div>
 
 <script>
-  mountThemeToggle(document.getElementById('themeBtn'));
+  let searchVal='';
+  mountShell('projects', { onSearch:function(q){ searchVal=q; render(); } });
 
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
+  const LL=(ko)=>window.L?L(ko):ko;
   const box=document.getElementById('projects');
+  // 템플릿 탭과 동일한 필터 리스트/카테고리
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
+  const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
+  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : p.stylePack==='ppt'?'ppt' : p.kind==='multi'?'website':'landing';
+  let filter='all';
 
+  function renderForStyle(sp, pg){ const d=pg.data||{};
+    if(sp==='krds' && window.renderKrdsPage) return renderKrdsPage(d, {volume:pg.volume, motion:'static'});
+    if(sp==='midas' && window.renderMidasPage) return renderMidasPage(d, {volume:pg.volume, motion:'static'});
+    if(sp==='edm' && window.renderEdmPage) return renderEdmPage(d);
+    if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
+    return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
+    const isMulti=project.kind==='multi';
+    const cat=catOfProject(project); const tag=document.createElement('span'); tag.className='tag '+(cat==='website'?'multi':'single'); tag.textContent=LL(CAT_LABEL[cat]); wrap.append(tag);
     const pg=project.pages[0];
-    if(pg){
-      const pack=DARK_PACK_BY_ID[project.stylePack]||DARK_PACK_BY_ID.aether;
-      const html=renderComposed(pg.data||{}, pack, 'static', pg.pageType, pg.volume);
-      const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=html; wrap.append(f);
-      requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; });
-    }
+    if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(project.stylePack, pg); wrap.append(f);
+      requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
     return wrap;
   }
-
   function open(p){ const pg=p.pages[0]; if(!pg){ location.href='index.html'; return; } location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`; }
-  function rename(p){ const nn=prompt('프로젝트 이름', p.name); if(nn==null) return; const t=nn.trim(); if(!t) return; const all=getProjects(); const t2=all.find(x=>x.id===p.id); if(t2){ t2.name=t; saveProjects(all); render(); } }
+  function rename(p){ uiPrompt(LL('새 프로젝트 이름을 입력하세요.'), {title:LL('이름 변경'), value:p.name, placeholder:LL('프로젝트 이름')}).then(nn=>{ if(nn==null) return; const t=nn.trim(); if(!t) return; const all=getProjects(); const t2=all.find(x=>x.id===p.id); if(t2){ t2.name=t; saveProjects(all); render(); } }); }
+
+  // 다중 선택 → 일괄 삭제
+  const selected=new Set();
+  const CHK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>';
+  function matches(p){ const q=(searchVal||'').trim().toLowerCase(); if(q && !p.name.toLowerCase().includes(q)) return false; return filter==='all' || catOfProject(p)===filter; }
+  function visibleProjects(){ return getProjects().filter(matches); }
+  function toggleSel(id){ if(selected.has(id)) selected.delete(id); else selected.add(id); syncSel(); }
+  function syncSel(){ document.querySelectorAll('.card').forEach(c=>c.classList.toggle('sel', selected.has(c.dataset.id)));
+    const bar=document.getElementById('selbar'); bar.classList.toggle('on', selected.size>0); document.getElementById('selcnt').textContent=selected.size+LL('개 선택됨'); }
+  document.getElementById('selall').onclick=()=>{ visibleProjects().forEach(p=>selected.add(p.id)); syncSel(); };
+  document.getElementById('selclear').onclick=()=>{ selected.clear(); syncSel(); };
+  document.getElementById('seldel').onclick=()=>{ if(!selected.size) return; uiConfirm(selected.size+LL('개 선택됨')+' · '+LL('삭제하면 되돌릴 수 없어요.'),{title:LL('프로젝트 삭제'),okText:LL('삭제'),danger:true}).then(ok=>{ if(!ok) return; selected.forEach(id=>deleteProject(id)); selected.clear(); render(); }); };
+
+  function renderFilters(){
+    const fb=document.getElementById('filters'); fb.innerHTML='';
+    const ps=getProjects();
+    const counts={all:ps.length}; FILTERS.forEach(([id])=>{ if(id!=='all') counts[id]=ps.filter(p=>catOfProject(p)===id).length; });
+    FILTERS.forEach(([id,label])=>{ const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${(window.L?L(label):label)} ${counts[id]}`; b.onclick=()=>{ filter=id; render(); }; fb.append(b); });
+  }
 
   function render(){
-    const ps=getProjects();
+    renderFilters();
+    const ps=visibleProjects();
     box.innerHTML='';
-    if(!ps.length){ box.innerHTML='<div class="empty">아직 프로젝트가 없어요. <b>새로 만들기</b>로 시작해보세요.</div>'; return; }
+    if(!getProjects().length){ box.innerHTML='<div class="empty">'+LL('아직 프로젝트가 없어요. ')+'<b>'+LL('＋ 새 프로젝트 생성')+'</b>'+LL('으로 시작해보세요.')+'</div>'; return; }
+    if(!ps.length){ box.innerHTML='<div class="empty">'+LL('조건에 해당하는 프로젝트가 없어요.')+'</div>'; return; }
     ps.forEach(p=>{
       const d=new Date(p.createdAt); const date=`${d.getMonth()+1}/${d.getDate()}`;
-      const kindLabel=p.kind==='multi'?`사이트 · ${p.pages.length}p`:(PTL[p.pages[0]?.pageType]||'페이지');
-      const card=document.createElement('div'); card.className='card';
-      card.append(thumbnail(p));
+      const detail=p.kind==='multi'?`${p.pages.length}${LL('개 페이지')}`:LL(PTL[p.pages[0]?.pageType]||'페이지');
+      const card=document.createElement('div'); card.className='card'; card.dataset.id=p.id;
+      const thumb=thumbnail(p);
+      const chk=document.createElement('button'); chk.className='chk'; chk.title='선택'; chk.innerHTML=CHK;
+      chk.onclick=(e)=>{ e.stopPropagation(); toggleSel(p.id); };
+      thumb.append(chk); card.append(thumb);
       const meta=document.createElement('div'); meta.className='meta';
-      meta.innerHTML=`<div class="info"><div class="nm">${p.name}</div><div class="sb">${kindLabel} · ${date}</div></div>
+      meta.innerHTML=`<div class="info"><div class="nm">${p.name}</div><div class="sb">${detail} · ${styleName(p.stylePack)} · ${date}</div></div>
         <div class="acts"><button class="ren" title="이름 변경"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2 2 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
         <button class="del" title="삭제"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div>`;
       meta.querySelector('.ren').onclick=(e)=>{ e.stopPropagation(); rename(p); };
-      meta.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); if(confirm(`"${p.name}" 삭제할까요?`)){ deleteProject(p.id); render(); } };
-      card.append(meta);
-      card.onclick=()=>open(p);
-      box.append(card);
+      meta.querySelector('.del').onclick=(e)=>{ e.stopPropagation(); uiConfirm('"'+p.name+'" · '+LL('삭제하면 되돌릴 수 없어요.'),{title:LL('프로젝트 삭제'),okText:LL('삭제'),danger:true}).then(ok=>{ if(ok){ selected.delete(p.id); deleteProject(p.id); render(); } }); };
+      card.append(meta); card.onclick=()=>open(p); box.append(card);
     });
+    syncSel();
   }
-  render();
+  storeReady().then(render);
+
 </script>
 </body>
 </html>

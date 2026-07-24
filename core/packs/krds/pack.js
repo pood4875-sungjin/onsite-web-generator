@@ -1,38 +1,43 @@
 /* ============================================================
-   core/packs/krds/pack.js — KRDS 스타일 팩
-   섹션 렌더러(styles/sections.css + sections/registry.js) 세계용 출력 팩.
-   렌더러 고정, 이 팩의 :root 오버라이드만 주입 → 전체 KRDS 리스킨.
+   core/packs/krds/pack.js — KRDS 풀 스타일팩 (계약 구현체)
+   대한민국 정부 디자인 시스템 v1.0.0. 파운데이션~모션 전 층 자기완결.
+   출처: KRDS v1.0.0 (Community) Figma OILUy443EILgdjCdB0nIDY (실측 + 규약).
    ============================================================ */
-import { vars, swatchGroups, typeRamp, spaceScale, radiusScale } from './tokens.js';
-
-/** :root 변수 오버라이드 CSS 문자열. scope 바꾸면 부분 적용 가능. */
-export function tokensCss(scope = ':root') {
-  const body = Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join('\n');
-  return `${scope}{\n${body}\n}`;
-}
+import { vars, foundationCss, swatchGroups, typeRamp, spaceScale, radiusScale, shadowScale } from './foundation.js';
+import { layout, layoutCss } from './layout.js';
+import { motion } from './motion.js';
+import { components, componentsCss, gallery } from './components.js';
+import { sections, sectionsCss } from './sections.js';
 
 export const krdsPack = {
   meta: {
     id: 'krds',
     name: 'KRDS',
-    desc: '대한민국 정부 디자인 시스템 v1.0.0 — 공공·정식, 정부블루 #256ef4, 저-radius 헤어라인',
+    desc: '밝은 신뢰 블루 — 라이트, 선명한 블루 강조 #256ef4, 저-radius 1px 헤어라인, Pretendard',
     source: 'KRDS v1.0.0 (Community) · Figma OILUy443EILgdjCdB0nIDY',
-    world: 'sections',           // sections.css 변수 계약 세계 (vs darkglow)
-    motionDefault: 'subtle',
   },
-  vars,
-  tokensCss,
-  // 섹션 × variant — 정부·정식 톤. 미지정 카테고리는 인스펙터가 첫 variant로 폴백.
-  variantMap: {
-    nav: 'solid',
-    cta: 'support',
-    footer: 'sitemap',
+  rootClass: 'krds',           // renderPage가 body를 이 클래스로 래핑 → 스코프 CSS
+  foundation: vars,
+  layout,
+  motion,
+  components,
+  sections,
+
+  /** 파운데이션 + 레이아웃 + 컴포넌트 + 섹션 base CSS 전부 방출 */
+  globalCss(/* ctx */) {
+    return [
+      // 폰트 (Pretendard GOV 미보유 시 Pretendard 폴백)
+      '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");',
+      foundationCss(':root'),
+      'body{margin:0;background:var(--bg)}',
+      layoutCss(),
+      componentsCss(),
+      sectionsCss(),
+    ].join('\n');
   },
-  // 인스펙터 표시용 부가 데이터
-  swatchGroups,
-  typeRamp,
-  spaceScale,
-  radiusScale,
+
+  // 인스펙터 문서용
+  docs: { swatchGroups, typeRamp, spaceScale, radiusScale, shadowScale, gallery },
 };
 
 export default krdsPack;

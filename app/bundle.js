@@ -96,13 +96,30 @@ const btnCta = (t) => `background:${t.ctaGradient};color:${t.accentText};font-we
 
 const SECTIONS = {
   gnb(d, t) {
+    // d.nav = 사이트 메뉴트리 [{name, active, children:[{name, active}]}] (스튜디오 레일에서 주입)
+    // 없으면 기본 플레이스홀더.
+    let nav;
+    if (d.nav && d.nav.length) {
+      nav = d.nav.map((it) => {
+        const on = it.active ? `color:${t.text};font-weight:600` : '';
+        const hasKids = it.children && it.children.length;
+        const sub = hasKids
+          ? `<div class="nsub" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;padding:6px;min-width:150px;border-radius:12px;background:${t.bg};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 40px rgba(0,0,0,.4)">
+              ${it.children.map((c) => `<span data-nav-page="${c.id || ''}" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
+            </div>`
+          : '';
+        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
+      }).join('');
+    } else {
+      nav = `<span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>`;
+    }
     return `
     <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;backdrop-filter:blur(20px);background:${t.bg}cc;border-bottom:1px solid ${t.surfaceBorder}">
       <div style="display:flex;align-items:center;gap:8px">
         <div style="display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:${t.ctaGradient}">${spark(t.accentText)}</div>
-        <span style="font-weight:600">${name(d)}</span>
+        <span data-edit="productName" style="font-weight:600">${name(d)}</span>
       </div>
-      <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px"><span>기능</span><span>가격</span><span>문서</span><span>고객사례</span></nav>
+      <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px">${nav}</nav>
       <button style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
     </header>`;
   },
@@ -122,20 +139,22 @@ const SECTIONS = {
       <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:520px;height:320px;border-radius:999px;filter:blur(100px);background:${t.glow};pointer-events:none"></div>
       <div class="rise" style="position:relative;max-width:680px;margin:0 auto">
         <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span>Engine v2.0 · AX 웹 제너레이터</span>
-        <h1 style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
-        <p style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
+        <h1 data-edit="tagline" style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
+        <p data-edit="subcopy" style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
         <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:12px">
-          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${cta(d)} →</button>
+          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}"><span data-edit="primaryCta">${cta(d)}</span> →</button>
           <button style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">문서 보기</button>
         </div>
       </div>
-      <div class="rise" style="position:relative;max-width:760px;margin:56px auto 0;overflow:hidden;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder};box-shadow:0 20px 80px ${t.glow}">
+      ${(d.images && d.images.hero)
+        ? `<img class="rise" data-img="hero" src="${esc(d.images.hero)}" alt="" style="display:block;position:relative;max-width:760px;width:100%;margin:56px auto 0;border-radius:${t.radius};box-shadow:0 20px 80px ${t.glow}">`
+        : `<div class="rise" data-img="hero" style="position:relative;max-width:760px;margin:56px auto 0;overflow:hidden;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder};box-shadow:0 20px 80px ${t.glow}">
         <div style="display:flex;align-items:center;gap:6px;padding:12px 16px;border-bottom:1px solid ${t.surfaceBorder}">
           <span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span><span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span><span style="width:10px;height:10px;border-radius:999px;background:${t.surfaceBorder}"></span>
           <span style="margin-left:12px;font-size:12px;color:${t.textMuted}">${name(d).toLowerCase()}.app / console</span>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px">${dash}</div>
-      </div>
+      </div>`}
     </section>`;
   },
 
@@ -144,9 +163,9 @@ const SECTIONS = {
     return `
     <section style="position:relative;padding:40px 32px">
       <div class="rise" style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;overflow:hidden;border-radius:${t.radius};background:${t.surfaceBorder};border:1px solid ${t.surfaceBorder}">
-        ${stats.map((s) => `<div style="padding:28px 24px;text-align:center;background:${t.bg}">
-          <div style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:${t.ctaGradient};-webkit-background-clip:text;background-clip:text;color:transparent">${esc(s.value)}</div>
-          <div style="margin-top:6px;color:${t.textMuted};font-size:13px">${esc(s.label)}</div></div>`).join('')}
+        ${stats.map((s, i) => `<div style="padding:28px 24px;text-align:center;background:${t.bg}">
+          <div data-edit="stats.${i}.value" style="font-size:36px;font-weight:700;letter-spacing:-.02em;background-image:${t.ctaGradient};-webkit-background-clip:text;background-clip:text;color:transparent">${esc(s.value)}</div>
+          <div data-edit="stats.${i}.label" style="margin-top:6px;color:${t.textMuted};font-size:13px">${esc(s.label)}</div></div>`).join('')}
       </div>
     </section>`;
   },
@@ -163,8 +182,8 @@ const SECTIONS = {
         ${features.map((f, i) => `<div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
           <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:${t.glow};opacity:.35;pointer-events:none"></div>
           <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
-          <h3 style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">${esc(f.title)}</h3>
-          <p style="position:relative;margin:8px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`).join('')}
+          <h3 data-edit="features.${i}.title" style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">${esc(f.title)}</h3>
+          <p data-edit="features.${i}.desc" style="position:relative;margin:8px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`).join('')}
       </div>
     </section>`;
   },
@@ -177,19 +196,21 @@ const SECTIONS = {
       <div class="rise" style="position:relative;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:hidden;padding:64px 40px;text-align:center;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
         <div style="position:absolute;inset:0;background:${t.heroGradient};pointer-events:none"></div>
         <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:384px;height:256px;border-radius:999px;filter:blur(90px);background:${t.glow};pointer-events:none"></div>
-        <h2 style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
+        <h2 data-edit="bannerText" style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
         <button style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta} →</button>
       </div>
     </section>`;
   },
 
   footer(d, t) {
+    const links = (d.footerLinks && d.footerLinks.length) ? d.footerLinks : ['이용약관', '개인정보처리방침', '문의'];
+    const copy = esc(d.footerCopyright || `© 2026 ${name(d)} Labs`);
     return `
     <footer style="position:relative;padding:40px 32px;border-top:1px solid ${t.surfaceBorder};color:${t.textMuted};font-size:14px">
       <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span style="font-weight:600">${name(d)}</span></div>
-        <div style="display:flex;gap:24px"><span>이용약관</span><span>개인정보처리방침</span><span>문의</span></div>
-        <span>© 2026 ${name(d)} Labs</span>
+        <div style="display:flex;gap:24px">${links.map((l, i) => `<span data-edit="footerLinks.${i}">${esc(l)}</span>`).join('')}</div>
+        <span data-edit="footerCopyright">${copy}</span>
       </div>
     </footer>`;
   },
@@ -206,9 +227,26 @@ const SECTIONS = {
 function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', volume = 'heavy') {
   const t = pack.tokens;
   const template = DG_TEMPLATES[pageType] || DG_TEMPLATES.main;
-  const body = template
-    .filter((s) => includesTier(volume, s.tier))
-    .map((s) => (SECTIONS[s.type] ? SECTIONS[s.type](data, t, motion) : ''))
+
+  // body 섹션 = gnb/footer 제외. 볼륨 기본 노출(defaultOn) + 편집모드 숨김/추가 반영
+  const bodyTpl = template.filter((s) => s.type !== 'gnb' && s.type !== 'footer');
+  const hasGnb = template.some((s) => s.type === 'gnb');
+  const hasFooter = template.some((s) => s.type === 'footer');
+  const defaultOn = new Set(bodyTpl.filter((s) => includesTier(volume, s.tier)).map((s) => s.type));
+  const hidden = new Set(data.hiddenSections || []);
+  const shown = new Set(data.shownSections || []);
+  let bodyTypes = bodyTpl.map((s) => s.type).filter((tp) => (defaultOn.has(tp) ? !hidden.has(tp) : shown.has(tp)));
+
+  // 커스텀 순서
+  if (data.sectionOrder && data.sectionOrder.length) {
+    const ordered = data.sectionOrder.filter((x) => bodyTypes.includes(x));
+    const rest = bodyTypes.filter((x) => !ordered.includes(x));
+    bodyTypes = [...ordered, ...rest];
+  }
+  const types = [...(hasGnb ? ['gnb'] : []), ...bodyTypes, ...(hasFooter ? ['footer'] : [])];
+
+  const body = types
+    .map((type) => (SECTIONS[type] ? `<div data-section="${type}">${SECTIONS[type](data, t, motion)}</div>` : ''))
     .join('\n');
 
   const gridBg = `<div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(${t.grid} 1px,transparent 1px),linear-gradient(90deg,${t.grid} 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%)"></div>`;
@@ -229,6 +267,21 @@ function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', v
 <title>${esc(data.productName || '제품명')}</title>
 <style>
   *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
+  .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
+  img{max-width:100%;height:auto}
+  /* 반응형 세이프티 넷 — 인라인 스타일(고정폭) 팩을 좁은 뷰포트서 정렬 */
+  @media (max-width:900px){
+    [style*="grid-template-columns:repeat(3"]{grid-template-columns:1fr 1fr!important}
+  }
+  @media (max-width:640px){
+    [style*="grid-template-columns:repeat(3"],[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}
+    [style*="padding:80px 32px"]{padding:56px 20px!important}
+    [style*="padding:64px 32px"]{padding:44px 20px!important}
+    [style*="padding:40px 32px"]{padding:32px 20px!important}
+    [style*="padding:16px 32px"]{padding:14px 18px!important}
+    header nav{display:none!important}
+    h1,[style*="font-size:56"],[style*="font-size:52"],[style*="font-size:48"]{font-size:34px!important;line-height:1.15!important}
+  }
   ${motionCss}
 </style>
 </head>
@@ -312,12 +365,47 @@ const DARK_PACK_BY_ID = Object.fromEntries(DARK_PACKS.map((p) => [p.id, p]));
    대시보드·페이지관리·스튜디오 공용.
    ============================================================ */
 const PROJECTS_KEY = 'onsite-projects-v2';
+/* 저장소: IndexedDB(대용량) + 메모리 캐시로 기존 동기 API 유지.
+   최초 실행 시 localStorage 데이터를 IndexedDB로 이사(마이그레이션) 후 LS 키 제거.
+   IndexedDB 불가(사생활 모드 등) 시 localStorage로 폴백. */
+const IDB_NAME = 'onsite-webgen', IDB_STORE = 'projects';
+let _cache = null;      // ready 후 프로젝트 배열(단일 진실)
+let _useLS = false;     // IDB 불가 → localStorage 폴백
+let _readyP = null;
+
+function _openDB(){
+  return new Promise((res, rej) => {
+    let r; try{ r = indexedDB.open(IDB_NAME, 1); }catch(e){ return rej(e); }
+    r.onupgradeneeded = () => { try{ if(!r.result.objectStoreNames.contains(IDB_STORE)) r.result.createObjectStore(IDB_STORE, { keyPath:'id' }); }catch(e){} };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function _idbAll(){ return _openDB().then(db => new Promise((res, rej) => { const rq = db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).getAll(); rq.onsuccess = () => res(rq.result || []); rq.onerror = () => rej(rq.error); })); }
+function _idbReplace(list){ return _openDB().then(db => new Promise((res, rej) => { const tx = db.transaction(IDB_STORE,'readwrite'); const os = tx.objectStore(IDB_STORE); os.clear(); (list||[]).forEach(p => { try{ os.put(p); }catch(e){} }); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); })); }
+
+// 페이지 초기 렌더/쓰기 전에 await 할 것. 이후 get/saveProjects는 동기.
+function storeReady(){
+  if(_readyP) return _readyP;
+  _readyP = (async () => {
+    let ls = []; try{ ls = JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch(e){}
+    try{
+      let idb = await _idbAll();
+      if(!idb.length && ls.length){ await _idbReplace(ls); idb = ls; try{ localStorage.removeItem(PROJECTS_KEY); }catch(e){} } // 최초 이사
+      _cache = idb;
+    }catch(e){ _useLS = true; _cache = ls; }   // IDB 불가 → LS 폴백
+  })();
+  return _readyP;
+}
 
 const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
-const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'' });
+const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] });
 
-function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
-function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
+function getProjects(){ if(_cache) return _cache; try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
+let _writeP = Promise.resolve();
+function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _writeP = _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
+// 저장(IDB 비동기) 완료 대기 — 생성 직후 페이지 이동 전에 await 할 것(경합 방지)
+function storeFlush(){ return _writeP; }
 function getProject(id){ return getProjects().find(p => p.id === id) || null; }
 
 function upsertProject(p){
@@ -334,12 +422,13 @@ let seq = 0;
 const uid = (pre) => pre + Date.now().toString(36) + (seq++).toString(36);
 
 // 페이지 생성 — 프로젝트 공유 사실(제품명·태그라인·주CTA)을 초기값으로 시드
-function newPage(pageType='main', shared={}){
+// parentId: 메뉴 트리 부모. null = 최상위(루트)
+function newPage(pageType='main', shared={}, parentId=null){
   const data = emptyData();
   if(shared.productName) data.productName = shared.productName;
   if(shared.tagline) data.tagline = shared.tagline;
   if(shared.primaryCta) data.primaryCta = shared.primaryCta;
-  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', data };
+  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', parentId, data };
 }
 
 function createProject({ name, kind='single', shared={}, stylePack='aether', org='' } = {}){
@@ -358,17 +447,90 @@ function createProject({ name, kind='single', shared={}, stylePack='aether', org
   return upsertProject(p);
 }
 
-function addPage(projectId, pageType='main'){
+function addPage(projectId, pageType='main', parentId=null, name=null){
   const p = getProject(projectId); if(!p) return null;
-  const pg = newPage(pageType, p.shared || {});
+  const pg = newPage(pageType, p.shared || {}, parentId);
+  if(name && name.trim()) pg.name = name.trim();
   p.pages.push(pg); upsertProject(p);
   return pg;
 }
 
+function renamePage(projectId, pageId, name){
+  const p = getProject(projectId); if(!p) return;
+  const pg = p.pages.find(x => x.id === pageId); if(!pg) return;
+  const t = (name || '').trim(); if(!t) return;
+  pg.name = t; upsertProject(p);
+}
+
+// 한 페이지 + 모든 하위 자손 id 집합
+function descendantIds(pages, rootId){
+  const out = new Set([rootId]);
+  let grew = true;
+  while(grew){
+    grew = false;
+    for(const pg of pages){ if(pg.parentId && out.has(pg.parentId) && !out.has(pg.id)){ out.add(pg.id); grew = true; } }
+  }
+  return out;
+}
+
+// 삭제 = 해당 페이지와 그 하위 트리 전체 제거
+// 템플릿 → 프로젝트 복사 (전 페이지 생성완료 상태). 스튜디오 편집모드로 바로 진입.
+function createProjectFromTemplate(tpl){
+  if(!tpl) return null;
+  const p = createProject({ kind: tpl.kind||'single', name: tpl.name||'무제 프로젝트', shared:{ productName: (tpl.pages && tpl.pages[0] && tpl.pages[0].data && tpl.pages[0].data.productName) || '' }, stylePack: tpl.stylePack });
+  const full = getProject(p.id);
+  full.pages = (tpl.pages||[]).map(pg => ({
+    id: uid('pg'), name: pg.name||'페이지', pageType: pg.pageType||'main', volume: pg.volume||'heavy', parentId: pg.parentId||null,
+    data: Object.assign(emptyData(), JSON.parse(JSON.stringify(pg.data||{}))),
+    chat: { log:[{r:'bot',t:'📂 템플릿에서 시작했어요. 편집 모드에서 바로 수정하세요.'}], idx:8, generated:true },
+  }));
+  upsertProject(full);
+  return full;
+}
+
 function deletePage(projectId, pageId){
   const p = getProject(projectId); if(!p) return;
-  p.pages = p.pages.filter(x => x.id !== pageId); upsertProject(p);
+  const kill = descendantIds(p.pages, pageId);
+  p.pages = p.pages.filter(x => !kill.has(x.id)); upsertProject(p);
 }
+
+// 트리 이동 = 부모 변경(reparent) + 형제 내 위치 변경(reorder)
+// parentId: 새 부모 id (null=루트). index: 새 형제들 중 삽입 위치(null=맨 끝)
+// 형제 순서는 pages[] 배열 순서로 표현.
+function movePage(projectId, pageId, parentId=null, index=null){
+  const p = getProject(projectId); if(!p) return;
+  const pg = p.pages.find(x => x.id === pageId); if(!pg) return;
+  parentId = parentId || null;
+  // 순환 방지: 자기 자신·자손 밑으로는 못 감
+  if(parentId){
+    if(descendantIds(p.pages, pageId).has(parentId)) return;
+  }
+  pg.parentId = parentId;
+  // 배열에서 빼고, 새 형제들 기준으로 다시 삽입
+  p.pages = p.pages.filter(x => x.id !== pageId);
+  const siblings = p.pages.filter(x => (x.parentId || null) === parentId);
+  let at;
+  if(index == null || index >= siblings.length){
+    if(siblings.length) at = p.pages.indexOf(siblings[siblings.length - 1]) + 1;
+    else if(parentId) at = p.pages.indexOf(p.pages.find(x => x.id === parentId)) + 1;
+    else at = p.pages.length;
+  } else {
+    at = p.pages.indexOf(siblings[index]);
+  }
+  p.pages.splice(at, 0, pg);
+  upsertProject(p);
+}
+
+// pages[] → 중첩 트리 [{...page, children:[...]}] (배열 순서 = 형제 순서)
+function pageTree(pages){
+  const byParent = new Map();
+  pages.forEach(pg => { const k = pg.parentId || null; if(!byParent.has(k)) byParent.set(k, []); byParent.get(k).push(pg); });
+  const build = (parentId) => (byParent.get(parentId) || []).map(pg => ({ ...pg, children: build(pg.id) }));
+  return build(null);
+}
+
+// 모든 페이지 로드 시 즉시 캐시 준비 시작(마이그레이션 포함). 페이지는 storeReady()를 await.
+storeReady();
 
 
 /* ===== app/theme.js ===== */
@@ -389,5 +551,5 @@ function mountThemeToggle(el){ el.classList.add('ds-theme'); el.setAttribute('da
 function applySavedTheme(){ document.documentElement.setAttribute('data-theme', localStorage.getItem(THEME_KEY) || 'light'); }
 
 
-Object.assign(window, { esc, VOLUMES, TIERS, includesTier, DG_TEMPLATES, PAGE_TYPE_LABEL, SECTIONS, renderComposed, DARK_PACKS, DARK_PACK_BY_ID, PT_LABEL, emptyData, getProjects, saveProjects, getProject, upsertProject, deleteProject, newPage, createProject, addPage, deletePage, currentTheme, setTheme, toggleTheme, mountThemeToggle, applySavedTheme });
+Object.assign(window, { esc, VOLUMES, TIERS, includesTier, DG_TEMPLATES, PAGE_TYPE_LABEL, SECTIONS, renderComposed, DARK_PACKS, DARK_PACK_BY_ID, PT_LABEL, emptyData, storeReady, storeFlush, getProjects, saveProjects, getProject, upsertProject, deleteProject, newPage, createProject, addPage, deletePage, movePage, pageTree, renamePage, createProjectFromTemplate, currentTheme, setTheme, toggleTheme, mountThemeToggle, applySavedTheme });
 })();

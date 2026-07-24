@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>템플릿 · MIDAS Web Generator</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
+<script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
+<script src="edm/promo01.js"></script>
+<script src="templates.js"></script>
+<script src="i18n.js"></script>
+<script src="icons.js"></script>
+<script src="shell.js"></script>
+<link rel="stylesheet" href="ds.css">
+<style>
+  html,body{background:var(--canvas)}
+  .page h1{font-family:var(--font-display);font-size:var(--fs-display-sm);font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .page .lead{color:var(--mute);font-size:15px;margin:0 0 26px}
+  .tpl-filters{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
+  .tpl-filters .ds-chip{box-shadow:none}
+  /* 프로젝트 카드와 동일한 태그 표현(좌상단·카테고리 색) */
+  .tpl .cat{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .tpl .cat.multi{background:color-mix(in srgb,var(--a-purple) 80%,transparent)}
+  .tpl .cat.single{background:color-mix(in srgb,var(--a-blue) 80%,transparent)}
+  .tpl-empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--mute);border:1px dashed var(--hairline);border-radius:var(--r-md)}
+  .tpl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+  @media (max-width:1180px){.tpl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:720px){.tpl-grid{grid-template-columns:1fr}}
+  .tpl{cursor:pointer}
+  .tpl .thumb{height:210px;border-radius:var(--r-md);overflow:hidden;position:relative;border:1px solid var(--hairline);background:var(--canvas-2);transition:var(--dur) var(--ease)}
+  .tpl:hover .thumb{border-color:var(--hairline-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .tpl .thumb iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0;pointer-events:none}
+  .tpl .badge2{position:absolute;top:10px;left:10px;z-index:2;font-size:11px;font-weight:600;color:#fff;padding:3px 9px;border-radius:var(--r-pill);background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .tpl .nm{font-size:15px;font-weight:var(--fw-semi);margin:12px 2px 2px}
+  .tpl .ds{font-size:13px;color:var(--mute);margin:0 2px}
+  /* 프리뷰 모달 */
+  .tm-scrim{position:fixed;inset:0;z-index:999;display:grid;place-items:center;padding:28px;background:color-mix(in srgb,var(--canvas) 25%,rgba(10,11,24,.6));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}
+  .tm-scrim.on{opacity:1}
+  .tm{width:100%;max-width:1040px;height:min(84vh,720px);display:flex;flex-direction:column;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-md);box-shadow:var(--shadow-3);overflow:hidden;transform:scale(.96);transition:transform .2s cubic-bezier(.22,1,.36,1)}
+  .tm-scrim.on .tm{transform:none}
+  .tm-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--hairline);flex:0 0 auto}
+  .tm-h .t{font-family:var(--font-display);font-size:16px;font-weight:600}
+  .tm-h .t span{color:var(--mute);font-weight:var(--fw-med);font-size:13px;margin-left:8px}
+  .tm-h .r{display:flex;gap:8px;align-items:center}
+  .tm-close{width:32px;height:32px;border:1px solid var(--hairline);background:var(--surface-solid);border-radius:var(--r-pill);color:var(--body);cursor:pointer;display:grid;place-items:center}
+  .tm-close:hover{color:var(--ink);border-color:var(--hairline-strong)}
+  .tm-body{flex:1;display:flex;min-height:0}
+  .tm-pages{flex:0 0 176px;border-right:1px solid var(--hairline);overflow-y:auto;padding:12px}
+  .tm-pg{border:1px solid var(--hairline);border-radius:10px;padding:9px 11px;font-size:13px;color:var(--body);cursor:pointer;margin-bottom:8px;font-weight:var(--fw-med)}
+  .tm-pg.on{border-color:var(--point);background:var(--point-weak);color:var(--point)}
+  .tm-view{flex:1;position:relative;overflow-y:auto;overflow-x:hidden;background:#070a12}
+  .tm-scale{position:relative;width:100%}
+  .tm-view iframe{position:absolute;top:0;left:0;border:0;transform-origin:0 0}
+  .ds-btn.sm{padding:9px 16px;font-size:14px}
+</style>
+</head>
+<body class="ds-body app-grid">
+<div data-snb></div>
+<div class="content">
+  <div data-gnb></div>
+  <div class="page">
+    <h1 data-i18n="템플릿">템플릿</h1>
+    <p class="lead" data-i18n="템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.">템플릿으로 시작해 다음 프로젝트를 빠르게 만들어보세요.</p>
+    <div class="tpl-filters" id="filters"></div>
+    <div class="tpl-grid" id="grid"></div>
+  </div>
+</div>
+
+<script>
+  mountShell('resources', {});
+  const TPLS = window.APP_TEMPLATES || [];
+
+  function renderForStyle(sp, pg){ const d=pg.data||{};
+    if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
+    if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
+    if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
+    return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function fit(wrap, iframe, wide){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; iframe.style.width='1280px'; iframe.style.height=(wrap.clientHeight/s)+'px'; iframe.style.transform='scale('+s+')'; }); }
+
+  const grid=document.getElementById('grid');
+  const LL=(ko)=>window.L?L(ko):ko;
+  // 필터 카테고리 통일(랜딩+이벤트 = 랜딩페이지). 카드 태그도 이 카테고리 라벨만 노출.
+  const CAT_OF=(t)=>({website:'website',landing:'landing',event:'landing',edm:'edm',ppt:'ppt'}[t]||t);
+  const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
+  const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
+  let filter='all';
+  // 생성 플로우에서 이메일 선택 시 ?type=edm로 진입 → 해당 필터 프리셋
+  try{ const _t=new URLSearchParams(location.search).get('type'); if(_t && FILTERS.some(f=>f[0]===_t)) filter=_t; }catch(e){}
+
+  function renderFilters(){
+    const fb=document.getElementById('filters'); fb.innerHTML='';
+    FILTERS.forEach(([id,label])=>{ const n=id==='all'?TPLS.length:TPLS.filter(t=>CAT_OF(t.tag)===id).length;
+      const b=document.createElement('button'); b.className='ds-chip'+(filter===id?' on':''); b.textContent=`${LL(label)} ${n}`;
+      b.onclick=()=>{ filter=id; renderFilters(); renderGrid(); }; fb.append(b); });
+  }
+  function renderGrid(){
+    grid.innerHTML='';
+    const list=TPLS.filter(t=> filter==='all' || CAT_OF(t.tag)===filter);
+    if(!list.length){ grid.innerHTML='<div class="tpl-empty">'+LL('아직 준비된 템플릿이 없어요.')+'</div>'; return; }
+    list.forEach(tpl=>{
+      const card=document.createElement('div'); card.className='tpl';
+      const thumb=document.createElement('div'); thumb.className='thumb';
+      if(tpl.tag){ const c=CAT_OF(tpl.tag); const cat=document.createElement('span'); cat.className='cat '+(c==='website'?'multi':'single'); cat.textContent=LL(CAT_LABEL[c]||tpl.tag); thumb.append(cat); }
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
+      card.append(thumb);
+      card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
+      card.onclick=()=>openModal(tpl);
+      grid.append(card);
+    });
+  }
+  renderFilters(); renderGrid();
+
+  /* 프리뷰 모달 */
+  function openModal(tpl){
+    const scrim=document.createElement('div'); scrim.className='tm-scrim';
+    scrim.innerHTML=`<div class="tm">
+      <div class="tm-h"><div class="t">${tpl.name}<span>${styleName(tpl.stylePack)} · ${tpl.kind==='multi'?tpl.pages.length+(window.L?L('개 페이지'):'개 페이지'):(window.L?L('단일 페이지'):'단일 페이지')}</span></div>
+        <div class="r"><a class="ds-btn primary sm" id="tmUse">${window.L?L('이 템플릿으로 시작'):'이 템플릿으로 시작'}</a><button class="tm-close" id="tmClose">✕</button></div></div>
+      <div class="tm-body"><div class="tm-pages" id="tmPages"></div><div class="tm-view" id="tmView"></div></div>
+    </div>`;
+    document.body.append(scrim);
+    const view=scrim.querySelector('#tmView'); const pagesBox=scrim.querySelector('#tmPages');
+    // 전체 페이지를 폭에 맞춰 축소 + 세로 스크롤(전체 확인 가능)
+    function fitFull(scale, f){ const s=view.clientWidth/1280; const doc=f.contentDocument;
+      const h=(doc&&(doc.body.scrollHeight||doc.documentElement.scrollHeight))||view.clientHeight;
+      f.style.width='1280px'; f.style.height=h+'px'; f.style.transform='scale('+s+')';
+      scale.style.height=(h*s)+'px'; }
+    function show(i){ view.scrollTop=0; view.innerHTML='';
+      const scale=document.createElement('div'); scale.className='tm-scale';
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[i]);
+      f.addEventListener('load',()=>{ fitFull(scale,f); requestAnimationFrame(()=>fitFull(scale,f)); });
+      scale.append(f); view.append(scale);
+      pagesBox.querySelectorAll('.tm-pg').forEach((x,j)=>x.classList.toggle('on',j===i)); }
+    tpl.pages.forEach((pg,i)=>{ const b=document.createElement('div'); b.className='tm-pg'; b.textContent=pg.name; b.onclick=()=>show(i); pagesBox.append(b); });
+    show(0);
+    function close(){ scrim.classList.remove('on'); setTimeout(()=>scrim.remove(),190); }
+    scrim.querySelector('#tmClose').onclick=close;
+    scrim.onclick=(e)=>{ if(e.target===scrim) close(); };
+    scrim.querySelector('#tmUse').onclick=async ()=>{
+      try{ await storeReady(); const p=createProjectFromTemplate(tpl); const pg=p.pages[0]; await storeFlush(); location.href='studio/studio.html?p='+p.id+'&page='+pg.id+'&edit=1'; }
+      catch(err){ const msg=(err&&err.name==='QuotaExceededError')?LL('저장 공간이 부족해요. 대시보드에서 오래된 프로젝트를 정리한 뒤 다시 시도해주세요.'):LL('프로젝트를 만들지 못했어요. 잠시 후 다시 시도해주세요.'); (window.uiAlert?uiAlert(msg):alert(msg)); console.error('[template use]',err); }
+    };
+    requestAnimationFrame(()=>scrim.classList.add('on'));
+  }
+</script>
+</body>
+</html>

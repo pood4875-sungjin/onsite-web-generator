@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아이콘 · MIDAS Web Generator</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
+<script src="bundle.js"></script>
+<script src="packs.krds.js"></script>
+<script src="packs.midas.js"></script>
+<script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
+<script src="packs.ppt.js"></script>
+<script src="i18n.js"></script>
+<script src="icons.js"></script>
+<script src="shell.js"></script>
+<link rel="stylesheet" href="ds.css">
+<style>
+  html,body{background:var(--canvas)}
+  .page h1{font-family:var(--font-display);font-size:var(--fs-display-sm);font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+  .page .lead{color:var(--mute);font-size:15px;margin:0 0 20px}
+  .ictools{display:flex;gap:10px;align-items:center;margin:0 0 22px;flex-wrap:wrap}
+  .ictools input{flex:1;min-width:180px;max-width:340px;border:1px solid var(--hairline);background:var(--surface);border-radius:var(--r-pill);padding:9px 16px;font-family:inherit;font-size:14px;color:var(--ink);outline:none}
+  .ictools input:focus{border-color:var(--point)}
+  .ictools .cnt{font-size:13px;color:var(--mute)}
+  .ictools .seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--hairline);border-radius:var(--r-pill);background:var(--surface)}
+  .ictools .seg button{border:0;background:none;color:var(--body);font-size:12.5px;padding:5px 11px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit}
+  .ictools .seg button.on{background:var(--point);color:#fff}
+  .ic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px}
+  .ic{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 12px;border:1px solid var(--hairline);border-radius:var(--r-md);background:var(--surface-solid);cursor:pointer;transition:var(--dur) var(--ease)}
+  .ic:hover{border-color:var(--point);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+  .ic .box{color:var(--ink);display:grid;place-items:center;height:34px}
+  .ic .nm{font-size:11.5px;color:var(--mute);text-align:center;word-break:break-all;line-height:1.3}
+  .ic.copied .nm{color:var(--point);font-weight:600}
+  .empty{grid-column:1/-1;padding:50px;text-align:center;color:var(--mute);border:1px dashed var(--hairline);border-radius:var(--r-md)}
+  .empty code{background:var(--surface-2,var(--canvas-2));padding:2px 7px;border-radius:6px;color:var(--point)}
+</style>
+</head>
+<body class="ds-body app-grid">
+<div data-snb></div>
+<div class="content">
+  <div data-gnb></div>
+  <div class="page">
+    <h1 data-i18n="아이콘">아이콘</h1>
+    <p class="lead" data-i18n="아이콘 리드">플랫폼에 탑재된 아이콘 리소스. 클릭하면 이름이 복사돼요. 코드: <code>icon('name',{size:20})</code></p>
+    <div class="ictools">
+      <input id="q" placeholder="아이콘 검색 (예: home, arrow, search)" data-i18n-ph="아이콘 검색 (예: home, arrow, search)">
+      <div class="seg" id="sizeSeg"><button data-s="20" class="on">S</button><button data-s="28">M</button><button data-s="40">L</button></div>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="ic-grid" id="grid"></div>
+  </div>
+</div>
+
+<script>
+  mountShell('icons', {});
+  var size=20, q='';
+  var grid=document.getElementById('grid'), cnt=document.getElementById('cnt');
+  function render(){
+    var names=(window.iconNames?iconNames():[]).filter(function(n){ return !q || n.toLowerCase().indexOf(q)>=0; });
+    cnt.textContent = names.length + ' / ' + (window.iconNames?iconNames().length:0);
+    if(!window.iconNames || !iconNames().length){
+      grid.innerHTML='<div class="empty">아이콘이 아직 없어요. <code>assets/icons/</code>에 SVG를 넣고 <code>node build-icons.cjs</code> 실행하면 여기 나타나요.</div>';
+      return;
+    }
+    if(!names.length){ grid.innerHTML='<div class="empty">검색 결과가 없어요.</div>'; return; }
+    grid.innerHTML='';
+    names.forEach(function(n){
+      var el=document.createElement('div'); el.className='ic';
+      el.innerHTML='<div class="box">'+icon(n,{size:size})+'</div><div class="nm">'+n+'</div>';
+      el.onclick=function(){
+        try{ navigator.clipboard.writeText(n); }catch(e){}
+        el.classList.add('copied'); setTimeout(function(){ el.classList.remove('copied'); }, 900);
+      };
+      grid.append(el);
+    });
+  }
+  document.getElementById('q').oninput=function(){ q=this.value.trim().toLowerCase(); render(); };
+  document.getElementById('sizeSeg').querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){ size=+b.dataset.s; document.querySelectorAll('#sizeSeg button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); render(); };
+  });
+  render();
+</script>
+</body>
+</html>
