@@ -759,17 +759,23 @@
   // AI 작업중 버블: 단계 메시지 순환 + 경과초 + 진행바. 반환 {row, done()} — done()이 버블 제거.
   function workingBubble(){
     const stages=[ ['지시 해석 중…',12], ['관련 슬라이드 찾는 중…',38], ['문장 새로 쓰는 중…',66], ['덱에 반영 준비 중…',85] ];
+    // '보통 N초' = 이 기기 실측(최근 10회 중앙값 기반). 기록 없으면 시간 약속 안 함.
+    const est = (window.LLM && LLM.estimateDur) ? LLM.estimateDur('edit') : null;
+    const metaTail = est ? tL('초 경과 · 보통')+' '+est+tL('초 안팎') : tL('초 경과');
     const row=el('div','row');
     const bub=el('div','bub bot working',
       `<div class="wk-head"><span class="wk-spin"></span><span class="wk-stage">${tL(stages[0][0])}</span></div>`+
-      `<div class="wk-meta"><span class="wk-sec">0</span>${tL('초 경과 · 보통 10~25초 걸려요')}</div>`+
+      `<div class="wk-meta"><span class="wk-sec">0</span><span class="wk-tail">${metaTail}</span></div>`+
       `<div class="wk-bar"><i></i></div>`);
     row.append(bub); msgs.append(row); scroll();
-    const stEl=bub.querySelector('.wk-stage'), secEl=bub.querySelector('.wk-sec'), barEl=bub.querySelector('.wk-bar i');
-    let i=0, sec=0;
+    const stEl=bub.querySelector('.wk-stage'), secEl=bub.querySelector('.wk-sec'), barEl=bub.querySelector('.wk-bar i'), tailEl=bub.querySelector('.wk-tail');
+    let i=0, sec=0, over=false;
     barEl.style.width=stages[0][1]+'%';
     const stT=setInterval(()=>{ i++; if(i<stages.length){ stEl.textContent=tL(stages[i][0]); barEl.style.width=stages[i][1]+'%'; } else clearInterval(stT); }, 3500);
-    const scT=setInterval(()=>{ sec++; secEl.textContent=sec; }, 1000);
+    const scT=setInterval(()=>{ sec++; secEl.textContent=sec;
+      // 예상 초과 → 낡은 약속 대신 정직한 전환
+      if(est && !over && sec>est){ over=true; stEl.textContent=tL('조금 더 걸리네요… 거의 다 됐어요'); tailEl.textContent=tL('초 경과'); barEl.style.width='92%'; clearInterval(stT); }
+    }, 1000);
     return { row, done(){ clearInterval(stT); clearInterval(scT); row.remove(); } };
   }
   const _pptUndo=[];
@@ -788,8 +794,10 @@
       meBubble(t); inp.value=''; send.disabled=true;
       const wk=workingBubble();
       const snap=JSON.stringify(data.slides||[]);
+      const t0=Date.now();
       try{
         const res=await LLM.editDeck(data.slides||[], t);
+        LLM.recordDur('edit', Date.now()-t0);   // 실측 기록 → 다음부터 '보통 N초' 정확해짐
         wk.done();
         if(res.slides){
           _pptUndo.push(snap);

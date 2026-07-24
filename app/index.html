@@ -211,7 +211,7 @@
     <b class="aigen-title" data-i18n="AI가 장표를 만들고 있어요">AI가 장표를 만들고 있어요</b>
     <span class="aigen-stage" id="aiGenStage">브리프 분석 중…</span>
     <div class="aigen-bar"><i id="aiGenBar"></i></div>
-    <span class="aigen-hint" data-i18n="보통 10~20초 걸려요. 창을 닫지 마세요.">보통 10~20초 걸려요. 창을 닫지 마세요.</span>
+    <span class="aigen-hint" id="aiGenHint">창을 닫지 마세요.</span>
   </div>
 </div>
 
@@ -325,15 +325,20 @@
   /* AI 생성 로딩 — 단계 메시지 순환 + 진행바 전진(마지막 12%는 완료 시 채움).
      반환된 stop(ok)로 종료: ok=true면 100% 채우고 유지(곧 이동), false면 즉시 숨김(폴백). */
   function showAiGen(){
-    const ov=document.getElementById('aiGen'), st=document.getElementById('aiGenStage'), bar=document.getElementById('aiGenBar');
+    const ov=document.getElementById('aiGen'), st=document.getElementById('aiGenStage'), bar=document.getElementById('aiGenBar'), hint=document.getElementById('aiGenHint');
     const stages=[ ['브리프 분석 중…',14], ['목차·스토리 구성 중…',34], ['슬라이드 문장 작성 중…',58], ['수치·레이아웃 다듬는 중…',76], ['덱 조립 중…',88] ];
-    let i=0, timer=null;
+    // '보통 N초' = 이 기기 실측 기반(없으면 시간 약속 안 함). 초과 시 정직한 전환.
+    const est=(window.LLM&&LLM.estimateDur)?LLM.estimateDur('compose'):null;
+    hint.textContent = est ? _L('보통')+' '+est+_L('초 안팎 걸려요. 창을 닫지 마세요.') : _L('창을 닫지 마세요.');
+    let i=0, sec=0, timer=null, secT=null, over=false;
     const setStage=(n)=>{ const s=stages[Math.min(n,stages.length-1)]; st.style.opacity=0; setTimeout(()=>{ st.textContent=_L(s[0]); st.style.opacity=1; },180); bar.style.width=s[1]+'%'; };
     ov.hidden=false; requestAnimationFrame(()=>ov.classList.add('on'));
     setStage(0);
     timer=setInterval(()=>{ i++; if(i<stages.length) setStage(i); else clearInterval(timer); }, 2600);
-    return (ok)=>{ clearInterval(timer);
-      if(ok){ bar.style.width='100%'; st.textContent=_L('완성! 스튜디오로 이동해요'); }
+    secT=setInterval(()=>{ sec++; if(est && !over && sec>est){ over=true; clearInterval(timer); st.textContent=_L('조금 더 걸리네요… 거의 다 됐어요'); bar.style.width='94%'; } },1000);
+    const t0=Date.now();
+    return (ok)=>{ clearInterval(timer); clearInterval(secT);
+      if(ok){ if(window.LLM&&LLM.recordDur) LLM.recordDur('compose', Date.now()-t0); bar.style.width='100%'; st.textContent=_L('완성! 스튜디오로 이동해요'); }
       else { ov.classList.remove('on'); setTimeout(()=>{ ov.hidden=true; bar.style.width='8%'; },250); }
     };
   }

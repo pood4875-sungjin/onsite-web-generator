@@ -118,7 +118,12 @@
     return deck;
   }
 
-  // 채팅 내용수정: {slides, instruction} → {ops:[{i,slide}], message}. 디자인/구조 요청은 ops 없이 안내 메시지.
+  /* 실측 소요시간 기록 — '보통 N초'를 추정이 아니라 이 기기 실측(최근 10회 중앙값×1.4, 5초 올림)으로 표시.
+     기록 없으면 null → UI는 시간 약속을 하지 않음. */
+  function recordDur(kind, ms) { try { var k = 'onsite-ai-durs-' + kind; var a = JSON.parse(localStorage.getItem(k)) || []; a.push(Math.round(ms / 1000)); if (a.length > 10) a = a.slice(-10); localStorage.setItem(k, JSON.stringify(a)); } catch (e) {} }
+  function estimateDur(kind) { try { var a = JSON.parse(localStorage.getItem('onsite-ai-durs-' + kind)) || []; if (!a.length) return null; a = a.slice().sort(function (x, y) { return x - y; }); var med = a[Math.floor(a.length / 2)]; return Math.max(10, Math.ceil(med * 1.4 / 5) * 5); } catch (e) { return null; } }
+
+  // 채팅 내용수정: {slides, instruction} → {slides|null, message}. 디자인 요청은 slides 없이 안내 메시지.
   async function editDeck(slides, instruction) {
     if (usingProxy()) {
       var r = await fetch(proxyUrl() + '/edit', {
@@ -150,7 +155,7 @@
   }
 
   window.LLM = {
-    editDeck: editDeck,
+    editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
     hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, parseDeck: parseDeck,
