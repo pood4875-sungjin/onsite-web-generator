@@ -253,7 +253,7 @@
       if(!tpl){ (window.uiAlert?uiAlert(_L('사용할 이메일 템플릿이 없어요.')):alert('no eDM template')); return; }
       const p=createProjectFromTemplate(tpl);
       if(nm) p.name=nm; if(prod){ p.shared=p.shared||{}; p.shared.productName=prod; } p.lang=siteLang; upsertProject(p);
-      leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
+      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
     }
     // PPT: 선택 스타일 + 스타터 덱으로 생성
     if(kind==='ppt'){
@@ -263,12 +263,13 @@
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
       pg0.chat={ log:[{r:'bot',t:'📊 PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.'}], idx:8, generated:true };
       full.lang=siteLang; upsertProject(full);
-      leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
+      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
     }
     const shared={ productName:prod };
     const name=nm || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });
     p.lang=siteLang; upsertProject(p);   // 사이트 출력 언어 저장
+    await storeFlush();
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
     leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;

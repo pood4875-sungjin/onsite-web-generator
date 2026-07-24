@@ -402,7 +402,10 @@ const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'�
 const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] });
 
 function getProjects(){ if(_cache) return _cache; try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
-function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
+let _writeP = Promise.resolve();
+function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _writeP = _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
+// 저장(IDB 비동기) 완료 대기 — 생성 직후 페이지 이동 전에 await 할 것(경합 방지)
+function storeFlush(){ return _writeP; }
 function getProject(id){ return getProjects().find(p => p.id === id) || null; }
 
 function upsertProject(p){
@@ -548,5 +551,5 @@ function mountThemeToggle(el){ el.classList.add('ds-theme'); el.setAttribute('da
 function applySavedTheme(){ document.documentElement.setAttribute('data-theme', localStorage.getItem(THEME_KEY) || 'light'); }
 
 
-Object.assign(window, { esc, VOLUMES, TIERS, includesTier, DG_TEMPLATES, PAGE_TYPE_LABEL, SECTIONS, renderComposed, DARK_PACKS, DARK_PACK_BY_ID, PT_LABEL, emptyData, storeReady, getProjects, saveProjects, getProject, upsertProject, deleteProject, newPage, createProject, addPage, deletePage, movePage, pageTree, renamePage, createProjectFromTemplate, currentTheme, setTheme, toggleTheme, mountThemeToggle, applySavedTheme });
+Object.assign(window, { esc, VOLUMES, TIERS, includesTier, DG_TEMPLATES, PAGE_TYPE_LABEL, SECTIONS, renderComposed, DARK_PACKS, DARK_PACK_BY_ID, PT_LABEL, emptyData, storeReady, storeFlush, getProjects, saveProjects, getProject, upsertProject, deleteProject, newPage, createProject, addPage, deletePage, movePage, pageTree, renamePage, createProjectFromTemplate, currentTheme, setTheme, toggleTheme, mountThemeToggle, applySavedTheme });
 })();

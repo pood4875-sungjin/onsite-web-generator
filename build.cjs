@@ -26,7 +26,7 @@ const PUBLICS = [
   'VOLUMES', 'TIERS', 'includesTier',
   'DG_TEMPLATES', 'PAGE_TYPE_LABEL', 'SECTIONS', 'renderComposed',
   'DARK_PACKS', 'DARK_PACK_BY_ID',
-  'PT_LABEL', 'emptyData', 'storeReady', 'getProjects', 'saveProjects', 'getProject',
+  'PT_LABEL', 'emptyData', 'storeReady', 'storeFlush', 'getProjects', 'saveProjects', 'getProject',
   'upsertProject', 'deleteProject', 'newPage', 'createProject', 'addPage', 'deletePage',
   'movePage', 'pageTree', 'renamePage', 'createProjectFromTemplate',
   'currentTheme', 'setTheme', 'toggleTheme', 'mountThemeToggle', 'applySavedTheme',

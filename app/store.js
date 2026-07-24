@@ -42,7 +42,10 @@ export const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pric
 export const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] });
 
 export function getProjects(){ if(_cache) return _cache; try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
-export function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
+let _writeP = Promise.resolve();
+export function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _writeP = _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
+// 저장(IDB 비동기) 완료 대기 — 생성 직후 페이지 이동 전에 await 할 것(경합 방지)
+export function storeFlush(){ return _writeP; }
 export function getProject(id){ return getProjects().find(p => p.id === id) || null; }
 
 export function upsertProject(p){
