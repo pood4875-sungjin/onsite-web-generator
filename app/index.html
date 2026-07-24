@@ -28,11 +28,11 @@
   .step.on{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .eyebrow{margin-bottom:14px}
-  h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:var(--lh-tight);margin:0 0 12px;color:var(--ink)}
+  h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0 0 56px;color:var(--ink)}
   .sub{font-size:var(--fs-body-lg);color:var(--body-mid);margin:0 0 40px;letter-spacing:var(--tr-body)}
 
   /* 종류 카드 */
-  .cards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap;margin-top:52px}
+  .cards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap}
   #st1{max-width:980px}
   .kc{flex:1 1 0;min-width:0;max-width:290px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
   .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
@@ -109,7 +109,7 @@
 
 <div class="wrap">
   <div class="step on" id="st1">
-    <h1 data-i18n="어떤 종류의 프로젝트를 만들까요?">어떤 종류의 프로젝트를 만들까요?</h1>
+    <h1>어떤 종류의<br>프로젝트를 만들까요?</h1>
     <div class="cards">
       <button class="kc single" data-k="single">
         <div class="thumb tb-land"><div class="gw gw-land"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar w70"></span><span class="gwbar w52"></span></div></div>
@@ -131,9 +131,7 @@
   </div>
 
   <div class="step" id="st2">
-    <div class="ds-eyebrow eyebrow" data-i18n="1 / 2 · 프로젝트 정보">1 / 2 · 프로젝트 정보</div>
-    <h1 data-i18n="프로젝트 정보">프로젝트 정보</h1>
-    <p class="sub" data-i18n="이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.">이름과 사업군을 알려주세요. 사업군에 맞는 스타일을 추천해드려요.</p>
+    <h1>프로젝트 정보를<br>입력해주세요.</h1>
     <div class="fields">
       <label data-i18n="프로젝트 이름">프로젝트 이름</label><input class="ds-input" id="pname" data-i18n-ph="예: 온사이트 제품사이트" placeholder="예: 온사이트 제품사이트">
       <label><span data-i18n="제품명 ">제품명 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="product" data-i18n-ph="예: Onsite" placeholder="예: Onsite">
@@ -144,9 +142,7 @@
   </div>
 
   <div class="step" id="st3">
-    <div class="ds-eyebrow eyebrow" id="st3eye" data-i18n="2 / 2 · 스타일">2 / 2 · 스타일</div>
-    <h1 id="st3h" data-i18n="스타일을 선택하세요">스타일을 선택하세요</h1>
-    <p class="sub" id="st3sub" data-i18n="생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.">생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.</p>
+    <h1>디자인 스타일을<br>선택해주세요.</h1>
     <div class="pptbrief" id="pptBrief" hidden>
       <div class="pb-fields">
         <label data-i18n="발표 주제 · 제목">발표 주제 · 제목</label><input class="ds-input" id="pbTitle" data-i18n-ph="예: 2026 AX 제안 발표" placeholder="예: 2026 AX 제안 발표">
@@ -172,9 +168,6 @@
     document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
     if(n===3){
       const isEdm=kind==='edm', isPpt=kind==='ppt';
-      document.getElementById('st3eye').textContent = isEdm ? _L('2 / 2 · 템플릿') : _L('2 / 2 · 스타일');
-      document.getElementById('st3h').textContent = isEdm ? _L('템플릿을 선택하세요') : _L('스타일을 선택하세요');
-      document.getElementById('st3sub').textContent = isEdm ? _L('이메일 템플릿을 골라 시작해요.') : isPpt ? _L('기획을 적으면 목차대로 장표를 구성해드려요. 스타일도 골라주세요.') : _L('생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.');
       const pb=document.getElementById('pptBrief'); if(pb) pb.hidden = !isPpt;
       if(isEdm) renderEdmTemplates(); else if(isPpt) renderPptStyles(); else renderStyles();
     }
@@ -225,8 +218,6 @@
 
   function renderStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
-    const orgLabel=(ORGS.find(o=>o.id===org)||{}).label;
-    document.getElementById('st3sub').textContent = org ? `${_L(orgLabel)} ${_L('사업군에 맞춰 골라보세요.')}` : _L('생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.');
     // 스타일팩 = Glow(다크글로우) + KRDS(정부 DS). KRDS는 packs.krds.js 계약 팩.
     const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{id:'aether',name:'Glow',desc:'다크·글로우',swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
     const STYLES=[
