@@ -83,8 +83,19 @@
       var items = s.stats || [];
       if (!items.length) return '';
       return '<section class="ag-sec ag-stat-sec"><div class="ag-wrap ag-stats">' +
-        items.map(function (st) { return '<div class="rv"><div class="ag-stat-v">' + esc(st.value) + '</div><div class="ag-stat-l">' + esc(st.label) + '</div></div>'; }).join('') +
+        items.map(function (st, i) { return '<div class="rv" style="--d:' + (i * 0.08) + 's"><div class="ag-stat-v">' + esc(st.value) + '</div><div class="ag-stat-l">' + esc(st.label) + '</div></div>'; }).join('') +
         '</div></section>';
+    },
+    showcase: function (s) {
+      var pts = (s.showcasePoints && s.showcasePoints.length) ? s.showcasePoints : ['드래그 앤 드롭 파이프라인 빌더', '자동 이상탐지 & 알림', '예측 지표 & 시나리오 시뮬레이션'];
+      var steps = (s.pipeline && s.pipeline.length) ? s.pipeline : [{ k: '수집 · Kafka', v: '2.4ms' }, { k: '변환 · dbt', v: '2.0ms' }, { k: '적재 · Warehouse', v: '1.6ms' }, { k: '예측 · ML', v: '1.2ms' }];
+      return '<section class="ag-sec"><div class="ag-wrap ag-show">' +
+        '<div class="rv ag-show-l"><p class="ag-eyebrow">Live Showcase</p><h2>' + esc(s.showcaseTitle || '한 화면에서 수집부터 예측까지') + '</h2>' +
+        '<p class="ag-show-d">' + esc(s.showcaseDesc || '스트림·배치·외부 API를 하나의 파이프라인으로. 이상 징후는 자동 감지되고, 예측 모델이 다음 지표를 미리 알려줍니다.') + '</p>' +
+        '<ul class="ag-show-ul">' + pts.map(function (t) { return '<li><span class="ag-macc">' + icon('chart', 20) + '</span>' + esc(t) + '</li>'; }).join('') + '</ul></div>' +
+        '<div class="rv ag-show-r glass" style="--d:.12s"><div class="ag-show-h"><b>파이프라인 · prod</b><span class="ag-run">running</span></div>' +
+        steps.map(function (st, i) { return '<div class="glass ag-step" style="--d:' + (0.1 + i * 0.08) + 's"><span>' + esc(st.k) + '</span><i>' + esc(st.v) + '</i></div>'; }).join('') +
+        '</div></div></section>';
     },
     cta: function (s) {
       if (!s.bannerText) return '';
@@ -107,7 +118,7 @@
 
   var TPL = [
     { type: 'nav', tier: 'core' }, { type: 'hero', tier: 'core' }, { type: 'feature', tier: 'core' },
-    { type: 'stat', tier: 'mid' }, { type: 'cta', tier: 'rich' }, { type: 'footer', tier: 'core' },
+    { type: 'showcase', tier: 'rich' }, { type: 'stat', tier: 'mid' }, { type: 'cta', tier: 'rich' }, { type: 'footer', tier: 'core' },
   ];
 
   function visibleSections(shared, vol) {
@@ -172,8 +183,18 @@
       '.ag-head{text-align:center;max-width:640px;margin:0 auto 60px}.ag-head h2{font-size:clamp(28px,4vw,44px)}' +
       '.ag-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}' +
       '@media(max-width:820px){.ag-cards{grid-template-columns:1fr}}' +
-      '.ag-card{border-radius:18px;padding:28px}.ag-card h3{font-size:20px;margin-bottom:8px}.ag-card p{color:' + T.muted + ';line-height:1.65;font-size:15px}' +
+      '.ag-card{border-radius:18px;padding:28px;transition:transform .3s cubic-bezier(.2,.9,.3,1),border-color .3s}.ag-card:hover{transform:translateY(-8px);border-color:rgba(3,199,90,.4)}.ag-card h3{font-size:20px;margin-bottom:8px}.ag-card p{color:' + T.muted + ';line-height:1.65;font-size:15px}' +
       '.ag-ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;color:' + T.green + ';margin-bottom:18px}' +
+      /* showcase */
+      '.ag-show{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}' +
+      '@media(max-width:820px){.ag-show{grid-template-columns:1fr;gap:32px}}' +
+      '.ag-show-l h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:16px}.ag-show-d{color:' + T.muted + ';line-height:1.7;margin-bottom:24px}' +
+      '.ag-show-ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}' +
+      '.ag-show-ul li{display:flex;align-items:center;gap:12px;color:rgba(226,232,240,.88)}.ag-macc{color:' + T.green + ';display:inline-flex}' +
+      '.ag-show-r{border-radius:18px;padding:24px}' +
+      '.ag-show-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;color:#fff;font-family:' + T.fontD + '}' +
+      '.ag-run{font-size:12px;color:' + T.green + ';display:inline-flex;align-items:center;gap:6px}.ag-run:before{content:"";width:7px;height:7px;border-radius:50%;background:' + T.green + '}' +
+      '.ag-step{border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.ag-step:last-child{margin-bottom:0}.ag-step span{font-size:14px;color:rgba(226,232,240,.9)}.ag-step i{font-size:12px;color:' + T.muted + ';font-style:normal}' +
       '.ag-stat-sec{border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}' +
       '.ag-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}' +
       '@media(max-width:720px){.ag-stats{grid-template-columns:repeat(2,1fr)}}' +
@@ -183,17 +204,18 @@
       '.ag-cta-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(3,199,90,.35),transparent 70%);filter:blur(60px)}' +
       '.ag-foot{border-top:1px solid rgba(255,255,255,.06);padding:44px 0}.ag-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:' + T.muted + ';font-size:14px}' +
       '.ag-foot-links{display:flex;gap:22px}.ag-foot-links a:hover{color:#fff}' +
-      /* reveal */
-      (anim ? '.rv{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.2,.9,.3,1),transform .6s cubic-bezier(.2,.9,.3,1)}.rv.in{opacity:1;transform:none}' : '.rv{opacity:1}') +
+      /* reveal — 순수 CSS 엔트런스(JS 무의존, 항상 보임 + 스태거) */
+      (anim ? '.rv{opacity:0;transform:translateY(24px);animation:ag-rv .7s cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d,.06s)}' : '.rv{opacity:1}') +
+      '@keyframes ag-rv{to{opacity:1;transform:none}}' +
       '@keyframes ag-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}' +
       '@keyframes ag-spin-r{to{transform:translate(-50%,-50%) rotate(-360deg)}}' +
       '@keyframes ag-up{to{opacity:1;transform:none}}' +
       '@keyframes ag-bar{to{height:var(--h)}}' +
-      '@media(prefers-reduced-motion:reduce){.ag-w,.ag-bars i,.ag-a1,.ag-a2{animation:none!important}.ag-w{opacity:1;transform:none}.rv{opacity:1;transform:none}}';
+      '@media(prefers-reduced-motion:reduce){.ag-w,.ag-bars i,.ag-a1,.ag-a2,.rv{animation:none!important}.ag-w,.rv{opacity:1;transform:none}.ag-bars i{height:var(--h)}}';
   }
 
-  var REVEAL_JS = '<script>(function(){var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");o.unobserve(e.target)}})},{threshold:.15});document.querySelectorAll(".rv").forEach(function(el){o.observe(el)});' +
-    'document.querySelectorAll(".ag-mag").forEach(function(b){b.addEventListener("mousemove",function(e){var r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)*.3)+"px,"+((e.clientY-r.top-r.height/2)*.3)+"px)"});b.addEventListener("mouseleave",function(){b.style.transform=""})});})();<\/script>';
+  // 리빌은 CSS로 처리(무의존). JS는 마그네틱 버튼 강화만(있으면 좋고, 없어도 무방).
+  var REVEAL_JS = '<script>(function(){document.querySelectorAll(".ag-mag").forEach(function(b){b.addEventListener("mousemove",function(e){var r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)*.3)+"px,"+((e.clientY-r.top-r.height/2)*.3)+"px)"});b.addEventListener("mouseleave",function(){b.style.transform=""})});})();<\/script>';
 
   function renderAetherPage(shared, opts) {
     shared = shared || {}; opts = opts || {};
