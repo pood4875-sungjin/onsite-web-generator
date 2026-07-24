@@ -9,6 +9,7 @@
 <script src="packs.krds.js"></script>
 <script src="packs.midas.js"></script>
 <script src="packs.edm.js"></script>
+<script src="packs.aether.js"></script>
 <script src="modal.js"></script>
 <script src="i18n.js"></script>
 <link rel="stylesheet" href="ds.css">
@@ -161,6 +162,7 @@
       { id:'aether', name:'다크 글로우', desc:'다크 · 네온 글로우', swatch:glow.swatch },
       { id:'krds', name:'밝은 신뢰 블루', desc:'라이트 · 선명한 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
       { id:'midas', name:'MIDAS AX', desc:'모노크롬 · Poppins', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
+      { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), desc:'다크 글래스 · 그린', swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
     ];
     if(!STYLES.some(s=>s.id===stylePack)) stylePack=STYLES[0].id;
     STYLES.forEach(p=>{ const c=document.createElement('div'); c.className='sc'+(p.id===stylePack?' sel':'');
@@ -181,6 +183,7 @@
     });
     if(id==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:'compact',motion:'static'});
     if(id==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:'compact',motion:'static'});
+    if(id==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:'compact',motion:'static'});
     return renderComposed(d, (DARK_PACK_BY_ID[id]||DARK_PACK_BY_ID.aether), 'static', 'main', 'compact');
   }
   function fitThumb(wrap, f){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
