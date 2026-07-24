@@ -130,12 +130,13 @@
       return _parseEdit(j.text);
     }
     var sys =
-      '너는 프레젠테이션 내용 편집자다. 현재 덱과 사용자 지시를 받아 내용만 수정한다.\n' +
-      '반드시 유효한 JSON 하나만 출력: {"ops":[{"i":<0기준 인덱스>,"slide":{...전체...}}],"message":"<한 줄 요약>"}\n' +
+      '너는 프레젠테이션 편집자다. 현재 덱과 사용자 지시를 받아 덱을 수정한다.\n' +
+      '반드시 유효한 JSON 하나만 출력: {"slides":[...수정 후 전체 배열...],"message":"<한 줄 요약>"}\n' +
       '슬라이드 스키마: ' + SCHEMA_DOC + '\n' +
-      '지시와 관련된 슬라이드만 ops에. 디자인(색·폰트·배치) 요청은 ops 빈 배열 + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. ' +
-      '순서·추가·삭제 요청은 ops 빈 배열 + "왼쪽 슬라이드 목록에서 드래그/버튼으로 하세요" 안내. 무관한 요청은 정중히 유도.';
-    var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 4000 });
+      '문구·수치·톤 수정, 추가·분할·삭제·순서 변경 전부 가능. 무관한 슬라이드는 원본 그대로 복사. ' +
+      '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +
+      '디자인(색·폰트·배치) 요청만 slides null + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. 무관한 요청은 정중히 유도.';
+    var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 6000 });
     return _parseEdit(txt);
   }
   function _parseEdit(txt) {
@@ -143,8 +144,9 @@
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
     if (i < 0 || j < 0) throw new Error('BAD_JSON');
     var obj = JSON.parse(s.slice(i, j + 1));
-    var ops = (Array.isArray(obj.ops) ? obj.ops : []).filter(function (o) { return o && typeof o.i === 'number' && o.slide && ALLOWED[o.slide.type]; });
-    return { ops: ops, message: String(obj.message || '') };
+    var slides = Array.isArray(obj.slides) ? obj.slides.filter(function (sl) { return sl && ALLOWED[sl.type]; }).slice(0, 24) : null;
+    if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
+    return { slides: slides, message: String(obj.message || '') };
   }
 
   window.LLM = {

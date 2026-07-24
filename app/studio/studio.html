@@ -228,7 +228,7 @@
   .pptc-row{display:flex;gap:6px;align-items:center}
   .pptc-inp{flex:1;min-width:0;border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:10px 13px;font-size:13px;color:var(--tx);font-family:inherit;outline:none}
   .pptc-inp:focus{border-color:var(--accent)}
-  .pptc-send{border:none;background:var(--cta);color:#fff;border-radius:12px;padding:10px 16px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .pptc-send{border:none;background:var(--cta);color:var(--on-primary);border-radius:12px;padding:10px 16px;font-size:12.5px;font-weight:600;cursor:pointer}
   .pptc-send:disabled{opacity:.5;cursor:default}
   .pptc-undo{border:1px solid var(--line);background:var(--surf);color:var(--tx2);border-radius:12px;padding:10px 12px;font-size:13px;cursor:pointer}
   .pptc-undo:hover{color:var(--tx);border-color:var(--hairline-strong)}
@@ -754,8 +754,8 @@
     const send=document.getElementById('pptcSend'), undoB=document.getElementById('pptcUndo');
     box.style.display='';
     // 온보딩(범위 계약) — 화면에만, 로그 저장 안 함(재방문마다 1회)
-    addBot(tL('✏️ 슬라이드의 내용을 고쳐드려요 — 문구·수치·톤·분량. 🎨 디자인(색·글꼴·배치)은 스타일 팩이 자동 관리하고, 순서·추가·삭제는 위 슬라이드 목록에서 바로 할 수 있어요.'));
-    const chips=[ '더 간결하게 줄여줘', '핵심 수치를 강조해줘', '톤을 격식 있게 바꿔줘', '표지 문구를 더 임팩트 있게' ];
+    addBot(tL('✏️ 말만 하면 고쳐드려요 — 문구·수치·톤은 물론, 장표 추가·분할·삭제·순서까지. 🎨 디자인(색·글꼴·배치)만 스타일 팩이 자동 관리해요. 급하면 위 슬라이드 목록에서 드래그로도 정리돼요.'));
+    const chips=[ '더 간결하게 줄여줘', '핵심 수치를 강조해줘', '마지막 장 앞에 Q&A 장 추가해줘', '표지 문구를 더 임팩트 있게' ];
     const cbox=document.getElementById('pptcChips');
     chips.forEach(c=>{ const b=el('button','pptc-chip',tL(c)); b.onclick=()=>{ inp.value=tL(c); doSend(); }; cbox.append(b); });
     async function doSend(){
@@ -766,9 +766,9 @@
       try{
         const res=await LLM.editDeck(data.slides||[], t);
         think.remove();
-        if(res.ops.length){
+        if(res.slides){
           _pptUndo.push(snap);
-          res.ops.forEach(o=>{ if(o.i>=0 && o.i<(data.slides||[]).length) data.slides[o.i]=o.slide; });
+          data.slides=res.slides;
           persist(); render(); refreshPptPanel();
           undoB.style.display='';
           botBubble((res.message||tL('수정했어요.'))+' '+tL('(↺로 되돌릴 수 있어요)'));
