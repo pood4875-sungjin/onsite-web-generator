@@ -139,4 +139,39 @@
     closing: { type: 'closing', title: 'Thank you', sub: 'contact@example.com', contacts: [{ k: 'EMAIL', v: '' }, { k: 'WEB', v: '' }] },
   };
   window.pptNewSlide = function (type) { return JSON.parse(JSON.stringify(_SLIDE_STARTERS[type] || _SLIDE_STARTERS.rows)); };
+
+  /* ---- 브리프 → 결정론적 덱 조립 (백엔드 없이). 생성 흐름에서 사용.
+     brief = { title, message, audience, outline:[문자열...], style, accent }
+     제목·핵심메시지·목차 항목을 슬롯에 채우고 본문 레이아웃을 rows/cols/bigstat로 순환.
+     세부 문구는 스캐폴드(플레이스홀더) — 사용자가 스튜디오에서 채움(웹 생성기와 동일 철학). ---- */
+  window.pptComposeDeck = function (brief) {
+    brief = brief || {};
+    var title = (brief.title || '').trim() || '제안 발표';
+    var msg = (brief.message || '').trim();
+    var audience = (brief.audience || '').trim();
+    var outline = (brief.outline || []).map(function (s) { return (s || '').trim(); }).filter(Boolean).slice(0, 8);
+    var slides = [];
+    // 표지 — 제목 + 핵심 메시지 + 대상
+    slides.push({ type: 'cover', eyebrow: 'MIDAS AX', title: title, subtitle: msg,
+      meta: audience ? [{ k: 'AUDIENCE', v: audience }, { k: 'TEAM', v: 'MIDAS AX' }] : [{ k: 'TEAM', v: 'MIDAS AX' }] });
+    // 목차 — 항목이 2개 이상일 때만
+    if (outline.length >= 2) slides.push({ type: 'agenda', title: 'Agenda', items: outline.slice(0, 6) });
+    // 본문 — 목차 항목마다 한 장, 레이아웃 순환(rows→cols→bigstat)
+    (outline.length ? outline : ['핵심 내용']).forEach(function (sec, i) {
+      var idx = String(i + 1).padStart(2, '0'), mod = i % 3;
+      if (mod === 0) slides.push({ type: 'rows', title: sec, index: idx, rows: [
+        { num: '01', label: '항목', desc: '설명을 입력하세요.' },
+        { num: '02', label: '항목', desc: '설명을 입력하세요.' },
+        { num: '03', label: '항목', desc: '설명을 입력하세요.' } ] });
+      else if (mod === 1) slides.push({ type: 'cols', title: sec, index: idx, cols: [
+        { sub: '포인트 A', items: ['내용을 입력하세요.', '내용을 입력하세요.'] },
+        { sub: '포인트 B', items: ['내용을 입력하세요.', '내용을 입력하세요.'] } ] });
+      else slides.push({ type: 'bigstat', title: sec, index: idx, big: '00%', sides: [
+        { sub: '지표', text: '설명을 입력하세요.' },
+        { sub: '효과', text: '설명을 입력하세요.' } ] });
+    });
+    // 마무리
+    slides.push({ type: 'closing', title: 'Thank you', sub: '', contacts: [{ k: 'TEAM', v: audience || 'MIDAS AX' }] });
+    return { style: brief.style || 'ax', accent: brief.accent || 'blue', slides: slides };
+  };
 })();
