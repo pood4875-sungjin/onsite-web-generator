@@ -11,6 +11,7 @@
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
 <script src="packs.ppt.js"></script>
+<script src="llm.js"></script>
 <script src="edm/promo01.js"></script>
 <script src="templates.js"></script>
 <script src="modal.js"></script>
@@ -99,6 +100,11 @@
   .pb-fields .opt{color:var(--mute);font-weight:400}
   .pb-fields textarea.ds-input{resize:vertical;min-height:96px;line-height:1.5;font-family:inherit}
   .pb-hint{margin-top:12px;font-size:12px;color:var(--mute);text-align:center}
+  .pb-ai{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:11px 14px;border:1px solid var(--hairline);border-radius:var(--r-sm);background:var(--surface)}
+  .pb-ai[hidden]{display:none}
+  .pb-aitog{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+  .pb-aitog input{accent-color:var(--primary);width:16px;height:16px}
+  .pb-aimeta{font-size:12px;color:var(--mute)}
   @media (max-width:760px){ .cards{flex-wrap:wrap} .kc{flex:1 1 240px;max-width:none} }
 </style>
 </head>
@@ -150,7 +156,11 @@
         <label><span data-i18n="대상 청중 ">대상 청중 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="pbAud" data-i18n-ph="예: 경영진 · 파트너사" placeholder="예: 경영진 · 파트너사">
         <label><span data-i18n="목차 ">목차 </span><span class="opt" data-i18n="(한 줄에 하나 · 슬라이드로 자동 구성)">(한 줄에 하나 · 슬라이드로 자동 구성)</span></label><textarea class="ds-input" id="pbOutline" rows="5" data-i18n-ph="배경과 문제&#10;해결 방향&#10;핵심 기능&#10;기대 효과&#10;다음 단계" placeholder="배경과 문제&#10;해결 방향&#10;핵심 기능&#10;기대 효과&#10;다음 단계"></textarea>
       </div>
-      <p class="pb-hint" data-i18n="목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.">목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.</p>
+      <div class="pb-ai" id="pbAiRow" hidden>
+        <label class="pb-aitog"><input type="checkbox" id="pbAi" checked><span data-i18n="AI로 내용까지 채우기">AI로 내용까지 채우기</span></label>
+        <span class="pb-aimeta" id="pbAiMeta"></span>
+      </div>
+      <p class="pb-hint" id="pbHint" data-i18n="목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.">목차를 비우면 기본 5장 스타터 덱으로 시작해요. 세부 문구는 스튜디오에서 채웁니다.</p>
     </div>
     <div class="styles" id="styles"></div>
     <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="finish()" data-i18n="시작하기 →">시작하기 →</button></div>
@@ -169,6 +179,13 @@
     if(n===3){
       const isEdm=kind==='edm', isPpt=kind==='ppt';
       const pb=document.getElementById('pptBrief'); if(pb) pb.hidden = !isPpt;
+      // AI 토글: 키 등록 시에만 노출(BYOK). 없으면 결정론 조립 그대로.
+      if(isPpt){
+        const row=document.getElementById('pbAiRow'), meta=document.getElementById('pbAiMeta');
+        const has=(window.LLM&&LLM.hasKey());
+        row.hidden=!has;
+        if(has){ const m=(LLM.MODELS.find(x=>x.id===LLM.getModel())||{}).name||LLM.getModel(); meta.textContent=m+' · '+LLM.maskKey(); }
+      }
       if(isEdm) renderEdmTemplates(); else if(isPpt) renderPptStyles(); else renderStyles();
     }
   };
@@ -273,7 +290,17 @@
         style:pptStyle
       };
       const hasBrief = brief.outline.length || brief.message || (brief.title && brief.title!==(nm||prod));
-      const deck = (hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
+      // AI 생성(BYOK): 키 있고 토글 켜짐 + 브리프 있음 → LLM이 내용까지 채움. 실패·무키 시 결정론 조립 폴백.
+      let deck=null;
+      const wantAi = hasBrief && window.LLM && LLM.hasKey() && document.getElementById('pbAi').checked;
+      if(wantAi){
+        const btn=document.querySelector('#st3 .ds-btn.primary'); const orig=btn.textContent;
+        btn.disabled=true; btn.textContent=_L('AI 생성 중…');
+        try{ deck=await LLM.composeDeck(brief); }
+        catch(e){ console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+        finally{ btn.disabled=false; btn.textContent=orig; }
+      }
+      if(!deck) deck = (hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
                  : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:pptStyle});
       const p=createProject({ kind:'single', name:(nm||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:'ppt' });
       const full=getProject(p.id); const pg0=full.pages[0];

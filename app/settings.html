@@ -11,6 +11,7 @@
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
 <script src="packs.ppt.js"></script>
+<script src="llm.js"></script>
 <script src="i18n.js"></script>
 <script src="icons.js"></script>
 <script src="shell.js"></script>
@@ -43,6 +44,11 @@
   .acts{display:flex;gap:10px;margin:18px 0 0;flex-wrap:wrap}
   .empty{color:var(--mute);font-size:14px;padding:16px 0}
   .note{font-size:12.5px;color:var(--mute);line-height:1.6;margin:14px 0 0}
+  .ai-fields{display:flex;flex-direction:column;gap:8px;max-width:520px}
+  .ai-fields label{font-size:13px;font-weight:600;color:var(--body);margin-top:6px}
+  .ai-keyrow{display:flex;gap:8px}
+  .ai-keyrow .ds-input{flex:1}
+  .orgchips{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body class="ds-body app-grid">
@@ -62,6 +68,22 @@
     </div>
 
     <div class="card">
+      <h2 data-i18n="AI 생성 (선택)">AI 생성 (선택)</h2>
+      <p class="sub" data-i18n="내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.">내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.</p>
+      <div class="ai-fields">
+        <label data-i18n="API 키">API 키</label>
+        <div class="ai-keyrow">
+          <input class="ds-input" id="aiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
+          <button class="ds-btn" id="aiKeySave" data-i18n="저장">저장</button>
+          <button class="ds-btn" id="aiKeyDel" data-i18n="삭제" style="display:none">삭제</button>
+        </div>
+        <p class="note" id="aiKeyState"></p>
+        <label data-i18n="모델">모델</label>
+        <div class="orgchips" id="aiModels"></div>
+      </div>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="프로젝트 관리">프로젝트 관리</h2>
       <p class="sub" data-i18n="용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.">용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.</p>
       <div class="acts">
@@ -76,6 +98,25 @@
   mountShell('settings', {});
   const LL=(ko)=>window.L?L(ko):ko;
   const QUOTA_KB = 5120; // localStorage 표준 한도(브라우저별 5~10MB, 보수적 5MB 기준)
+
+  /* ---- AI 생성 (BYOK) — 키는 이 브라우저 localStorage에만 저장 ---- */
+  (function(){
+    const inp=document.getElementById('aiKey'), st=document.getElementById('aiKeyState');
+    const bSave=document.getElementById('aiKeySave'), bDel=document.getElementById('aiKeyDel');
+    const chips=document.getElementById('aiModels');
+    function refresh(){
+      const has=LLM.hasKey();
+      st.textContent = has ? LL('등록됨')+' · '+LLM.maskKey() : LL('키가 없으면 AI 생성 없이 기본 조립으로 동작해요.');
+      bDel.style.display = has?'':'none';
+      inp.value=''; inp.placeholder = has ? LLM.maskKey() : 'sk-ant-…';
+    }
+    bSave.onclick=()=>{ const v=inp.value.trim(); if(!v){ st.textContent=LL('키를 입력해주세요.'); return; } LLM.setKey(v); refresh(); };
+    inp.onkeydown=(e)=>{ if(e.key==='Enter') bSave.onclick(); };
+    bDel.onclick=()=>{ uiConfirm(LL('저장된 API 키를 삭제할까요?'),{title:LL('키 삭제'),okText:LL('삭제'),danger:true}).then(ok=>{ if(ok){ LLM.setKey(''); refresh(); } }); };
+    LLM.MODELS.forEach(m=>{ const b=document.createElement('button'); b.className='ds-chip'+(m.id===LLM.getModel()?' on':''); b.textContent=m.name;
+      b.onclick=()=>{ LLM.setModel(m.id); chips.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; chips.append(b); });
+    refresh();
+  })();
 
   function lsUsedKB(){ let n=0; try{ for(const k in localStorage){ if(Object.prototype.hasOwnProperty.call(localStorage,k)) n+=(k.length+(localStorage.getItem(k)||'').length); } }catch(e){} return n/1024; }
   function projKB(p){ try{ return JSON.stringify(p).length/1024; }catch(e){ return 0; } }
