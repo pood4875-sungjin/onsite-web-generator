@@ -40,9 +40,9 @@
   var S = {
     nav: function (s) {
       return '<header class="ag-nav"><div class="ag-nav-in glass">' +
-        '<a class="ag-logo" href="#">' + esc(s.productName || 'Aether') + '</a>' +
+        '<a class="ag-logo" href="#" data-edit="productName">' + esc(s.productName || 'Aether') + '</a>' +
         '<nav class="ag-links">' + navLinks(s) + '</nav>' +
-        '<a class="ag-btn ag-btn-pri" href="#">' + esc(s.primaryCta || '무료로 시작') + '</a>' +
+        '<a class="ag-btn ag-btn-pri" href="#" data-edit="primaryCta">' + esc(s.primaryCta || '무료로 시작') + '</a>' +
         '</div></header>';
     },
     hero: function (s) {
@@ -60,10 +60,10 @@
         '</div></div>';
       return '<section class="ag-hero"><div class="ag-aurora" aria-hidden="true"><div class="ag-a1"></div><div class="ag-a2"></div></div><div class="ag-grid-tx" aria-hidden="true"></div>' +
         '<div class="ag-hero-in">' +
-        '<h1 class="ag-title">' + title + '</h1>' +
-        (s.subcopy ? '<p class="ag-sub" data-edit>' + esc(s.subcopy) + '</p>' : '') +
+        '<h1 class="ag-title" data-edit="tagline">' + title + '</h1>' +
+        (s.subcopy ? '<p class="ag-sub" data-edit="subcopy">' + esc(s.subcopy) + '</p>' : '') +
         '<div class="ag-cta-row">' +
-        '<a class="ag-btn ag-btn-pri ag-mag" href="#" data-edit>' + esc(s.primaryCta || '무료로 시작하기') + '</a>' +
+        '<a class="ag-btn ag-btn-pri ag-mag" href="#" data-edit="primaryCta">' + esc(s.primaryCta || '무료로 시작하기') + '</a>' +
         '<a class="ag-btn ag-btn-gh" href="#">데모 살펴보기</a>' +
         '</div>' + mock +
         '</div></section>';
@@ -72,46 +72,46 @@
       var items = s.features || [];
       if (!items.length) return '';
       return '<section class="ag-sec"><div class="ag-wrap">' +
-        '<div class="ag-head rv"><p class="ag-eyebrow">Why ' + esc(s.productName || 'Aether') + '</p><h2>' + esc(s.featureTitle || '복잡함은 숨기고, 인사이트만 남깁니다') + '</h2></div>' +
+        '<div class="ag-head rv"><p class="ag-eyebrow">Why ' + esc(s.productName || 'Aether') + '</p><h2 data-edit="featureTitle">' + esc(s.featureTitle || '복잡함은 숨기고, 인사이트만 남깁니다') + '</h2></div>' +
         '<div class="ag-cards">' + items.map(function (f, i) {
-          return '<div class="ag-card glass rv" style="--d:' + (i * 0.1) + 's" data-edit-group>' +
+          return '<div class="ag-card glass rv" style="--d:' + (i * 0.1) + 's">' +
             '<div class="ag-ic glass">' + icon(f.icon || 'bolt') + '</div>' +
-            '<h3 data-edit>' + esc(f.title) + '</h3><p data-edit>' + esc(f.desc || '') + '</p></div>';
+            '<h3 data-edit="features.' + i + '.title">' + esc(f.title) + '</h3><p data-edit="features.' + i + '.desc">' + esc(f.desc || '') + '</p></div>';
         }).join('') + '</div></div></section>';
     },
     stat: function (s) {
       var items = s.stats || [];
       if (!items.length) return '';
       return '<section class="ag-sec ag-stat-sec"><div class="ag-wrap ag-stats">' +
-        items.map(function (st, i) { return '<div class="rv" style="--d:' + (i * 0.08) + 's"><div class="ag-stat-v">' + esc(st.value) + '</div><div class="ag-stat-l">' + esc(st.label) + '</div></div>'; }).join('') +
+        items.map(function (st, i) { return '<div class="rv" style="--d:' + (i * 0.08) + 's"><div class="ag-stat-v" data-edit="stats.' + i + '.value">' + esc(st.value) + '</div><div class="ag-stat-l" data-edit="stats.' + i + '.label">' + esc(st.label) + '</div></div>'; }).join('') +
         '</div></section>';
     },
     showcase: function (s) {
       var pts = (s.showcasePoints && s.showcasePoints.length) ? s.showcasePoints : ['드래그 앤 드롭 파이프라인 빌더', '자동 이상탐지 & 알림', '예측 지표 & 시나리오 시뮬레이션'];
       var steps = (s.pipeline && s.pipeline.length) ? s.pipeline : [{ k: '수집 · Kafka', v: '2.4ms' }, { k: '변환 · dbt', v: '2.0ms' }, { k: '적재 · Warehouse', v: '1.6ms' }, { k: '예측 · ML', v: '1.2ms' }];
       return '<section class="ag-sec"><div class="ag-wrap ag-show">' +
-        '<div class="rv ag-show-l"><p class="ag-eyebrow">Live Showcase</p><h2>' + esc(s.showcaseTitle || '한 화면에서 수집부터 예측까지') + '</h2>' +
-        '<p class="ag-show-d">' + esc(s.showcaseDesc || '스트림·배치·외부 API를 하나의 파이프라인으로. 이상 징후는 자동 감지되고, 예측 모델이 다음 지표를 미리 알려줍니다.') + '</p>' +
-        '<ul class="ag-show-ul">' + pts.map(function (t) { return '<li><span class="ag-macc">' + icon('chart', 20) + '</span>' + esc(t) + '</li>'; }).join('') + '</ul></div>' +
+        '<div class="rv ag-show-l"><p class="ag-eyebrow">Live Showcase</p><h2 data-edit="showcaseTitle">' + esc(s.showcaseTitle || '한 화면에서 수집부터 예측까지') + '</h2>' +
+        '<p class="ag-show-d" data-edit="showcaseDesc">' + esc(s.showcaseDesc || '스트림·배치·외부 API를 하나의 파이프라인으로. 이상 징후는 자동 감지되고, 예측 모델이 다음 지표를 미리 알려줍니다.') + '</p>' +
+        '<ul class="ag-show-ul">' + pts.map(function (t, i) { return '<li><span class="ag-macc">' + icon('chart', 20) + '</span><span data-edit="showcasePoints.' + i + '">' + esc(t) + '</span></li>'; }).join('') + '</ul></div>' +
         '<div class="rv ag-show-r glass" style="--d:.12s"><div class="ag-show-h"><b>파이프라인 · prod</b><span class="ag-run">running</span></div>' +
-        steps.map(function (st, i) { return '<div class="glass ag-step" style="--d:' + (0.1 + i * 0.08) + 's"><span>' + esc(st.k) + '</span><i>' + esc(st.v) + '</i></div>'; }).join('') +
+        steps.map(function (st, i) { return '<div class="glass ag-step" style="--d:' + (0.1 + i * 0.08) + 's"><span data-edit="pipeline.' + i + '.k">' + esc(st.k) + '</span><i data-edit="pipeline.' + i + '.v">' + esc(st.v) + '</i></div>'; }).join('') +
         '</div></div></section>';
     },
     cta: function (s) {
       if (!s.bannerText) return '';
       return '<section class="ag-sec"><div class="ag-wrap"><div class="ag-cta glass rv">' +
         '<div class="ag-cta-glow" aria-hidden="true"></div>' +
-        '<h2 data-edit>' + esc(s.bannerText) + '</h2>' +
-        (s.subcopy ? '<p data-edit>' + esc(s.subcopy) + '</p>' : '') +
-        '<div class="ag-cta-row"><a class="ag-btn ag-btn-pri ag-mag" href="#" data-edit>' + esc(s.bannerCta || s.primaryCta || '무료로 시작하기') + '</a></div>' +
+        '<h2 data-edit="bannerText">' + esc(s.bannerText) + '</h2>' +
+        (s.subcopy ? '<p data-edit="subcopy">' + esc(s.subcopy) + '</p>' : '') +
+        '<div class="ag-cta-row"><a class="ag-btn ag-btn-pri ag-mag" href="#" data-edit="bannerCta">' + esc(s.bannerCta || s.primaryCta || '무료로 시작하기') + '</a></div>' +
         '</div></div></section>';
     },
     footer: function (s) {
-      var links = (s.footerLinks || []).map(function (t) { return '<a href="#">' + esc(t) + '</a>'; }).join('');
+      var links = (s.footerLinks || []).map(function (t, i) { return '<a href="#" data-edit="footerLinks.' + i + '">' + esc(t) + '</a>'; }).join('');
       return '<footer class="ag-foot"><div class="ag-wrap ag-foot-in">' +
-        '<span class="ag-logo">' + esc(s.productName || 'Aether') + '</span>' +
+        '<span class="ag-logo" data-edit="productName">' + esc(s.productName || 'Aether') + '</span>' +
         '<div class="ag-foot-links">' + links + '</div>' +
-        '<span class="ag-copy">' + esc(s.footerCopyright || '© 2026') + '</span>' +
+        '<span class="ag-copy" data-edit="footerCopyright">' + esc(s.footerCopyright || '© 2026') + '</span>' +
         '</div></footer>';
     },
   };
