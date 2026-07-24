@@ -886,9 +886,7 @@
     generated=true;
     const rs=document.getElementById('reset'); if(rs) rs.style.display='none';
     badge.style.cursor='default';
-    // eDM=편집전용 → 채팅 생성 패널·스플리터 숨기고 편집 캔버스만
-    const chatEl=document.querySelector('.chat'); if(chatEl) chatEl.style.display='none';
-    const splitEl=document.getElementById('split'); if(splitEl) splitEl.style.display='none';
+    // eDM=편집전용 → 대화 패널은 그대로 유지(생성 위젯 없이 편집 안내만). 자동 편집모드.
     setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
   });
