@@ -212,6 +212,29 @@
   .prow .del{flex:0 0 auto;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
   .prow .del:hover{color:#f87171;background:rgba(248,113,113,.12)}
   .pempty{color:var(--tx3);font-size:12px;text-align:center;padding:16px}
+  /* PPT 슬라이드 관리 패널 */
+  .pptpanel{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  .pptp-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .pptp-head b{font-size:13px;color:var(--tx)}
+  .pptp-cnt{font-size:11px;color:var(--tx3);background:var(--surf2);border:1px solid var(--line);border-radius:20px;padding:1px 8px}
+  .pptp-list{display:flex;flex-direction:column;gap:4px}
+  .pptp-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:9px;cursor:pointer;color:var(--tx2);font-size:12.5px;border:1px solid transparent;transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  .pptp-row:hover{background:var(--surf2);border-color:var(--line)}
+  .pptp-idx{font-family:ui-monospace,monospace;font-size:11px;color:var(--tx3);flex:0 0 auto}
+  .pptp-name{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--tx)}
+  .pptp-ops{display:flex;gap:2px;opacity:0;transition:opacity var(--dur) var(--ease)}
+  .pptp-row:hover .pptp-ops{opacity:1}
+  .pptp-op{border:none;background:none;color:var(--tx3);cursor:pointer;font-size:12px;line-height:1;padding:3px 5px;border-radius:6px}
+  .pptp-op:hover{color:var(--tx);background:var(--line)}
+  .pptp-op.off{opacity:.25;pointer-events:none}
+  .pptp-op.del:hover{color:#f87171;background:rgba(248,113,113,.12)}
+  .pptp-add{position:relative;margin-top:10px}
+  .pptp-addbtn{width:100%;border:1px dashed var(--line2);background:none;color:var(--tx2);border-radius:10px;padding:9px;font-size:12.5px;cursor:pointer;transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+  .pptp-addbtn:hover{color:var(--tx);border-color:var(--accent)}
+  .pptp-menu{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);background:var(--surface);border:1px solid var(--line2);border-radius:12px;padding:6px;z-index:40;box-shadow:var(--shadow-3);grid-template-columns:1fr 1fr;gap:4px}
+  .pptp-menu.open{display:grid}
+  .pptp-mi{border:none;background:none;color:var(--tx2);cursor:pointer;font-size:12.5px;text-align:left;padding:8px 10px;border-radius:8px}
+  .pptp-mi:hover{color:var(--tx);background:var(--surf2)}
 </style>
 </head>
 <body>
@@ -350,6 +373,7 @@
     frame.style.transform = 'scale(' + s + ')';
   }
   function setDevice(d){
+    if(curMode().device==='fixed') d='desktop';   // 고정 포맷(PPT·eDM)은 PC 기준만
     device = d;
     document.querySelectorAll('#vpseg button').forEach(b=>b.classList.toggle('on', b.dataset.vp===d));
     const pv = document.querySelector('.pvbox');
@@ -402,12 +426,14 @@
        styleSwitch : 스타일 배지로 팩 교체 허용
        reorder     : 편집모드에서 섹션 순서/숨김 컨트롤 노출
        exportFmt   : 내보내기 버튼 세트
+       device      : 'responsive'(데스크탑/태블릿/모바일 토글) | 'fixed'(고정 포맷 — 토글 숨김, PC 기준)
+       slides      : true=슬라이드 단위 관리 패널 노출(PPT). 슬라이드 추가/삭제/순서
        doneKo      : 편집전용일 때 채팅 안내 문구(KO 원문, tL로 로컬라이징)
      ============================================================ */
   function packMode(sp){
-    if(sp==='edm') return { editOnly:true,  persist:'raw',    styleSwitch:false, reorder:false, exportFmt:['html'],         doneKo:'이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.' };
-    if(sp==='ppt') return { editOnly:true,  persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하세요.' };
-    return           { editOnly:false, persist:'fields', styleSwitch:true,  reorder:true,  exportFmt:['html','json'], doneKo:'' }; // 웹사이트/랜딩 (darkglow/krds/midas/aether)
+    if(sp==='edm') return { editOnly:true,  persist:'raw',    styleSwitch:false, reorder:false, exportFmt:['html'],         device:'fixed',      slides:false, doneKo:'이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.' };
+    if(sp==='ppt') return { editOnly:true,  persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], device:'fixed',      slides:true,  doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하거나, 아래에서 슬라이드를 추가·정리하세요.' };
+    return           { editOnly:false, persist:'fields', styleSwitch:true,  reorder:true,  exportFmt:['html','json'], device:'responsive', slides:false, doneKo:'' }; // 웹사이트/랜딩 (darkglow/krds/midas/aether)
   }
   function curMode(){ return packMode(project ? project.stylePack : (pack && pack.id)); }
   // raw 섹션 팩(eDM): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
@@ -667,11 +693,49 @@
     // 편집전용(이메일/PPT): 재생성 없이 편집 안내만 (packMode.doneKo)
     if(curMode().editOnly){
       d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL(curMode().doneKo||'우측 편집 버튼으로 수정하세요.')}</span>`));
+      if(curMode().slides){ d.style.textAlign='left'; d.append(buildPptPanel()); }
       return d;
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
     d.append(nextBtn(tL('↺ 새로 만들기'), reset));
     return d;
+  }
+
+  /* ---- PPT 슬라이드 관리 패널 (data.slides[] 추가·삭제·순서). 편집전용 done 위젯에 삽입 ---- */
+  function scrollToSlide(i){
+    try{ const secs=frame.contentDocument.querySelectorAll('.ppt-stack > .slide'); if(secs[i]) secs[i].scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+  }
+  function pptMutate(fn){ if(!Array.isArray(data.slides)) data.slides=[]; fn(data.slides); persist(); render(); refreshPptPanel(); }
+  // 라이브 DOM에서 현재 패널을 찾아 교체(init 중 done 위젯이 여러 번 마운트돼 캡처 참조가 분리될 수 있음)
+  function refreshPptPanel(){ const cur=document.querySelector('.pptpanel'); if(cur) cur.replaceWith(buildPptPanel()); }
+  function buildPptPanel(){
+    const TL = window.PPT_TYPE_LABEL||{}; const TYPES = window.PPT_SLIDE_TYPES||[];
+    const box=el('div','pptpanel');
+    const head=el('div','pptp-head'); head.append(el('b','',tL('슬라이드')));
+    const cnt=el('span','pptp-cnt', (data.slides||[]).length+''); head.append(cnt); box.append(head);
+    const list=el('div','pptp-list');
+    (data.slides||[]).forEach((s,i)=>{
+      const row=el('div','pptp-row');
+      row.append(el('span','pptp-idx', String(i+1).padStart(2,'0')));
+      const nm=el('span','pptp-name', (TL[s.type]||s.type||'슬라이드')); nm.title=(s.title||'').replace(/\n/g,' '); row.append(nm);
+      const ops=el('div','pptp-ops');
+      const up=el('button','pptp-op'+(i===0?' off':''),'↑'); up.title=tL('위로'); up.onclick=(e)=>{ e.stopPropagation(); if(i===0)return; pptMutate(a=>{ const t=a[i]; a[i]=a[i-1]; a[i-1]=t; }); };
+      const dn=el('button','pptp-op'+(i===(data.slides.length-1)?' off':''),'↓'); dn.title=tL('아래로'); dn.onclick=(e)=>{ e.stopPropagation(); if(i===data.slides.length-1)return; pptMutate(a=>{ const t=a[i]; a[i]=a[i+1]; a[i+1]=t; }); };
+      const del=el('button','pptp-op del','✕'); del.title=tL('삭제'); del.onclick=(e)=>{ e.stopPropagation(); if((data.slides||[]).length<=1){ uiAlert(tL('마지막 슬라이드는 삭제할 수 없어요.')); return; } uiConfirm(tL('이 슬라이드를 삭제할까요?'),{title:tL('슬라이드 삭제'),okText:tL('삭제'),danger:true}).then(ok=>{ if(ok) pptMutate(a=>a.splice(i,1)); }); };
+      ops.append(up,dn,del); row.append(ops);
+      row.onclick=()=>scrollToSlide(i);
+      list.append(row);
+    });
+    box.append(list);
+    // 추가 버튼 + 타입 메뉴
+    const addWrap=el('div','pptp-add');
+    const addBtn=el('button','pptp-addbtn','+ '+tL('슬라이드 추가'));
+    const menu=el('div','pptp-menu');
+    TYPES.forEach(t=>{ const b=el('button','pptp-mi',t.label); b.onclick=()=>{ menu.classList.remove('open'); pptMutate(a=>a.push(window.pptNewSlide(t.type))); setTimeout(()=>scrollToSlide((data.slides||[]).length-1),120); }; menu.append(b); });
+    addBtn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+    document.addEventListener('click',(e)=>{ if(!addWrap.contains(e.target)) menu.classList.remove('open'); });
+    addWrap.append(addBtn,menu); box.append(addWrap);
+    return box;
   }
 
   function listWidget(key, fields, summarize, twoCol){
@@ -898,6 +962,9 @@
   } else {
     botBubble(PROMPT.kind); mountWidget('kind'); render();
   }
+
+  // 고정 포맷(PPT 16:9 · eDM 760px): 디바이스 토글 숨김 + PC 기준 고정
+  if(curMode().device==='fixed'){ const vp=document.getElementById('vpseg'); if(vp) vp.style.display='none'; setDevice('desktop'); }
 
   // 템플릿에서 시작 → 편집모드 자동 진입
   if(window.I18N) I18N.apply(document);   // 정적 마크업(data-i18n) 로컬라이징

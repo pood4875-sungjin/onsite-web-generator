@@ -115,4 +115,28 @@
     { id: 'navy', name: 'Navy Glow', swatch: 'linear-gradient(135deg,#0f1420,#2f6dff)' },
     { id: 'ember', name: 'Ember', swatch: 'linear-gradient(135deg,#171311,#ff4327)' },
   ];
+
+  /* ---- 슬라이드 추가용: 타입 목록 + 기본 슬라이드 팩토리 (스튜디오 슬라이드 패널에서 사용) ---- */
+  window.PPT_SLIDE_TYPES = [
+    { type: 'cover', label: '표지' },
+    { type: 'agenda', label: '목차' },
+    { type: 'rows', label: '목록형' },
+    { type: 'cols', label: '단 비교' },
+    { type: 'bigstat', label: '핵심 수치' },
+    { type: 'statement', label: '선언·메시지' },
+    { type: 'divider', label: '구분·섹션' },
+    { type: 'closing', label: '마무리' },
+  ];
+  window.PPT_TYPE_LABEL = window.PPT_SLIDE_TYPES.reduce(function (m, x) { m[x.type] = x.label; return m; }, {});
+  var _SLIDE_STARTERS = {
+    cover: { type: 'cover', eyebrow: '', title: '제목을 입력', subtitle: '부제목을 입력', meta: [{ k: 'DATE', v: '2026' }, { k: 'TEAM', v: '' }] },
+    agenda: { type: 'agenda', title: 'Agenda', items: ['항목 1', '항목 2', '항목 3'] },
+    rows: { type: 'rows', title: '제목', index: '', rows: [{ num: '01', label: '항목', desc: '설명' }, { num: '02', label: '항목', desc: '설명' }] },
+    cols: { type: 'cols', title: '제목', index: '', cols: [{ sub: '소제목', items: ['내용'] }, { sub: '소제목', items: ['내용'] }] },
+    bigstat: { type: 'bigstat', title: '제목', index: '', big: '00%', sides: [{ sub: '라벨', text: '설명' }, { sub: '라벨', text: '설명' }] },
+    statement: { type: 'statement', title: '제목', index: '', text: '핵심 메시지를 입력하세요.', cols: [] },
+    divider: { type: 'divider', title: '섹션', index: '', sub: '부연 설명' },
+    closing: { type: 'closing', title: 'Thank you', sub: 'contact@example.com', contacts: [{ k: 'EMAIL', v: '' }, { k: 'WEB', v: '' }] },
+  };
+  window.pptNewSlide = function (type) { return JSON.parse(JSON.stringify(_SLIDE_STARTERS[type] || _SLIDE_STARTERS.rows)); };
 })();
