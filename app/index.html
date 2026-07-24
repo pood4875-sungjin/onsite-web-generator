@@ -189,7 +189,8 @@
   function fitThumb(wrap, f){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
 
   let leaving=false;
-  window.finish=()=>{
+  window.finish=async ()=>{
+    await storeReady();   // 저장소 준비(마이그레이션 포함) 후 생성 — 기존 프로젝트 덮어쓰기 방지
     const shared={ productName:document.getElementById('product').value.trim() };
     const name=document.getElementById('pname').value.trim() || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });

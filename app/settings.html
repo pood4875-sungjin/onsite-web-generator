@@ -89,15 +89,22 @@
 
   function styleLabel(sp){ if(sp==='edm')return 'eDM'; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; try{ return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }catch(e){ return sp; } }
 
+  function fmt(mb){ return mb>=1024 ? (mb/1024).toFixed(1)+' GB' : mb.toFixed(1)+' MB'; }
   function renderUsage(){
-    const used=lsUsedKB(); const pct=Math.min(100, Math.round(used/QUOTA_KB*100));
-    document.getElementById('uUsed').textContent = used.toFixed(0)+' KB';
-    document.getElementById('uPct').textContent = pct+'% / '+QUOTA_KB+' KB';
-    const bar=document.getElementById('uBar'); bar.querySelector('i').style.width=pct+'%';
-    bar.className='bar'+(pct>=90?' full':pct>=75?' warn':'');
-    document.getElementById('uNote').textContent = pct>=90
-      ? LL('용량이 거의 찼어요. 아래에서 프로젝트를 정리해주세요.')
-      : LL('여유 있어요.');
+    const setBar=(usedMB, quotaMB)=>{
+      const pct=quotaMB>0?Math.min(100,Math.round(usedMB/quotaMB*100)):0;
+      document.getElementById('uUsed').textContent = fmt(usedMB);
+      document.getElementById('uPct').textContent = pct+'% / '+fmt(quotaMB);
+      const bar=document.getElementById('uBar'); bar.querySelector('i').style.width=pct+'%';
+      bar.className='bar'+(pct>=90?' full':pct>=75?' warn':'');
+      document.getElementById('uNote').textContent = pct>=90
+        ? LL('용량이 거의 찼어요. 아래에서 프로젝트를 정리해주세요.')
+        : LL('여유 있어요. (이제 IndexedDB에 저장되어 용량이 넉넉해요.)');
+    };
+    // 최신 브라우저: 오리진 전체(IndexedDB 포함) 사용량/한도
+    if(navigator.storage && navigator.storage.estimate){
+      navigator.storage.estimate().then(e=>{ setBar((e.usage||0)/1048576, (e.quota||0)/1048576); }).catch(()=>setBar(lsUsedKB()/1024, QUOTA_KB/1024));
+    } else { setBar(lsUsedKB()/1024, QUOTA_KB/1024); }
   }
   function renderList(){
     const box=document.getElementById('plist'); box.innerHTML='';
@@ -146,7 +153,8 @@
   };
 
   if(window.I18N) I18N.apply(document);
-  renderAll();
+  storeReady().then(renderAll);
+
 </script>
 </body>
 </html>

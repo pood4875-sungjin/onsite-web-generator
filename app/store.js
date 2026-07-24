@@ -5,12 +5,44 @@
    대시보드·페이지관리·스튜디오 공용.
    ============================================================ */
 const PROJECTS_KEY = 'onsite-projects-v2';
+/* 저장소: IndexedDB(대용량) + 메모리 캐시로 기존 동기 API 유지.
+   최초 실행 시 localStorage 데이터를 IndexedDB로 이사(마이그레이션) 후 LS 키 제거.
+   IndexedDB 불가(사생활 모드 등) 시 localStorage로 폴백. */
+const IDB_NAME = 'onsite-webgen', IDB_STORE = 'projects';
+let _cache = null;      // ready 후 프로젝트 배열(단일 진실)
+let _useLS = false;     // IDB 불가 → localStorage 폴백
+let _readyP = null;
+
+function _openDB(){
+  return new Promise((res, rej) => {
+    let r; try{ r = indexedDB.open(IDB_NAME, 1); }catch(e){ return rej(e); }
+    r.onupgradeneeded = () => { try{ if(!r.result.objectStoreNames.contains(IDB_STORE)) r.result.createObjectStore(IDB_STORE, { keyPath:'id' }); }catch(e){} };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function _idbAll(){ return _openDB().then(db => new Promise((res, rej) => { const rq = db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).getAll(); rq.onsuccess = () => res(rq.result || []); rq.onerror = () => rej(rq.error); })); }
+function _idbReplace(list){ return _openDB().then(db => new Promise((res, rej) => { const tx = db.transaction(IDB_STORE,'readwrite'); const os = tx.objectStore(IDB_STORE); os.clear(); (list||[]).forEach(p => { try{ os.put(p); }catch(e){} }); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); })); }
+
+// 페이지 초기 렌더/쓰기 전에 await 할 것. 이후 get/saveProjects는 동기.
+export function storeReady(){
+  if(_readyP) return _readyP;
+  _readyP = (async () => {
+    let ls = []; try{ ls = JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch(e){}
+    try{
+      let idb = await _idbAll();
+      if(!idb.length && ls.length){ await _idbReplace(ls); idb = ls; try{ localStorage.removeItem(PROJECTS_KEY); }catch(e){} } // 최초 이사
+      _cache = idb;
+    }catch(e){ _useLS = true; _cache = ls; }   // IDB 불가 → LS 폴백
+  })();
+  return _readyP;
+}
 
 export const PT_LABEL = { main:'메인홈', features:'제품 기능소개', pricing:'요금 비교', landing:'랜딩', notice:'공지' };
 export const emptyData = () => ({ productName:'', tagline:'', subcopy:'', primaryCta:'', features:[], stats:[], bannerText:'', bannerCta:'', footerLinks:[], footerCopyright:'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] });
 
-export function getProjects(){ try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
-export function saveProjects(a){ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }
+export function getProjects(){ if(_cache) return _cache; try{ return JSON.parse(localStorage.getItem(PROJECTS_KEY)) || []; }catch{ return []; } }
+export function saveProjects(a){ _cache = a; if(_useLS){ try{ localStorage.setItem(PROJECTS_KEY, JSON.stringify(a)); }catch(e){ console.error('[store] LS save', e); } } else { _idbReplace(a).catch(e => console.error('[store] idb save', e)); } }
 export function getProject(id){ return getProjects().find(p => p.id === id) || null; }
 
 export function upsertProject(p){
@@ -133,3 +165,6 @@ export function pageTree(pages){
   const build = (parentId) => (byParent.get(parentId) || []).map(pg => ({ ...pg, children: build(pg.id) }));
   return build(null);
 }
+
+// 모든 페이지 로드 시 즉시 캐시 준비 시작(마이그레이션 포함). 페이지는 storeReady()를 await.
+storeReady();

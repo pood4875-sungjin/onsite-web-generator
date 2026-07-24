@@ -273,8 +273,8 @@
   // 프로젝트 컨텍스트 (대시보드에서 열림)
   const params = new URLSearchParams(location.search);
   const projectId = params.get('p'), pageId = params.get('page');
-  let project = projectId ? getProject(projectId) : null;
-  let pageRef = project ? (project.pages.find(pg => pg.id === pageId) || project.pages[0]) : null;
+  let project = null;   // storeReady() 이후 로드
+  let pageRef = null;
 
   function persist(){
     if(!project || !pageRef) return;
@@ -841,7 +841,10 @@
     inp.onblur=()=>finish(true);
   }
 
-  /* ---- init ---- */
+  /* ---- init (저장소 준비 후) ---- */
+  storeReady().then(()=>{
+  project = projectId ? getProject(projectId) : null;
+  pageRef = project ? (project.pages.find(pg => pg.id === pageId) || project.pages[0]) : null;
   renderRail();
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
@@ -885,6 +888,7 @@
     badge.style.cursor='default';
     setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
+  });
 </script>
 </body>
 </html>
