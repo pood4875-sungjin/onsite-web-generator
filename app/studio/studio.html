@@ -391,6 +391,18 @@
   /* ---- 편집 모드: 프리뷰에서 텍스트 직접 편집 + 이미지 영역 첨부/교체 ---- */
   let editMode=false;
   const editBtn=document.getElementById('editBtn');
+  // raw 섹션 팩(eDM 등): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
+  function isRawPack(){ return !!(pack && pack.id==='edm') || (data && Array.isArray(data.sections) && data.sections.some(s=>s&&s.type==='raw')); }
+  function persistRawEdits(doc){
+    if(!data || !Array.isArray(data.sections)) return;
+    const tbs=doc.querySelectorAll('table.edm-shell > tbody[data-section]');
+    tbs.forEach((tb,i)=>{ if(!data.sections[i]) return;
+      const clone=tb.cloneNode(true);
+      clone.querySelectorAll('[contenteditable]').forEach(n=>n.removeAttribute('contenteditable'));
+      clone.querySelectorAll('.secctl').forEach(n=>n.remove());
+      data.sections[i].html=clone.innerHTML;
+    });
+  }
   function setField(path,val){
     const p=path.split('.');
     if(p.length===1){ data[p[0]]=val; }
@@ -403,8 +415,8 @@
       const rd=new FileReader(); rd.onload=()=>{ data.images=data.images||{}; data.images[key]=rd.result; persist();
         const doc=frame.contentDocument, slot=doc&&doc.querySelector('[data-img="'+key+'"]');
         // 이미 <img>면 src만 교체(깜빡임 없음). placeholder 등 그 외엔 팩별 마크업으로 전체 리렌더.
-        if(slot && slot.tagName==='IMG'){ slot.src=rd.result; }
-        else { render(); }
+        if(slot && slot.tagName==='IMG'){ slot.src=rd.result; if(isRawPack()){ persistRawEdits(doc); persist(); } }
+        else if(!isRawPack()){ render(); }
       }; rd.readAsDataURL(f); };
     inp.click();
   }
@@ -441,7 +453,10 @@
     doc.querySelectorAll('[data-edit]').forEach(elm=>{
       if(editMode) elm.setAttribute('contenteditable','true'); else elm.removeAttribute('contenteditable');
       if(!elm.__wired){ elm.__wired=1;
-        elm.addEventListener('blur',()=>{ if(!editMode)return; setField(elm.getAttribute('data-edit'), elm.textContent.replace(/\s+/g,' ').trim()); persist(); });
+        elm.addEventListener('blur',()=>{ if(!editMode)return;
+          if(isRawPack()){ persistRawEdits(doc); }   // eDM 등 raw 섹션: 편집 DOM을 html로 되씀(WYSIWYG)
+          else { setField(elm.getAttribute('data-edit'), elm.textContent.replace(/\s+/g,' ').trim()); }
+          persist(); });
         elm.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && elm.tagName!=='P'){ e.preventDefault(); elm.blur(); } });
       }
     });
@@ -451,7 +466,7 @@
     const movable=currentMovable(); const fx=sectionSpec().fixed;
     doc.querySelectorAll('[data-section]').forEach(sec=>{
       const type=sec.getAttribute('data-section'); const old=sec.querySelector(':scope > .secctl'); if(old) old.remove();
-      if(!editMode || fx.indexOf(type)>=0) return;
+      if(!editMode || fx.indexOf(type)>=0 || isRawPack()) return;   // eDM 등 raw는 섹션 리오더 미제공(고정 구성)
       const i=movable.indexOf(type);
       const bar=doc.createElement('div'); bar.className='secctl';
       bar.innerHTML='<button data-mv="up"'+(i<=0?' disabled':'')+' title="'+tL('위로')+'">↑</button><span class="lbl">'+secLabel(type)+'</span><button data-mv="down"'+(i>=movable.length-1?' disabled':'')+' title="'+tL('아래로')+'">↓</button><button class="hd" data-mv="hide" title="'+tL('숨기기')+'">✕</button>';
