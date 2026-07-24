@@ -155,13 +155,26 @@
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
     document.querySelectorAll('.dots i').forEach((d,i)=>d.classList.toggle('on',i===n-1));
     if(n===3){
-      const isEdm=kind==='edm';
+      const isEdm=kind==='edm', isPpt=kind==='ppt';
       document.getElementById('st3eye').textContent = isEdm ? _L('2 / 2 · 템플릿') : _L('2 / 2 · 스타일');
       document.getElementById('st3h').textContent = isEdm ? _L('템플릿을 선택하세요') : _L('스타일을 선택하세요');
-      document.getElementById('st3sub').textContent = isEdm ? _L('이메일 템플릿을 골라 시작해요.') : _L('생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.');
-      if(isEdm) renderEdmTemplates(); else renderStyles();
+      document.getElementById('st3sub').textContent = isEdm ? _L('이메일 템플릿을 골라 시작해요.') : isPpt ? _L('발표 장표 스타일을 골라주세요.') : _L('생성될 페이지의 룩앤필. 나중에 바꿀 수 있어요.');
+      if(isEdm) renderEdmTemplates(); else if(isPpt) renderPptStyles(); else renderStyles();
     }
   };
+
+  let pptStyle='ax';
+  function renderPptStyles(){
+    const sz=document.getElementById('styles'); sz.innerHTML='';
+    (window.PPT_STYLES||[]).forEach(s=>{
+      const c=document.createElement('div'); c.className='sc'+(s.id===pptStyle?' sel':'');
+      c.innerHTML=`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`;
+      const sw=c.querySelector('.sw');
+      try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); sw.append(f); fitThumb(sw,f); }catch(e){}
+      c.onclick=()=>{ sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); pptStyle=s.id; };
+      sz.append(c);
+    });
+  }
 
   let edmTpl=null;
   function renderEdmTemplates(){
@@ -241,6 +254,16 @@
       const p=createProjectFromTemplate(tpl);
       if(nm) p.name=nm; if(prod){ p.shared=p.shared||{}; p.shared.productName=prod; } p.lang=siteLang; upsertProject(p);
       leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
+    }
+    // PPT: 선택 스타일 + 스타터 덱으로 생성
+    if(kind==='ppt'){
+      const deck=JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})); deck.style=pptStyle;
+      const p=createProject({ kind:'single', name:(nm||prod||'무제 PPT'), shared:{productName:prod}, stylePack:'ppt' });
+      const full=getProject(p.id); const pg0=full.pages[0];
+      pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
+      pg0.chat={ log:[{r:'bot',t:'📊 PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.'}], idx:8, generated:true };
+      full.lang=siteLang; upsertProject(full);
+      leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
     }
     const shared={ productName:prod };
     const name=nm || shared.productName || '무제 프로젝트';

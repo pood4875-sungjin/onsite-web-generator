@@ -86,7 +86,7 @@
   // 템플릿 탭과 동일한 필터 리스트/카테고리
   const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
   const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
-  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : p.kind==='multi'?'website':'landing';
+  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : p.stylePack==='ppt'?'ppt' : p.kind==='multi'?'website':'landing';
   let filter='all';
 
   function renderForStyle(sp, pg){ const d=pg.data||{};
