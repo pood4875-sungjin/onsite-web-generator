@@ -395,8 +395,23 @@
   /* ---- 편집 모드: 프리뷰에서 텍스트 직접 편집 + 이미지 영역 첨부/교체 ---- */
   let editMode=false;
   const editBtn=document.getElementById('editBtn');
-  // raw 섹션 팩(eDM 등): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
-  function isRawPack(){ return !!(pack && pack.id==='edm') || (data && Array.isArray(data.sections) && data.sections.some(s=>s&&s.type==='raw')); }
+  /* ============================================================
+     packMode — 스타일팩별 스튜디오 동작 규칙(단일 진실). 새 타입 = 항목 하나만 추가.
+       editOnly    : 생성 채팅 없이 편집전용(이메일/PPT). false=생성 플로우(웹사이트/랜딩)
+       persist     : 'fields'(data-edit 경로→setField) | 'raw'(data.sections[].html DOM 되쓰기)
+       styleSwitch : 스타일 배지로 팩 교체 허용
+       reorder     : 편집모드에서 섹션 순서/숨김 컨트롤 노출
+       exportFmt   : 내보내기 버튼 세트
+       doneKo      : 편집전용일 때 채팅 안내 문구(KO 원문, tL로 로컬라이징)
+     ============================================================ */
+  function packMode(sp){
+    if(sp==='edm') return { editOnly:true,  persist:'raw',    styleSwitch:false, reorder:false, exportFmt:['html'],         doneKo:'이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.' };
+    if(sp==='ppt') return { editOnly:true,  persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하세요.' };
+    return           { editOnly:false, persist:'fields', styleSwitch:true,  reorder:true,  exportFmt:['html','json'], doneKo:'' }; // 웹사이트/랜딩 (darkglow/krds/midas/aether)
+  }
+  function curMode(){ return packMode(project ? project.stylePack : (pack && pack.id)); }
+  // raw 섹션 팩(eDM): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
+  function isRawPack(){ return curMode().persist==='raw'; }
   function persistRawEdits(doc){
     if(!data || !Array.isArray(data.sections)) return;
     const tbs=doc.querySelectorAll('table.edm-shell > tbody[data-section]');
@@ -470,7 +485,7 @@
     const movable=currentMovable(); const fx=sectionSpec().fixed;
     doc.querySelectorAll('[data-section]').forEach(sec=>{
       const type=sec.getAttribute('data-section'); const old=sec.querySelector(':scope > .secctl'); if(old) old.remove();
-      if(!editMode || fx.indexOf(type)>=0 || isRawPack()) return;   // eDM 등 raw는 섹션 리오더 미제공(고정 구성)
+      if(!editMode || fx.indexOf(type)>=0 || !curMode().reorder) return;   // eDM 등 raw는 섹션 리오더 미제공(고정 구성)
       const i=movable.indexOf(type);
       const bar=doc.createElement('div'); bar.className='secctl';
       bar.innerHTML='<button data-mv="up"'+(i<=0?' disabled':'')+' title="'+tL('위로')+'">↑</button><span class="lbl">'+secLabel(type)+'</span><button data-mv="down"'+(i>=movable.length-1?' disabled':'')+' title="'+tL('아래로')+'">↓</button><button class="hd" data-mv="hide" title="'+tL('숨기기')+'">✕</button>';
@@ -518,7 +533,7 @@
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
-  badge.onclick=(e)=>{ e.stopPropagation(); if(project && (project.stylePack==='edm'||project.stylePack==='ppt')) return; const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
+  badge.onclick=(e)=>{ e.stopPropagation(); if(!curMode().styleSwitch) return; const m=document.getElementById('stylemenu'); const open=!m.classList.contains('open'); if(open) buildStyleMenu(); m.classList.toggle('open'); };
   document.addEventListener('click',(e)=>{ const m=document.getElementById('stylemenu'); if(m && !m.contains(e.target) && e.target.id!=='badge') m.classList.remove('open'); });
 
   /* ---- 대화창↔프리뷰 리사이저 ---- */
@@ -649,13 +664,9 @@
     }
     // done
     const d=el('div','card'); d.style.textAlign='center';
-    if(project && project.stylePack==='edm'){
-      // eDM은 재생성 불가 — 기존 템플릿 구성 그대로 편집만
-      d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.')}</span>`));
-      return d;
-    }
-    if(project && project.stylePack==='ppt'){
-      d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하세요.')}</span>`));
+    // 편집전용(이메일/PPT): 재생성 없이 편집 안내만 (packMode.doneKo)
+    if(curMode().editOnly){
+      d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL(curMode().doneKo||'우측 편집 버튼으로 수정하세요.')}</span>`));
       return d;
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
@@ -873,9 +884,9 @@
       if(generated || step==='done'){ generated=true; mountWidget('done'); }
       else mountWidget(step);
       render(); scroll();
-    } else if(project && project.stylePack==='edm'){
-      // eDM: 생성 플로우 없이 기존 구성 그대로 편집
-      generated=true; idx=STEPS.indexOf('done'); botBubble(`📧 ${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
+    } else if(curMode().editOnly){
+      // 편집전용(이메일/PPT): 생성 플로우 없이 기존 구성 그대로 편집
+      generated=true; idx=STEPS.indexOf('done'); botBubble(`${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
@@ -891,7 +902,7 @@
   // 템플릿에서 시작 → 편집모드 자동 진입
   if(window.I18N) I18N.apply(document);   // 정적 마크업(data-i18n) 로컬라이징
   // eDM = 재생성 불가·편집전용: 재생성 UI 숨김 + 스타일 배지 잠금 + 편집모드 자동 진입
-  const _isEdm = project && (project.stylePack==='edm'||project.stylePack==='ppt');
+  const _isEdm = curMode().editOnly;
   if(_isEdm){
     generated=true;
     const rs=document.getElementById('reset'); if(rs) rs.style.display='none';
@@ -901,7 +912,7 @@
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 
   // PPT: .pptx 내보내기 버튼
-  if(project && project.stylePack==='ppt'){
+  if(curMode().exportFmt.indexOf('pptx')>=0){
     const pb=document.getElementById('pptxBtn');
     if(pb){ pb.style.display='';
       pb.onclick=async()=>{
