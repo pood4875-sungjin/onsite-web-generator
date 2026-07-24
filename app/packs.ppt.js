@@ -82,7 +82,7 @@
       '.cover{display:flex;flex-direction:column;justify-content:space-between}.cover-meta{display:flex;gap:56px}.cover-meta .spacer{margin-left:auto;text-align:right}.meta-k{font-size:13px;color:var(--muted-alt);margin:0 0 6px}.meta-v{font-size:14px;font-weight:600;color:var(--on-alt);margin:0}.cover-foot{display:flex;align-items:flex-end;justify-content:space-between}.cover-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:118px;line-height:.9;letter-spacing:-.02em;margin:0}.cover-arrow{width:84px;height:84px;flex:none;display:grid;place-items:center;background:#fff;color:var(--surf-alt);font-size:30px;border-radius:var(--rad)}' +
       '.agenda{display:grid;grid-template-columns:130px 1fr;gap:24px;height:100%}.agenda-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:64px;writing-mode:vertical-rl;transform:rotate(180deg);align-self:center}.agenda-list{display:flex;flex-direction:column;justify-content:center}.agenda-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 6px;border-top:1px solid var(--line)}.agenda-row:last-child{border-bottom:1px solid var(--line)}.agenda-label{font-family:var(--font-disp);font-weight:600;font-size:28px;margin:0}.agenda-badge{width:64px;height:64px;flex:none;display:grid;place-items:center;background:var(--accent,var(--surf-alt));color:#fff;font-family:var(--font-num);font-size:22px;border-radius:var(--rad)}' +
       '.bigstat{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}.bignum{font-family:var(--font-disp);font-weight:var(--title-weight);font-size:104px;line-height:.92;letter-spacing:-.02em;margin:0;color:var(--accent,currentColor)}.bigstat-side{display:flex;flex-direction:column;gap:44px}' +
-      '.contact{display:flex;flex-direction:column;justify-content:space-between;height:100%}.contact-grid{position:absolute;top:0;right:0;width:600px;height:420px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}.contact-cell{display:grid;place-content:center;padding:28px}.contact-cell.fill{background:var(--surf);color:var(--on-surf)}.contact-k{font-size:13px;color:var(--muted);margin:0 0 6px}.contact-v{font-size:15px;font-weight:600;margin:0}.contact-foot{margin-top:auto}.contact-email{font-size:14px;color:var(--muted-alt);margin:0 0 14px}.contact-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:92px;line-height:.92;letter-spacing:-.02em;margin:0}';
+      '.contact{display:flex;flex-direction:column;justify-content:space-between}.contact-grid{position:absolute;top:0;right:0;width:600px;height:420px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}.contact-cell{display:grid;place-content:center;padding:28px}.contact-cell.fill{background:var(--surf);color:var(--on-surf)}.contact-k{font-size:13px;color:var(--muted);margin:0 0 6px}.contact-v{font-size:15px;font-weight:600;margin:0}.contact-foot{margin-top:auto}.contact-email{font-size:14px;color:var(--muted-alt);margin:0 0 14px}.contact-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:92px;line-height:.92;letter-spacing:-.02em;margin:0}';
   }
 
   function renderPptDeck(data, opts) {
@@ -106,6 +106,53 @@
     { type: 'closing', title: 'Thank you', sub: 'contact@midasit.com', contacts: [{ k: 'EMAIL', v: 'contact@midasit.com' }, { k: 'WEB', v: 'midasit.com' }, { k: 'TEAM', v: 'MIDAS AX' }] },
   ] };
 
+  /* ---- 발표 뷰어 — 한 장씩, ←→/클릭/버튼 넘김. 미리보기 오버레이 iframe용 자가완결 문서 ---- */
+  function renderPptViewer(data) {
+    data = data || {};
+    var style = data.style || 'ax', accent = data.accent || '';
+    var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
+    var vcss =
+      'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
+      '.vwrap{position:fixed;inset:0 0 96px 0;display:grid;place-items:center}' +   // 하단 96px는 컨트롤 바 영역 — 장표와 안 겹침
+      '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;transform-origin:center center}' +
+      '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
+      '.vscale .slide.cur{display:flex}.vscale .slide.cur:not(.cover):not(.contact){display:block}' +
+      '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
+      '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
+      '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
+      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}' +
+      '.vhint{position:fixed;top:18px;right:22px;color:rgba(255,255,255,.5);font-size:12px;font-family:Pretendard,system-ui,sans-serif;z-index:9}';
+    var vjs =
+      '(function(){var s=[].slice.call(document.querySelectorAll(".vscale .slide")),n=0;' +
+      'var c=document.querySelector(".vcount"),pb=document.querySelector(".vprev"),nb=document.querySelector(".vnext");' +
+      // 가용 영역 = 화면 - 하단 바(96px). 전체화면이면 바 숨기고 꽉 채움
+      'function fs(){return !!document.fullscreenElement}' +
+      'function fit(){var bh=fs()?0:96;var sc=Math.min(innerWidth/1280,(innerHeight-bh)/720)*(fs()?0.98:0.94);' +
+      'document.querySelector(".vwrap").style.bottom=bh+"px";' +
+      'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
+      'document.querySelector(".vhint").style.display=fs()?"none":"block";' +
+      'document.querySelector(".vscale").style.transform="scale("+sc+")";}' +
+      'function show(i){n=Math.max(0,Math.min(s.length-1,i));s.forEach(function(x,k){x.classList.toggle("cur",k===n)});c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
+      'function toggleFs(){ if(fs()) document.exitFullscreen&&document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); }' +
+      'document.addEventListener("fullscreenchange",fit);' +
+      'addEventListener("resize",fit);fit();show(0);' +
+      'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
+      'document.addEventListener("click",function(e){if(e.target.closest(".vbar"))return;show(n+1)});' +
+      'document.addEventListener("keydown",function(e){' +
+      'if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" ")show(n+1);' +
+      'else if(e.key==="ArrowLeft"||e.key==="PageUp")show(n-1);' +
+      'else if(e.key==="f"||e.key==="F")toggleFs();' +
+      'else if(e.key==="Escape"){if(fs())return;try{parent.postMessage({pptViewerClose:1},"*")}catch(x){}}});' +
+      '})();';
+    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<style>' + css() + vcss + '</style></head><body data-style="' + esc(style) + '"' + (accent ? ' data-accent="' + esc(accent) + '"' : '') + '>' +
+      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' +
+      '<div class="vhint">← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기</div>' +
+      '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button></div>' +
+      '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
+  }
+
+  window.renderPptViewer = renderPptViewer;
   window.renderPptDeck = renderPptDeck;
   window.PPT_DEFAULT_DECK = DEFAULT_DECK;
   window.PPT_STYLE = { id: 'ppt', name: 'PPT', desc: '슬라이드 · 16:9 · MIDAS AX', swatch: 'linear-gradient(135deg,#0b1f3a,#2f93e3)' };

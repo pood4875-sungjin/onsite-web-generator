@@ -213,12 +213,24 @@
   .prow .del{flex:0 0 auto;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
   .prow .del:hover{color:#f87171;background:rgba(248,113,113,.12)}
   .pempty{color:var(--tx3);font-size:12px;text-align:center;padding:16px}
+  /* 전체화면 미리보기 오버레이 */
+  .pvfull{position:fixed;inset:0;z-index:998;display:flex;flex-direction:column;background:#0a0a0e}
+  .pvfull[hidden]{display:none}
+  .pvf-top{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+  .pvf-title{color:rgba(255,255,255,.75);font-size:13px;font-weight:600}
+  .pvf-x{border:none;background:rgba(255,255,255,.1);color:#fff;width:30px;height:30px;border-radius:999px;font-size:13px;cursor:pointer;line-height:1}
+  .pvf-x:hover{background:rgba(255,255,255,.22)}
+  #pvfFrame{flex:1;border:0;width:100%;background:#fff}
   /* PPT 슬라이드 관리 패널 — 채팅 위 고정 도킹(#pptDock). 대화가 쌓여도 안 밀림 */
   .pptdock{flex:0 0 auto;max-height:42%;overflow-y:auto;padding:12px 18px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surf2) 60%,transparent)}
   .pptdock .pptpanel{margin-top:0;border-top:none;padding-top:0}
   .pptpanel.closed .pptp-list,.pptpanel.closed .pptp-add{display:none}
-  .pptp-fold{margin-left:auto;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:11px;padding:3px 7px;border-radius:6px}
+  .pptp-fold{margin-left:auto;display:inline-flex;align-items:center;gap:4px;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:11px;line-height:1;padding:5px 8px;border-radius:6px}
   .pptp-fold:hover{color:var(--tx);background:var(--line)}
+  .pptp-fold .chev{display:inline-flex;align-items:center;transition:transform var(--dur) var(--ease)}
+  .pptp-fold .chev.up{transform:rotate(180deg)}
+  .pptpanel.closed .pptp-head{margin-bottom:0}
+  .pptp-head{min-height:26px}
   .pptpanel{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
   /* PPT 내용수정 채팅 컴포저 */
   .pptchat{flex:0 0 auto;padding:10px 14px 14px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--surf2) 60%,transparent)}
@@ -255,6 +267,8 @@
   .pptp-row:hover{background:var(--surf2);border-color:var(--line)}
   .pptp-idx{font-family:ui-monospace,monospace;font-size:11px;color:var(--tx3);flex:0 0 auto}
   .pptp-name{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:var(--tx)}
+  .pptp-mark{flex:0 0 auto;font-size:9.5px;font-weight:700;letter-spacing:.04em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:6px;padding:2px 6px}
+  .pptp-mark.new{color:#fff;background:var(--accent)}
   .pptp-ops{display:flex;gap:2px;opacity:0;transition:opacity var(--dur) var(--ease)}
   .pptp-row:hover .pptp-ops{opacity:1}
   .pptp-op{border:none;background:none;color:var(--tx3);cursor:pointer;font-size:12px;line-height:1;padding:3px 5px;border-radius:6px}
@@ -274,6 +288,12 @@
 <div class="orb" style="left:-160px;top:-160px;width:520px;height:520px;background:rgba(6,182,212,.20)"></div>
 <div class="orb" style="right:-160px;top:80px;width:520px;height:520px;background:rgba(99,102,241,.20)"></div>
 <div class="orb" style="left:33%;bottom:-160px;width:480px;height:480px;background:rgba(139,92,246,.15)"></div>
+
+<!-- 전체화면 미리보기 오버레이 — 팝업 차단과 무관하게 항상 동작 -->
+<div class="pvfull" id="pvFull" hidden>
+  <div class="pvf-top"><span class="pvf-title" id="pvfTitle">미리보기</span><button class="pvf-x" id="pvfClose" title="닫기 (ESC)">✕</button></div>
+  <iframe id="pvfFrame" title="preview-full" allowfullscreen allow="fullscreen"></iframe>
+</div>
 
 <div class="app">
   <aside class="rail" id="rail" style="display:none">
@@ -303,7 +323,7 @@
 
   <main class="preview">
     <div class="pvhead">
-      <div class="l" style="position:relative"><svg class="pvicon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 20h8M12 17v3"/></svg><span data-i18n="실시간 프리뷰">실시간 프리뷰</span> <button class="badge" id="badge" data-i18n-title="스타일 변경 (프로젝트 전체 일괄)" title="스타일 변경 (프로젝트 전체 일괄)">에테르 스타일 ▾</button>
+      <div class="l" style="position:relative"><span data-i18n="실시간 프리뷰">실시간 프리뷰</span> <button class="badge" id="badge" hidden style="cursor:default">에테르 스타일</button>
         <div class="vpseg" id="vpseg" role="group" aria-label="뷰포트">
           <button data-vp="desktop" class="on" data-i18n-title="데스크탑" title="데스크탑"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></button>
           <button data-vp="tablet" data-i18n-title="태블릿" title="태블릿"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
@@ -451,7 +471,7 @@
   function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), 'static'); }
   function render(){
     frame.srcdoc = pageHtml();
-    badge.textContent = `${pack.name} ${tL('스타일')} ▾`;
+    badge.textContent = `${pack.name} ${tL('스타일')}`;
     empty.classList.toggle('hide', generated);
     fitPreview();
   }
@@ -475,7 +495,7 @@
   function packMode(sp){
     if(sp==='edm') return { editOnly:true,  persist:'raw',    styleSwitch:false, reorder:false, exportFmt:['html'],         device:'fixed',      slides:false, doneKo:'이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.' };
     if(sp==='ppt') return { editOnly:true,  persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], device:'fixed',      slides:true,  doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하거나, 아래에서 슬라이드를 추가·정리하세요.' };
-    return           { editOnly:false, persist:'fields', styleSwitch:true,  reorder:true,  exportFmt:['html','json'], device:'responsive', slides:false, doneKo:'' }; // 웹사이트/랜딩 (darkglow/krds/midas/aether)
+    return           { editOnly:false, persist:'fields', styleSwitch:false, reorder:true,  exportFmt:['html','json'], device:'responsive', slides:false, doneKo:'' }; // 웹사이트/랜딩 — 스타일은 생성 시 선택(스튜디오 변경 제거)
   }
   function curMode(){ return packMode(project ? project.stylePack : (pack && pack.id)); }
   // raw 섹션 팩(eDM): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
@@ -748,9 +768,23 @@
   function scrollToSlide(i){
     try{ const secs=frame.contentDocument.querySelectorAll('.ppt-stack > .slide'); if(secs[i]) secs[i].scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
   }
-  function pptMutate(fn){ if(!Array.isArray(data.slides)) data.slides=[]; fn(data.slides); persist(); render(); refreshPptPanel(); }
+  // AI가 방금 추가/수정한 슬라이드 인덱스 표시(패널 배지 + 프리뷰 플래시). 수동 조작 시 해제.
+  let _pptMarks={};   // {idx:'new'|'mod'}
+  function pptMutate(fn){ if(!Array.isArray(data.slides)) data.slides=[]; _pptMarks={}; fn(data.slides); persist(); render(); refreshPptPanel(); }
+  // 프리뷰에서 해당 장들로 시선 유도: 첫 변경 장으로 스크롤 + 잠시 액센트 테두리
+  function flashSlides(idxs){
+    if(!idxs.length) return;
+    setTimeout(()=>{ try{
+      const doc=frame.contentDocument, ss=doc.querySelectorAll('.ppt-stack > .slide');
+      idxs.forEach(i=>{ const s=ss[i]; if(!s) return;
+        s.style.transition='box-shadow .4s ease'; s.style.boxShadow='0 0 0 4px #8b5cf6, 0 12px 40px rgba(0,0,0,.4)';
+        setTimeout(()=>{ s.style.boxShadow=''; }, 2600);
+      });
+      if(ss[idxs[0]]) ss[idxs[0]].scrollIntoView({behavior:'smooth',block:'center'});
+    }catch(e){} }, 450);   // srcdoc 로드 대기
+  }
   // 라이브 DOM에서 현재 패널을 찾아 교체(init 중 done 위젯이 여러 번 마운트돼 캡처 참조가 분리될 수 있음)
-  let _pptFolded=false;
+  let _pptFolded=true;   // 기본 접힘 — 필요할 때만 펼쳐 공간 확보
   function refreshPptPanel(){ const cur=document.querySelector('.pptpanel'); if(cur) cur.replaceWith(buildPptPanel()); }
   // 슬라이드 패널을 채팅 위 도킹 영역에 고정(대화가 쌓여도 안 밀림)
   function mountPptDock(){ const d=document.getElementById('pptDock'); if(!d) return; d.style.display=''; d.innerHTML=''; d.append(buildPptPanel()); }
@@ -801,8 +835,19 @@
         wk.done();
         if(res.slides){
           _pptUndo.push(snap);
+          // 변경 감지: 그대로/이동만 된 장은 제외, 내용 바뀐 장='수정', 완전 새 장='NEW'
+          const oldArr=JSON.parse(snap);
+          const oldSet=new Set(oldArr.map(s=>JSON.stringify(s)));
+          const oldTitles=new Set(oldArr.map(s=>(s.type||'')+'|'+(s.title||'')));
+          _pptMarks={};
+          res.slides.forEach((s,i)=>{ const j=JSON.stringify(s);
+            if(oldSet.has(j)) return;                                   // 동일 내용(제자리든 이동이든)
+            _pptMarks[i]= oldTitles.has((s.type||'')+'|'+(s.title||'')) ? 'mod' : 'new';
+          });
           data.slides=res.slides;
           persist(); render(); refreshPptPanel();
+          const idxs=Object.keys(_pptMarks).map(Number);
+          flashSlides(idxs); idxs.length&&scrollToSlide(idxs[0]);
           undoB.style.display='';
           botBubble((res.message||tL('수정했어요.'))+' '+tL('(↺로 되돌릴 수 있어요)'));
         } else {
@@ -814,7 +859,7 @@
     send.onclick=doSend;
     inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSend(); } };
     undoB.onclick=()=>{ const s=_pptUndo.pop(); if(!s) return;
-      data.slides=JSON.parse(s); persist(); render(); refreshPptPanel();
+      data.slides=JSON.parse(s); _pptMarks={}; persist(); render(); refreshPptPanel();
       if(!_pptUndo.length) undoB.style.display='none';
       botBubble(tL('마지막 AI 수정을 되돌렸어요.')); scroll();
     };
@@ -824,8 +869,10 @@
     const box=el('div','pptpanel');
     const head=el('div','pptp-head'); head.append(el('b','',tL('슬라이드')));
     const cnt=el('span','pptp-cnt', (data.slides||[]).length+''); head.append(cnt);
-    const fold=el('button','pptp-fold', _pptFolded?tL('펼치기 ˅'):tL('접기 ˄'));
-    fold.onclick=(e)=>{ e.stopPropagation(); _pptFolded=!_pptFolded; box.classList.toggle('closed',_pptFolded); fold.textContent=_pptFolded?tL('펼치기 ˅'):tL('접기 ˄'); };
+    const CHEV='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    const foldLabel=()=>`<span>${_pptFolded?tL('펼치기'):tL('접기')}</span><i class="chev${_pptFolded?'':' up'}">${CHEV}</i>`;
+    const fold=el('button','pptp-fold', foldLabel());
+    fold.onclick=(e)=>{ e.stopPropagation(); _pptFolded=!_pptFolded; box.classList.toggle('closed',_pptFolded); fold.innerHTML=foldLabel(); };
     head.append(fold); box.append(head);
     if(_pptFolded) box.classList.add('closed');
     const list=el('div','pptp-list');
@@ -834,7 +881,10 @@
     (data.slides||[]).forEach((s,i)=>{
       const row=el('div','pptp-row');
       row.append(el('span','pptp-idx', String(i+1).padStart(2,'0')));
-      const nm=el('span','pptp-name', (TL[s.type]||s.type||'슬라이드')); nm.title=(s.title||'').replace(/\n/g,' '); row.append(nm);
+      // 행 제목 = 슬라이드 실제 제목(내용 기반). 없으면 타입 라벨 폴백. (textContent — AI/사용자 문자열 이스케이프)
+      const nm=el('span','pptp-name'); const _t=(s.title||'').replace(/\n/g,' ').trim();
+      nm.textContent=_t||(TL[s.type]||s.type||'슬라이드'); nm.title=_t; row.append(nm);
+      if(_pptMarks[i]) row.append(el('span','pptp-mark'+(_pptMarks[i]==='new'?' new':''), _pptMarks[i]==='new'?'NEW':tL('수정')));
       // 드래그로 순서 변경 (레일과 동일 UX — 위/아래 절반에 인디케이터)
       row.draggable=true;
       row.addEventListener('dragstart',(e)=>{ dragIdx=i; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',String(i)); setTimeout(()=>row.classList.add('dragging'),0); });
@@ -898,7 +948,8 @@
   function previewHtml(){
     persist();
     const pages = (project && project.kind==='multi' && project.pages.length) ? project.pages : [ {id:'single', data, pageType, volume} ];
-    const cur = (pageRef && pageRef.id) || pages[0].id;
+    // 단일 프로젝트는 가상 id('single')라 pageRef.id와 불일치 → 첫 페이지 기준(안 그러면 전부 hidden)
+    const cur = (project && project.kind==='multi' && pageRef && pageRef.id) ? pageRef.id : pages[0].id;
     const dp = new DOMParser();
     let headHTML=''; const secs=[];
     pages.forEach((pg,i)=>{ const doc=dp.parseFromString(renderProjectPage(pg),'text/html');
@@ -907,12 +958,24 @@
     const swap='<scr'+'ipt>document.addEventListener("click",function(e){var n=e.target.closest&&e.target.closest("[data-nav-page]");if(n){e.preventDefault();var t=document.querySelector(\'[data-ppage="\'+n.getAttribute("data-nav-page")+\'"]\');if(t){document.querySelectorAll("[data-ppage]").forEach(function(s){s.hidden=true});t.hidden=false;window.scrollTo(0,0);}return;}var a=e.target.closest&&e.target.closest(\'a[href^="#"]\');if(a)e.preventDefault();},true);document.addEventListener("submit",function(e){e.preventDefault()},true);</scr'+'ipt>';
     return '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(data.productName||'미리보기')+'</title>'+headHTML+'</head><body>'+secs.join('')+swap+'</body></html>';
   }
+  /* 전체화면 오버레이로 미리보기(팝업 미사용 — 차단 무관). PPT는 발표 뷰어(←→ 넘김). */
+  const pvFull=document.getElementById('pvFull'), pvfFrame=document.getElementById('pvfFrame');
+  function openPreview(){
+    persist();
+    const isPptPack = pack && pack.id==='ppt' && typeof renderPptViewer==='function';
+    document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기 — ←→ 또는 클릭으로 넘기기') : tL('미리보기');
+    pvfFrame.srcdoc = isPptPack ? renderPptViewer(data) : previewHtml();
+    pvFull.hidden=false;
+    if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
+  }
+  function closePreview(){ pvFull.hidden=true; pvfFrame.srcdoc=''; }
   document.getElementById('previewBtn').onclick=async ()=>{
     if(!generated){ await uiAlert(tL('먼저 페이지를 생성해주세요.')); return; }
-    const w=window.open('','_blank');
-    if(!w){ await uiAlert('팝업이 차단됐어요. 브라우저에서 이 사이트의 팝업을 허용해주세요.'); return; }
-    w.document.open(); w.document.write(previewHtml()); w.document.close();
+    openPreview();
   };
+  document.getElementById('pvfClose').onclick=closePreview;
+  window.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && !pvFull.hidden) closePreview(); });
+  window.addEventListener('message',(e)=>{ if(e.data && e.data.pptViewerClose) closePreview(); });
 
   /* ---- 저장: 현재 페이지를 프로젝트에 저장 ---- */
   function saveCurrent(){

@@ -45,6 +45,20 @@
     s.addShape(rad > 0 ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, opts);
   }
 
+  /* 배경 래스터화 — 그라디언트·글로우(background-image)는 색만으론 못 살림.
+     자식을 잠시 숨기고 html2canvas로 배경만 캡처 → 슬라이드 배경 이미지. 텍스트·도형은 편집 가능한 개체 유지. */
+  async function slideBgImage(win, slide) {
+    var cs = win.getComputedStyle(slide);
+    if (!cs.backgroundImage || cs.backgroundImage === 'none') return null;
+    var kids = [].slice.call(slide.children), prev = kids.map(function (k) { return k.style.visibility; });
+    kids.forEach(function (k) { k.style.visibility = 'hidden'; });
+    try {
+      var canvas = await win.html2canvas(slide, { backgroundColor: null, scale: 1, logging: false });
+      return canvas.toDataURL('image/jpeg', 0.9);
+    } catch (e) { return null; }
+    finally { kids.forEach(function (k, j) { k.style.visibility = prev[j]; }); }
+  }
+
   window.exportPptx = async function (doc, onProgress) {
     doc = doc || document;
     var win = doc.defaultView || window;
@@ -52,12 +66,19 @@
     var slides = [].slice.call(doc.querySelectorAll('.ppt-stack > .slide, .deck > .slide'));
     if (!slides.length) throw new Error('슬라이드를 찾을 수 없습니다.');
     try { await doc.fonts.ready; } catch (e) {}
+    // html2canvas는 iframe 문서 컨텍스트에 로드(배경 캡처용). 실패해도 색 배경으로 진행.
+    if (!win.html2canvas) {
+      try {
+        await new Promise(function (res, rej) { var el = doc.createElement('script'); el.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'; el.onload = res; el.onerror = rej; doc.head.appendChild(el); });
+      } catch (e) {}
+    }
     var pptx = new PptxGenJS(); pptx.layout = 'LAYOUT_WIDE';
     for (var i = 0; i < slides.length; i++) {
       if (onProgress) onProgress(i + 1, slides.length);
       var slide = slides[i], origin = slide.getBoundingClientRect();
       var slideBg = parseColor(win.getComputedStyle(slide).backgroundColor); if (slideBg.a < 1) slideBg = blend(slideBg, { r: 255, g: 255, b: 255, a: 1 });
       var s = pptx.addSlide(); s.background = { color: hex(slideBg) };
+      if (win.html2canvas) { var bgData = await slideBgImage(win, slide); if (bgData) s.background = { data: bgData }; }
       [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
       [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
       [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
