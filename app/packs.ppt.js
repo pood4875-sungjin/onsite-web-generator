@@ -113,25 +113,24 @@
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
-      '.vwrap{position:fixed;inset:0 0 96px 0;display:grid;place-items:center}' +   // 하단 96px는 컨트롤 바 영역 — 장표와 안 겹침
-      '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;transform-origin:center center}' +
+      '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +   // 세로 배치는 fit()이 translateY로 결정(그리드 센터링 오차 회피)
+      '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;flex:none;transform-origin:top center}' +
       '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
       '.vscale .slide.cur{display:flex}.vscale .slide.cur:not(.cover):not(.contact){display:block}' +
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
-      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}' +
-      '.vhint{position:fixed;top:18px;right:22px;color:rgba(255,255,255,.5);font-size:12px;font-family:Pretendard,system-ui,sans-serif;z-index:9}';
+      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}';
     var vjs =
       '(function(){var s=[].slice.call(document.querySelectorAll(".vscale .slide")),n=0;' +
       'var c=document.querySelector(".vcount"),pb=document.querySelector(".vprev"),nb=document.querySelector(".vnext");' +
       // 가용 영역 = 화면 - 하단 바(96px). 전체화면이면 바 숨기고 꽉 채움
       'function fs(){return !!document.fullscreenElement}' +
-      'function fit(){var bh=fs()?0:96;var sc=Math.min(innerWidth/1280,(innerHeight-bh)/720)*(fs()?0.98:0.94);' +
-      'document.querySelector(".vwrap").style.bottom=bh+"px";' +
+      // 가용높이 = 화면 - 바 점유(fs=0). 스케일 후 남는 공간 절반을 translateY로 — 결정론 배치
+      'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
+      'var ty=Math.max(0,(area-720*sc)/2);' +
       'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
-      'document.querySelector(".vhint").style.display=fs()?"none":"block";' +
-      'document.querySelector(".vscale").style.transform="scale("+sc+")";}' +
+      'var v=document.querySelector(".vscale");v.style.transform="translateY("+ty+"px) scale("+sc+")";}' +
       'function show(i){n=Math.max(0,Math.min(s.length-1,i));s.forEach(function(x,k){x.classList.toggle("cur",k===n)});c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'function toggleFs(){ if(fs()) document.exitFullscreen&&document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); }' +
       'document.addEventListener("fullscreenchange",fit);' +
@@ -147,7 +146,6 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + vcss + '</style></head><body data-style="' + esc(style) + '"' + (accent ? ' data-accent="' + esc(accent) + '"' : '') + '>' +
       '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' +
-      '<div class="vhint">← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기</div>' +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button></div>' +
       '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
   }

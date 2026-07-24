@@ -963,7 +963,7 @@
   function openPreview(){
     persist();
     const isPptPack = pack && pack.id==='ppt' && typeof renderPptViewer==='function';
-    document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기 — ←→ 또는 클릭으로 넘기기') : tL('미리보기');
+    document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기 — ← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기') : tL('미리보기');
     pvfFrame.srcdoc = isPptPack ? renderPptViewer(data) : previewHtml();
     pvFull.hidden=false;
     if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
