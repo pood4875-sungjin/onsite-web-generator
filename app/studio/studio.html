@@ -11,6 +11,7 @@
 <script src="../packs.edm.js"></script>
 <script src="../packs.aether.js"></script>
 <script src="../packs.ppt.js"></script>
+<script src="../export-pptx.js"></script>
 <script src="../edm/promo01.js"></script>
 <script src="../modal.js"></script>
 <script src="../i18n.js"></script>
@@ -251,6 +252,7 @@
         <button class="dl" id="save" data-i18n="저장">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
+        <button class="dl" id="pptxBtn" style="display:none">PPTX</button>
       </div>
     </div>
     <div class="secadd" id="secAdd"></div>
@@ -897,6 +899,20 @@
     // eDM=편집전용 → 대화 패널은 그대로 유지(생성 위젯 없이 편집 안내만). 자동 편집모드.
     setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
+
+  // PPT: .pptx 내보내기 버튼
+  if(project && project.stylePack==='ppt'){
+    const pb=document.getElementById('pptxBtn');
+    if(pb){ pb.style.display='';
+      pb.onclick=async()=>{
+        if(typeof exportPptx!=='function'){ await uiAlert(tL('내보내기 모듈을 불러오지 못했어요.')); return; }
+        const orig=pb.textContent; pb.disabled=true;
+        try{ await exportPptx(frame.contentDocument, (i,n)=>{ pb.textContent=i+'/'+n; }); }
+        catch(e){ console.error('[pptx]',e); await uiAlert(tL('PPTX 내보내기에 실패했어요.')+' '+(e&&e.message||'')); }
+        finally{ pb.disabled=false; pb.textContent=orig; }
+      };
+    }
+  }
   });
 </script>
 </body>

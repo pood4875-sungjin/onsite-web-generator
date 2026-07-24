@@ -1,0 +1,68 @@
+/* export-pptx.js — PPT 덱(iframe 내 .ppt-stack > .slide)을 PowerPoint(.pptx)로 내보내기.
+   출처: ~/ppt-template/js/export-pptx.js 포팅. iframe 문서 대상으로 동작하게 수정.
+   window.exportPptx(doc, onProgress?) — doc = 덱이 렌더된 document(스튜디오 frame.contentDocument).
+   PptxGenJS로 각 요소 좌표/폰트/색 읽어 편집 가능한 텍스트 상자·도형 생성. CDN 지연 로드. */
+(function () {
+  var PT = 0.75, IN = 1 / 96;
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      if ([].slice.call(document.scripts).some(function (s) { return s.src === src; })) return res();
+      var el = document.createElement('script'); el.src = src; el.onload = function () { res(); }; el.onerror = function () { rej(new Error('script load fail: ' + src)); }; document.head.appendChild(el);
+    });
+  }
+  function parseColor(str) { if (!str || str === 'transparent' || str === 'none') return { r: 0, g: 0, b: 0, a: 0 }; var m = str.match(/rgba?\(([^)]+)\)/); if (!m) return { r: 0, g: 0, b: 0, a: 1 }; var p = m[1].split(',').map(function (x) { return parseFloat(x.trim()); }); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; }
+  function blend(fg, bg) { var a = fg.a; return { r: Math.round(fg.r * a + bg.r * (1 - a)), g: Math.round(fg.g * a + bg.g * (1 - a)), b: Math.round(fg.b * a + bg.b * (1 - a)), a: 1 }; }
+  function hex(c) { function h(n) { return ('0' + Math.max(0, Math.min(255, n)).toString(16)).slice(-2).toUpperCase(); } return h(c.r) + h(c.g) + h(c.b); }
+  function fontFamily(cs) { var f = (cs.fontFamily || '').split(',')[0].replace(/["']/g, '').trim(); return f || 'Pretendard'; }
+
+  var TEXT_SEL = ['.meta-k', '.meta-v', '.eyebrow', '.cover-title', '.cover-sub', '.s-title', '.s-index', '.row-num', '.row-label', '.row-desc', '.block-sub', '.block-p', '.bignum', '.agenda-title', '.agenda-label', '.agenda-badge', '.contact-k', '.contact-v', '.contact-email', '.contact-title'].join(',');
+  var LIST_SEL = '.block-list li';
+  var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill';
+
+  function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
+
+  function addTextBox(win, s, el, origin, slideBg) {
+    var cs = win.getComputedStyle(el);
+    var txt = (el.innerText || el.textContent || '').replace(/ /g, ' ').trimEnd();
+    if (!txt.trim()) return;
+    var r = rel(el, origin); if (r.w < 2 || r.h < 2) return;
+    var fs = parseFloat(cs.fontSize) || 16;
+    var col = blend(parseColor(cs.color), slideBg);
+    var lh = cs.lineHeight, lsm = (lh && lh !== 'normal') ? Math.max(0.6, parseFloat(lh) / fs) : null;
+    var ls = (cs.letterSpacing && cs.letterSpacing !== 'normal') ? parseFloat(cs.letterSpacing) * PT : 0;
+    var align = cs.textAlign === 'right' ? 'right' : cs.textAlign === 'center' ? 'center' : 'left';
+    var vertical = (cs.writingMode || '').indexOf('vertical') >= 0;
+    var opts = { x: r.x * IN, y: r.y * IN, w: Math.max(r.w, 6) * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: (parseInt(cs.fontWeight, 10) || 400) >= 600, italic: cs.fontStyle === 'italic', fontFace: fontFamily(cs), align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacingMultiple: lsm || undefined, wrap: true };
+    if (vertical) { var cx = r.x + r.w / 2, cy = r.y + r.h / 2; opts.w = Math.max(r.h, 6) * IN; opts.h = Math.max(r.w, 8) * IN; opts.x = cx * IN - opts.w / 2; opts.y = cy * IN - opts.h / 2; opts.rotate = 270; opts.align = 'center'; opts.valign = 'middle'; }
+    s.addText(txt, opts);
+  }
+  function addShapeBox(win, pptx, s, el, origin, slideBg) {
+    var cs = win.getComputedStyle(el); var r = rel(el, origin); if (r.w < 3 || r.h < 3) return;
+    var fill = parseColor(cs.backgroundColor), bw = parseFloat(cs.borderTopWidth) || 0, bcol = parseColor(cs.borderTopColor), rad = parseFloat(cs.borderTopLeftRadius) || 0;
+    if (fill.a <= 0.01 && !(bw > 0 && bcol.a > 0)) return;
+    var opts = { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: fill.a > 0.01 ? { color: hex(blend(fill, slideBg)) } : { type: 'none' }, line: (bw > 0 && bcol.a > 0) ? { color: hex(blend(bcol, slideBg)), width: Math.max(0.5, bw * PT) } : { type: 'none' } };
+    if (rad > 0) opts.rectRadius = Math.min(0.2, rad * IN);
+    s.addShape(rad > 0 ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, opts);
+  }
+
+  window.exportPptx = async function (doc, onProgress) {
+    doc = doc || document;
+    var win = doc.defaultView || window;
+    await loadScript('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js');
+    var slides = [].slice.call(doc.querySelectorAll('.ppt-stack > .slide, .deck > .slide'));
+    if (!slides.length) throw new Error('슬라이드를 찾을 수 없습니다.');
+    try { await doc.fonts.ready; } catch (e) {}
+    var pptx = new PptxGenJS(); pptx.layout = 'LAYOUT_WIDE';
+    for (var i = 0; i < slides.length; i++) {
+      if (onProgress) onProgress(i + 1, slides.length);
+      var slide = slides[i], origin = slide.getBoundingClientRect();
+      var slideBg = parseColor(win.getComputedStyle(slide).backgroundColor); if (slideBg.a < 1) slideBg = blend(slideBg, { r: 255, g: 255, b: 255, a: 1 });
+      var s = pptx.addSlide(); s.background = { color: hex(slideBg) };
+      [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
+      [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
+      [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
+    }
+    var name = (doc.title || 'deck').replace(/[\\/:*?"<>|]+/g, '_').trim() || 'deck';
+    await pptx.writeFile({ fileName: name + '.pptx' });
+  };
+})();
