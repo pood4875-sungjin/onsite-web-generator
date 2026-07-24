@@ -34,15 +34,31 @@ const SYSTEM =
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
   '형식: {"slides":[ ... ]}\n' +
   '슬라이드 타입과 필드: ' + SCHEMA_DOC + '\n' +
-  '규칙: 첫 장은 cover, 항목 2개 이상이면 두번째는 agenda, 마지막은 closing. ' +
-  '목차 항목마다 본문 슬라이드(rows/cols/bigstat/statement) 1장 이상을 실제 내용으로 채운다(플레이스홀더 금지). ' +
-  '레이아웃은 내용 성격에 맞게 다양하게. 수치는 맥락상 그럴듯하게. 총 6~12장.';
+  '규칙: 첫 장은 cover, 본문이 2섹션 이상이면 두번째는 agenda, 마지막은 closing. ' +
+  '브리프의 plan(자유 기획 텍스트)을 해석해 구조를 잡는다 — plan에 목차·순서가 보이면 그대로 따르고, ' +
+  '없으면 주제·목적·청중에 맞는 논리적 목차를 직접 구성한다. plan의 구체 정보(수치·기능·일정 등)는 반드시 슬라이드에 반영. ' +
+  '섹션마다 본문 슬라이드(rows/cols/bigstat/statement) 1장 이상을 실제 내용으로 채운다(플레이스홀더 금지). ' +
+  '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. 총 6~12장.';
+
+/* 내용 수정(채팅) — 패치 계약: 바뀐 슬라이드만 ops로. 디자인 요청은 거절+리다이렉트 메시지 */
+const EDIT_SYSTEM =
+  '너는 프레젠테이션 내용 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 내용만 수정한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +
+  '형식: {"ops":[{"i":<수정할 슬라이드의 0기준 인덱스>,"slide":{...교체할 슬라이드 전체...}}],"message":"<사용자에게 보여줄 한 줄 요약>"}\n' +
+  '슬라이드 스키마: ' + SCHEMA_DOC + '\n' +
+  '규칙:\n' +
+  '- 지시와 관련된 슬라이드만 ops에 포함(무관한 슬라이드 변경 금지). 타입 변경은 내용상 꼭 필요할 때만.\n' +
+  '- 디자인(색·폰트·크기·배치·테마) 요청이면 ops를 빈 배열로 하고 message에 "디자인은 스타일 팩에서 일괄 관리돼요. 내용(문구·수치·톤) 수정을 말씀해주세요." 취지로 안내.\n' +
+  '- 순서 변경·추가·삭제 요청이면 ops 빈 배열 + message에 "순서·추가·삭제는 왼쪽 슬라이드 목록에서 드래그/버튼으로 바로 할 수 있어요." 취지로 안내.\n' +
+  '- 발표와 무관한 요청이면 ops 빈 배열 + 정중히 내용 수정 요청을 유도.\n' +
+  '- message는 한국어 한두 문장.';
 
 export default {
   async fetch(req, env) {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
-    if (req.method !== 'POST' || url.pathname !== '/compose') return json({ error: 'NOT_FOUND' }, 404);
+    const route = url.pathname;
+    if (req.method !== 'POST' || (route !== '/compose' && route !== '/edit')) return json({ error: 'NOT_FOUND' }, 404);
 
     // ---- IP당 일일 제한 (KV) ----
     const ip = req.headers.get('cf-connecting-ip') || 'unknown';
@@ -52,17 +68,31 @@ export default {
     try { used = parseInt(await env.RATE_KV.get(rlKey), 10) || 0; } catch (e) {}
     if (used >= DAILY_LIMIT) return json({ error: 'LIMIT', message: `오늘 사용 한도(${DAILY_LIMIT}회)를 모두 썼어요. 내일 다시 시도해주세요.` }, 429);
 
-    // ---- 브리프 검증 (전용 엔드포인트 — 임의 프롬프트 불가) ----
-    let brief;
-    try { brief = await req.json(); } catch (e) { return json({ error: 'BAD_REQUEST' }, 400); }
+    // ---- 입력 검증 (전용 엔드포인트 — 임의 프롬프트 불가) ----
+    let body;
+    try { body = await req.json(); } catch (e) { return json({ error: 'BAD_REQUEST' }, 400); }
     const clip = (s, n) => String(s == null ? '' : s).slice(0, n);
-    const safe = {
-      title: clip(brief.title, 200),
-      message: clip(brief.message, 500),
-      audience: clip(brief.audience, 200),
-      outline: (Array.isArray(brief.outline) ? brief.outline : []).slice(0, 8).map((s) => clip(s, 120)),
-    };
-    if (!safe.title && !safe.message && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
+
+    let system, userMsg;
+    if (route === '/compose') {
+      const safe = {
+        title: clip(body.title, 200),
+        message: clip(body.message, 500),
+        audience: clip(body.audience, 200),
+        purpose: clip(body.purpose, 300),
+        plan: clip(body.plan, 6000),   // 자유 기획 텍스트 — 목차·수치·요구 전부 여기 담김
+        outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
+      };
+      if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
+      system = SYSTEM;
+      userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
+    } else { // /edit
+      const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
+      const instruction = clip(body.instruction, 800);
+      if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
+      system = EDIT_SYSTEM;
+      userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
+    }
 
     // ---- Anthropic 호출 (키·모델·토큰 전부 서버 통제) ----
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -73,8 +103,8 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: MAX_TOKENS, system: SYSTEM,
-        messages: [{ role: 'user', content: '브리프:\n' + JSON.stringify(safe, null, 2) }],
+        model: MODEL, max_tokens: MAX_TOKENS, system: system,
+        messages: [{ role: 'user', content: userMsg }],
       }),
     });
     if (!res.ok) {

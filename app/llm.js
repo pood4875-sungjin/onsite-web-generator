@@ -88,7 +88,7 @@
     if (usingProxy()) {
       var pres = await fetch(proxyUrl() + '/compose', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', outline: brief.outline || [] }),
+        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', outline: brief.outline || [] }),
       });
       var pj = null; try { pj = await pres.json(); } catch (e) {}
       if (!pres.ok) throw new Error((pj && (pj.message || pj.error)) || ('HTTP ' + pres.status));
@@ -102,11 +102,13 @@
       '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
       '형식: {"slides":[ ... ]}\n' +
       '슬라이드 타입과 필드: ' + SCHEMA_DOC + '\n' +
-      '규칙: 첫 장은 cover, 항목 2개 이상이면 두번째는 agenda, 마지막은 closing. ' +
-      '목차 항목마다 본문 슬라이드(rows/cols/bigstat/statement) 1장 이상을 실제 내용으로 채운다(플레이스홀더 금지). ' +
-      '레이아웃은 내용 성격에 맞게 다양하게. 수치는 맥락상 그럴듯하게. 총 6~12장.';
+      '규칙: 첫 장은 cover, 본문이 2섹션 이상이면 두번째는 agenda, 마지막은 closing. ' +
+      'plan(자유 기획 텍스트)에 목차·순서가 보이면 그대로 따르고, 없으면 주제·목적·청중에 맞는 논리적 목차를 직접 구성. ' +
+      'plan의 구체 정보(수치·기능·일정)는 반드시 반영. 섹션마다 본문 슬라이드(rows/cols/bigstat/statement) 1장 이상 실제 내용으로(플레이스홀더 금지). ' +
+      '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. 총 6~12장.';
     var user = '브리프:\n' + JSON.stringify({
       title: brief.title || '', message: brief.message || '', audience: brief.audience || '',
+      purpose: brief.purpose || '', plan: brief.plan || '',
       outline: (brief.outline || []),
     }, null, 2);
     var txt = await messages({ system: sys, user: user, maxTokens: 4000 });
@@ -116,7 +118,37 @@
     return deck;
   }
 
+  // 채팅 내용수정: {slides, instruction} → {ops:[{i,slide}], message}. 디자인/구조 요청은 ops 없이 안내 메시지.
+  async function editDeck(slides, instruction) {
+    if (usingProxy()) {
+      var r = await fetch(proxyUrl() + '/edit', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ slides: slides, instruction: instruction }),
+      });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok) throw new Error((j && (j.message || j.error)) || ('HTTP ' + r.status));
+      return _parseEdit(j.text);
+    }
+    var sys =
+      '너는 프레젠테이션 내용 편집자다. 현재 덱과 사용자 지시를 받아 내용만 수정한다.\n' +
+      '반드시 유효한 JSON 하나만 출력: {"ops":[{"i":<0기준 인덱스>,"slide":{...전체...}}],"message":"<한 줄 요약>"}\n' +
+      '슬라이드 스키마: ' + SCHEMA_DOC + '\n' +
+      '지시와 관련된 슬라이드만 ops에. 디자인(색·폰트·배치) 요청은 ops 빈 배열 + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. ' +
+      '순서·추가·삭제 요청은 ops 빈 배열 + "왼쪽 슬라이드 목록에서 드래그/버튼으로 하세요" 안내. 무관한 요청은 정중히 유도.';
+    var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 4000 });
+    return _parseEdit(txt);
+  }
+  function _parseEdit(txt) {
+    var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+    var i = s.indexOf('{'), j = s.lastIndexOf('}');
+    if (i < 0 || j < 0) throw new Error('BAD_JSON');
+    var obj = JSON.parse(s.slice(i, j + 1));
+    var ops = (Array.isArray(obj.ops) ? obj.ops : []).filter(function (o) { return o && typeof o.i === 'number' && o.slide && ALLOWED[o.slide.type]; });
+    return { ops: ops, message: String(obj.message || '') };
+  }
+
   window.LLM = {
+    editDeck: editDeck,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
     hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, parseDeck: parseDeck,
