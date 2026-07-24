@@ -193,18 +193,25 @@
     var body = (data.sections || []).map(function (sec) {
       var fn = S[sec.type];
       if (!fn) { console.warn('[edm] no section:', sec.type); return ''; }
-      try { return '<div data-section="' + esc0(sec.type) + '">' + fn(sec) + '</div>'; }
+      // 유효 HTML: table 직계 자식은 tbody. 각 섹션 = 하나의 tbody.
+      try { return '<tbody data-section="' + esc0(sec.type) + '">' + fn(sec) + '</tbody>'; }
       catch (e) { console.error('[edm] section failed', sec.type, e); return ''; }
     }).join('');
+
+    // bare = 엣지-투-엣지 플랫(그대로 구현 템플릿용): 라운드/보더/캔버스 패딩 제거
+    var bare = !!data.bare;
+    var shellStyle = 'width:' + T.w + 'px;max-width:100%;background:' + T.bg +
+      (bare ? '' : ';border-radius:' + T.radius + 'px;overflow:hidden;border:1px solid ' + T.line + '');
+    var outerPad = bare ? '0' : '24px 0';
 
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">' +
       '<style>@font-face{font-family:\'Gmarket Sans\';font-weight:700;src:url(https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff) format(\'woff\')}' +
-      'body{margin:0;background:' + T.canvas + ';font-family:' + T.font + '} .edm-btn:hover{opacity:.92} img{max-width:100%}' +
+      'body{margin:0;background:' + (bare ? T.bg : T.canvas) + ';font-family:' + T.font + '} .edm-btn:hover{opacity:.92} img{max-width:100%} table{border-collapse:collapse}' +
       '@media (max-width:620px){.edm-shell{width:100%!important}}</style></head>' +
-      '<body><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' + T.canvas + '"><tr><td align="center" style="padding:24px 0">' +
-      '<table role="presentation" class="edm-shell" width="' + T.w + '" cellpadding="0" cellspacing="0" style="width:' + T.w + 'px;max-width:100%;background:' + T.bg + ';border-radius:' + T.radius + 'px;overflow:hidden;border:1px solid ' + T.line + '">' +
+      '<body><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' + (bare ? T.bg : T.canvas) + '"><tr><td align="center" style="padding:' + outerPad + '">' +
+      '<table role="presentation" class="edm-shell" width="' + T.w + '" cellpadding="0" cellspacing="0" style="' + shellStyle + '">' +
       body +
       '</table></td></tr></table></body></html>';
   }
