@@ -532,7 +532,7 @@
         const navEl = t && t.closest && t.closest('[data-nav-page]');
         if(navEl){ e.preventDefault();
           const id=navEl.getAttribute('data-nav-page');
-          if(project && id && !(pageRef&&pageRef.id===id)){ persist(); location.href='?p='+project.id+'&page='+id; }
+          if(project && id && !(pageRef&&pageRef.id===id)){ persist(); storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+id; }); }
           return; }
         const a=t && t.closest && t.closest('a[href]'); if(a){ e.preventDefault(); }
       }, true);
@@ -842,7 +842,7 @@
         `<span class="dh" title="${tL('드래그로 이동')}">⠿</span><span class="pt">${pg.name}</span><span class="ren" title="${tL('이름 변경')}">✎</span><span class="x" title="${tL('삭제')}">✕</span>`);
       r.style.paddingLeft=(8+depth*15)+'px';
       r.draggable=true; r.dataset.id=pg.id;
-      r.querySelector('.pt').onclick=()=>{ persist(); location.href='?p='+project.id+'&page='+pg.id; };
+      r.querySelector('.pt').onclick=()=>{ persist(); storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+pg.id; }); };
       r.querySelector('.ren').onclick=(e)=>{ e.stopPropagation(); startRename(pg,r); };
       r.querySelector('.x').onclick=(e)=>{ e.stopPropagation();
         if(project.pages.length<=1){ uiAlert(tL('마지막 페이지는 삭제할 수 없어요.')); return; }
@@ -852,7 +852,7 @@
           const wasCur = pageRef && (pg.id===pageRef.id || project.pages.some(x=>x.id===pageRef.id && belongs(pageRef.id,pg.id)));
           deletePage(project.id,pg.id);
           project=getProject(project.id);
-          if(wasCur){ location.href='?p='+project.id+'&page='+project.pages[0].id; }
+          if(wasCur){ storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+project.pages[0].id; }); }
           else { renderRail(); render(); }
         });
       };
@@ -889,7 +889,7 @@
     rl.ondragleave=(e)=>{ if(e.target===rl) rl.classList.remove('droproot'); };
     rl.ondrop=(e)=>{ e.preventDefault(); clearDnd(); if(!dragId||!canDrop(dragId,null)) return; persist(); movePage(project.id,dragId,null,null); project=getProject(project.id); renderRail(); render(); };
 
-    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); persist(); const pg=addPage(project.id,'features',null,'새 페이지'); location.href='?p='+project.id+'&page='+pg.id; };
+    document.getElementById('addPage').onclick=(e)=>{ e.stopPropagation(); persist(); const pg=addPage(project.id,'features',null,'새 페이지'); storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+pg.id; }); };
   }
 
   // 페이지 이름 인라인 입력 (추가) — 타입 선택 없이 이름부터. 추가 페이지 기본 타입=features
@@ -903,7 +903,7 @@
     const inp=row.querySelector('.rinp'); inp.focus();
     let done=false;
     const finish=(commit)=>{ if(done) return; done=true; const v=inp.value.trim();
-      if(commit && v){ persist(); const pg=addPage(project.id,'features',parentId,v); location.href='?p='+project.id+'&page='+pg.id; }
+      if(commit && v){ persist(); const pg=addPage(project.id,'features',parentId,v); storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+pg.id; }); }
       else row.remove();
     };
     inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
