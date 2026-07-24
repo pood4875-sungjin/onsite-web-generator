@@ -9,7 +9,7 @@
 
 const MODEL = 'claude-sonnet-5';   // 서버 고정 — 클라이언트가 못 바꿈
 const MAX_TOKENS = 4000;
-const DAILY_LIMIT = 9;             // 인당(IP당) 하루 9회 = 10회 미만
+const DAILY_LIMIT = 999;           // 임시 해제(혼자 사용 중). 팀 배포 시 9로 복원할 것
 
 const CORS = {
   'access-control-allow-origin': '*',
