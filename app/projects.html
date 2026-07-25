@@ -43,13 +43,18 @@
   .tag{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r-pill);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   .tag.single{color:#fff;background:color-mix(in srgb,var(--a-blue) 80%,transparent)}
   .tag.multi{color:#fff;background:color-mix(in srgb,var(--a-purple) 80%,transparent)}
-  .chk{position:absolute;top:8px;right:8px;z-index:3;width:24px;height:24px;border-radius:6px;border:1.5px solid rgba(255,255,255,.7);background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;opacity:0;transition:var(--dur)}
+  /* padding:0 필수 — 버튼 UA 패딩(1px 6px)이 남으면 내용 영역이 9px로 좁아져 체크 아이콘이 우측으로 밀린다 */
+  .chk{position:absolute;top:8px;right:8px;z-index:3;width:24px;height:24px;padding:0;border-radius:6px;border:1.5px solid rgba(255,255,255,.7);background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;opacity:0;transition:var(--dur)}
   .card:hover .chk,.card.sel .chk{opacity:1}
   .card.sel .chk{background:var(--primary);border-color:var(--primary)}
   .card.sel{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
   .chk svg{opacity:0} .card.sel .chk svg{opacity:1;color:var(--on-primary)}
-  .selbar{display:none;align-items:center;gap:12px;margin:0 0 18px;padding:10px 14px;border:1px solid var(--hairline-strong);border-radius:var(--r-md);background:var(--surface-solid)}
-  .selbar.on{display:flex}
+  /* 선택 컨트롤은 탭 줄 우측에 얹는다. display 토글이 아니라 visibility 토글 —
+     선택할 때마다 줄이 새로 생겨 아래 그리드가 달그락거리는 걸 막는다. */
+  .frow{display:flex;align-items:center;gap:12px;margin:0 0 22px}
+  .frow .filters{margin:0;flex:1;min-width:0}
+  .selbar{display:flex;align-items:center;gap:8px;flex:0 0 auto;visibility:hidden;pointer-events:none}
+  .selbar.on{visibility:visible;pointer-events:auto}
   .selbar .cnt{font-size:var(--fs-body-sm);font-weight:var(--fw-semi)}
   .selbar .sp{flex:1}
   .selbar button{border:1px solid var(--hairline);background:var(--surface-solid);color:var(--body);border-radius:var(--r-sm);padding:7px 14px;font-size:var(--fs-body-sm);cursor:pointer;font-family:inherit}
@@ -64,13 +69,14 @@
   <div data-gnb></div>
   <div class="page">
     <h1 data-i18n="내 프로젝트">내 프로젝트</h1>
-    <div class="filters" id="filters"></div>
-    <div class="selbar" id="selbar">
-      <span class="cnt" id="selcnt">0개 선택됨</span>
-      <button id="selall" data-i18n="전체 선택">전체 선택</button>
-      <button id="selclear" data-i18n="선택 해제">선택 해제</button>
-      <span class="sp"></span>
-      <button class="delsel" id="seldel" data-i18n="선택 삭제">선택 삭제</button>
+    <div class="frow">
+      <div class="filters" id="filters"></div>
+      <div class="selbar" id="selbar">
+        <span class="cnt" id="selcnt">0개 선택됨</span>
+        <button id="selall" data-i18n="전체 선택">전체 선택</button>
+        <button id="selclear" data-i18n="선택 해제">선택 해제</button>
+        <button class="delsel" id="seldel" data-i18n="선택 삭제">선택 삭제</button>
+      </div>
     </div>
     <div class="grid" id="projects"></div>
   </div>
