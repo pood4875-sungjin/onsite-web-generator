@@ -227,6 +227,19 @@
   .thumb-menu.open{display:grid}
   .thumb-menu button{border:none;background:none;color:var(--tx2);cursor:pointer;font-size:12px;text-align:left;padding:7px 9px;border-radius:7px}
   .thumb-menu button:hover{color:var(--tx);background:var(--surf2)}
+  /* 내보내기 모달 */
+  .expmodal{position:fixed;inset:0;z-index:999;display:grid;place-items:center;background:color-mix(in srgb,var(--canvas) 30%,rgba(10,11,24,.55));-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+  .expmodal[hidden]{display:none}
+  .expm-card{width:min(92vw,420px);background:var(--surface-solid);border:1px solid var(--line2);border-radius:var(--r-md);box-shadow:var(--shadow-3);padding:22px;text-align:center}
+  .expm-card > b{font-size:15px;color:var(--tx)}
+  .expm-sub{margin:6px 0 16px;font-size:12.5px;color:var(--tx3)}
+  .expm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .expm-grid button{display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:16px 6px;color:var(--tx);font-size:13px;font-weight:700;cursor:pointer;transition:var(--dur) var(--ease)}
+  .expm-grid button:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .expm-grid .xi{font-size:22px}
+  .expm-grid .xd{font-size:10.5px;font-weight:400;color:var(--tx3)}
+  .expm-close{margin-top:14px;border:none;background:none;color:var(--tx3);font-size:12.5px;cursor:pointer;padding:6px 12px;border-radius:8px}
+  .expm-close:hover{color:var(--tx);background:var(--line)}
   /* 전체화면 미리보기 오버레이 */
   .pvfull{position:fixed;inset:0;z-index:998;display:flex;flex-direction:column;background:#0a0a0e}
   .pvfull[hidden]{display:none}
@@ -303,6 +316,20 @@
 <div class="orb" style="right:-160px;top:80px;width:520px;height:520px;background:rgba(99,102,241,.20)"></div>
 <div class="orb" style="left:33%;bottom:-160px;width:480px;height:480px;background:rgba(139,92,246,.15)"></div>
 
+<!-- 내보내기 형식 선택 모달 (PPT) -->
+<div class="expmodal" id="expModal" hidden>
+  <div class="expm-card">
+    <b data-i18n="슬라이드 내보내기">슬라이드 내보내기</b>
+    <p class="expm-sub" data-i18n="형식을 선택하세요">형식을 선택하세요</p>
+    <div class="expm-grid">
+      <button data-x="pptx"><span class="xi">📊</span>PPTX<span class="xd" data-i18n="파워포인트에서 편집">파워포인트에서 편집</span></button>
+      <button data-x="pdf"><span class="xi">📄</span>PDF<span class="xd" data-i18n="인쇄·공유용">인쇄·공유용</span></button>
+      <button data-x="html"><span class="xi">🌐</span>HTML<span class="xd" data-i18n="웹에서 열기">웹에서 열기</span></button>
+    </div>
+    <button class="expm-close" id="expmClose" data-i18n="닫기">닫기</button>
+  </div>
+</div>
+
 <!-- 전체화면 미리보기 오버레이 — 팝업 차단과 무관하게 항상 동작 -->
 <div class="pvfull" id="pvFull" hidden>
   <div class="pvf-top"><span class="pvf-title" id="pvfTitle">미리보기</span><button class="pvf-x" id="pvfClose" title="닫기 (ESC)">✕</button></div>
@@ -353,6 +380,7 @@
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
         <button class="dl" id="pptxBtn" style="display:none">PPTX</button>
+        <button class="dl" id="exportBtn" style="display:none" data-i18n="내보내기">내보내기</button>
       </div>
     </div>
     <div class="secadd" id="secAdd"></div>
@@ -626,6 +654,7 @@
     }
     if(editMode) applyEdit();
     else if(curMode().slides) decoratePpt(frame.contentDocument);   // 슬라이드 호버 [↑↓✕]는 항상
+    if(curMode().slides && _pptRevealPending){ _pptRevealPending=false; revealSlides(); }
     // 썸네일 현재 장 동기화 — 프리뷰 스크롤 중앙 기준
     if(curMode().slides){
       const fw=frame.contentWindow;
@@ -828,6 +857,19 @@
   }
   // 라이브 DOM에서 현재 패널을 찾아 교체(init 중 done 위젯이 여러 번 마운트돼 캡처 참조가 분리될 수 있음)
   let _pptFolded=true;   // 기본 접힘 — 필요할 때만 펼쳐 공간 확보
+  // 생성 직후 진입: 슬라이드가 하나씩 만들어지는 듯한 순차 등장(1회)
+  let _pptRevealPending=false;
+  function revealSlides(){
+    try{ const ss=[...frame.contentDocument.querySelectorAll('.ppt-stack > .slide')];
+      ss.forEach((s,i)=>{
+        s.style.opacity='0'; s.style.transform='translateY(22px)';
+        s.style.transition='opacity .55s ease, transform .55s ease'; s.style.transitionDelay=(i*0.16)+'s';
+        setTimeout(()=>{ s.style.opacity='1'; s.style.transform=''; }, 40);
+        setTimeout(()=>{ s.style.transition=''; s.style.transitionDelay=''; }, 1300+i*160);
+      });
+    }catch(e){}
+  }
+
   // 슬라이드 내비 = 프리뷰 좌측 썸네일 스트립(젠스파크식). 구조 변경 시 재빌드
   function refreshPptPanel(){ rebuildThumbRail(); }
   let _curThumb=0;
@@ -1347,22 +1389,40 @@
     badge.style.cursor='default';
     // eDM=편집전용 → 대화 패널은 그대로 유지(생성 위젯 없이 편집 안내만). 자동 편집모드.
     setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
-    // PPT: 내용수정 채팅(AI 가능 시) + 통합 되돌리기 버튼
-    if(curMode().slides){ initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI(); }
+    // PPT: 내용수정 채팅(AI 가능 시) + 통합 되돌리기 버튼 + 진입 순차 등장
+    if(curMode().slides){ initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI(); if(params.get('edit')) _pptRevealPending=true; }
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 
-  // PPT: .pptx 내보내기 버튼
+  // PPT: 내보내기 = 단일 버튼 + 형식 모달(PPTX/PDF/HTML) — 젠스파크식
   if(curMode().exportFmt.indexOf('pptx')>=0){
-    const pb=document.getElementById('pptxBtn');
-    if(pb){ pb.style.display='';
-      pb.onclick=async()=>{
-        if(typeof exportPptx!=='function'){ await uiAlert(tL('내보내기 모듈을 불러오지 못했어요.')); return; }
-        const orig=pb.textContent; pb.disabled=true;
-        try{ await exportPptx(frame.contentDocument, (i,n)=>{ pb.textContent=i+'/'+n; }); }
-        catch(e){ console.error('[pptx]',e); await uiAlert(tL('PPTX 내보내기에 실패했어요.')+' '+(e&&e.message||'')); }
-        finally{ pb.disabled=false; pb.textContent=orig; }
-      };
+    ['pptxBtn','expBtn','dl'].forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display='none'; });
+    const xb=document.getElementById('exportBtn'), modal=document.getElementById('expModal');
+    xb.style.display='';
+    xb.onclick=()=>{ modal.hidden=false; };
+    document.getElementById('expmClose').onclick=()=>{ modal.hidden=true; };
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.hidden=true; });
+    async function doPptx(btn){
+      if(typeof exportPptx!=='function'){ await uiAlert(tL('내보내기 모듈을 불러오지 못했어요.')); return; }
+      const orig=btn.innerHTML; btn.disabled=true;
+      try{ await exportPptx(frame.contentDocument, (i,n)=>{ btn.textContent=i+'/'+n; }); }
+      catch(e){ console.error('[pptx]',e); await uiAlert(tL('PPTX 내보내기에 실패했어요.')+' '+(e&&e.message||'')); }
+      finally{ btn.disabled=false; btn.innerHTML=orig; }
     }
+    function doPdf(){
+      // 장별 페이지 인쇄 문서 → 숨은 iframe print (브라우저의 'PDF로 저장')
+      let html=renderPptDeck(data);
+      html=html.replace('</head>','<style>@page{size:13.333in 7.5in;margin:0}html,body{background:#fff}.ppt-stack{display:block;padding:0;gap:0}.ppt-stack>.slide{margin:0;box-shadow:none;page-break-after:always;break-inside:avoid}</style></head>');
+      const f=document.createElement('iframe'); f.style.cssText='position:fixed;left:-99999px;width:1280px;height:720px;border:0';
+      f.srcdoc=html; document.body.append(f);
+      f.onload=()=>{ setTimeout(()=>{ try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} setTimeout(()=>f.remove(),60000); },400); };
+    }
+    function doHtml(){ const b=new Blob([pageHtml()],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=(project&&project.name||'deck')+'.html'; a.click(); URL.revokeObjectURL(a.href); }
+    modal.querySelectorAll('[data-x]').forEach(b=>{ b.onclick=async()=>{
+      const x=b.getAttribute('data-x');
+      if(x==='pptx'){ await doPptx(b); modal.hidden=true; }
+      else if(x==='pdf'){ modal.hidden=true; doPdf(); }
+      else { modal.hidden=true; doHtml(); }
+    };});
   }
   });
 </script>
