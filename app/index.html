@@ -70,7 +70,8 @@
   @media (prefers-reduced-motion:reduce){.kc:hover .thumb>*{transform:none}}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
-  .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
+  /* 설명문은 1줄 고정 — 번역문이 2줄로 넘치면 그 카드만 라벨이 커져 나머지 카드에 빈 공간이 생긴다 */
+  .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   @media (max-width:760px){ .kcards{flex-wrap:wrap} .kc{flex:1 1 240px;max-width:none} }
 
   /* ---- 2) 챗 화면 — 하단 고정 입력창 ---- */
@@ -172,8 +173,8 @@
 
 <!-- 1) 종류 선택 — 단독 풀페이지 -->
 <div class="kscreen" id="kscreen">
-  <!-- data-i18n 금지: I18N.apply가 textContent로 덮어 <br>가 깨짐 -->
-  <h1>어떤 종류의<br>프로젝트를 만들까요?</h1>
+  <!-- 줄마다 span으로 쪼갠다: h1에 data-i18n을 걸면 textContent 대입으로 <br>가 사라진다 -->
+  <h1><span data-i18n="어떤 종류의">어떤 종류의</span><br><span data-i18n="프로젝트를 만들까요?">프로젝트를 만들까요?</span></h1>
   <div class="kcards" id="kcards"></div>
 </div>
 
@@ -187,11 +188,11 @@
       <div class="cbrow">
         <button class="attbtn" id="cattach" data-i18n-title="파일 첨부" title="파일 첨부"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
         <span class="atthint" id="atthint" data-i18n="기획서가 있다면 txt · md · pdf · docx로 첨부하세요">기획서가 있다면 txt · md · pdf · docx로 첨부하세요</span>
-        <button class="sendbtn" id="csend" title="보내기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+        <button class="sendbtn" id="csend" data-i18n-title="보내기" title="보내기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
       </div>
     </div>
     <input type="file" id="cfile" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.pdf,.docx" hidden>
-    <button class="ds-btn primary gencta" id="genCta" hidden>✨ 생성하기</button>
+    <button class="ds-btn primary gencta" id="genCta" data-i18n="✨ 생성하기" hidden>✨ 생성하기</button>
   </div>
 </div>
 
@@ -199,10 +200,10 @@
 <div class="aigen" id="aiGen" hidden>
   <div class="aigen-box">
     <div class="aigen-orb"><i></i><i></i><i></i></div>
-    <b class="aigen-title">AI가 초안을 만들고 있어요</b>
-    <span class="aigen-stage" id="aiGenStage">브리프 분석 중…</span>
+    <b class="aigen-title" data-i18n="AI가 초안을 만들고 있어요">AI가 초안을 만들고 있어요</b>
+    <span class="aigen-stage" id="aiGenStage" data-i18n="브리프 분석 중…">브리프 분석 중…</span>
     <div class="aigen-bar"><i id="aiGenBar"></i></div>
-    <span class="aigen-hint" id="aiGenHint">창을 닫지 마세요.</span>
+    <span class="aigen-hint" id="aiGenHint" data-i18n="창을 닫지 마세요.">창을 닫지 마세요.</span>
   </div>
 </div>
 
@@ -287,7 +288,10 @@
   }
   function send(){ const v=cinput.value.trim(); if(!v && !attachments.length) return; finishInput(v,false); }
   csend.onclick=send;
-  cinput.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+  // isComposing 가드 필수 — 한글·일본어·중국어 입력 중 Enter는 "글자 확정"이다.
+  // 없으면 조합 중인 "너무…"가 확정되기 전에 전송돼 "너"만 나간다. keyCode 229 = 일부 브라우저의 조합 중 Enter.
+  cinput.addEventListener('keydown',(e)=>{ if(e.isComposing || e.keyCode===229) return;
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
   composerOff('');
 
   /* ---- 파일 첨부 — txt·md·csv·json·html은 즉시, pdf·docx는 CDN 파서 지연 로드 ---- */
@@ -578,7 +582,8 @@
   });
 
   async function flow(k){
-    bot(_L('좋아요,')+' '+_L(k.kt)+_L('를 만들게요!'));
+    // 조각 이어붙이기 금지 — 영어·일본어에서 어순이 깨진다
+    bot((window.LF?LF:( (t)=>t ))('좋아요, {kind}를 만들게요!', {kind:_L(k.kt)}));
 
     if(S.kind!=='edm'){
       bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));

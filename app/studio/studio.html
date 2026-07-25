@@ -347,7 +347,7 @@
     <div class="expm-range">
       <label class="expm-rr"><input type="radio" name="exprange" value="all" checked><span data-i18n="전체 페이지">전체 페이지</span> <span class="expm-cnt" id="expmCnt"></span></label>
       <label class="expm-rr"><input type="radio" name="exprange" value="custom"><span data-i18n="범위 지정">범위 지정</span></label>
-      <input class="expm-rin" id="expmRange" placeholder="예: 1-3, 5" disabled>
+      <input class="expm-rin" id="expmRange" data-i18n-ph="예: 1-3, 5" placeholder="예: 1-3, 5" disabled>
     </div>
     <div class="expm-actions">
       <button class="expm-close" id="expmClose" data-i18n="취소">취소</button>
@@ -358,7 +358,7 @@
 
 <!-- 전체화면 미리보기 오버레이 — 팝업 차단과 무관하게 항상 동작 -->
 <div class="pvfull" id="pvFull" hidden>
-  <div class="pvf-top"><span class="pvf-title" id="pvfTitle">미리보기</span><button class="pvf-x" id="pvfClose" title="닫기 (ESC)">✕</button></div>
+  <div class="pvf-top"><span class="pvf-title" id="pvfTitle" data-i18n="미리보기">미리보기</span><button class="pvf-x" id="pvfClose" data-i18n-title="닫기 (ESC)" title="닫기 (ESC)">✕</button></div>
   <iframe id="pvfFrame" title="preview-full" allowfullscreen allow="fullscreen"></iframe>
 </div>
 
@@ -371,7 +371,7 @@
   </aside>
   <aside class="chat">
     <div class="chead">
-      <div class="brand"><a class="hbtn" href="../dashboard.html" title="홈으로"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a><b class="ds-wordmark">MIDAS <span class="wg">WEB AX</span></b></div>
+      <div class="brand"><a class="hbtn" href="../dashboard.html" data-i18n-title="홈으로" title="홈으로"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a><b class="ds-wordmark">MIDAS <span class="wg">WEB AX</span></b></div>
       <div style="display:flex;gap:8px;align-items:center"><button class="reset" id="reset" data-i18n="↺ 다시">↺ 다시</button></div>
     </div>
     <div class="pptdock" id="pptDock" style="display:none"></div>
@@ -380,13 +380,13 @@
       <div class="pptc-chips" id="pptcChips"></div>
       <div class="pptc-row">
         <input class="pptc-inp" id="pptcInp" maxlength="500" data-i18n-ph="예: 3번 슬라이드를 더 간결하게" placeholder="예: 3번 슬라이드를 더 간결하게">
-        <button class="pptc-undo" id="pptcUndo" title="마지막 AI 수정 되돌리기" style="display:none">↺</button>
+        <button class="pptc-undo" id="pptcUndo" data-i18n-title="마지막 AI 수정 되돌리기" title="마지막 AI 수정 되돌리기" style="display:none">↺</button>
         <button class="pptc-send" id="pptcSend" data-i18n="보내기">보내기</button>
       </div>
     </div>
   </aside>
 
-  <div class="splitter" id="split" title="드래그로 크기 조절"></div>
+  <div class="splitter" id="split" data-i18n-title="드래그로 크기 조절" title="드래그로 크기 조절"></div>
 
   <main class="preview">
     <div class="pvhead">
@@ -399,8 +399,8 @@
         <div class="stylemenu" id="stylemenu"></div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
-        <button class="dl" id="histBtn" title="되돌리기" style="display:none">↺</button>
-        <button class="dl" id="editBtn" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
+        <button class="dl" id="histBtn" data-i18n-title="되돌리기" title="되돌리기" style="display:none">↺</button>
+        <button class="dl" id="editBtn" data-i18n-title="텍스트·이미지 편집" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
         <button class="dl" id="previewBtn" data-i18n-title="생성된 페이지를 새 창에서 미리보기" title="생성된 페이지를 새 창에서 미리보기" data-i18n="미리보기">미리보기</button>
         <button class="dl" id="save" data-i18n="저장">저장</button>
         <button class="dl" id="expBtn">JSON</button>
@@ -650,6 +650,7 @@
           }
           persist(); });
         elm.addEventListener('keydown',(e)=>{
+          if(e.isComposing || e.keyCode===229) return;   // 조합 중 Enter=글자 확정. 여기서 줄바꿈/blur 하면 글자가 잘린다
           if(e.key==='Enter'){
             if(curMode().slides && !e.shiftKey){ e.preventDefault(); doc.execCommand('insertLineBreak'); }   // PPT: Enter=줄바꿈
             else if(!curMode().slides && elm.tagName!=='P'){ e.preventDefault(); elm.blur(); }
@@ -1304,7 +1305,8 @@
       finally{ send.disabled=false; scroll(); }
     }
     send.onclick=doSend;
-    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSend(); } };
+    // 조합 중(한글/일문/중문) Enter는 글자 확정 — 가드 없으면 미완성 글자만 전송된다
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return; if(e.key==='Enter'){ e.preventDefault(); doSend(); } };
     undoB.onclick=()=>{ if(!_undoStack.length) return; undoAll(); botBubble(tL('마지막 수정을 되돌렸어요.')); scroll(); };
   }
   function buildPptPanel(){
@@ -1462,14 +1464,15 @@
       if(commit && v && v!==cur){ project.name=v; upsertProject(project); }
       renderRail();
     };
-    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return;   // 조합 중 Enter=글자 확정
+      if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
     inp.onblur=()=>finish(true);
   }
 
   function renderRail(){
     if(!project || project.kind!=='multi') return;
     document.getElementById('rail').style.display='flex';
-    const rn=document.getElementById('rname'); rn.textContent=project.name; rn.title='클릭해서 이름 수정';
+    const rn=document.getElementById('rname'); rn.textContent=project.name; rn.title=tL('클릭해서 이름 수정');
     rn.onclick=()=>editProjectName(rn);
     const rl=document.getElementById('rlist'); rl.innerHTML='';
 
@@ -1542,7 +1545,8 @@
       if(commit && v){ persist(); const pg=addPage(project.id,'features',parentId,v); storeFlush().then(()=>{ location.href='?p='+project.id+'&page='+pg.id; }); }
       else row.remove();
     };
-    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return;   // 조합 중 Enter=글자 확정
+      if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
     inp.onblur=()=>finish(true);
   }
   // 페이지 이름 인라인 수정
@@ -1557,7 +1561,8 @@
       if(commit && v && v!==pg.name){ renamePage(project.id,pg.id,v); project=getProject(project.id); if(pageRef&&pageRef.id===pg.id) pageRef=project.pages.find(x=>x.id===pg.id); render(); }
       renderRail();
     };
-    inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return;   // 조합 중 Enter=글자 확정
+      if(e.key==='Enter'){ e.preventDefault(); finish(true); } else if(e.key==='Escape'){ finish(false); } };
     inp.onblur=()=>finish(true);
   }
 

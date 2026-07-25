@@ -118,7 +118,7 @@
       inp.value=''; inp.placeholder = has ? LLM.maskKey() : 'sk-ant-…';
     }
     bSave.onclick=()=>{ const v=inp.value.trim(); if(!v){ st.textContent=LL('키를 입력해주세요.'); return; } LLM.setKey(v); refresh(); };
-    inp.onkeydown=(e)=>{ if(e.key==='Enter') bSave.onclick(); };
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return; if(e.key==='Enter') bSave.onclick(); };
     bDel.onclick=()=>{ uiConfirm(LL('저장된 API 키를 삭제할까요?'),{title:LL('키 삭제'),okText:LL('삭제'),danger:true}).then(ok=>{ if(ok){ LLM.setKey(''); refresh(); } }); };
     LLM.MODELS.forEach(m=>{ const b=document.createElement('button'); b.className='ds-chip'+(m.id===LLM.getModel()?' on':''); b.textContent=m.name;
       b.onclick=()=>{ LLM.setModel(m.id); chips.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; chips.append(b); });

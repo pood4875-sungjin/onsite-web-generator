@@ -274,11 +274,195 @@
     '아직 준비된 템플릿이 없어요.': ['No templates here yet.', 'まだテンプレートがありません。', '还没有模板。'],
     '추천': ['Recommended', 'おすすめ', '推荐'],
     // 종류 워딩 통일 (웹사이트=다중 / 랜딩페이지=단일)
-    '단일페이지 · 랜딩·공지 한 장': ['Single page · landing, notice', '単一ページ · ランディング・お知らせ', '单页 · 落地页·公告'],
-    '다중페이지 · 메인·기능·요금…': ['Multi-page · home, features, pricing…', '複数ページ · メイン・機能・料金…', '多页 · 主页·功能·价格…'],
-    '단일페이지 · 랜딩·공지': ['Single page · landing, notice', '単一ページ · ランディング', '单页 · 落地页·公告'],
+    '단일페이지 · 랜딩·공지 한 장': ['Single page · landing', '単一ページ · ランディング・お知らせ', '单页 · 落地页·公告'],
+    '다중페이지 · 메인·기능·요금…': ['Multi-page · home, features…', '複数ページ · メイン・機能・料金…', '多页 · 主页·功能·价格…'],
+    '단일페이지 · 랜딩·공지': ['Single page · landing', '単一ページ · ランディング', '单页 · 落地页·公告'],
     '다중페이지 · 여러 페이지': ['Multi-page · multiple pages', '複数ページ', '多页'],
-    '개 페이지 · 웹사이트': [' pages · website', 'ページ · ウェブサイト', ' 页 · 网站']
+    '개 페이지 · 웹사이트': [' pages · website', 'ページ · ウェブサイト', ' 页 · 网站'],
+
+    // ── 종류 선택 화면 ──
+    '어떤 종류의': ['What kind of', 'どんな種類の', '要创建哪种'],
+    '프로젝트를 만들까요?': ['project shall we build?', 'プロジェクトを作りますか？', '类型的项目？'],
+    '발표 장표 · 16:9 슬라이드': ['Deck · 16:9 slides', 'プレゼン資料 · 16:9スライド', '演示文稿 · 16:9 幻灯片'],
+    'eDM · 템플릿에서 시작': ['eDM · start from a template', 'eDM · テンプレートから', 'eDM · 从模板开始'],
+    '좋아요, {kind}를 만들게요!': ["Great — let's build your {kind}!", 'では{kind}を作りますね！', '好，我们来创建{kind}！'],
+
+    // ── 챗 인테이크 ──
+    '어떤 페이지인지 자유롭게 알려주세요.\n제품·서비스가 무엇인지, 누구를 위한 것인지, 핵심 기능이나 자랑할 수치, 방문자가 했으면 하는 행동까지 적을수록 초안이 정확해져요.': [
+      "Tell us about the page in your own words.\nThe more you share — what the product or service is, who it's for, key features, numbers worth showing, and the action you want (sign-up, inquiry…) — the more accurate the draft.",
+      'どんなページか自由に教えてください。\n製品・サービスの内容、対象、主な機能や誇れる数値、促したい行動（登録・問い合わせなど）を書くほど下書きが正確になります。',
+      '请自由描述这个页面。\n产品或服务是什么、面向谁、核心功能或亮点数据、希望引导的行动（注册·咨询等）写得越多，草稿越准确。'],
+    '어떤 사이트인지 자유롭게 알려주세요.\n제품·서비스 소개, 핵심 기능·강점, 수치, 유도할 행동(도입 문의 등)을 적을수록 초안이 정확해져요.': [
+      "Tell us about the site in your own words.\nThe more you share — what the product or service is, key features and strengths, numbers, and the action you want (a demo request…) — the more accurate the draft.",
+      'どんなサイトか自由に教えてください。\n製品・サービスの紹介、主な機能・強み、数値、促したい行動（導入相談など）を書くほど下書きが正確になります。',
+      '请自由描述这个网站。\n产品或服务介绍、核心功能与优势、数据、希望引导的行动（咨询导入等）写得越多，草稿越准确。'],
+    '어떤 발표인지 자유롭게 알려주세요.\n주제·청중·목적, 목차(있으면 그 순서대로), 강조할 수치나 꼭 들어갈 내용을 적을수록 정확해져요.': [
+      'Tell us about the deck in your own words.\nThe more you share — topic, audience, purpose, an outline (in the order you want), key numbers and must-have content — the more accurate the draft.',
+      'どんな発表か自由に教えてください。\nテーマ・聴衆・目的、目次（あればその順序で）、強調したい数値や必ず入れる内容を書くほど下書きが正確になります。',
+      '请自由描述这个演示。\n主题·听众·目的、目录（如有请按顺序）、要强调的数据或必须包含的内容写得越多，草稿越准确。'],
+    '예) 건설현장 안전관리 SaaS 세이프사이트 소개 랜딩. AI 위험 감지·실시간 알림. 도입사 120곳. 목표는 도입 문의': [
+      'e.g. Landing page for SafeSite, a construction-site safety SaaS. AI hazard detection, real-time alerts. 120 customers. Goal: demo inquiries',
+      '例）建設現場の安全管理SaaS「セーフサイト」紹介ランディング。AI危険検知・リアルタイム通知。導入120社。目標は導入相談',
+      '例）建筑工地安全管理 SaaS「SafeSite」介绍落地页。AI 风险识别·实时告警。已有 120 家客户。目标是咨询导入'],
+    '예) 협업툴 플로우 제품 사이트. 프로젝트 보드·자동 리포트. 무료 체험 가입 유도': [
+      'e.g. Product site for Flow, a collaboration tool. Project boards, automated reports. Drive free-trial sign-ups',
+      '例）コラボツール「フロー」の製品サイト。プロジェクトボード・自動レポート。無料トライアル登録を促す',
+      '例）协作工具「Flow」产品站。项目看板·自动报表。引导免费试用注册'],
+    '예) 2026 2분기 사업보고. 청중은 경영진. 1.시장 현황 2.실적 3.하반기 계획. 매출 32% 성장 강조': [
+      'e.g. Q2 2026 business review. Audience: executives. 1. Market 2. Results 3. H2 plan. Emphasize 32% revenue growth',
+      '例）2026年第2四半期の事業報告。聴衆は経営層。1.市場動向 2.実績 3.下期計画。売上32%成長を強調',
+      '例）2026 年第二季度业务汇报。听众为管理层。1.市场现状 2.业绩 3.下半年计划。强调营收增长 32%'],
+    '기획서가 있다면 txt · md · pdf · docx로 첨부하세요': ['Have a brief? Attach it as txt · md · pdf · docx', '企画書があれば txt · md · pdf · docx で添付してください', '如有方案文档，可用 txt · md · pdf · docx 附加'],
+    '건너뛰기 — 나중에 채울게요': ["Skip — I'll fill this in later", 'スキップ — あとで入力', '跳过 — 稍后填写'],
+    '건너뛰기': ['Skip', 'スキップ', '跳过'],
+    '건너뛸게요': ['Skipping', 'スキップします', '已跳过'],
+    '분량은 어느 정도로 할까요?': ['How long should it be?', '分量はどのくらいにしますか？', '篇幅大概多少？'],
+    '5–8장 · 짧은 발표': ['5–8 slides · short', '5〜8枚 · 短め', '5–8 页 · 简短'],
+    '10–15장 · 표준 발표': ['10–15 slides · standard', '10〜15枚 · 標準', '10–15 页 · 标准'],
+    '20장+ · 심층 자료': ['20+ slides · in-depth', '20枚以上 · 詳細', '20 页以上 · 深入'],
+    '어느 사업군 프로젝트인가요? 어울리는 스타일을 추천해드릴게요.': ['Which business unit is this for? We\'ll recommend a matching style.', 'どの事業領域のプロジェクトですか？合うスタイルをおすすめします。', '这是哪个事业群的项目？我们会推荐合适的风格。'],
+    '디자인 스타일을 골라주세요.': ['Pick a design style.', 'デザインスタイルを選んでください。', '请选择设计风格。'],
+    '이렇게 만들게요. 이름을 다듬고 생성해주세요!': ["Here's the plan. Tweak the name, then hit generate!", 'この内容で作ります。名前を整えて生成してください！', '就按这样创建。调整名称后点击生成！'],
+    '✨ 생성하기': ['✨ Generate', '✨ 生成する', '✨ 生成'],
+    '생성 중…': ['Generating…', '生成中…', '生成中…'],
+    '생성할게요!': ["Let's generate!", '生成します！', '开始生成！'],
+    '내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.': ['Got it! Just a couple of questions to sharpen the draft.', '内容を確認しました！より正確な下書きのためにいくつか質問します。', '已了解！为了让草稿更准确，再问几个问题。'],
+    '파일 첨부': ['Attach file', 'ファイル添付', '附加文件'],
+    '보내기': ['Send', '送信', '发送'],
+    '지원하지 않는 형식이에요': ['Unsupported file type', '対応していない形式です', '不支持的格式'],
+    '20MB 이하 파일만 첨부할 수 있어요.': ['Files must be 20 MB or smaller.', '20MB以下のファイルのみ添付できます。', '仅支持 20MB 以内的文件。'],
+    '파일을 읽지 못했어요.': ["Couldn't read the file.", 'ファイルを読み取れませんでした。', '无法读取文件。'],
+    '돌아가기': ['Back', '戻る', '返回'],
+    '종류 선택으로 돌아가기': ['Back to project type', '種類の選択に戻る', '返回类型选择'],
+    '종류 선택으로 돌아갈까요?': ['Go back to project type?', '種類の選択に戻りますか？', '返回类型选择？'],
+    '입력한 내용은 사라져요.': ["What you've entered will be lost.", '入力した内容は失われます。', '已输入的内容将丢失。'],
+
+    // ── 생성 오버레이 ──
+    'AI가 초안을 만들고 있어요': ['AI is drafting your project', 'AIが下書きを作成しています', 'AI 正在生成草稿'],
+    '브리프 분석 중…': ['Analyzing your brief…', 'ブリーフを分析中…', '正在分析简报…'],
+    '창을 닫지 마세요.': ["Please don't close this window.", 'ウィンドウを閉じないでください。', '请勿关闭窗口。'],
+    '초 안팎 걸려요. 창을 닫지 마세요.': ["s or so. Please don't close this window.", '秒ほどかかります。ウィンドウを閉じないでください。', '秒左右。请勿关闭窗口。'],
+    '초 안팎': ['s or so', '秒ほど', '秒左右'],
+    '초 경과': ['s elapsed', '秒経過', '秒'],
+    '초 경과 · 보통': ['s elapsed · usually', '秒経過 · 通常', '秒 · 通常约'],
+    '조금 더 걸리네요… 거의 다 됐어요': ['Taking a bit longer… almost there', 'もう少しかかります…あと少しです', '还需要一点时间…快完成了'],
+    '완성! 스튜디오로 이동해요': ['Done! Opening the studio', '完成！スタジオに移動します', '完成！正在进入工作室'],
+    '보통': ['usually', '通常', '通常'],
+    'AI 생성에 실패해 기본 구성으로 시작해요.': ['AI generation failed — starting from the default layout.', 'AI生成に失敗したため、基本構成で開始します。', 'AI 生成失败，将以默认结构开始。'],
+    'AI 초안 생성에 실패해 대화로 채우는 방식으로 시작해요.': ["AI drafting failed — we'll fill this in through chat instead.", 'AI下書きの生成に失敗したため、チャットで埋めていきます。', 'AI 草稿生成失败，改为通过对话填写。'],
+    'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.': ['Your deck draft is ready. Edit it directly in edit mode.', 'PPTの下書きができました。編集モードでそのまま修正できます。', '演示草稿已就绪。可在编辑模式中直接修改。'],
+    '✨ 입력한 내용으로 초안을 만들었어요. 오른쪽에서 확인해보세요.': ['✨ Draft built from what you shared. Take a look on the right.', '✨ 入力内容から下書きを作成しました。右側で確認してください。', '✨ 已根据你的输入生成草稿。请在右侧查看。'],
+    '참고로': ['Note —', 'なお', '另外，'],
+    '은(는) 내용에 없어서 예시로 채워뒀어요. 편집 버튼을 눌러 실제 내용으로 다듬어보세요!': [
+      " weren't in your brief, so we filled them with examples. Hit Edit to replace them with the real thing!",
+      'はブリーフに無かったため例として埋めました。編集ボタンから実際の内容に直してください！',
+      '在简报中没有提到，因此先用示例填充。点击编辑替换为真实内容！'],
+    '메뉴 구성도 읽어서': ['We also read your menu structure and created the', 'メニュー構成も読み取り、', '我们还读取了菜单结构，一并创建了'],
+    '페이지를 함께 만들어뒀어요. 왼쪽 페이지 목록에서 골라 이어서 채우면 돼요.': [
+      ' pages for you. Pick one from the page list on the left and keep filling it in.',
+      'ページも一緒に作成しました。左のページ一覧から選んで続けて入力できます。',
+      ' 页面。可从左侧页面列表选择并继续填写。'],
+    '이 페이지는 메뉴 구성에 맞춰 만들어둔 골격이에요. 채우고 싶은 내용을 말해주세요.': [
+      'This page is a skeleton built from your menu structure. Tell me what to put in it.',
+      'このページはメニュー構成に合わせた骨組みです。入れたい内容を教えてください。',
+      '此页面是按菜单结构生成的框架。告诉我想放什么内容。'],
+
+    // ── 스튜디오 공통 ──
+    '내보내기': ['Export', 'エクスポート', '导出'],
+    '페이지 내보내기': ['Export page', 'ページをエクスポート', '导出页面'],
+    '슬라이드 내보내기': ['Export slides', 'スライドをエクスポート', '导出幻灯片'],
+    '형식을 선택하세요': ['Choose a format', '形式を選択してください', '请选择格式'],
+    '파워포인트에서 편집': ['Edit in PowerPoint', 'PowerPointで編集', '在 PowerPoint 中编辑'],
+    '인쇄·공유용': ['For print & sharing', '印刷・共有用', '用于打印·分享'],
+    '웹에서 열기': ['Open in a browser', 'ブラウザで開く', '在浏览器中打开'],
+    '데이터 백업': ['Data backup', 'データバックアップ', '数据备份'],
+    '전체 페이지': ['All pages', 'すべてのページ', '全部页面'],
+    '현재 페이지만': ['Current page only', '現在のページのみ', '仅当前页面'],
+    '범위 지정': ['Custom range', '範囲を指定', '指定范围'],
+    '유효한 페이지 범위를 입력해주세요.': ['Enter a valid page range.', '有効なページ範囲を入力してください。', '请输入有效的页面范围。'],
+    'PPTX 내보내기에 실패했어요.': ['PPTX export failed.', 'PPTXのエクスポートに失敗しました。', 'PPTX 导出失败。'],
+    '내보내기 모듈을 불러오지 못했어요.': ["Couldn't load the export module.", 'エクスポートモジュールを読み込めませんでした。', '无法加载导出模块。'],
+    '먼저 페이지를 생성해주세요.': ['Generate the page first.', 'まずページを生成してください。', '请先生成页面。'],
+    '발표 미리보기 — ← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기': [
+      'Presentation preview — ← → or click to advance · F fullscreen · ESC to close',
+      'プレゼンプレビュー — ← → またはクリックで送る · F 全画面 · ESC で閉じる',
+      '演示预览 — ← → 或点击翻页 · F 全屏 · ESC 关闭'],
+    '접기': ['Collapse', '折りたたむ', '收起'],
+    '펼치기': ['Expand', '展開', '展开'],
+    '추가': ['Add', '追加', '添加'],
+    '수정': ['Edit', '修正', '修改'],
+    '교체': ['Replace', '差し替え', '替换'],
+    '기본': ['Default', '基本', '默认'],
+    '그룹': ['Group', 'グループ', '组合'],
+    '그룹 해제': ['Ungroup', 'グループ解除', '取消组合'],
+    '맨 앞으로': ['Bring to front', '最前面へ', '置于顶层'],
+    '맨 뒤로': ['Send to back', '最背面へ', '置于底层'],
+    '이미지': ['Image', '画像', '图片'],
+    '이미지 첨부': ['Attach image', '画像を添付', '附加图片'],
+    '이미지를 불러오지 못했어요.': ["Couldn't load the image.", '画像を読み込めませんでした。', '无法加载图片。'],
+    '이미지를 읽지 못했어요.': ["Couldn't read the image.", '画像を読み取れませんでした。', '无法读取图片。'],
+    '페이지 삭제': ['Delete page', 'ページを削除', '删除页面'],
+    '슬라이드': ['Slides', 'スライド', '幻灯片'],
+    '슬라이드 추가': ['Add slide', 'スライドを追加', '添加幻灯片'],
+    '슬라이드 삭제': ['Delete slide', 'スライドを削除', '删除幻灯片'],
+    '이 슬라이드를 삭제할까요?': ['Delete this slide?', 'このスライドを削除しますか？', '删除这张幻灯片？'],
+    '마지막 슬라이드는 삭제할 수 없어요.': ["You can't delete the last slide.", '最後のスライドは削除できません。', '无法删除最后一张幻灯片。'],
+    '(↺로 되돌릴 수 있어요)': ['(↺ to undo)', '（↺で元に戻せます）', '（可用 ↺ 撤销）'],
+    '마지막 수정을 되돌렸어요.': ['Reverted the last change.', '直前の修正を元に戻しました。', '已撤销上一次修改。'],
+    '수정했어요.': ['Updated.', '修正しました。', '已修改。'],
+    '수정에 실패했어요. 잠시 후 다시 시도해주세요.': ['That edit failed. Please try again in a moment.', '修正に失敗しました。しばらくしてからもう一度お試しください。', '修改失败。请稍后再试。'],
+    '요청을 이해하지 못했어요. 슬라이드 내용 수정을 말씀해주세요.': ["I didn't catch that. Tell me what to change on the slides.", 'リクエストを理解できませんでした。スライド内容の修正を教えてください。', '没有理解你的请求。请说明要修改的幻灯片内容。'],
+    '예: 3번 슬라이드를 더 간결하게': ['e.g. Make slide 3 more concise', '例：3番目のスライドをもっと簡潔に', '例：让第 3 页更简洁'],
+    '✏️ 말만 하면 고쳐드려요 — 문구·수치·톤은 물론, 장표 추가·분할·삭제·순서까지. 🎨 디자인(색·글꼴·배치)만 스타일 팩이 자동 관리해요. 급하면 위 슬라이드 목록에서 드래그로도 정리돼요.': [
+      '✏️ Just say it and I\'ll fix it — copy, numbers, tone, and even adding, splitting, deleting or reordering slides. 🎨 Design (color, type, layout) stays with the style pack. In a hurry? Drag slides in the list above.',
+      '✏️ 言っていただければ直します — 文言・数値・トーンはもちろん、スライドの追加・分割・削除・並び替えまで。🎨 デザイン（色・書体・配置）はスタイルパックが自動管理します。急ぎなら上のスライド一覧のドラッグでも整理できます。',
+      '✏️ 说一声就帮你改 — 文案·数字·语气，甚至添加·拆分·删除·排序幻灯片。🎨 设计（颜色·字体·排版）由风格包自动管理。着急的话，也可在上方列表中拖动排序。'],
+
+    // ── 설정 ──
+    'AI 생성 (선택)': ['AI generation (optional)', 'AI生成（任意）', 'AI 生成（可选）'],
+    'API 키': ['API key', 'APIキー', 'API 密钥'],
+    '모델': ['Model', 'モデル', '模型'],
+    '일일 한도': ['Daily limit', '1日の上限', '每日上限'],
+    '회': [' calls', '回', ' 次'],
+    '등록됨': ['Registered', '登録済み', '已注册'],
+    '키 삭제': ['Delete key', 'キーを削除', '删除密钥'],
+    '키를 입력해주세요.': ['Enter a key.', 'キーを入力してください。', '请输入密钥。'],
+    '저장된 API 키를 삭제할까요?': ['Delete the saved API key?', '保存されたAPIキーを削除しますか？', '删除已保存的 API 密钥？'],
+    '키가 없으면 AI 생성 없이 기본 조립으로 동작해요.': ['Without a key it runs on the default assembly, no AI generation.', 'キーがない場合はAI生成なしで基本構成として動作します。', '没有密钥时将以默认组装方式运行，不使用 AI 生成。'],
+    '팀 공용 AI가 연결되어 있어요. 개인 API 키 없이 PPT AI 생성을 쓸 수 있어요.': [
+      "The team's shared AI is connected. You can use AI deck generation without a personal API key.",
+      'チーム共用のAIが接続されています。個人のAPIキーなしでPPTのAI生成を使えます。',
+      '已连接团队共用 AI。无需个人 API 密钥即可使用 PPT AI 生成。'],
+    '내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.': [
+      'Register your own Anthropic API key and AI will write the deck copy for you. The key is stored only in this browser and never sent to our server.',
+      '自分のAnthropic APIキーを登録すると、AIがPPTの内容を実際の文章で埋めます。キーはこのブラウザにのみ保存され、サーバーには送信されません。',
+      '注册你自己的 Anthropic API 密钥后，AI 会为演示文稿撰写真实文案。密钥仅保存在此浏览器，不会发送到服务器。'],
+    '여유 있어요. (이제 IndexedDB에 저장되어 용량이 넉넉해요.)': ['Plenty of room. (Now stored in IndexedDB, so space is ample.)', '余裕があります。（IndexedDBに保存されるため容量に余裕があります。）', '空间充足。（现已存储于 IndexedDB，容量宽裕。）'],
+    '미구축 프로젝트를 삭제할까요?': ['Delete the unbuilt projects?', '未構築のプロジェクトを削除しますか？', '删除未构建的项目？'],
+
+    // ── 기타 ──
+    // ── 템플릿 카드 메타(스타일·종류 조합) — 템플릿 이름·내용은 콘텐츠라 그대로 둔다 ──
+    'MIDAS AX · 모노크롬 · 웹사이트': ['MIDAS AX · monochrome · website', 'MIDAS AX · モノクローム · ウェブサイト', 'MIDAS AX · 单色 · 网站'],
+    'KRDS · 밝은 신뢰 블루 · 웹사이트': ['KRDS · bright trust blue · website', 'KRDS · 明るい信頼ブルー · ウェブサイト', 'KRDS · 明亮信赖蓝 · 网站'],
+    '다크 글로우 · 시안 · 웹사이트': ['Dark glow · cyan · website', 'ダークグロウ · シアン · ウェブサイト', '暗色辉光 · 青色 · 网站'],
+    'MIDAS AX · 프로모션 · 랜딩페이지': ['MIDAS AX · promotion · landing page', 'MIDAS AX · プロモーション · ランディング', 'MIDAS AX · 促销 · 落地页'],
+    '밝은 신뢰 블루 · 이벤트 · 랜딩페이지': ['Bright trust blue · event · landing page', '明るい信頼ブルー · イベント · ランディング', '明亮信赖蓝 · 活动 · 落地页'],
+    'eDM · 이메일 디자인 · 760px': ['eDM · email design · 760px', 'eDM · メールデザイン · 760px', 'eDM · 邮件设计 · 760px'],
+    '페이지': ['Page', 'ページ', '页面'],
+    '무제 프로젝트': ['Untitled project', '無題のプロジェクト', '未命名项目'],
+    '닫기 (ESC)': ['Close (ESC)', '閉じる (ESC)', '关闭 (ESC)'],
+    '마지막 AI 수정 되돌리기': ['Undo the last AI edit', '直前のAI修正を元に戻す', '撤销上一次 AI 修改'],
+    '되돌리기': ['Undo', '元に戻す', '撤销'],
+    '텍스트·이미지 편집': ['Edit text & images', 'テキスト・画像を編集', '编辑文本与图片'],
+    '예: 1-3, 5': ['e.g. 1-3, 5', '例: 1-3, 5', '例：1-3, 5'],
+    '위 선택지에서 골라주세요': ['Pick one of the options above', '上の選択肢から選んでください', '请从上方选项中选择'],
+    '다크 모드': ['Dark mode', 'ダークモード', '深色模式'],
+    '라이트 모드': ['Light mode', 'ライトモード', '浅色模式'],
+    '저장 공간이 부족해요. 대시보드에서 오래된 프로젝트를 정리한 뒤 다시 시도해주세요.': [
+      'Out of storage. Clean up old projects on the dashboard and try again.',
+      '保存容量が不足しています。ダッシュボードで古いプロジェクトを整理してから再試行してください。',
+      '存储空间不足。请在仪表板中清理旧项目后重试。'],
+    '프로젝트를 만들지 못했어요. 잠시 후 다시 시도해주세요.': ["Couldn't create the project. Please try again in a moment.", 'プロジェクトを作成できませんでした。しばらくしてからもう一度お試しください。', '无法创建项目。请稍后再试。']
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }
@@ -289,6 +473,12 @@
     var e = MAP[ko]; if (!e) return ko;
     return e[IDX[l]] != null ? e[IDX[l]] : ko;
   }
+  // 문장 조립 금지용 — 조각을 이어 붙이면 다른 언어에서 어순·문법이 깨진다. LF('… {kind} …', {kind:'…'})
+  function LF(ko, vars) {
+    var out = L(ko);
+    Object.keys(vars || {}).forEach(function (k) { out = out.split('{' + k + '}').join(vars[k]); });
+    return out;
+  }
   function apply(root) {
     root = root || document;
     root.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = L(el.getAttribute('data-i18n')); });
@@ -296,6 +486,6 @@
     root.querySelectorAll('[data-i18n-title]').forEach(function (el) { el.setAttribute('title', L(el.getAttribute('data-i18n-title'))); });
   }
   try { document.documentElement.setAttribute('lang', getLang()); } catch (e) {}
-  window.I18N = { getLang: getLang, setLang: setLang, L: L, apply: apply, LANGS: LANGS };
-  window.L = L;
+  window.I18N = { getLang: getLang, setLang: setLang, L: L, LF: LF, apply: apply, LANGS: LANGS };
+  window.L = L; window.LF = LF;
 })();

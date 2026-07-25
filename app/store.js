@@ -68,13 +68,15 @@ export function newPage(pageType='main', shared={}, parentId=null){
   if(shared.productName) data.productName = shared.productName;
   if(shared.tagline) data.tagline = shared.tagline;
   if(shared.primaryCta) data.primaryCta = shared.primaryCta;
-  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', parentId, data };
+  // 기본 페이지명은 UI 언어로 — 사용자가 바꿀 수 있는 콘텐츠라 생성 시점에 한 번만 번역한다
+  const _t = (ko) => (typeof window!=='undefined' && window.L) ? window.L(ko) : ko;
+  return { id: uid('pg'), name: _t(PT_LABEL[pageType] || '페이지'), pageType, volume:'heavy', parentId, data };
 }
 
 export function createProject({ name, kind='single', shared={}, stylePack='aether', org='' } = {}){
   const p = {
     id: uid('pr'),
-    name: name || shared.productName || '무제 프로젝트',
+    name: name || shared.productName || ((typeof window!=='undefined' && window.L) ? window.L('무제 프로젝트') : '무제 프로젝트'),
     kind,
     org,
     shared,

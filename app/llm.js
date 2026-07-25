@@ -22,6 +22,8 @@
   function setModel(v) { try { v ? localStorage.setItem(MODEL_LS, v) : localStorage.removeItem(MODEL_LS); } catch (e) {} }
   function hasKey() { return !!getKey(); }
   function maskKey(k) { k = k || getKey(); if (!k) return ''; return k.length <= 12 ? '••••' : k.slice(0, 7) + '…' + k.slice(-4); }
+  // UI 언어 — 되묻기 질문·수정 결과 메시지를 이 언어로 받는다(초안 콘텐츠 언어는 brief.lang)
+  function uiLang() { try { return (window.I18N ? I18N.getLang() : localStorage.getItem('midas-lang')) || 'ko'; } catch (e) { return 'ko'; } }
   function proxyUrl() { var o = ''; try { o = localStorage.getItem(PROXY_LS) || ''; } catch (e) {} return (o || PROXY_URL || '').replace(/\/$/, ''); }
   function usingProxy() { return !!proxyUrl(); }
   // AI 사용 가능? 프록시(팀 공용) 또는 개인 키
@@ -137,7 +139,7 @@
     if (usingProxy()) {
       var r = await fetch(proxyUrl() + '/edit', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ slides: slides, instruction: instruction }),
+        body: JSON.stringify({ slides: slides, instruction: instruction, lang: uiLang() }),
       });
       var j = null; try { j = await r.json(); } catch (e) {}
       if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
@@ -166,7 +168,7 @@
     if (usingProxy()) {
       var r = await fetch(proxyUrl() + '/intake', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ kind: brief.kind || '', plan: brief.plan || '' }),
+        body: JSON.stringify({ kind: brief.kind || '', plan: brief.plan || '', lang: uiLang() }),
       });
       var j = null; try { j = await r.json(); } catch (e) {}
       if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));

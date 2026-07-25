@@ -429,13 +429,15 @@ function newPage(pageType='main', shared={}, parentId=null){
   if(shared.productName) data.productName = shared.productName;
   if(shared.tagline) data.tagline = shared.tagline;
   if(shared.primaryCta) data.primaryCta = shared.primaryCta;
-  return { id: uid('pg'), name: PT_LABEL[pageType] || '페이지', pageType, volume:'heavy', parentId, data };
+  // 기본 페이지명은 UI 언어로 — 사용자가 바꿀 수 있는 콘텐츠라 생성 시점에 한 번만 번역한다
+  const _t = (ko) => (typeof window!=='undefined' && window.L) ? window.L(ko) : ko;
+  return { id: uid('pg'), name: _t(PT_LABEL[pageType] || '페이지'), pageType, volume:'heavy', parentId, data };
 }
 
 function createProject({ name, kind='single', shared={}, stylePack='aether', org='' } = {}){
   const p = {
     id: uid('pr'),
-    name: name || shared.productName || '무제 프로젝트',
+    name: name || shared.productName || ((typeof window!=='undefined' && window.L) ? window.L('무제 프로젝트') : '무제 프로젝트'),
     kind,
     org,
     shared,
@@ -544,7 +546,7 @@ function currentTheme(){ return document.documentElement.getAttribute('data-them
 function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem(THEME_KEY, t); refresh(); }
 function toggleTheme(){ setTheme(currentTheme() === 'dark' ? 'light' : 'dark'); }
 
-function refresh(){ document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.innerHTML = currentTheme() === 'dark' ? SUN : MOON; b.title = currentTheme()==='dark'?'라이트 모드':'다크 모드'; }); }
+function refresh(){ document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.innerHTML = currentTheme() === 'dark' ? SUN : MOON; b.title = (window.L?L:(t=>t))(currentTheme()==='dark'?'라이트 모드':'다크 모드'); }); }
 
 function mountThemeToggle(el){ el.classList.add('ds-theme'); el.setAttribute('data-theme-toggle',''); el.onclick = toggleTheme; refresh(); }
 

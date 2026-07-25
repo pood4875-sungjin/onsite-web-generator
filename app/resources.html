@@ -111,7 +111,7 @@
       if(tpl.tag){ const c=CAT_OF(tpl.tag); const cat=document.createElement('span'); cat.className='cat '+(c==='website'?'multi':'single'); cat.textContent=LL(CAT_LABEL[c]||tpl.tag); thumb.append(cat); }
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(tpl.stylePack, tpl.pages[0]); thumb.append(f); fit(thumb,f);
       card.append(thumb);
-      card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${tpl.desc||''}</div>`);
+      card.insertAdjacentHTML('beforeend', `<div class="nm">${tpl.name}</div><div class="ds">${LL(tpl.desc||'')}</div>`);
       card.onclick=()=>openModal(tpl);
       grid.append(card);
     });

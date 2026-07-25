@@ -68,6 +68,11 @@ const WEB_SYSTEM =
 
 /* 인테이크 되묻기 — 브리프를 읽고 "생성 품질에 정말 필요한데 빠진 정보"만 0~2개 질문.
    이름/제품명도 브리프에서 추출(따로 폼으로 안 물음). 질문 없으면 빈 배열. */
+/* UI 언어 → 사용자에게 보여줄 AI 문장(되묻기 질문·수정 결과 메시지)의 언어.
+   초안 콘텐츠 언어(compose-web의 lang)와는 별개다. */
+const UI_LANG = { ko: '한국어', en: '영어(English)', ja: '일본어(日本語)', zh: '중국어 간체(简体中文)' };
+const uiLangName = (l) => UI_LANG[l] || UI_LANG.ko;
+
 const INTAKE_SYSTEM =
   '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고,\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 금지.\n' +
@@ -77,7 +82,7 @@ const INTAKE_SYSTEM =
   '- questions는 결과물 품질에 정말 필요한데 브리프에 없는 것만 최대 2개. 브리프가 충분하면 빈 배열 [].\n' +
   '- 좋은 질문 예: 대상 고객이 누구인지(kind=web), 청중·발표 목적(kind=ppt), 강조할 수치가 있는지.\n' +
   '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름).\n' +
-  '- q는 한국어 존댓말 한 문장, 짧게. key는 영문 스네이크(예: target_audience).';
+  '- q는 {LANG} 정중한 한 문장, 짧게. key는 영문 스네이크(예: target_audience).';
 
 /* 내용 수정(채팅) — 전체 slides 교체 계약. 내용·구조(추가/분할/삭제/순서) 전부 허용, 디자인만 거절 */
 const EDIT_SYSTEM =
@@ -92,7 +97,7 @@ const EDIT_SYSTEM =
   '- 덱은 1~24장.\n' +
   '- 디자인(색·폰트·크기·배치·테마) 요청만 예외: slides를 null로 하고 message에 "디자인은 스타일 팩에서 일괄 관리돼요. 내용·구성 수정을 말씀해주세요." 취지로 안내.\n' +
   '- 발표와 무관한 요청이면 slides null + 정중히 수정 요청을 유도.\n' +
-  '- message는 한국어 한두 문장, 무엇을 했는지 구체적으로.';
+  '- message는 {LANG} 한두 문장, 무엇을 했는지 구체적으로.';
 
 export default {
   async fetch(req, env) {
@@ -130,9 +135,9 @@ export default {
       system = SYSTEM;
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
-      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000) };
+      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
       if (!safe.plan) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = INTAKE_SYSTEM;
+      system = INTAKE_SYSTEM.replace('{LANG}', uiLangName(safe.lang));
       userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan;
     } else if (route === '/compose-web') {
       const safe = {
@@ -150,7 +155,7 @@ export default {
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
       if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
-      system = EDIT_SYSTEM;
+      system = EDIT_SYSTEM.replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
     }
 

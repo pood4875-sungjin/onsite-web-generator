@@ -7,7 +7,7 @@ export function currentTheme(){ return document.documentElement.getAttribute('da
 export function setTheme(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem(THEME_KEY, t); refresh(); }
 export function toggleTheme(){ setTheme(currentTheme() === 'dark' ? 'light' : 'dark'); }
 
-function refresh(){ document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.innerHTML = currentTheme() === 'dark' ? SUN : MOON; b.title = currentTheme()==='dark'?'라이트 모드':'다크 모드'; }); }
+function refresh(){ document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.innerHTML = currentTheme() === 'dark' ? SUN : MOON; b.title = (window.L?L:(t=>t))(currentTheme()==='dark'?'라이트 모드':'다크 모드'); }); }
 
 export function mountThemeToggle(el){ el.classList.add('ds-theme'); el.setAttribute('data-theme-toggle',''); el.onclick = toggleTheme; refresh(); }
 
