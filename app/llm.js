@@ -158,7 +158,7 @@
       });
       var j = null; try { j = await r.json(); } catch (e) {}
       if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
-      return _parseEdit(j.text);
+      return _parseEdit(j.text, pack);
     }
     var sys =
       '너는 프레젠테이션 편집자다. 현재 덱과 사용자 지시를 받아 덱을 수정한다.\n' +
@@ -168,7 +168,7 @@
       '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +
       '디자인(색·폰트·배치) 요청만 slides null + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. 무관한 요청은 정중히 유도.';
     var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 6000 });
-    return _parseEdit(txt);
+    return _parseEdit(txt, pack);
   }
   /* 인테이크 되묻기 — 브리프에서 이름/제품명 추출 + 부족 정보 질문 0~2개.
      실패해도 흐름을 막지 않도록 호출측에서 catch → 질문 없이 진행. */
@@ -265,12 +265,13 @@
     return out;
   }
 
-  function _parseEdit(txt) {
+  function _parseEdit(txt, pack) {
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
     if (i < 0 || j < 0) throw new Error('BAD_JSON');
     var obj = JSON.parse(s.slice(i, j + 1));
-    var slides = Array.isArray(obj.slides) ? obj.slides.filter(function (sl) { return sl && ALLOWED[sl.type]; }).slice(0, 24) : null;
+    var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
+    var slides = Array.isArray(obj.slides) ? obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24) : null;
     if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
     return { slides: slides, message: String(obj.message || '') };
   }
