@@ -388,13 +388,14 @@
   // 프로젝트 이름 자동 생성 — AI가 뽑은 이름 → 제품명 → 브리프 첫 구절 → 종류+날짜
   function autoName(){
     const kt=_L((KINDS.find(k=>k.id===S.kind)||{}).kt||'프로젝트');
+    const withKind=(s)=>s.endsWith(kt)?s:s+' '+kt;   // "…웹사이트 웹사이트" 중복 방지
     if(S.name) return S.name;
-    if(S.product) return S.product+' '+kt;
+    if(S.product) return withKind(S.product);
     const t=(S.plan||'').replace(/\s+/g,' ').trim();
     if(t){
       let head=t.split(/[.!?·:,\n]/)[0].trim();
       if(head.length>24) head=head.slice(0,24).trim();
-      if(head) return head+' '+kt;
+      if(head) return withKind(head);
     }
     const d=new Date();
     return kt+' '+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
@@ -519,6 +520,27 @@
         if(assumed.length) msg+='\n\n'+_L('참고로')+' '+assumed.join(' · ')+_L('은(는) 내용에 없어서 예시로 채워뒀어요. 편집 버튼을 눌러 실제 내용으로 다듬어보세요!');
         pg0.data=seed; pg0.volume='heavy';
         pg0.chat={ log:[{r:'bot',t:msg}], idx:9, generated:true };
+
+        // 브리프에 IA(메뉴 구성)가 있으면 하위 페이지도 함께 생성 — 좌측 페이지 패널·GNB에 그대로 반영됨
+        const ia = (S.kind==='multi' && Array.isArray(draft.pages)) ? draft.pages : [];
+        if(ia.length){
+          ia.forEach(ip=>{
+            const sub=newPage(ip.type, full.shared||{}, null);
+            sub.name=ip.name;
+            sub.data=Object.assign(sub.data, {
+              productName:seed.productName, primaryCta:seed.primaryCta,
+              tagline:ip.tagline||'', subcopy:ip.subcopy||'',
+              // 비워두면 팩 기본 예시문("아토믹 생성" 등)이 그대로 보이므로 페이지별 카드 + 공통 지표로 채움
+              features:(ip.features&&ip.features.length)?ip.features:seed.features,
+              stats:seed.stats, bannerText:seed.bannerText, bannerCta:seed.bannerCta,
+              footerLinks:seed.footerLinks, footerCopyright:seed.footerCopyright });
+            sub.volume='heavy';
+            // 각 하위 페이지는 히어로만 채워진 골격 → 스튜디오 채팅으로 이어서 채우게 안내
+            sub.chat={ log:[{r:'bot',t:_L('이 페이지는 메뉴 구성에 맞춰 만들어둔 골격이에요. 채우고 싶은 내용을 말해주세요.')}], idx:9, generated:true };
+            full.pages.push(sub);
+          });
+          pg0.chat.log[0].t += '\n\n'+_L('메뉴 구성도 읽어서')+' '+ia.map(x=>x.name).join(' · ')+' '+_L('페이지를 함께 만들어뒀어요. 왼쪽 페이지 목록에서 골라 이어서 채우면 돼요.');
+        }
         full.name=name; full.lang=S.lang; upsertProject(full);
         await storeFlush(); leaving=true;
         location.href=`studio/studio.html?p=${full.id}&page=${pg0.id}`; return;
