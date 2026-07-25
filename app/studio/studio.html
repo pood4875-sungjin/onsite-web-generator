@@ -931,11 +931,17 @@
     if(plan){
       const tp=pendingBubble('내용 읽는 중…');
       let it=null;
-      try{ it=await LLM.intake({kind:'web-page', plan:tL(t.label)+' 페이지: '+plan}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
+      /* 사이트 하위 페이지라 타겟 고객·브랜드 톤은 이미 메인홈에서 정해진 것 — 다시 묻지 않는다.
+         프롬프트로 막고, 그래도 나오면 아래 SKIP_Q로 걸러낸다. */
+      const ipl='기존 사이트의 하위 페이지다. 타겟 고객·대상 독자·브랜드 톤은 사이트 전체에서 이미 정해져 있으니 묻지 말 것.\n'
+              + tL(t.label)+' 페이지: '+plan;
+      try{ it=await LLM.intake({kind:'web-page', plan:ipl}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
       tp.remove(); if(dead()) return;
-      if(it && it.questions && it.questions.length){
+      const SKIP_Q=/(타겟|대상\s*(고객|독자|층)|고객층|주요\s*고객|브랜드\s*톤|target\s*(audience|customer)|tone)/i;
+      const qs=(it&&it.questions||[]).filter(q=>!SKIP_Q.test(q.q));
+      if(qs.length){
         botBubble(tL('좋아요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.'));
-        for(const q of it.questions){
+        for(const q of qs){
           botBubble(q.q);
           const a=await askText('답변을 입력하세요', '건너뛰기'); if(dead()) return;
           if(a){ meBubble(a); answers.push(q.q+' → '+a); }

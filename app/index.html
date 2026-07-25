@@ -149,20 +149,16 @@
   .aigen.on{opacity:1}
   .aigen[hidden]{display:none}
   .aigen-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 56px;border-radius:var(--r-md);background:var(--surface-solid);border:1px solid var(--hairline);box-shadow:var(--shadow-3);max-width:360px;text-align:center}
-  /* 회전 링 제거 — 코어 원 하나가 숨쉬듯 커졌다 작아진다.
-     halo는 같은 주기로 더 크게 번져 "생각하는 중"의 리듬만 남긴다(회전은 진행률을 암시해 오해를 줌). */
+  /* 스튜디오 빈 상태 오브(.ai-orb)와 색·모션 동일 — 같은 "AI 작업 중" 신호라 화면마다 다르면 안 된다 */
   .aigen-orb{position:relative;width:64px;height:64px;margin-bottom:4px;display:grid;place-items:center}
-  .aigen-orb i{position:absolute;border-radius:999px}
-  .aigen-orb .glow{inset:-4px;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 70%,transparent) 30%,transparent 68%);filter:blur(9px);animation:agGlow 2.2s ease-in-out infinite}
-  .aigen-orb .core{width:38px;height:38px;background:radial-gradient(circle at 34% 30%,var(--accent),var(--primary) 76%);box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 32%,transparent);animation:agBreath 2.2s ease-in-out infinite}
-  @keyframes agBreath{0%,100%{transform:scale(.84)}50%{transform:scale(1.1)}}
-  @keyframes agGlow{0%,100%{transform:scale(.9);opacity:.45}50%{transform:scale(1.28);opacity:.9}}
+  .aigen-orb::after{content:'';width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#3fe0c6,#5b9dff 46%,#8a6bff 82%);box-shadow:0 0 34px rgba(90,157,255,.6);animation:agPulse 1.9s ease-in-out infinite}
+  @keyframes agPulse{0%,100%{transform:scale(.92);opacity:.85}50%{transform:scale(1.05);opacity:1}}
   .aigen-title{font-size:16px;font-weight:700;color:var(--ink)}
   .aigen-stage{font-size:13px;color:var(--body-mid);min-height:18px;transition:opacity .2s ease}
   .aigen-bar{width:100%;height:6px;border-radius:999px;background:var(--hairline);overflow:hidden}
   .aigen-bar i{display:block;height:100%;width:8%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .9s cubic-bezier(.22,1,.36,1)}
   .aigen-hint{font-size:11.5px;color:var(--mute)}
-  @media (prefers-reduced-motion:reduce){.aigen-orb i{animation:none;transform:none}}
+  @media (prefers-reduced-motion:reduce){.aigen-orb::after{animation:none;transform:none}}
 </style>
 </head>
 <body class="ds-body">
@@ -201,7 +197,7 @@
 <!-- AI 생성 로딩 오버레이 -->
 <div class="aigen" id="aiGen" hidden>
   <div class="aigen-box">
-    <div class="aigen-orb"><i class="glow"></i><i class="core"></i></div>
+    <div class="aigen-orb"></div>
     <b class="aigen-title" data-i18n="AI가 초안을 만들고 있어요">AI가 초안을 만들고 있어요</b>
     <span class="aigen-stage" id="aiGenStage" data-i18n="브리프 분석 중…">브리프 분석 중…</span>
     <div class="aigen-bar"><i id="aiGenBar"></i></div>
