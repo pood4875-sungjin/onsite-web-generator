@@ -149,18 +149,20 @@
   .aigen.on{opacity:1}
   .aigen[hidden]{display:none}
   .aigen-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 56px;border-radius:var(--r-md);background:var(--surface-solid);border:1px solid var(--hairline);box-shadow:var(--shadow-3);max-width:360px;text-align:center}
-  .aigen-orb{position:relative;width:64px;height:64px;margin-bottom:4px}
-  .aigen-orb i{position:absolute;inset:0;border-radius:999px;background:conic-gradient(from 0deg,var(--primary),var(--accent),var(--primary));opacity:.85;animation:agSpin 1.6s linear infinite;filter:blur(1px)}
-  .aigen-orb i:nth-child(2){inset:8px;background:var(--surface-solid);animation:none;filter:none}
-  .aigen-orb i:nth-child(3){inset:16px;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--accent),var(--primary));animation:agPulse 1.2s ease-in-out infinite alternate;filter:none}
-  @keyframes agSpin{to{transform:rotate(360deg)}}
-  @keyframes agPulse{from{transform:scale(.86);opacity:.75}to{transform:scale(1);opacity:1}}
+  /* 회전 링 제거 — 코어 원 하나가 숨쉬듯 커졌다 작아진다.
+     halo는 같은 주기로 더 크게 번져 "생각하는 중"의 리듬만 남긴다(회전은 진행률을 암시해 오해를 줌). */
+  .aigen-orb{position:relative;width:64px;height:64px;margin-bottom:4px;display:grid;place-items:center}
+  .aigen-orb i{position:absolute;border-radius:999px}
+  .aigen-orb .glow{inset:-4px;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 70%,transparent) 30%,transparent 68%);filter:blur(9px);animation:agGlow 2.2s ease-in-out infinite}
+  .aigen-orb .core{width:38px;height:38px;background:radial-gradient(circle at 34% 30%,var(--accent),var(--primary) 76%);box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 32%,transparent);animation:agBreath 2.2s ease-in-out infinite}
+  @keyframes agBreath{0%,100%{transform:scale(.84)}50%{transform:scale(1.1)}}
+  @keyframes agGlow{0%,100%{transform:scale(.9);opacity:.45}50%{transform:scale(1.28);opacity:.9}}
   .aigen-title{font-size:16px;font-weight:700;color:var(--ink)}
   .aigen-stage{font-size:13px;color:var(--body-mid);min-height:18px;transition:opacity .2s ease}
   .aigen-bar{width:100%;height:6px;border-radius:999px;background:var(--hairline);overflow:hidden}
   .aigen-bar i{display:block;height:100%;width:8%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .9s cubic-bezier(.22,1,.36,1)}
   .aigen-hint{font-size:11.5px;color:var(--mute)}
-  @media (prefers-reduced-motion:reduce){.aigen-orb i{animation:none}}
+  @media (prefers-reduced-motion:reduce){.aigen-orb i{animation:none;transform:none}}
 </style>
 </head>
 <body class="ds-body">
@@ -199,7 +201,7 @@
 <!-- AI 생성 로딩 오버레이 -->
 <div class="aigen" id="aiGen" hidden>
   <div class="aigen-box">
-    <div class="aigen-orb"><i></i><i></i><i></i></div>
+    <div class="aigen-orb"><i class="glow"></i><i class="core"></i></div>
     <b class="aigen-title" data-i18n="AI가 초안을 만들고 있어요">AI가 초안을 만들고 있어요</b>
     <span class="aigen-stage" id="aiGenStage" data-i18n="브리프 분석 중…">브리프 분석 중…</span>
     <div class="aigen-bar"><i id="aiGenBar"></i></div>
