@@ -138,6 +138,11 @@
   .inp{width:100%;border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:9px 12px;font-size:13px;color:var(--tx);font-family:inherit;outline:none}
   .inp::placeholder{color:var(--tx3)} .inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
   textarea.inp{min-height:52px;resize:vertical}
+  textarea.inp.ta{min-height:92px;line-height:1.55}
+  /* 자유 입력 위젯: 보내기 + 건너뛰기 한 줄. 건너뛰기는 약한 위계(테두리만) */
+  .askrow{display:flex;align-items:center;gap:8px}
+  .skipbtn{border:1px solid var(--line);background:transparent;color:var(--tx2);border-radius:var(--r-sm);padding:10px 14px;font-size:13px}
+  .skipbtn:hover{color:var(--tx);border-color:var(--line2)}
   .item{display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.04);border-radius:12px;padding:8px}
   .item .hd{display:flex;align-items:center;gap:6px}
   .num{display:grid;place-items:center;width:20px;height:20px;flex:0 0 20px;border-radius:999px;background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent);font-size:10px}
@@ -809,12 +814,14 @@
     scroll();
   }
 
-  function mountWidget(step){
+  function mountNode(node){
     const old = document.getElementById('activeWidget'); if(old) old.remove();
     const w = el('div','widget'); w.id='activeWidget';
-    w.append(buildWidget(step));
+    w.append(node);
     msgs.append(w); scroll();
   }
+  function mountWidget(step){ mountNode(buildWidget(step)); }
+  function clearWidget(){ const old=document.getElementById('activeWidget'); if(old) old.remove(); }
 
   function chips(opts, pick){
     const c = el('div','chips');
@@ -850,6 +857,130 @@
     wrap.append(nextBtn(tL('다음 →'), ()=>{ applyMainSel(seeded); if(project&&pageRef){ upsertProject(project); renderRail(); } advance(`${tL('메인홈')} · ${seeded.size}${tL('개 섹션')}`); }));
     return wrap;
   }
+  /* ==== 새 페이지 = 대화형 AI 인테이크 ====
+     기존엔 유형→정보량→제품명→기능3개→지표→배너→푸터를 전부 손으로 입력해야 했다.
+     이제는 "유형 + 담을 내용" 두 번만 묻고, 부족한 건 AI가 최대 2개 되묻고, 나머지는 초안으로 채운다.
+     생성 중에는 우측 프리뷰에 진행 오버레이(#genning)를 띄운다. AI가 없거나 실패하면 옛 스텝 플로우로 폴백. */
+  const PAGE_KINDS = [
+    {id:'features', label:'제품 기능소개', hint:'기능·가치 소개'},
+    {id:'pricing',  label:'요금 비교',    hint:'플랜·가격표'},
+    {id:'landing',  label:'랜딩',        hint:'캠페인·전환 유도'},
+  ];
+  function aiPageFlow(){ const m=curMode(); return !!(project && project.kind==='multi' && !m.editOnly && !m.slides && window.LLM && LLM.aiAvailable()); }
+
+  function askChips(opts){ return new Promise(res=>{ mountNode(chips(opts, o=>{ clearWidget(); res(o); })); }); }
+  // 자유 입력 위젯 — 여러 줄. Enter=전송(조합 중 Enter는 글자 확정이라 무시), Shift+Enter=줄바꿈.
+  function askText(ph, skipLabel){
+    return new Promise(res=>{
+      const wrap=el('div','card');
+      const ta=el('textarea','inp ta'); ta.placeholder=tL(ph); ta.rows=4; ta.maxLength=1200;
+      const row=el('div','askrow');
+      const go=el('button','next',tL('보내기'));
+      const skip=skipLabel?el('button','skipbtn',tL(skipLabel)):null;
+      const done=(v)=>{ clearWidget(); res(v); };
+      go.onclick=()=>{ const v=ta.value.trim(); if(!v) return; done(v); };
+      if(skip) skip.onclick=()=>done('');
+      ta.addEventListener('keydown',(e)=>{ if(e.isComposing || e.keyCode===229) return;
+        if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); go.click(); } });
+      row.append(go); if(skip) row.append(skip);
+      wrap.append(ta, row); mountNode(wrap); setTimeout(()=>ta.focus(),50);
+    });
+  }
+  // 채팅에 잠깐 띄우는 대기 버블(로그 저장 안 함)
+  function pendingBubble(txt){ const r=el('div','row'); r.append(el('div','bub bot working',`<div class="wk-head"><span class="wk-spin"></span><span class="wk-stage">${tL(txt)}</span></div>`)); msgs.append(r); scroll(); return r; }
+
+  // 우측 프리뷰 진행 오버레이 — 실제 AI 호출 동안 계속 떠 있고, 끝나면 stop(ok) 호출
+  function genStart(){
+    const g=document.getElementById('genning'), gt=document.getElementById('gtext'), bar=document.querySelector('#genning .gbar i');
+    const steps=['페이지 성격 파악 중…','핵심 메시지 뽑는 중…','카피 작성 중…','섹션 구성 중…','초안 조립 중…'].map(tL);
+    empty.classList.add('hide'); g.classList.add('on'); bar.style.width='8%'; gt.textContent=steps[0];
+    let i=0; const iv=setInterval(()=>{ i++; if(i<steps.length){ gt.textContent=steps[i]; bar.style.width=(8+i*20)+'%'; } else clearInterval(iv); }, 2600);
+    return (ok)=>{ clearInterval(iv); bar.style.width=ok?'100%':'0';
+      setTimeout(()=>{ g.classList.remove('on'); if(!ok) empty.classList.remove('hide'); }, ok?320:0); };
+  }
+
+  // 메인홈에서 물려받을 공통값 — 페이지끼리 제품명·CTA·푸터가 어긋나지 않게
+  function siteCtx(){
+    const home=(project&&project.pages||[]).find(p=>p.pageType==='main') || (project&&project.pages||[])[0];
+    const d=(home&&home.data)||{};
+    return { productName:d.productName||(project&&project.shared&&project.shared.productName)||'', primaryCta:d.primaryCta||'',
+             footerLinks:d.footerLinks||[], footerCopyright:d.footerCopyright||'' };
+  }
+
+  const A_LABEL={ productName:'제품명', tagline:'태그라인', subcopy:'소개 문구', primaryCta:'CTA 버튼', features:'기능 카드',
+                  stats:'지표 수치', bannerText:'배너 문구', bannerCta:'배너 버튼', footerLinks:'푸터 링크', footerCopyright:'저작권 문구' };
+
+  // 흐름 토큰 — '다시'로 재시작하면 이전 흐름의 남은 await가 위젯을 덮어쓰지 않게 버린다
+  let flowSeq=0;
+  async function startPageIntake(){
+    const my=++flowSeq;
+    const dead=()=>my!==flowSeq;
+    idx=STEPS.indexOf('pageType');
+    botBubble(PROMPT.pageType);
+    const t=await askChips(PAGE_KINDS); if(dead()) return;
+    pageType=t.id;
+    if(project&&pageRef){ pageRef.pageType=t.id; pageRef.name=tL(t.label); upsertProject(project); renderRail(); }
+    meBubble(tL(t.label)); render();
+
+    botBubble(tL('이 페이지에 담을 내용을 자유롭게 적어주세요. 목적·대상·꼭 넣을 항목이면 충분해요. 나머지는 초안으로 채워드릴게요.'));
+    const plan=await askText('예: 스타터·프로·엔터프라이즈 3개 요금제 비교. 중소기업 대상이고 연간 결제 20% 할인 강조.', '건너뛰기 — 알아서 채워줘'); if(dead()) return;
+    if(plan) meBubble(plan);
+
+    // 되묻기 — 결과 품질에 정말 필요한 것만 최대 2개. 실패해도 그냥 진행.
+    const answers=[];
+    if(plan){
+      const tp=pendingBubble('내용 읽는 중…');
+      let it=null;
+      try{ it=await LLM.intake({kind:'web-page', plan:tL(t.label)+' 페이지: '+plan}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
+      tp.remove(); if(dead()) return;
+      if(it && it.questions && it.questions.length){
+        botBubble(tL('좋아요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.'));
+        for(const q of it.questions){
+          botBubble(q.q);
+          const a=await askText('답변을 입력하세요', '건너뛰기'); if(dead()) return;
+          if(a){ meBubble(a); answers.push(q.q+' → '+a); }
+        }
+      }
+    }
+
+    // 초안 생성 — 우측 프리뷰에 진행 표시
+    const ctx=siteCtx();
+    const brief=[
+      '사이트: '+((project&&project.name)||''),
+      ctx.productName?('제품/서비스: '+ctx.productName):'',
+      '이 페이지 유형: '+t.label,
+      plan?('페이지 내용:\n'+plan):'페이지 내용: (지정 없음 — 유형에 맞는 일반적인 구성으로)',
+      answers.length?('추가 정보:\n'+answers.join('\n')):'',
+      '주의: 사이트 전체가 아니라 이 페이지 하나만 작성한다.',
+    ].filter(Boolean).join('\n');
+    const stop=genStart();
+    const wait=pendingBubble('초안 만드는 중…');
+    let draft=null;
+    try{ draft=await LLM.composeSite({ product:ctx.productName, name:(project&&project.name)||'', plan:brief, kind:'single', lang:(project&&project.lang)||'ko' }); }
+    catch(e){ console.warn('[ai] compose-web 실패 → 대화 폴백', e); }
+    wait.remove(); stop(!!draft); if(dead()) return;
+
+    if(!draft){
+      botBubble(tL('AI 초안 생성에 실패했어요. 대화로 하나씩 채워볼게요.'));
+      advance(); return;                                   // pageType 다음(정보량)부터 옛 플로우
+    }
+    data=Object.assign(structuredClone(EMPTY), {
+      productName: draft.productName||ctx.productName||'',
+      tagline: draft.tagline||'', subcopy: draft.subcopy||'',
+      primaryCta: draft.primaryCta||ctx.primaryCta||'',
+      features: draft.features||[], stats: draft.stats||[],
+      bannerText: draft.bannerText||'', bannerCta: draft.bannerCta||'',
+      footerLinks: (draft.footerLinks&&draft.footerLinks.length)?draft.footerLinks:ctx.footerLinks,
+      footerCopyright: draft.footerCopyright||ctx.footerCopyright||'',
+    });
+    volume='heavy'; generated=true; idx=STEPS.indexOf('done');
+    persist(); render(); renderRail();
+    const assumed=[...new Set((draft.assumed||[]).map(k=>tL(A_LABEL[k]||'')).filter(Boolean))];
+    let msg=tL('✨ 초안을 만들었어요. 오른쪽에서 확인해보세요.');
+    if(assumed.length) msg+='\n\n'+tL('참고로')+' '+assumed.join(' · ')+tL('은(는) 내용에 없어서 예시로 채워뒀어요. 편집 버튼을 눌러 실제 내용으로 다듬어보세요!');
+    botBubble(msg); mountWidget('done'); scroll();
+  }
+
   function buildWidget(step){
     if(step==='kind') return chips([{id:'single',label:'랜딩페이지',hint:'단일페이지 · 랜딩·공지'},{id:'multi',label:'웹사이트',hint:'다중페이지 · 여러 페이지'}], o=>advance(tL(o.label)));
     if(step==='pageType') return chips(['제품 기능소개','요금 비교','랜딩'].map(p=>({id:p,label:p})), o=>{ pageType=PAGETYPE[o.label]||'features'; if(project&&pageRef){ pageRef.pageType=pageType; pageRef.name=o.label; upsertProject(project); renderRail(); } render(); advance(tL(o.label)); });
@@ -889,7 +1020,7 @@
       if(curMode().slides) refreshPptPanel();
       return d;
     }
-    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
+    d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.')}</span>`));
     d.append(nextBtn(tL('↺ 새로 만들기'), reset));
     return d;
   }
@@ -1384,7 +1515,8 @@
   // 스타일(팩)은 진입 후 스튜디오에서 변경 불가 — '내 프로젝트' 관리에서만 변경(일관성 유지)
   function reset(){
     data=structuredClone(EMPTY); generated=false; volume='heavy'; chatLog=[];
-    if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('pageType'); msgs.innerHTML=''; botBubble(PROMPT.pageType); mountWidget('pageType'); }
+    if(project && pageRef && pageRef.pageType!=='main' && aiPageFlow()){ pageType=pageRef.pageType||'features'; msgs.innerHTML=''; startPageIntake(); }
+    else if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('pageType'); msgs.innerHTML=''; botBubble(PROMPT.pageType); mountWidget('pageType'); }
     else { pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); }
     render();
   }
@@ -1626,7 +1758,8 @@
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
       else if(project && project.kind==='multi' && (pageRef.pageType==='main' || (project.pages[0]&&project.pages[0].id===pageRef.id))){
         pageType='main'; idx=STEPS.indexOf('mainSections'); botBubble(PROMPT.mainSections); mountWidget('mainSections'); } // 다중=메인홈부터 섹션 선택
-      else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // 페이지 타입부터(템플릿·섹션 결정)
+      else if(aiPageFlow()){ startPageIntake(); }                                              // 새 하위 페이지 = 대화형 AI 인테이크
+      else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // 폴백: 페이지 타입부터 손으로
       render();
     }
   } else {

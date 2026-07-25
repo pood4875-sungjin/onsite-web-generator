@@ -203,7 +203,7 @@
     '태그라인': ['Tagline', 'タグライン', '标语'],
     '페이지': ['Page', 'ページ', '页面'],
     '푸터 링크 (쉼표로 구분) — 예: 이용약관, 개인정보처리방침, 문의': ['Footer links (comma-separated) — e.g. Terms, Privacy, Contact', 'フッターリンク (カンマ区切り) — 例: 利用規約, プライバシー, お問い合わせ', '页脚链接（逗号分隔）— 例：条款, 隐私, 联系'],
-    '우측 편집 버튼 안내': ['Use the Edit button (top-right) to change text, images, and section order.', '右側の編集ボタンでテキスト·画像·セクション順を変更できます。', '用右侧的“编辑”按钮更改文本、图片和板块顺序。'],
+    '우측 편집 버튼으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.': ['Use the Edit button (top-right) to change text, images, and section order.', '右側の編集ボタンでテキスト·画像·セクション順を変更できます。', '用右侧的“编辑”按钮更改文本、图片和板块顺序。'],
     '히어로': ['Hero', 'ヒーロー', '主视觉'],
     // 모달 기본
     '확인': ['OK', '確認', '确定'],
@@ -353,6 +353,36 @@
     'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.': ['Your deck draft is ready. Edit it directly in edit mode.', 'PPTの下書きができました。編集モードでそのまま修正できます。', '演示草稿已就绪。可在编辑模式中直接修改。'],
     '✨ 입력한 내용으로 초안을 만들었어요. 오른쪽에서 확인해보세요.': ['✨ Draft built from what you shared. Take a look on the right.', '✨ 入力内容から下書きを作成しました。右側で確認してください。', '✨ 已根据你的输入生成草稿。请在右侧查看。'],
     '참고로': ['Note —', 'なお', '另外，'],
+    /* 스튜디오 — 새 페이지 대화형 AI 인테이크 */
+    '기능·가치 소개': ['Features & value', '機能·価値の紹介', '功能与价值'],
+    '플랜·가격표': ['Plans & pricing', 'プラン·料金表', '套餐与价格'],
+    '캠페인·전환 유도': ['Campaign & conversion', 'キャンペーン·CV誘導', '活动与转化'],
+    '이 페이지에 담을 내용을 자유롭게 적어주세요. 목적·대상·꼭 넣을 항목이면 충분해요. 나머지는 초안으로 채워드릴게요.': [
+      'Tell us freely what this page should cover. Purpose, audience, and must-have items are enough — we\'ll draft the rest.',
+      'このページに載せたい内容を自由に書いてください。目的·対象·必須項目だけで十分です。残りは下書きで埋めます。',
+      '请自由描述这个页面要放的内容。目的、受众和必须包含的项目就够了，其余我们来起草。'],
+    '예: 스타터·프로·엔터프라이즈 3개 요금제 비교. 중소기업 대상이고 연간 결제 20% 할인 강조.': [
+      'e.g. Compare Starter/Pro/Enterprise plans. Aimed at SMBs, highlight the 20% annual discount.',
+      '例: スターター·プロ·エンタープライズの3プラン比較。中小企業向けで年間払い20%割引を強調。',
+      '例：比较入门版/专业版/企业版三种套餐。面向中小企业，强调年付 8 折。'],
+    '건너뛰기 — 알아서 채워줘': ['Skip — just fill it in', 'スキップ — おまかせで', '跳过 — 你来填'],
+    '내용 읽는 중…': ['Reading your input…', '内容を読み取り中…', '正在读取内容…'],
+    '초안 만드는 중…': ['Drafting…', '下書き作成中…', '正在生成草稿…'],
+    '좋아요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.': [
+      'Great! A couple of questions so the draft lands closer.',
+      'ありがとうございます！より正確な下書きのため、いくつか伺います。',
+      '好的！为了让草稿更贴合，再问几个问题。'],
+    '답변을 입력하세요': ['Type your answer', '回答を入力してください', '请输入回答'],
+    'AI 초안 생성에 실패했어요. 대화로 하나씩 채워볼게요.': [
+      "AI drafting failed — let's fill it in step by step through chat.",
+      'AI下書きの生成に失敗しました。チャットで一つずつ埋めていきます。',
+      'AI 草稿生成失败，改为通过对话逐项填写。'],
+    '✨ 초안을 만들었어요. 오른쪽에서 확인해보세요.': [
+      '✨ Draft is ready. Take a look on the right.',
+      '✨ 下書きができました。右側で確認してください。',
+      '✨ 草稿已生成，请在右侧查看。'],
+    '페이지 성격 파악 중…': ['Reading the page type…', 'ページの性格を把握中…', '正在判断页面类型…'],
+    '섹션 구성 중…': ['Arranging sections…', 'セクションを構成中…', '正在编排板块…'],
     '은(는) 내용에 없어서 예시로 채워뒀어요. 편집 버튼을 눌러 실제 내용으로 다듬어보세요!': [
       " weren't in your brief, so we filled them with examples. Hit Edit to replace them with the real thing!",
       'はブリーフに無かったため例として埋めました。編集ボタンから実際の内容に直してください！',
