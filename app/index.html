@@ -94,6 +94,12 @@
   .attbtn:disabled{opacity:.35;cursor:default}
   .atthint{font-size:11.5px;color:var(--mute);user-select:none;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cbrow .sendbtn{margin-left:auto}
+  /* 요약 단계: 입력창이 아래로 사라지고 그 자리에 생성하기 버튼 등장 */
+  .cbox.away{transform:translateY(150%);opacity:0;pointer-events:none}
+  .cbox{will-change:transform}
+  .gencta{display:block;max-width:712px;margin:0 auto;width:100%;padding:16px 20px;font-size:15px;font-weight:700;border-radius:20px;box-shadow:var(--shadow-2);animation:ctaUp .35s var(--ease)}
+  .gencta[hidden]{display:none}
+  @keyframes ctaUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
   .attrow{display:flex;flex-wrap:wrap;gap:6px;padding:2px 4px 0}
   .attchip{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--body);background:var(--canvas-2);border:1px solid var(--hairline);border-radius:var(--r-pill);padding:5px 7px 5px 11px;max-width:240px}
   .attchip .an{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -172,6 +178,7 @@
       </div>
     </div>
     <input type="file" id="cfile" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.pdf,.docx" hidden>
+    <button class="ds-btn primary gencta" id="genCta" hidden>✨ 생성하기</button>
   </div>
 </div>
 
@@ -397,11 +404,13 @@
         b.onclick=()=>{ S.lang=Lg[0]; lrow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; lrow.append(b); });
       rows.append(row('언어',lrow));
       card.append(rows);
-      const act=el('div','cwact');
-      const go=el('button','ds-btn primary',_L('✨ 생성하기'));
-      go.onclick=()=>{ S.name=nameIn.value.trim(); S.product=prodIn.value.trim(); go.disabled=true; off(w); me(_L('생성할게요!')); res(true); };
-      act.append(go); card.append(act);
       const w=widget(card);
+      // 컴포저 전환: 입력창이 아래로 사라지고 그 자리에 생성하기 버튼 등장
+      cbox.classList.add('away');
+      const g=document.getElementById('genCta');
+      setTimeout(()=>{ cbox.style.display='none'; g.hidden=false; },340);
+      g.onclick=()=>{ S.name=nameIn.value.trim(); S.product=prodIn.value.trim();
+        g.disabled=true; g.textContent=_L('생성 중…'); off(w); me(_L('생성할게요!')); res(true); };
     });
   }
 
@@ -511,7 +520,12 @@
   const kc=document.getElementById('kcards');
   KINDS.forEach(k=>{
     const b=el('button','kc '+k.cls, k.th+`<div class="lab"><div class="kt">${_L(k.kt)}</div><div class="kd">${_L(k.kd)}</div></div>`);
-    b.onclick=()=>{ S.kind=k.id; document.getElementById('kscreen').hidden=true; document.getElementById('cshell').hidden=false; document.getElementById('backBtn').hidden=false; flow(k); };
+    b.onclick=()=>{ S.kind=k.id;
+      document.getElementById('kscreen').hidden=true;
+      document.getElementById('cshell').hidden=false;
+      document.getElementById('backBtn').hidden=false;
+      pushChatStep();          // 챗 = 별도 히스토리 엔트리 → 브라우저 뒤로가기가 종류 선택으로
+      flow(k); };
     kc.append(b);
   });
 
@@ -566,23 +580,36 @@
 
   if(window.I18N) I18N.apply(document);
 
-  /* 뒤로가기 = 종류 선택으로 (진행 내용 초기화 확인 후 리로드) */
-  document.getElementById('backBtn').onclick=async ()=>{
-    const ok=await uiConfirm(_L('입력한 내용은 사라져요.'), { title:_L('종류 선택으로 돌아갈까요?'), okText:_L('돌아가기'), danger:true });
-    if(ok){ leaving=true; location.reload(); }
-  };
+  /* ---- 뒤로가기 ----
+     브라우저 뒤로가기가 흐름대로 동작해야 함:
+     · 종류 선택 화면 = 이 문서의 첫 히스토리 엔트리 → 뒤로가면 그냥 이전 페이지(대시보드)로.
+       (아직 입력한 게 없으니 막지 않는다. 예전엔 pushState로 가둬서 '뒤로가기가 안 되는' 문제)
+     · 챗 화면 = 종류 선택 시 pushState한 엔트리 → 뒤로가면 종류 선택으로 복귀(확인 후 리셋).
+     헤더 ← 버튼도 같은 경로(history.back)를 타 동작을 하나로 유지. */
+  const backBtn=document.getElementById('backBtn');
+  backBtn.onclick=()=>history.back();
+  window.pushChatStep=()=>history.pushState({s:'chat'},'',location.href);
+  history.replaceState({s:'kind'},'',location.href);
 
-  /* ---- 종료 가드 ---- */
+  async function confirmBackToKind(){
+    return uiConfirm(_L('입력한 내용은 사라져요.'), { title:_L('종류 선택으로 돌아갈까요?'), okText:_L('돌아가기'), danger:true });
+  }
+  window.addEventListener('popstate', async (e)=>{
+    if(leaving) return;
+    if(document.getElementById('cshell').hidden) return;   // 종류 선택 화면 → 브라우저에 맡김(이전 페이지로)
+    const ok=await confirmBackToKind();
+    if(ok){ leaving=true; location.reload(); }             // 흐름이 선형 async라 되감기 대신 초기화
+    else window.pushChatStep();                            // 취소 → 챗 엔트리 복원
+  });
+
+  /* 홈 버튼 — 생성 중간이면 이탈 확인 */
   function confirmLeave(){ return uiConfirm(_L('입력한 내용은 저장되지 않아요.'), { title:_L('프로젝트 생성을 종료할까요?'), okText:_L('나가기'), danger:true }); }
-  window.leaveGuard=(e)=>{ if(leaving) return true; e.preventDefault();
+  window.leaveGuard=(e)=>{
+    if(leaving) return true;
+    if(document.getElementById('cshell').hidden) return true;   // 종류 선택 = 잃을 게 없음
+    e.preventDefault();
     confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
     return false; };
-  history.pushState(null,'',location.href);
-  window.addEventListener('popstate', ()=>{
-    if(leaving) return;
-    history.pushState(null,'',location.href);
-    confirmLeave().then(ok=>{ if(ok){ leaving=true; location.href='dashboard.html'; } });
-  });
 </script>
 </body>
 </html>
