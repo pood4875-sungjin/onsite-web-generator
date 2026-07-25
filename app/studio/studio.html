@@ -831,6 +831,18 @@
   /* ---- PPT 편집 v2 — 블록(⠿이동·✕숨김) + 텍스트 굵기 툴바 + 슬라이드 호버 [↑↓✕] ----
      오프셋/숨김/굵기는 슬라이드 데이터(_pos/_hide/_fmt)에 저장 → 렌더·뷰어·PPTX 전부 반영 */
   function slideIndexOf(node){ const sl=node.closest('.ppt-stack > .slide'); return sl? [...sl.parentElement.children].indexOf(sl) : -1; }
+  // 이미지 선택 → 최대 1280px·JPEG 0.85 압축 dataURL (저장 용량·PPTX 용량 관리)
+  function pickPptImage(cb){
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
+      const rd=new FileReader(); rd.onload=()=>{ const im=new Image(); im.onload=()=>{
+        const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
+        const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc); cv.height=Math.round(im.height*sc);
+        cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+        cb(cv.toDataURL('image/jpeg',0.85));
+      }; im.src=rd.result; }; rd.readAsDataURL(f); };
+    inp.click();
+  }
   function relPathOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
   function decoratePpt(doc){
     if(!curMode().slides || !doc || !doc.body) return;
@@ -853,7 +865,10 @@
     arr.forEach((sl,i)=>{
       const old=sl.querySelector(':scope > .slctl'); if(old) old.remove();
       const bar=doc.createElement('div'); bar.className='slctl';
-      bar.innerHTML='<button class="su"'+(i===0?' disabled':'')+' title="'+tL('위로')+'">↑</button><button class="sd"'+(i===arr.length-1?' disabled':'')+' title="'+tL('아래로')+'">↓</button><button class="sx" title="'+tL('삭제')+'">✕</button>';
+      const hasImg=!!((data.slides[i]||{}).img&&data.slides[i].img.src);
+      bar.innerHTML='<button class="si" title="'+tL(hasImg?'이미지 교체':'이미지 삽입')+'">🖼</button><button class="su"'+(i===0?' disabled':'')+' title="'+tL('위로')+'">↑</button><button class="sd"'+(i===arr.length-1?' disabled':'')+' title="'+tL('아래로')+'">↓</button><button class="sx" title="'+tL('삭제')+'">✕</button>';
+      bar.querySelector('.si').onclick=(e)=>{ e.stopPropagation();
+        pickPptImage(src=>{ pushUndo(); const s=data.slides[i]; s.img={src}; persist(); render(); refreshPptPanel(); }); };
       bar.querySelector('.su').onclick=(e)=>{ e.stopPropagation(); pptMutate(a=>{ const t=a[i]; a[i]=a[i-1]; a[i-1]=t; }); };
       bar.querySelector('.sd').onclick=(e)=>{ e.stopPropagation(); pptMutate(a=>{ const t=a[i]; a[i]=a[i+1]; a[i+1]=t; }); };
       bar.querySelector('.sx').onclick=(e)=>{ e.stopPropagation();
@@ -883,6 +898,13 @@
       ctl.querySelector('.mvx').onclick=(e)=>{ e.stopPropagation();
         pushUndo(); const s=data.slides[si]; s._hide=s._hide||{}; s._hide[key]=1; blk.style.display='none'; persist(); };
       blk.appendChild(ctl);
+    });
+    // 이미지 클릭 = 교체 (편집모드)
+    doc.querySelectorAll('.s-imgwrap img').forEach(im=>{
+      if(im.__imgw) return; im.__imgw=1; im.style.cursor='pointer'; im.title=tL('클릭해서 이미지 교체');
+      im.addEventListener('click',(e)=>{ if(!editMode) return; e.preventDefault(); e.stopPropagation();
+        const si=slideIndexOf(im); if(si<0) return;
+        pickPptImage(src=>{ pushUndo(); data.slides[si].img={src}; im.src=src; persist(); }); });
     });
     // 굵기 툴바 — [data-edit] 포커스 시 [B|L|기본]
     let fb=doc.getElementById('fmtbar');

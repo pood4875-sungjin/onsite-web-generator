@@ -57,11 +57,21 @@
       return '<section class="slide dark contact" data-kind="Closing"><div class="contact-grid">' + cells + '</div><div class="contact-foot">' + (s.sub ? '<p class="contact-email"' + de(P + '.sub') + '>' + esc(s.sub) + '</p>' : '') + '<h2 class="contact-title"' + de(P + '.title') + '>' + ml(s.title || 'Thank you') + '</h2></div></section>';
     },
   };
-  function renderSlides(slides) { return (slides || []).map(function (s, i) { var fn = R[s.type] || R.rows; try { return fn(s, 'slides.' + i); } catch (e) { return ''; } }).join('\n'); }
+  function renderSlides(slides) {
+    return (slides || []).map(function (s, i) {
+      var fn = R[s.type] || R.rows; var html = '';
+      try { html = fn(s, 'slides.' + i); } catch (e) { return ''; }
+      // 슬라이드 이미지(선택) — 이동/숨김 대상(.s-img가 MV_SEL에 포함), PPTX에도 추출됨
+      if (s.img && s.img.src) html = html.replace(/<\/section>\s*$/, '<div class="s-imgwrap"><img class="s-img" src="' + esc(s.img.src) + '" alt=""></div></section>');
+      return html;
+    }).join('\n');
+  }
 
   /* ---- 편집 상태 적용 — 슬라이드별 _pos(블록 오프셋)/_hide(블록 숨김)/_fmt(텍스트 굵기, 상대경로 키).
      블록 키 = MV_SEL 매칭 순서 m0,m1… (deck·viewer·PPTX 좌표까지 일관 반영) ---- */
-  var MV_SEL = '.s-head, .s-body > *, .cover-meta, .cover-foot > *, .agenda, .contact-grid, .contact-foot';
+  /* 바깥 묶음 + 안쪽 개별 항목(각 row·목차 줄·불릿·카드·셀)까지 전부 이동/숨김 대상. DOM 순서 = 키 순서 */
+  var MV_SEL = '.s-head, .s-body > *, .cover-meta, .cover-foot > *, .agenda, .contact-grid, .contact-foot, ' +
+    '.row, .agenda-row, .block-list li, .bigstat-side > div, .cover-meta > div, .contact-cell.fill, .cols2 > div, .cols3 > div, .s-imgwrap';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -94,6 +104,8 @@
       '*{box-sizing:border-box}body{margin:0;background:#0a0a0e;font-family:var(--font-disp);-webkit-font-smoothing:antialiased}' +
       '.ppt-stack{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 0}' +
       '.slide{position:relative;width:var(--slide-w);height:var(--slide-h);flex:none;background:var(--surf);color:var(--on-surf);padding:var(--margin);word-break:keep-all;overflow-wrap:break-word;box-shadow:0 12px 40px rgba(0,0,0,.4);overflow:hidden}' +
+      '.s-imgwrap{position:absolute;right:60px;top:150px;z-index:5}' +
+      '.s-imgwrap img{display:block;max-width:420px;max-height:440px;border-radius:14px;object-fit:cover;box-shadow:0 16px 48px rgba(0,0,0,.35)}' +
       '.slide.dark{background:var(--surf-alt);color:var(--on-alt)}.slide.dark .s-index{color:var(--accent,var(--on-alt))}.slide.dark .row-desc,.slide.dark .muted,.slide.dark .meta-k,.slide.dark .contact-email{color:var(--muted-alt)}.slide.dark .block-list li,.slide.dark .block-p{color:var(--on-alt-soft)}.slide.dark .agenda-row{border-color:var(--line-alt)}.slide.dark .row{background:var(--card-bg-alt);border-color:var(--card-bd-alt)}' +
       '.s-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}.s-title{font-family:var(--font-disp);font-weight:var(--title-weight);font-size:72px;line-height:.98;letter-spacing:-.02em;margin:0;max-width:70%}.s-index{font-family:var(--font-num);font-size:54px;line-height:1;letter-spacing:-.02em;color:var(--accent,currentColor);white-space:nowrap;margin-top:6px}.s-body{margin-top:64px}' +
       '.rows{display:flex;flex-direction:column;gap:40px}.row{display:grid;grid-template-columns:150px 1fr 340px;gap:40px;align-items:start;background:var(--card-bg);border:1px solid var(--card-bd);border-radius:var(--rad);padding:var(--card-pad)}.row-num{font-family:var(--font-num);font-size:34px;color:var(--accent,currentColor)}.row-label{font-family:var(--font-disp);font-weight:var(--label-weight);font-size:34px;line-height:1;margin:0}.row-desc{font-weight:300;font-size:16px;line-height:1.55;color:var(--muted);margin:0}' +

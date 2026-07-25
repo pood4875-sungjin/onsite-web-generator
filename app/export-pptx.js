@@ -79,6 +79,12 @@
       var slideBg = parseColor(win.getComputedStyle(slide).backgroundColor); if (slideBg.a < 1) slideBg = blend(slideBg, { r: 255, g: 255, b: 255, a: 1 });
       var s = pptx.addSlide(); s.background = { color: hex(slideBg) };
       if (win.html2canvas) { var bgData = await slideBgImage(win, slide); if (bgData) s.background = { data: bgData }; }
+      // 슬라이드 이미지(.s-img 등 data-URI <img>) → 편집 가능한 이미지 개체로
+      [].slice.call(slide.querySelectorAll('img')).forEach(function (el) {
+        var r = rel(el, origin); if (r.w < 3 || r.h < 3) return;
+        var src = el.currentSrc || el.src || ''; if (src.indexOf('data:') !== 0) return;
+        try { s.addImage({ data: src, x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN }); } catch (e) {}
+      });
       [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
       [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
       [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
