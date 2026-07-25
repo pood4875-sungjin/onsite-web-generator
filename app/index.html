@@ -84,7 +84,7 @@
 
   /* 하단 고정 컴포저 */
   .composer{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:12px 24px 26px;background:linear-gradient(to top,var(--canvas) 62%,transparent)}
-  .cbox{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:4px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:20px;padding:8px 12px 12px 16px;box-shadow:var(--shadow-2);transition:var(--dur) var(--ease)}
+  .cbox{max-width:712px;margin:0 auto;   /* .cwrap(760) - 좌우 패딩(48) = 채팅 컬럼과 동일 폭 */display:flex;flex-direction:column;gap:4px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:20px;padding:8px 12px 12px 16px;box-shadow:var(--shadow-2);transition:var(--dur) var(--ease)}
   .cbox:focus-within{border-color:var(--hairline-strong);box-shadow:var(--shadow-3)}
   .cbox.dis{opacity:.55}
   /* 하단 줄: [+ 첨부] + 힌트 텍스트 왼쪽, 보내기 오른쪽 (Lovable식) */
