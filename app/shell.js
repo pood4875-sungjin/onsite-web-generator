@@ -25,7 +25,7 @@
       var noop = it[1] === '#' ? ' onclick="return false"' : '';
       return '<a class="item' + on + '" href="' + it[1] + '"' + noop + '>' + it[3] + '<span data-i18n="' + it[2] + '">' + tt(it[2]) + '</span></a>';
     }).join('');
-    return '<aside class="snb"><b class="ds-wordmark">MIDAS <span>WEB AX</span></b>'
+    return '<aside class="snb"><b class="ds-wordmark">MIDAS <span>DRS</span><sup class="ds-beta">beta</sup></b>'
       + '<nav class="grp"><div class="gl" data-i18n="메뉴">' + tt('메뉴') + '</div>' + nav + '</nav>'
       + footHTML() + '</aside>';
   }

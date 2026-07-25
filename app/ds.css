@@ -94,7 +94,8 @@ a{color:inherit;text-decoration:none}
 .ds-eyebrow{font-size:var(--fs-eyebrow);font-weight:var(--fw-med);letter-spacing:var(--tr-eyebrow);text-transform:uppercase;color:var(--mute)}
 .ds-wordmark{font-family:var(--font-display);font-weight:var(--fw-semi);letter-spacing:-.02em;font-size:18px;color:var(--ink)}
 .ds-wordmark span{font-weight:var(--fw-semi);color:var(--ink)}
-.ds-wordmark span{font-weight:var(--fw-semi);color:var(--ink)}
+/* beta 딱지 — 워드마크 옆 작은 필. currentColor 기반이라 밝은/어두운 셸 모두에서 읽힌다 */
+.ds-beta{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:var(--r-pill);border:1px solid color-mix(in srgb,currentColor 26%,transparent);background:color-mix(in srgb,currentColor 10%,transparent);font-family:var(--font-body);font-size:10px;font-weight:var(--fw-semi);letter-spacing:.04em;text-transform:uppercase;vertical-align:3px;opacity:.85}
 
 /* 버튼 — MIDAS AX btn-pill (fill → hover 반전) */
 .ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:var(--r-pill);
