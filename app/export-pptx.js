@@ -59,11 +59,12 @@
     finally { kids.forEach(function (k, j) { k.style.visibility = prev[j]; }); }
   }
 
-  window.exportPptx = async function (doc, onProgress) {
+  window.exportPptx = async function (doc, onProgress, indices) {
     doc = doc || document;
     var win = doc.defaultView || window;
     await loadScript('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js');
     var slides = [].slice.call(doc.querySelectorAll('.ppt-stack > .slide, .deck > .slide'));
+    if (indices && indices.length) slides = slides.filter(function (_, i) { return indices.indexOf(i) >= 0; });   // 페이지 범위
     if (!slides.length) throw new Error('슬라이드를 찾을 수 없습니다.');
     try { await doc.fonts.ready; } catch (e) {}
     // html2canvas는 iframe 문서 컨텍스트에 로드(배경 캡처용). 실패해도 색 배경으로 진행.

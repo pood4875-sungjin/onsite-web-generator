@@ -62,7 +62,10 @@
       var fn = R[s.type] || R.rows; var html = '';
       try { html = fn(s, 'slides.' + i); } catch (e) { return ''; }
       // 슬라이드 이미지(선택) — 이동/숨김 대상(.s-img가 MV_SEL에 포함), PPTX에도 추출됨
-      if (s.img && s.img.src) html = html.replace(/<\/section>\s*$/, '<div class="s-imgwrap"><img class="s-img" src="' + esc(s.img.src) + '" alt=""></div></section>');
+      if (s.img && s.img.src) {
+        var iw = s.img.w ? ' style="width:' + (+s.img.w) + 'px;max-width:none;max-height:none"' : '';
+        html = html.replace(/<\/section>\s*$/, '<div class="s-imgwrap"><img class="s-img" src="' + esc(s.img.src) + '"' + iw + ' alt=""></div></section>');
+      }
       return html;
     }).join('\n');
   }
