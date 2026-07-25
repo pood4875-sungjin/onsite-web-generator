@@ -437,7 +437,7 @@
   function persist(){
     if(!project || !pageRef) return;
     pageRef.data = structuredClone(data); pageRef.pageType = pageType; pageRef.volume = volume;
-    pageRef.chat = { log: chatLog, idx, generated };
+    pageRef.chat = { log: chatLog, idx, generated, ...(aiMissing&&aiMissing.size?{aiDraft:[...aiMissing]}:{}) };
     project.stylePack = pack.id; project.motion = motion;
     if((!project.name || project.name==='무제 프로젝트') && data.productName) project.name = data.productName;
     upsertProject(project);
@@ -478,7 +478,7 @@
   let chatLog = [];
   function addBot(txt){const r=el('div','row');r.append(el('div','bub bot',txt));msgs.append(r);}
   function addMe(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
-  function saveChat(){ if(!project||!pageRef) return; pageRef.chat={log:chatLog, idx, generated}; upsertProject(project); }
+  function saveChat(){ if(!project||!pageRef) return; pageRef.chat={log:chatLog, idx, generated, ...(aiMissing&&aiMissing.size?{aiDraft:[...aiMissing]}:{})}; upsertProject(project); }
   function botBubble(txt){ addBot(txt); chatLog.push({r:'bot',t:txt}); saveChat(); }
   function meBubble(txt){ addMe(txt); chatLog.push({r:'me',t:txt}); saveChat(); }
   function scroll(){msgs.scrollTo({top:msgs.scrollHeight,behavior:'smooth'});}
@@ -778,11 +778,26 @@
     }
     return false;
   }
+  /* AI 초안 후속질문 모드 — aiMissing(Set)이 있으면 구조 스텝은 건너뛰고
+     초안이 못 채운 콘텐츠 스텝만 순서대로 질문. 전부 채우면 done. */
+  let aiMissing = null;
+  const AI_STRUCT = new Set(['kind','pageType','mainSections','volume']);
+  const AI_CONTENT = new Set(['facts','features','stats','banner','footer']);
+  function effSkip(step){
+    if(shouldSkip(step)) return true;
+    if(aiMissing){
+      if(AI_STRUCT.has(step)) return true;
+      if(AI_CONTENT.has(step)) return !aiMissing.has(step);
+    }
+    return false;
+  }
   function advance(userText){
     if(userText) meBubble(userText);
+    if(aiMissing) aiMissing.delete(STEPS[idx]);   // 빈 Set도 유지 — 남은 콘텐츠 스텝 전부 스킵시켜 done으로
     idx++;
     let step = STEPS[idx];
-    while(shouldSkip(step)){ idx++; step = STEPS[idx]; }
+    while(effSkip(step)){ idx++; step = STEPS[idx]; }
+    if(step==='done') aiMissing=null;             // 후속질문 모드 종료
     botBubble(PROMPT[step]);
     mountWidget(step);
     if(step==='done'){ runGenerate(); }
@@ -1537,7 +1552,22 @@
          : (project.stylePack==='midas' && typeof MIDAS_STYLE!=='undefined') ? MIDAS_STYLE
          : (DARK_PACKS.find(x=>x.id===project.stylePack) || DARK_PACKS[0]);
     motion = project.motion || 'subtle';
-    if(pageRef.chat && pageRef.chat.log && pageRef.chat.log.length){
+    if(pageRef.chat && pageRef.chat.aiDraft && pageRef.chat.aiDraft.length){
+      // AI 초안 후속질문 — 초안은 이미 렌더됨(generated). 못 채운 스텝만 이어서 질문.
+      chatLog = pageRef.chat.log.slice(); generated = true;
+      chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
+      aiMissing = new Set(pageRef.chat.aiDraft);
+      idx = 0; while(effSkip(STEPS[idx])) idx++;
+      const step = STEPS[idx] || 'done';
+      if(step==='done'){ aiMissing=null; mountWidget('done'); }
+      else {
+        // 진행 중이던 질문이 로그 마지막에 이미 있으면 다시 묻지 않음(재진입)
+        const last = chatLog.length ? chatLog[chatLog.length-1] : null;
+        if(!(last && last.r==='bot' && last.t===PROMPT[step])) botBubble(PROMPT[step]);
+        mountWidget(step);
+      }
+      render(); scroll();
+    } else if(pageRef.chat && pageRef.chat.log && pageRef.chat.log.length){
       // 저장된 대화 복원 → 나갔다 와도 대화 살아있음
       chatLog = pageRef.chat.log.slice(); idx = pageRef.chat.idx||0; generated = !!pageRef.chat.generated;
       chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));

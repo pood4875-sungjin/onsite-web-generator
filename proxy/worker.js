@@ -41,6 +41,22 @@ const SYSTEM =
   '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. ' +
   '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 
+/* 웹(랜딩/웹사이트) 초안 — 브리프에 근거 있는 것만 채우고, 없는 건 null.
+   null 필드는 스튜디오 채팅이 후속 질문으로 받아 채움(추측 수치 금지 원칙). */
+const WEB_SYSTEM =
+  '너는 시니어 웹 카피라이터 겸 콘텐츠 기획자다. 브리프로 제품 소개 페이지의 콘텐츠 초안을 만든다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
+  '"features":[{"title":str,"desc":str}]|null,"stats":[{"value":str,"label":str}]|null,' +
+  '"bannerText":str|null,"bannerCta":str|null,"footerLinks":[str]|null,"footerCopyright":str|null}\n' +
+  '규칙:\n' +
+  '- 브리프(특히 plan 자유 텍스트)에서 파악되는 내용만 쓴다. 카피(태그라인·소개문·CTA·배너 문구)는 브리프 내용 기반 창작 허용.\n' +
+  '- 수치가 필요한 stats는 plan에 실제 수치가 있을 때만 채운다. 없으면 null — 절대 지어내지 마라.\n' +
+  '- features는 plan에서 기능·강점을 뽑을 수 있으면 정확히 3개(제목 2~6단어+한 줄 설명). 못 뽑으면 null.\n' +
+  '- footerLinks/footerCopyright는 브리프에 관련 정보 있을 때만. 없으면 null.\n' +
+  '- 문구는 lang 값의 언어로(ko=한국어, en=영어). 톤은 간결·자신감, 과장 금지.\n' +
+  '- tagline은 12자 내외 한 줄, subcopy는 1~2문장.';
+
 /* 내용 수정(채팅) — 전체 slides 교체 계약. 내용·구조(추가/분할/삭제/순서) 전부 허용, 디자인만 거절 */
 const EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
@@ -61,7 +77,7 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
     const route = url.pathname;
-    if (req.method !== 'POST' || (route !== '/compose' && route !== '/edit')) return json({ error: 'NOT_FOUND' }, 404);
+    if (req.method !== 'POST' || (route !== '/compose' && route !== '/edit' && route !== '/compose-web')) return json({ error: 'NOT_FOUND' }, 404);
 
     // ---- IP당 일일 제한 (KV) ----
     const ip = req.headers.get('cf-connecting-ip') || 'unknown';
@@ -90,6 +106,18 @@ export default {
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = SYSTEM;
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
+    } else if (route === '/compose-web') {
+      const safe = {
+        product: clip(body.product, 100),
+        name: clip(body.name, 200),
+        purpose: clip(body.purpose, 300),
+        plan: clip(body.plan, 6000),   // 자유 소개/기획 텍스트
+        kind: clip(body.kind, 10),     // single|multi
+        lang: clip(body.lang, 5) || 'ko',
+      };
+      if (!safe.plan && !safe.product && !safe.name) return json({ error: 'EMPTY_BRIEF' }, 400);
+      system = WEB_SYSTEM;
+      userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else { // /edit
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
@@ -114,7 +142,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 6000 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유
+        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 2000 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안은 짧음
         system: system,
         messages: [{ role: 'user', content: userMsg }],
       }),

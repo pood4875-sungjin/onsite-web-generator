@@ -197,6 +197,28 @@
     <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="go(3)" data-i18n="다음 →">다음 →</button></div>
   </div>
 
+  <!-- 웹(랜딩/웹사이트) 브리프 — PPT st2p와 같은 패턴. AI가 해석해 초안을 채우고, 빈 항목은 스튜디오 채팅이 이어서 질문 -->
+  <div class="step" id="st2w">
+    <h1 data-i18n="어떤 내용을 담을까요?">어떤 내용을 담을까요?</h1>
+    <div class="pptbrief">
+      <div class="pb-fields">
+        <label><span data-i18n="소개 내용 ">소개 내용 </span><span class="opt" data-i18n="(자유롭게 — AI가 해석해서 초안을 채워요)">(자유롭게 — AI가 해석해서 초안을 채워요)</span></label>
+        <textarea class="ds-input" id="wbPlan" rows="8" placeholder="어떤 제품·서비스인지 자유롭게 적어주세요.
+
+• 무엇을 하는 제품인지, 누구를 위한 것인지
+• 핵심 기능·강점 (적으면 그대로 기능 카드가 돼요)
+• 자랑할 수치가 있으면 함께 (예: 도입사 120곳, 만족도 96%)
+• 방문자가 눌렀으면 하는 행동 (예: 도입 문의, 무료 체험)"></textarea>
+      </div>
+      <div class="pb-ai" id="wbAiRow" hidden>
+        <label class="pb-aitog"><input type="checkbox" id="wbAi" checked><span data-i18n="AI로 초안까지 채우기">AI로 초안까지 채우기</span></label>
+        <span class="pb-aimeta" id="wbAiMeta"></span>
+      </div>
+      <p class="pb-hint" data-i18n="비워두면 스튜디오에서 대화로 하나씩 채워요. 초안이 있어도 빈 항목은 이어서 질문해요.">비워두면 스튜디오에서 대화로 하나씩 채워요. 초안이 있어도 빈 항목은 이어서 질문해요.</p>
+    </div>
+    <div class="navbtns"><button class="ds-btn ghost" onclick="go(2)" data-i18n="← 이전">← 이전</button><button class="ds-btn primary" onclick="go(3)" data-i18n="다음 →">다음 →</button></div>
+  </div>
+
   <div class="step" id="st3">
     <h1>디자인 스타일을<br>선택해주세요.</h1>
     <div class="styles" id="styles"></div>
@@ -222,9 +244,9 @@
   const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
   let kind='single', stylePack='aether', org='';
 
-  // 스텝 흐름: 일반 1→2→3 · PPT 1→2→'2p'(발표 내용)→3. 스타일 선택(3)에서 시작하기=생성.
-  const flowSteps=()=> kind==='ppt' ? [1,2,'2p',3] : [1,2,3];
-  window.next2=()=> go(kind==='ppt' ? '2p' : 3);
+  // 스텝 흐름: eDM 1→2→3 · PPT 1→2→'2p'(발표 내용)→3 · 랜딩/웹사이트 1→2→'2w'(소개 내용)→3.
+  const flowSteps=()=> kind==='ppt' ? [1,2,'2p',3] : kind==='edm' ? [1,2,3] : [1,2,'2w',3];
+  window.next2=()=> go(kind==='ppt' ? '2p' : kind==='edm' ? 3 : '2w');
   window.go=(n)=>{ document.querySelectorAll('.step').forEach(s=>s.classList.remove('on')); document.getElementById('st'+n).classList.add('on');
     // 점 인디케이터 — 흐름 길이에 맞춰 재구성
     const steps=flowSteps(), dots=document.querySelector('.dots');
@@ -240,9 +262,20 @@
       }
       setTimeout(()=>document.getElementById('pbTitle').focus(),80);
     }
+    if(n==='2w'){
+      // 웹 브리프 — AI 토글 노출 규칙은 PPT와 동일
+      const row=document.getElementById('wbAiRow'), meta=document.getElementById('wbAiMeta');
+      const has=(window.LLM&&LLM.aiAvailable());
+      row.hidden=!has;
+      if(has){
+        if(LLM.usingProxy()) meta.textContent=_L('팀 공용 AI · Sonnet 5');
+        else { const m=(LLM.MODELS.find(x=>x.id===LLM.getModel())||{}).name||LLM.getModel(); meta.textContent=m+' · '+LLM.maskKey(); }
+      }
+      setTimeout(()=>document.getElementById('wbPlan').focus(),80);
+    }
     if(n===3){
       const isEdm=kind==='edm', isPpt=kind==='ppt';
-      document.getElementById('st3Back').onclick=()=>go(isPpt?'2p':2);
+      document.getElementById('st3Back').onclick=()=>go(isPpt?'2p':isEdm?2:'2w');
       if(isEdm) renderEdmTemplates(); else if(isPpt) renderPptStyles(); else renderStyles();
     }
   };
@@ -333,11 +366,15 @@
 
   /* AI 생성 로딩 — 단계 메시지 순환 + 진행바 전진(마지막 12%는 완료 시 채움).
      반환된 stop(ok)로 종료: ok=true면 100% 채우고 유지(곧 이동), false면 즉시 숨김(폴백). */
-  function showAiGen(){
+  function showAiGen(job){
+    job=job||'compose';   // 'compose'(PPT) | 'composeweb'(웹 초안) — 단계 문구·실측 시간 분리
     const ov=document.getElementById('aiGen'), st=document.getElementById('aiGenStage'), bar=document.getElementById('aiGenBar'), hint=document.getElementById('aiGenHint');
-    const stages=[ ['브리프 분석 중…',14], ['목차·스토리 구성 중…',34], ['슬라이드 문장 작성 중…',58], ['수치·레이아웃 다듬는 중…',76], ['덱 조립 중…',88] ];
+    const stages= job==='composeweb'
+      ? [ ['소개 내용 분석 중…',14], ['핵심 메시지 뽑는 중…',36], ['카피 작성 중…',60], ['섹션 구성 중…',80], ['초안 조립 중…',90] ]
+      : [ ['브리프 분석 중…',14], ['목차·스토리 구성 중…',34], ['슬라이드 문장 작성 중…',58], ['수치·레이아웃 다듬는 중…',76], ['덱 조립 중…',88] ];
+    document.querySelector('.aigen-title').textContent=_L(job==='composeweb'?'AI가 페이지 초안을 만들고 있어요':'AI가 장표를 만들고 있어요');
     // '보통 N초' = 이 기기 실측 기반(없으면 시간 약속 안 함). 초과 시 정직한 전환.
-    const est=(window.LLM&&LLM.estimateDur)?LLM.estimateDur('compose'):null;
+    const est=(window.LLM&&LLM.estimateDur)?LLM.estimateDur(job):null;
     hint.textContent = est ? _L('보통')+' '+est+_L('초 안팎 걸려요. 창을 닫지 마세요.') : _L('창을 닫지 마세요.');
     let i=0, sec=0, timer=null, secT=null, over=false;
     const setStage=(n)=>{ const s=stages[Math.min(n,stages.length-1)]; st.style.opacity=0; setTimeout(()=>{ st.textContent=_L(s[0]); st.style.opacity=1; },180); bar.style.width=s[1]+'%'; };
@@ -347,7 +384,7 @@
     secT=setInterval(()=>{ sec++; if(est && !over && sec>est){ over=true; clearInterval(timer); st.textContent=_L('조금 더 걸리네요… 거의 다 됐어요'); bar.style.width='94%'; } },1000);
     const t0=Date.now();
     return (ok)=>{ clearInterval(timer); clearInterval(secT);
-      if(ok){ if(window.LLM&&LLM.recordDur) LLM.recordDur('compose', Date.now()-t0); bar.style.width='100%'; st.textContent=_L('완성! 스튜디오로 이동해요'); }
+      if(ok){ if(window.LLM&&LLM.recordDur) LLM.recordDur(job, Date.now()-t0); bar.style.width='100%'; st.textContent=_L('완성! 스튜디오로 이동해요'); }
       else { ov.classList.remove('on'); setTimeout(()=>{ ov.hidden=true; bar.style.width='8%'; },250); }
     };
   }
@@ -404,8 +441,44 @@
     const name=nm || shared.productName || '무제 프로젝트';
     const p=createProject({ kind, name, shared, stylePack, org });
     p.lang=siteLang; upsertProject(p);   // 사이트 출력 언어 저장
-    await storeFlush();
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
+
+    // 랜딩/웹사이트 AI 초안: 소개 내용(브리프) 있으면 AI가 콘텐츠 필드를 채우고,
+    // 근거 없어 비운 항목(stats 등)은 aiDraft 목록으로 넘겨 스튜디오 채팅이 이어서 질문.
+    const wplan=(document.getElementById('wbPlan').value||'').trim();
+    const wantWebAi = wplan && window.LLM && LLM.aiAvailable() && document.getElementById('wbAi').checked;
+    if(wantWebAi){
+      const btn=document.querySelector('#st3 .ds-btn.primary'); btn.disabled=true;
+      const stop=showAiGen('composeweb');
+      let draft=null;
+      try{ draft=await LLM.composeSite({ product:prod, name, plan:wplan, kind, lang:siteLang }); stop(true); }
+      catch(e){ stop(false); console.warn('[ai] compose-web 실패 → 대화 플로우 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 초안 생성에 실패해 대화로 채우는 방식으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+      finally{ btn.disabled=false; }
+      if(draft){
+        const full=getProject(p.id); const pg0=full.pages.find(x=>x.id===pg.id)||full.pages[0];
+        const seed={ productName:draft.productName||prod||'', tagline:draft.tagline||'', subcopy:draft.subcopy||'', primaryCta:draft.primaryCta||'',
+          features:draft.features||[], stats:draft.stats||[], bannerText:draft.bannerText||'', bannerCta:draft.bannerCta||'',
+          footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] };
+        if(kind==='multi'){
+          pg0.pageType='main'; pg0.name='메인홈';
+          seed.shownSections=['feature','cta'];
+          seed.hiddenSections=['comparison','testimonial','blog','faq','stat'];
+        } else { pg0.pageType='landing'; }
+        // 후속 질문 목록 — 스튜디오 STEPS 이름 그대로. 채워진 스텝은 건너뜀.
+        const missing=[];
+        if(!seed.productName || !seed.tagline) missing.push('facts');
+        if(!seed.features.length) missing.push('features');
+        if(!seed.stats.length) missing.push('stats');
+        if(!seed.bannerText) missing.push('banner');
+        if(!seed.footerLinks.length) missing.push('footer');
+        pg0.data=seed; pg0.volume='heavy';
+        pg0.chat={ log:[{r:'bot',t:_L('✨ 입력한 내용으로 초안을 만들었어요. 오른쪽에서 확인해보세요.')}], idx:0, generated:true, aiDraft:missing };
+        full.name=name; full.lang=siteLang; upsertProject(full);
+        await storeFlush(); leaving=true;
+        location.href=`studio/studio.html?p=${full.id}&page=${pg0.id}`; return;
+      }
+    }
+    await storeFlush();
     leaving=true;
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   };

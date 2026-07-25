@@ -25,10 +25,11 @@ export const DG_TEMPLATES = {
     { type: 'banner', tier: 'rich' },
     { type: 'footer', tier: 'core' },
   ],
-  landing: [ // 랜딩 (짧음)
+  landing: [ // 랜딩 (짧음) — metrics는 mid+: 지표 입력을 받는 플로우와 일치시킴(사회적 증거 행)
     { type: 'gnb', tier: 'core' },
     { type: 'hero', tier: 'core' },
     { type: 'features', tier: 'mid' },
+    { type: 'metrics', tier: 'mid' },
     { type: 'banner', tier: 'core' },
     { type: 'footer', tier: 'core' },
   ],

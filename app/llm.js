@@ -153,6 +153,60 @@
     var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 6000 });
     return _parseEdit(txt);
   }
+  /* 웹(랜딩/웹사이트) 초안 — 브리프 → 사이트 콘텐츠 필드. 근거 없는 항목은 null로 와서
+     스튜디오가 후속 질문으로 채움. 실패 시 throw → 호출측이 기존 대화 플로우로 폴백. */
+  var WEB_SYSTEM =
+    '너는 시니어 웹 카피라이터 겸 콘텐츠 기획자다. 브리프로 제품 소개 페이지의 콘텐츠 초안을 만든다.\n' +
+    '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+    '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
+    '"features":[{"title":str,"desc":str}]|null,"stats":[{"value":str,"label":str}]|null,' +
+    '"bannerText":str|null,"bannerCta":str|null,"footerLinks":[str]|null,"footerCopyright":str|null}\n' +
+    '규칙: 브리프에서 파악되는 내용만. 카피는 브리프 기반 창작 허용. stats는 실제 수치 있을 때만(지어내기 금지). ' +
+    'features는 뽑을 수 있으면 정확히 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장.';
+  async function composeSite(brief) {
+    brief = brief || {};
+    var payload = { product: brief.product || '', name: brief.name || '', purpose: brief.purpose || '', plan: brief.plan || '', kind: brief.kind || 'single', lang: brief.lang || 'ko' };
+    var txt;
+    if (usingProxy()) {
+      var r = await fetch(proxyUrl() + '/compose-web', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+      });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
+      txt = j.text;
+    } else {
+      txt = await messages({ system: WEB_SYSTEM, user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 2000 });
+    }
+    return _parseSite(txt);
+  }
+  // 검증+정규화: 문자열 필드는 문자열로, 배열 필드는 유효 항목만. 비었으면 null 유지.
+  function _parseSite(txt) {
+    var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+    var i = s.indexOf('{'), j = s.lastIndexOf('}');
+    if (i < 0 || j < 0) throw new Error('BAD_JSON');
+    var o = JSON.parse(s.slice(i, j + 1));
+    var str = function (v) { return (typeof v === 'string' && v.trim()) ? v.trim() : ''; };
+    var out = {
+      productName: str(o.productName), tagline: str(o.tagline), subcopy: str(o.subcopy), primaryCta: str(o.primaryCta),
+      bannerText: str(o.bannerText), bannerCta: str(o.bannerCta), footerCopyright: str(o.footerCopyright),
+      features: null, stats: null, footerLinks: null,
+    };
+    if (Array.isArray(o.features)) {
+      var f = o.features.map(function (x) { return x && { title: str(x.title), desc: str(x.desc) }; }).filter(function (x) { return x && x.title; }).slice(0, 6);
+      if (f.length) out.features = f;
+    }
+    if (Array.isArray(o.stats)) {
+      var st = o.stats.map(function (x) { return x && { value: str(x.value), label: str(x.label) }; }).filter(function (x) { return x && x.value; }).slice(0, 6);
+      if (st.length) out.stats = st;
+    }
+    if (Array.isArray(o.footerLinks)) {
+      var fl = o.footerLinks.map(function (x) { return str(x); }).filter(Boolean).slice(0, 8);
+      if (fl.length) out.footerLinks = fl;
+    }
+    if (!out.productName && !out.tagline && !out.features) throw new Error('EMPTY_DRAFT');
+    return out;
+  }
+
   function _parseEdit(txt) {
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
@@ -167,7 +221,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
-    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, parseDeck: parseDeck,
+    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, parseDeck: parseDeck,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();
