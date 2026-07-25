@@ -32,7 +32,21 @@
     var ls = (cs.letterSpacing && cs.letterSpacing !== 'normal') ? parseFloat(cs.letterSpacing) * PT : 0;
     var align = cs.textAlign === 'right' ? 'right' : cs.textAlign === 'center' ? 'center' : 'left';
     var vertical = (cs.writingMode || '').indexOf('vertical') >= 0;
-    var opts = { x: r.x * IN, y: r.y * IN, w: Math.max(r.w, 6) * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: (parseInt(cs.fontWeight, 10) || 400) >= 600, italic: cs.fontStyle === 'italic', fontFace: fontFamily(cs), align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacingMultiple: lsm || undefined, wrap: true };
+    /* 줄바꿈 방어 — 상자 폭을 브라우저에서 잰 값 그대로 쓰면, 파워포인트에 Pretendard가 없어
+       더 넓은 대체 폰트로 그려질 때 텍스트가 상자를 넘는다. 한글은 파워포인트에서 글자 단위로
+       줄바꿈되므로 단어가 쪼개져 "띄어쓴 것처럼" 보인다.
+       → 브라우저에서 한 줄로 렌더된 요소는 wrap을 끄고(절대 줄바꿈 안 함),
+         여러 줄 요소는 폭에 여유를 준다. 늘어난 폭은 정렬 방향에 맞춰 흡수(우/중앙 정렬 밀림 방지). */
+    var lhPx = (lh && lh !== 'normal') ? parseFloat(lh) : fs * 1.2;
+    // 브라우저에서 자동 줄바꿈이 일어났는지 = 렌더된 줄 수가 <br>로 만든 줄 수보다 많은지
+    var explicitLines = txt.split('\n').length, renderedLines = Math.max(1, Math.round(r.h / lhPx));
+    var oneLine = renderedLines <= explicitLines;
+    var baseW = Math.max(r.w, 6);
+    var slackW = Math.min(baseW * (oneLine ? 0.16 : 0.06), Math.max(0, (origin.width || 1280) - r.x - baseW));
+    var boxW = baseW + slackW, boxX = r.x;
+    if (align === 'right') boxX = r.x - slackW;
+    else if (align === 'center') boxX = r.x - slackW / 2;
+    var opts = { x: boxX * IN, y: r.y * IN, w: boxW * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: (parseInt(cs.fontWeight, 10) || 400) >= 600, italic: cs.fontStyle === 'italic', fontFace: fontFamily(cs), align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacingMultiple: lsm || undefined, wrap: !oneLine };
     if (vertical) { var cx = r.x + r.w / 2, cy = r.y + r.h / 2; opts.w = Math.max(r.h, 6) * IN; opts.h = Math.max(r.w, 8) * IN; opts.x = cx * IN - opts.w / 2; opts.y = cy * IN - opts.h / 2; opts.rotate = 270; opts.align = 'center'; opts.valign = 'middle'; }
     s.addText(txt, opts);
   }
