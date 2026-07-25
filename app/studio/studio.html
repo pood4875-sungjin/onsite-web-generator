@@ -1676,6 +1676,69 @@
       else if(_expFmt==='pdf'){ modal.hidden=true; doPdf(idxs); }
       else { modal.hidden=true; doHtml(idxs); }
     };
+  } else {
+    /* 웹사이트·랜딩·eDM: PPT와 같은 방식 — 흩어져 있던 JSON·HTML 버튼을
+       "내보내기" 하나로 합치고, 형식은 모달에서 고른다. */
+    ['pptxBtn','expBtn','dl'].forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display='none'; });
+    const xb=document.getElementById('exportBtn'), modal=document.getElementById('expModal');
+    const grid=modal.querySelector('.expm-grid'), scope=modal.querySelector('.expm-range');
+    const goBtn=document.getElementById('expmGo');
+    const FMTS=[{id:'html',ic:'🌐',nm:'HTML',d:'웹에서 열기'},{id:'pdf',ic:'📄',nm:'PDF',d:'인쇄·공유용'}];
+    if(curMode().exportFmt.indexOf('json')>=0) FMTS.push({id:'json',ic:'🧩',nm:'JSON',d:'데이터 백업'});
+    let fmt='html';
+
+    modal.querySelector('.expm-card>b').textContent=tL('페이지 내보내기');
+    grid.style.gridTemplateColumns='repeat('+FMTS.length+',1fr)';
+    grid.innerHTML=FMTS.map((f,i)=>'<button data-x="'+f.id+'"'+(i?'':' class="sel"')+'><span class="xi">'+f.ic+'</span>'+f.nm+'<span class="xd">'+tL(f.d)+'</span></button>').join('');
+    grid.querySelectorAll('[data-x]').forEach(b=>{ b.onclick=()=>{ fmt=b.getAttribute('data-x');
+      grid.querySelectorAll('[data-x]').forEach(x=>x.classList.toggle('sel',x===b)); }; });
+
+    // 다중 페이지 프로젝트만 범위 선택. 단일은 고를 게 없어 숨긴다(.expm-range는 display:flex라 hidden 무효)
+    const multi = !!(project && project.kind==='multi' && project.pages.length>1);
+    if(multi) scope.innerHTML='<label class="expm-rr"><input type="radio" name="expscope" value="all" checked><span>'+tL('전체 페이지')+'</span> <span class="expm-cnt">('+project.pages.length+')</span></label>'+
+                              '<label class="expm-rr"><input type="radio" name="expscope" value="cur"><span>'+tL('현재 페이지만')+'</span></label>';
+    else scope.style.display='none';
+    const wantAll=()=>{ const r=scope.querySelector('[name=expscope]:checked'); return multi && (!r || r.value==='all'); };
+
+    xb.style.display='';
+    xb.onclick=async()=>{ if(!generated){ await uiAlert(tL('먼저 페이지를 생성해주세요.')); return; } modal.hidden=false; };
+    document.getElementById('expmClose').onclick=()=>{ modal.hidden=true; };
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) modal.hidden=true; });
+
+    const fileBase=()=>(project&&project.name)||data.productName||'page';
+    function save(html, ext, type){
+      const b=new Blob([html],{type:type}); const a=document.createElement('a');
+      a.href=URL.createObjectURL(b); a.download=fileBase()+'.'+ext; a.click(); URL.revokeObjectURL(a.href);
+    }
+    // 전체 페이지 PDF = 각 페이지를 한 장씩 이어붙이고 페이지 나눔을 넣는다(미리보기용 hidden·nav 스크립트는 빼고)
+    function pdfHtml(all){
+      persist();
+      const pages=(all && project && project.pages.length) ? project.pages : [{data,pageType,volume}];
+      const dp=new DOMParser(); let head=''; const secs=[];
+      pages.forEach((pg,i)=>{ const doc=dp.parseFromString(renderProjectPage(pg),'text/html');
+        if(i===0) head=doc.head.innerHTML; secs.push('<div class="pdfpg">'+doc.body.innerHTML+'</div>'); });
+      return '<!doctype html><html lang="ko"><head><meta charset="UTF-8">'+head+
+        '<style>@page{margin:0}html,body{background:#fff}.pdfpg{break-after:page;page-break-after:always}.pdfpg:last-child{break-after:auto;page-break-after:auto}</style>'+
+        '</head><body>'+secs.join('')+'</body></html>';
+    }
+    function printHtml(html){
+      const f=document.createElement('iframe'); f.style.cssText='position:fixed;left:-99999px;width:1280px;height:900px;border:0';
+      f.srcdoc=html; document.body.append(f);
+      f.onload=()=>{ setTimeout(()=>{ try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} setTimeout(()=>f.remove(),60000); },400); };
+    }
+    goBtn.onclick=()=>{
+      const all=wantAll();
+      modal.hidden=true;
+      if(fmt==='html'){ persist(); save(all?previewHtml():pageHtml(), 'html', 'text/html'); }
+      else if(fmt==='pdf'){ printHtml(pdfHtml(all)); }
+      else {
+        persist();
+        const snap = all
+          ? { name:(project&&project.name)||'', kind:project&&project.kind, pack:pack.id, pages:project.pages.map(p=>({name:p.name,pageType:p.pageType,volume:p.volume,data:p.data})) }
+          : { name:data.productName||'page', pageType, volume, motion, pack:pack.id, data };
+        save(JSON.stringify(snap,null,2), 'json', 'application/json');
+      }
+    };
   }
   });
 </script>

@@ -29,9 +29,16 @@
   .kscreen[hidden]{display:none}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .kscreen h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0 0 40px;color:var(--ink)}
+  /* 타이틀 → 카드 4개(한 덩어리) 순으로 아래에서 위로 천천히 페이드인.
+     카드는 개별이 아니라 .kcards 컨테이너를 움직인다 — 낱개 스태거는 산만하고,
+     컨테이너를 움직이면 카드 :hover의 translateY(-3px)와도 부딪히지 않는다. */
+  .kscreen h1{opacity:0;transform:translateY(28px);animation:kc-in .85s cubic-bezier(.22,1,.36,1) 80ms forwards}
+  .kcards{opacity:0;transform:translateY(44px);animation:kc-in .9s cubic-bezier(.22,1,.36,1) 240ms forwards}
+  @keyframes kc-in{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.kscreen h1,.kcards{animation:none;opacity:1;transform:none}}
   .kcards{display:flex;gap:18px;justify-content:center;flex-wrap:nowrap;max-width:1180px;width:100%}
   .kc{flex:1 1 0;min-width:0;max-width:340px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
-  .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .kc:hover{border-color:var(--hairline-strong);transform:translateY(-8px);box-shadow:var(--shadow-2)}
   /* 썸네일 = 영역을 꽉 채우는 창(하단에서 솟는 형태, 아래 모서리는 잘림) */
   .kc .thumb{height:172px;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding:22px 26px 0}
   .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
@@ -50,11 +57,17 @@
   .gwstack{position:relative;width:100%;height:100%}
   .gws{position:absolute;left:0;bottom:0;width:94%;height:88%;border-radius:14px 14px 0 0;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);border-bottom:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   .gws1{z-index:3;padding:32px 15px 10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
-  .gws2{z-index:2;transform:translate(10px,-11px);opacity:.62}
-  .gws3{z-index:1;transform:translate(20px,-22px);opacity:.36}
+  /* 뒤 두 장은 translateY로 올리지 않고 높이를 키운다 — 올리면 바닥이 안 잘려
+     사각 하단 모서리가 그대로 드러난다(앞 장처럼 썸네일 하단에서 잘려야 함). */
+  .gws2{z-index:2;transform:translateX(10px);height:calc(88% + 11px);opacity:.62}
+  .gws3{z-index:1;transform:translateX(20px);height:calc(88% + 22px);opacity:.36}
   .gws1 .gwhero{height:38px;margin-bottom:2px}
   .kc:hover .gw,.kc:hover .gws1{filter:brightness(1.07)}
   .kc .gw,.kc .gws{transition:filter var(--dur) var(--ease)}
+  /* 호버 시 썸네일 창이 살짝 확대 — 하단 기준으로 커져 "아래에서 솟는 창" 형태를 유지 */
+  .kc .thumb>*{transition:transform .45s cubic-bezier(.22,1,.36,1);transform-origin:50% 100%}
+  .kc:hover .thumb>*{transform:scale(1.045)}
+  @media (prefers-reduced-motion:reduce){.kc:hover .thumb>*{transform:none}}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
