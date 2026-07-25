@@ -81,6 +81,14 @@
     return { slides: slides, style: obj.style, accent: obj.accent };
   }
 
+  /* 프록시 에러 → 사용자용 한국어 메시지. LIMIT는 서버가 message를 주고,
+     UPSTREAM(Anthropic 거부 — 주로 경유 데이터센터 지역 차단)은 코드만 와서 여기서 번역. */
+  function _proxyErrMsg(j, status) {
+    if (j && j.message) return j.message;
+    if (j && j.error === 'UPSTREAM') return 'AI 서버 연결이 잠시 거부됐어요. 다시 시도해주세요.';
+    return (j && j.error) || ('HTTP ' + status);
+  }
+
   // 브리프 → 덱 JSON (LLM 생성). 세부 문구까지 채움.
   async function composeDeck(brief) {
     brief = brief || {};
@@ -91,7 +99,7 @@
         body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }),
       });
       var pj = null; try { pj = await pres.json(); } catch (e) {}
-      if (!pres.ok) throw new Error((pj && (pj.message || pj.error)) || ('HTTP ' + pres.status));
+      if (!pres.ok) throw new Error(_proxyErrMsg(pj, pres.status));
       var pdeck = parseDeck(pj.text);
       pdeck.style = brief.style || pdeck.style || 'ax';
       pdeck.accent = pdeck.accent || 'blue';
@@ -132,7 +140,7 @@
         body: JSON.stringify({ slides: slides, instruction: instruction }),
       });
       var j = null; try { j = await r.json(); } catch (e) {}
-      if (!r.ok) throw new Error((j && (j.message || j.error)) || ('HTTP ' + r.status));
+      if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
       return _parseEdit(j.text);
     }
     var sys =

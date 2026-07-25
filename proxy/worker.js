@@ -99,7 +99,14 @@ export default {
     }
 
     // ---- Anthropic 호출 (키·모델·토큰 전부 서버 통제) ----
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    // Anthropic은 홍콩 등 미지원 지역 IP를 403으로 차단하는데, 이 워커가 HKG 콜로에서
+    // 실행되면 그 IP로 나가 실패한다. AI_GATEWAY 변수가 있으면 Cloudflare AI Gateway
+    // (중앙 인프라 경유 — 지역 차단 안 걸림)를 통해 호출한다. wrangler.toml [vars] 참조.
+    const ACCOUNT_ID = '96adc93fc6d5c8f28f6d11a7550c698d';
+    const apiUrl = env.AI_GATEWAY
+      ? `https://gateway.ai.cloudflare.com/v1/${ACCOUNT_ID}/${env.AI_GATEWAY}/anthropic/v1/messages`
+      : 'https://api.anthropic.com/v1/messages';
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',

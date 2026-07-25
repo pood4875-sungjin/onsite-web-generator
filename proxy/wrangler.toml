@@ -2,6 +2,16 @@ name = "webgen-ppt-proxy"
 main = "worker.js"
 compatibility_date = "2026-07-01"
 
+# Anthropic은 홍콩 등 미지원 지역발 요청을 403으로 차단.
+# 한국 트래픽이 Cloudflare HKG 콜로로 붙으면 워커 egress도 홍콩 → 실패.
+# Smart Placement로 워커 실행 위치를 백엔드(api.anthropic.com, 미국) 근처로 이동.
+[placement]
+mode = "smart"
+
+# Anthropic 호출을 AI Gateway 경유로 (지역 차단 우회 확정판). worker.js 참조.
+[vars]
+AI_GATEWAY = "webgen"
+
 # IP당 일일 호출 카운트 저장용 KV.
 # 배포 전 1회: npx wrangler kv namespace create RATE_KV
 # 출력된 id를 아래에 붙여넣기.
