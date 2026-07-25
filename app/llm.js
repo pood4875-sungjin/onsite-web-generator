@@ -88,7 +88,7 @@
     if (usingProxy()) {
       var pres = await fetch(proxyUrl() + '/compose', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', outline: brief.outline || [] }),
+        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }),
       });
       var pj = null; try { pj = await pres.json(); } catch (e) {}
       if (!pres.ok) throw new Error((pj && (pj.message || pj.error)) || ('HTTP ' + pres.status));
@@ -105,10 +105,11 @@
       '규칙: 첫 장은 cover, 본문이 2섹션 이상이면 두번째는 agenda, 마지막은 closing. ' +
       'plan(자유 기획 텍스트)에 목차·순서가 보이면 그대로 따르고, 없으면 주제·목적·청중에 맞는 논리적 목차를 직접 구성. ' +
       'plan의 구체 정보(수치·기능·일정)는 반드시 반영. 섹션마다 본문 슬라이드(rows/cols/bigstat/statement) 1장 이상 실제 내용으로(플레이스홀더 금지). ' +
-      '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. 총 6~12장.';
+      '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. ' +
+      '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
     var user = '브리프:\n' + JSON.stringify({
       title: brief.title || '', message: brief.message || '', audience: brief.audience || '',
-      purpose: brief.purpose || '', plan: brief.plan || '',
+      purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '',
       outline: (brief.outline || []),
     }, null, 2);
     var txt = await messages({ system: sys, user: user, maxTokens: 4000 });

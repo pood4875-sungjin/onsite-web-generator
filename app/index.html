@@ -177,6 +177,8 @@
           <div><label><span data-i18n="대상 청중 ">대상 청중 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="pbAud" data-i18n-ph="예: 경영진" placeholder="예: 경영진"></div>
           <div><label><span data-i18n="발표 목적 ">발표 목적 </span><span class="opt" data-i18n="(선택)">(선택)</span></label><input class="ds-input" id="pbPurpose" data-i18n-ph="예: 투자 승인 받기" placeholder="예: 투자 승인 받기"></div>
         </div>
+        <label data-i18n="분량">분량</label>
+        <div class="orgchips" id="pbLenChips"></div>
         <label><span data-i18n="기획 내용 ">기획 내용 </span><span class="opt" data-i18n="(자유롭게 — AI가 해석해서 장표로 구성)">(자유롭게 — AI가 해석해서 장표로 구성)</span></label>
         <textarea class="ds-input" id="pbPlan" rows="8" placeholder="자유롭게 적어주세요. AI가 해석해서 장표를 구성해요.
 
@@ -246,6 +248,13 @@
   };
 
   let pptStyle='ax';
+  // PPT 분량 — 젠스파크식 사전 선택. AI 프롬프트의 목표 장수로 전달
+  const PPT_LENGTHS=[['short','5–8장 · 짧은 발표'],['std','10–15장 · 표준 발표'],['deep','20장+ · 심층 자료']];
+  let pbLen='short';
+  (function(){ const box=document.getElementById('pbLenChips'); if(!box) return;
+    PPT_LENGTHS.forEach(([id,label])=>{ const b=document.createElement('button'); b.type='button'; b.className='ds-chip'+(id===pbLen?' on':''); b.textContent=label;
+      b.onclick=()=>{ pbLen=id; box.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; box.append(b); });
+  })();
   function renderPptStyles(){
     const sz=document.getElementById('styles'); sz.innerHTML='';
     (window.PPT_STYLES||[]).forEach(s=>{
@@ -366,6 +375,7 @@
         audience:(document.getElementById('pbAud').value||'').trim(),
         purpose:(document.getElementById('pbPurpose').value||'').trim(),
         plan:plan,
+        length:pbLen,                                                       // short|std|deep → 목표 장수
         message:(document.getElementById('pbPurpose').value||'').trim(),   // 폴백 조립용
         outline:outlineFromPlan,                                            // 폴백 조립용
         style:pptStyle

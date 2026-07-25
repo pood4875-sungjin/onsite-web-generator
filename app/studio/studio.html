@@ -213,6 +213,20 @@
   .prow .del{flex:0 0 auto;border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px}
   .prow .del:hover{color:#f87171;background:rgba(248,113,113,.12)}
   .pempty{color:var(--tx3);font-size:12px;text-align:center;padding:16px}
+  /* PPT 썸네일 스트립 — 프리뷰 좌측(젠스파크식). 클릭=해당 장, 현재 장 하이라이트 */
+  .thumbrail{position:absolute;left:0;top:0;bottom:0;width:150px;z-index:6;display:flex;flex-direction:column;gap:8px;padding:10px 8px;overflow-y:auto;background:color-mix(in srgb,#0a0d16 82%,transparent);border-right:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+  .thumb{position:relative;flex:0 0 auto;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#11141f;transition:border-color var(--dur) var(--ease)}
+  .thumb:hover{border-color:rgba(255,255,255,.28)}
+  .thumb.cur{border-color:var(--accent)}
+  .thumb .tnum{position:absolute;left:5px;top:4px;z-index:2;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:5px;padding:1px 5px}
+  .thumb iframe{width:1280px;height:720px;border:0;transform-origin:0 0;pointer-events:none;display:block}
+  .thumb-add{flex:0 0 auto;position:relative}
+  .thumb-add > button{width:100%;border:1px dashed rgba(255,255,255,.3);background:none;color:rgba(255,255,255,.7);border-radius:8px;padding:9px;font-size:12px;cursor:pointer}
+  .thumb-add > button:hover{color:#fff;border-color:var(--accent)}
+  .thumb-menu{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);background:var(--surface-solid);border:1px solid var(--line2);border-radius:10px;padding:5px;z-index:40;box-shadow:var(--shadow-3);grid-template-columns:1fr;gap:2px;max-height:260px;overflow-y:auto}
+  .thumb-menu.open{display:grid}
+  .thumb-menu button{border:none;background:none;color:var(--tx2);cursor:pointer;font-size:12px;text-align:left;padding:7px 9px;border-radius:7px}
+  .thumb-menu button:hover{color:var(--tx);background:var(--surf2)}
   /* 전체화면 미리보기 오버레이 */
   .pvfull{position:fixed;inset:0;z-index:998;display:flex;flex-direction:column;background:#0a0a0e}
   .pvfull[hidden]{display:none}
@@ -343,6 +357,7 @@
     </div>
     <div class="secadd" id="secAdd"></div>
     <div class="pvbox">
+      <div class="thumbrail" id="thumbRail" style="display:none"></div>
       <div class="empty" id="empty"><div class="ai-orb"></div><span class="es"><span data-i18n="대화창을 통해 AI가 실시간으로">대화창을 통해 AI가 실시간으로</span><br><span data-i18n="페이지를 완성합니다">페이지를 완성합니다</span></span></div>
       <div class="genning" id="genning"><div class="gspin"></div><b data-i18n="페이지 생성 중">페이지 생성 중</b><span class="gtext" id="gtext" data-i18n="기획 내용 분석 중…">기획 내용 분석 중…</span><div class="gbar"><i></i></div></div>
       <iframe id="frame" title="preview"></iframe>
@@ -419,11 +434,14 @@
   let device = 'desktop';
   function fitPreview(){
     const box = frame.parentElement;
-    const bw = box.clientWidth, bh = box.clientHeight;
+    // PPT 썸네일 스트립(좌측 150px)이 떠 있으면 그만큼 오른쪽으로 밀어 렌더
+    const tr = document.getElementById('thumbRail');
+    const railOff = (tr && tr.style.display!=='none') ? 150 : 0;
+    const bw = box.clientWidth - railOff, bh = box.clientHeight;
     const targetW = DEVICE_W[device] || VW;
     let s, left, top;
     if(device === 'desktop'){
-      s = bw / targetW; left = 0; top = 0;               // 폭 맞춤 축소(기존 동작)
+      s = bw / targetW; left = railOff; top = 0;         // 폭 맞춤 축소(기존 동작)
     } else {
       s = Math.min((bw - 40) / targetW, (bh - 24) / 720, 1); // 폭·높이 여유에 맞춰, 업스케일 금지
       left = (bw - targetW * s) / 2;                     // 가로 중앙
@@ -608,6 +626,20 @@
     }
     if(editMode) applyEdit();
     else if(curMode().slides) decoratePpt(frame.contentDocument);   // 슬라이드 호버 [↑↓✕]는 항상
+    // 썸네일 현재 장 동기화 — 프리뷰 스크롤 중앙 기준
+    if(curMode().slides){
+      const fw=frame.contentWindow;
+      let _t=null;
+      fw.addEventListener('scroll',()=>{ if(_t) return; _t=setTimeout(()=>{ _t=null;
+        try{
+          const mid=fw.innerHeight/2;
+          const ss=[...frame.contentDocument.querySelectorAll('.ppt-stack > .slide')];
+          let best=0,bd=1e9;
+          ss.forEach((s,i)=>{ const r=s.getBoundingClientRect(); const c=r.top+r.height/2; const d=Math.abs(c-mid); if(d<bd){bd=d;best=i;} });
+          setCurThumb(best);
+        }catch(e){}
+      },120); },{passive:true});
+    }
   });
   editBtn.onclick=()=>{
     if(!generated){ editBtn.textContent=tL('먼저 생성하세요'); setTimeout(()=>editBtn.textContent=tL('편집'),1200); return; }
@@ -762,8 +794,8 @@
     // 편집전용(이메일/PPT): 재생성 없이 편집 안내만 (packMode.doneKo)
     if(curMode().editOnly){
       d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL(curMode().doneKo||'우측 편집 버튼으로 수정하세요.')}</span>`));
-      // 슬라이드 패널은 상단 도킹(#pptDock)에 별도 마운트 — 채팅에 안 밀리게
-      if(curMode().slides) mountPptDock();
+      // 슬라이드 내비는 프리뷰 좌측 썸네일 스트립
+      if(curMode().slides) refreshPptPanel();
       return d;
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼 안내')}</span>`));
@@ -773,7 +805,11 @@
 
   /* ---- PPT 슬라이드 관리 패널 (data.slides[] 추가·삭제·순서). 편집전용 done 위젯에 삽입 ---- */
   function scrollToSlide(i){
-    try{ const secs=frame.contentDocument.querySelectorAll('.ppt-stack > .slide'); if(secs[i]) secs[i].scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+    try{ const fw=frame.contentWindow, s=frame.contentDocument.querySelectorAll('.ppt-stack > .slide')[i]; if(!s) return;
+      const r=s.getBoundingClientRect(); const y=fw.scrollY + r.top - Math.max(0,(fw.innerHeight-r.height)/2);
+      fw.scrollTo({top:Math.max(0,y), behavior:'smooth'});
+      setTimeout(()=>{ try{ if(Math.abs(fw.scrollY-Math.max(0,y))>40) fw.scrollTo(0,Math.max(0,y)); }catch(e){} },350);   // smooth 미동작 환경 폴백
+    }catch(e){}
   }
   // AI가 방금 추가/수정한 슬라이드 인덱스 표시(패널 배지 + 프리뷰 플래시). 수동 조작 시 해제.
   let _pptMarks={};   // {idx:'new'|'mod'}
@@ -792,9 +828,36 @@
   }
   // 라이브 DOM에서 현재 패널을 찾아 교체(init 중 done 위젯이 여러 번 마운트돼 캡처 참조가 분리될 수 있음)
   let _pptFolded=true;   // 기본 접힘 — 필요할 때만 펼쳐 공간 확보
-  function refreshPptPanel(){ const cur=document.querySelector('.pptpanel'); if(cur) cur.replaceWith(buildPptPanel()); }
-  // 슬라이드 패널을 채팅 위 도킹 영역에 고정(대화가 쌓여도 안 밀림)
-  function mountPptDock(){ const d=document.getElementById('pptDock'); if(!d) return; d.style.display=''; d.innerHTML=''; d.append(buildPptPanel()); }
+  // 슬라이드 내비 = 프리뷰 좌측 썸네일 스트립(젠스파크식). 구조 변경 시 재빌드
+  function refreshPptPanel(){ rebuildThumbRail(); }
+  let _curThumb=0;
+  function setCurThumb(i){ _curThumb=i; document.querySelectorAll('#thumbRail .thumb').forEach((t,k)=>t.classList.toggle('cur',k===i)); }
+  function rebuildThumbRail(){
+    const rail=document.getElementById('thumbRail'); if(!rail) return;
+    if(!curMode().slides || typeof renderPptDeck!=='function'){ rail.style.display='none'; return; }
+    rail.style.display='flex'; rail.innerHTML='';
+    const W=132, sc=W/1280;
+    (data.slides||[]).forEach((s,i)=>{
+      const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>');
+      t.style.width=W+'px'; t.style.height=Math.round(720*sc)+'px';
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
+      f.srcdoc=renderPptDeck({slides:[JSON.parse(JSON.stringify(s))], style:data.style||'ax', accent:data.accent||''});
+      f.style.transform='scale('+sc+')';
+      t.append(f);
+      t.onclick=()=>{ setCurThumb(i); scrollToSlide(i); };
+      rail.append(t);
+    });
+    const add=el('div','thumb-add');
+    const ab=el('button','','+ '+tL('추가'));
+    const menu=el('div','thumb-menu');
+    (window.PPT_SLIDE_TYPES||[]).forEach(tp=>{ const b=el('button','',tp.label);
+      b.onclick=(e)=>{ e.stopPropagation(); menu.classList.remove('open'); pptMutate(a=>a.push(window.pptNewSlide(tp.type))); setTimeout(()=>{ setCurThumb((data.slides||[]).length-1); scrollToSlide((data.slides||[]).length-1); },150); }; menu.append(b); });
+    ab.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+    document.addEventListener('click',(e)=>{ if(!add.contains(e.target)) menu.classList.remove('open'); });
+    add.append(ab,menu); rail.append(add);
+    setCurThumb(Math.min(_curThumb,(data.slides||[]).length-1));
+    fitPreview();   // 레일 노출로 줄어든 폭 반영
+  }
 
   /* ---- PPT 내용수정 채팅 — 내용·구조(추가/분할/삭제/순서) AI 수정. 디자인만 안내로 리다이렉트 ---- */
   // AI 작업중 버블: 단계 메시지 순환 + 경과초 + 진행바. 반환 {row, done()} — done()이 버블 제거.
