@@ -11,6 +11,8 @@
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
 <script src="packs.ppt.js"></script>
+<script src="charts.js"></script>
+<script src="packs.pitch.js"></script>
 <script src="llm.js"></script>
 <script src="edm/promo01.js"></script>
 <script src="templates.js"></script>
@@ -373,6 +375,14 @@
           c.onclick=()=>{ c.classList.add('sel'); pick(s.id, s.name); };
           sz.append(c);
         });
+        // Creatable Pitch — 별도 디자인 시스템 팩. 같은 줄에서 나란히 고른다.
+        if(window.PITCH_STYLE){
+          const ps=window.PITCH_STYLE;
+          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPitchDeck?renderPitchDeck(window.PITCH_DEFAULT_DECK):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); pick('pitch', ps.name); };
+          sz.append(c);
+        }
       } else if(kind==='edm'){
         (window.APP_TEMPLATES||[]).filter(t=>t.tag==='edm').forEach(tpl=>{
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:linear-gradient(135deg,#0B1220,#03C75A)"></div></div><div class="cap">${tpl.name}</div>`);
@@ -487,7 +497,8 @@
 
     if(S.kind==='ppt'){
       const outlineFromPlan = plan.split('\n').map(s=>s.replace(/^[\s•\-*·]*\d*[.)]?\s*/,'').trim()).filter(s=>s && s.length<=40).slice(0,8);
-      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle };
+      const isPitch = S.pptStyle==='pitch';   // Creatable Pitch = 별도 팩(레이아웃 체계가 다름)
+      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:isPitch?'pitch':'' };
       const hasBrief=!!plan;
       let deck=null;
       if(hasBrief && window.LLM && LLM.aiAvailable()){
@@ -495,9 +506,11 @@
         try{ deck=await LLM.composeDeck(brief); stop(true); }
         catch(e){ stop(false); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       }
-      if(!deck) deck = (hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
-                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle});
-      const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:'ppt' });
+      if(!deck) deck = isPitch
+                 ? ((hasBrief && window.pitchComposeDeck) ? pitchComposeDeck(brief) : JSON.parse(JSON.stringify(window.PITCH_DEFAULT_DECK||{slides:[]})))
+                 : ((hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
+                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle}));
+      const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:isPitch?'pitch':'ppt' });
       const full=getProject(p.id); const pg0=full.pages[0];
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
       pg0.chat={ log:[{r:'bot',t:'📊 '+_L('PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.')}], idx:8, generated:true };

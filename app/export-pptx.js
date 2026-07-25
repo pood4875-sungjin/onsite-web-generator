@@ -15,9 +15,11 @@
   function hex(c) { function h(n) { return ('0' + Math.max(0, Math.min(255, n)).toString(16)).slice(-2).toUpperCase(); } return h(c.r) + h(c.g) + h(c.b); }
   function fontFamily(cs) { var f = (cs.fontFamily || '').split(',')[0].replace(/["']/g, '').trim(); return f || 'Pretendard'; }
 
-  var TEXT_SEL = ['.meta-k', '.meta-v', '.eyebrow', '.cover-title', '.cover-sub', '.s-title', '.s-index', '.row-num', '.row-label', '.row-desc', '.block-sub', '.block-p', '.bignum', '.agenda-title', '.agenda-label', '.agenda-badge', '.contact-k', '.contact-v', '.contact-email', '.contact-title'].join(',');
-  var LIST_SEL = '.block-list li';
-  var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill';
+  var TEXT_SEL = ['.meta-k', '.meta-v', '.eyebrow', '.cover-title', '.cover-sub', '.s-title', '.s-index', '.row-num', '.row-label', '.row-desc', '.block-sub', '.block-p', '.bignum', '.agenda-title', '.agenda-label', '.agenda-badge', '.contact-k', '.contact-v', '.contact-email', '.contact-title',
+    /* pitch 팩 */ '.p-eyebrow', '.p-title', '.p-lead', '.p-body', '.p-note', '.st-title', '.st-sub', '.qt-text', '.qt-by', '.qt-num', '.qt-lab', '.qt-stars', '.g-head', '.g-role', '.g-text', '.s-num', '.s-lab', '.sp-num', '.sp-lab', '.bs-num', '.bs-cap', '.l-label', '.l-sub', '.l-arrow', '.pr-name', '.pr-price', '.pr-per', '.tl-when', '.p-c-head', '.p-c-text', '.mx-lab', '.mx-axl', '.cl-k', '.cl-v', '.t-row > span', '.p-media.ph span'].join(',');
+  var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
+  var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
+    /* pitch 팩 — 카드·패널·플레이스홀더는 사각형으로 */ '.g-cell.card, .g-cell.person, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 
@@ -100,8 +102,34 @@
         var src = el.currentSrc || el.src || ''; if (src.indexOf('data:') !== 0) return;
         try { s.addImage({ data: src, x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN }); } catch (e) {}
       });
+      // 차트(SVG) → PNG로 래스터화해 이미지 개체로. 2배 해상도로 그려 선명도 유지.
+      var svgs = [].slice.call(slide.querySelectorAll('svg.cht'));
+      for (var sv = 0; sv < svgs.length; sv++) {
+        var el2 = svgs[sv], r2 = rel(el2, origin); if (r2.w < 3 || r2.h < 3) continue;
+        try {
+          var clone = el2.cloneNode(true);
+          // CSS 변수·클래스 스타일은 직렬화에 안 실린다 → computed 값을 인라인으로 굽는다
+          var srcN = el2.querySelectorAll('*'), dstN = clone.querySelectorAll('*');
+          for (var ni = 0; ni < srcN.length; ni++) {
+            var cs2 = win.getComputedStyle(srcN[ni]);
+            if (srcN[ni].tagName === 'text') dstN[ni].setAttribute('style', 'font-family:' + cs2.fontFamily + ';font-size:' + cs2.fontSize + ';font-weight:' + cs2.fontWeight + ';fill:' + cs2.fill + ';letter-spacing:' + cs2.letterSpacing);
+            else { var fl = cs2.fill; if (fl && fl.indexOf('var(') < 0) dstN[ni].setAttribute('fill', fl); var st2 = cs2.stroke; if (st2 && st2 !== 'none') { dstN[ni].setAttribute('stroke', st2); dstN[ni].setAttribute('stroke-width', cs2.strokeWidth); } }
+          }
+          clone.setAttribute('width', r2.w); clone.setAttribute('height', r2.h);
+          var xml = new XMLSerializer().serializeToString(clone);
+          var url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+          var png = await new Promise(function (resolve) {
+            var img = new Image();
+            img.onload = function () { var c = doc.createElement('canvas'); c.width = r2.w * 2; c.height = r2.h * 2;
+              c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); resolve(c.toDataURL('image/png')); };
+            img.onerror = function () { resolve(null); };
+            img.src = url;
+          });
+          if (png) s.addImage({ data: png, x: r2.x * IN, y: r2.y * IN, w: r2.w * IN, h: r2.h * IN });
+        } catch (e) {}
+      }
       [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
-      [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
+      [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { if (el.closest && el.closest('svg')) return; addTextBox(win, s, el, origin, slideBg); });
       [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
     }
     var name = (doc.title || 'deck').replace(/[\\/:*?"<>|]+/g, '_').trim() || 'deck';

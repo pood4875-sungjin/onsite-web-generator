@@ -11,6 +11,8 @@
 <script src="packs.edm.js"></script>
 <script src="packs.aether.js"></script>
 <script src="packs.ppt.js"></script>
+<script src="charts.js"></script>
+<script src="packs.pitch.js"></script>
 <script src="i18n.js"></script>
 <script src="icons.js"></script>
 <script src="shell.js"></script>
@@ -92,7 +94,7 @@
   // 템플릿 탭과 동일한 필터 리스트/카테고리
   const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
   const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
-  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : p.stylePack==='ppt'?'ppt' : p.kind==='multi'?'website':'landing';
+  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : (p.stylePack==='ppt'||p.stylePack==='pitch')?'ppt' : p.kind==='multi'?'website':'landing';
   let filter='all';
 
   function renderForStyle(sp, pg){ const d=pg.data||{};
@@ -101,8 +103,9 @@
     if(sp==='edm' && window.renderEdmPage) return renderEdmPage(d);
     if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
+    if(sp==='pitch'&&window.renderPitchDeck) return renderPitchDeck(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
-  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='edm')return 'eDM'; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
     const isMulti=project.kind==='multi';

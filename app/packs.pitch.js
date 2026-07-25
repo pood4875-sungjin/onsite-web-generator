@@ -439,7 +439,55 @@
     closing: { type: 'closing', title: 'Thank you', contacts: [{ k: 'EMAIL', v: '' }, { k: 'WEB', v: '' }] },
   };
 
+  /* AI 프롬프트용 스키마 문서 — 카탈로그의 "언제 쓰나"를 그대로 실어
+     브리프 내용에 따라 장표 타입을 고르게 한다(순환 배치 금지). */
+  var SCHEMA_DOC = CATALOG.map(function (c) {
+    return c.type + '(' + c.label + '): ' + c.use + ' | 필수 ' + c.needs.join(',') + (c.opt ? ' | 선택 ' + c.opt.join(',') : '');
+  }).join('\n');
+  var FIELD_DOC =
+    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?} | ' +
+    'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
+    'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label}|{kind:"panel"},side:"left|right",bg?} | ' +
+    'grid:{eyebrow?,title,variant:"text|icon|card|person",cols:2~4,items:[{head,role?,text}],bg?} | ' +
+    'stats:{eyebrow?,title,cols:2~3,items:[{value,label}],bg?} | ' +
+    'bigstat:{eyebrow?,title,value,caption,bg?} | ' +
+    'list:{title,rows:[{label,sub}],bg?} | ' +
+    'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
+    'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
+    'timeline:{title,items:[{when,head,text}],bg?} | ' +
+    'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn",categories:[str],series:[{name,values:[숫자]}],emphasis?:인덱스,format?:{prefix,suffix}},bg?} | ' +
+    'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
+    'gallery:{title,items:[{head?,text?,image?:{label}}],bg?} | ' +
+    'closing:{title,contacts:[{k,v}]}';
+
+  /* 결정론 폴백 — AI 실패/미가용 시. 내용 키워드로 장표 타입을 고른다(순환 배치가 아니라). */
+  function pitchComposeDeck(brief) {
+    brief = brief || {};
+    var title = (brief.title || '').trim() || '제안 발표';
+    var outline = (brief.outline || []).map(function (s) { return (s || '').trim(); }).filter(Boolean).slice(0, 8);
+    var slides = [{ type: 'statement', bg: 'green', pos: 'bottom', eyebrow: 'PITCH DECK', title: title, sub: brief.message || '' }];
+    var pick = function (sec) {
+      // 섹션 제목의 키워드 → 어울리는 장표. 매칭 없으면 grid(가장 범용).
+      if (/(로드맵|일정|계획|연혁|절차|단계)/.test(sec)) return { type: 'timeline', bg: 'grey', title: sec, items: [{ when: 'STEP 1', head: '단계', text: '설명을 입력하세요.' }, { when: 'STEP 2', head: '단계', text: '설명을 입력하세요.' }, { when: 'STEP 3', head: '단계', text: '설명을 입력하세요.' }] };
+      if (/(성과|지표|트랙션|실적|수치)/.test(sec)) return { type: 'stats', bg: 'grey', title: sec, cols: 3, items: [{ value: '00', label: '지표' }, { value: '00', label: '지표' }, { value: '00', label: '지표' }] };
+      if (/(시장|규모|TAM|점유)/i.test(sec)) return { type: 'bigstat', bg: 'white', eyebrow: 'MARKET', title: sec, value: '00%', caption: '설명을 입력하세요.' };
+      if (/(요금|가격|플랜|과금)/.test(sec)) return { type: 'pricing', bg: 'white', title: sec, tiers: [{ name: 'TIER 1', price: '$00', per: 'per month', features: ['기능', '기능'] }, { name: 'TIER 2', price: '$00', per: 'per month', features: ['기능', '기능'] }] };
+      if (/(추이|성장|매출|그래프|차트)/.test(sec)) return { type: 'chart', bg: 'white', title: sec, chart: { type: 'bar', categories: ['1', '2', '3', '4'], series: [{ name: '값', values: [2, 4, 6, 9] }] } };
+      if (/(경쟁|포지셔닝|차별)/.test(sec)) return { type: 'matrix', bg: 'grey', title: sec, axisX: '가로축', axisY: '세로축', points: [{ x: 72, y: 76, label: '우리' }, { x: 34, y: 42, label: '경쟁사' }] };
+      if (/(팀|조직|멤버|어드바이저)/.test(sec)) return { type: 'grid', bg: 'white', variant: 'person', title: sec, cols: 4, items: [{ head: '이름', role: 'ROLE', text: '소개' }, { head: '이름', role: 'ROLE', text: '소개' }, { head: '이름', role: 'ROLE', text: '소개' }, { head: '이름', role: 'ROLE', text: '소개' }] };
+      if (/(고객|후기|사례|보이스)/.test(sec)) return { type: 'quote', bg: 'green', text: '인용문을 입력하세요.', by: '— 이름' };
+      return { type: 'grid', bg: 'white', variant: 'text', title: sec, cols: 3, items: [{ head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] };
+    };
+    (outline.length ? outline : ['핵심 내용']).forEach(function (sec) { slides.push(pick(sec)); });
+    slides.push({ type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: brief.audience || '' }] });
+    return { style: 'pitch', slides: slides };
+  }
+
   window.renderPitchDeck = renderPitchDeck;
+  window.PITCH_SCHEMA_DOC = SCHEMA_DOC;
+  window.PITCH_FIELD_DOC = FIELD_DOC;
+  window.pitchComposeDeck = pitchComposeDeck;
+  window.PITCH_TYPE_LABEL = CATALOG.reduce(function (m, c) { m[c.type] = c.label; return m; }, {});
   window.PITCH_MV_SEL = MV_SEL;
   window.PITCH_DEFAULT_DECK = DEFAULT_DECK;
   window.PITCH_CATALOG = CATALOG;

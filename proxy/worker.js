@@ -41,6 +41,63 @@ const SYSTEM =
   '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. ' +
   '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 
+/* Pitch(Creatable) 팩 — 레이아웃 카탈로그("언제 쓰나")를 기준으로 AI가 장표 타입을 고른다.
+   app/packs.pitch.js의 PITCH_CATALOG·FIELD_DOC과 동일 계약. 팩이 늘면 여기도 팩별 스키마가 붙는다. */
+const PITCH_USE_DOC =
+  'statement(대형 문장): 표지·미션·섹션 전환·투자 요청. bg=green이 브랜드 강조면 | ' +
+  'quote(인용): 고객·전문가 발언으로 신뢰 | ' +
+  'split(좌우 2분할): 설명+시각자료 나란히 — 문제 정의·제품 화면·경쟁 우위 | ' +
+  'grid(N열 반복): 동급 항목 3~4개 — 기능·강점·팀원·경쟁사 | ' +
+  'stats(수치 그리드): 트랙션·성과 지표 2~6개 | ' +
+  'bigstat(단일 대형 수치): 시장 규모·점유율 숫자 하나로 임팩트 | ' +
+  'list(행 리스트): 언론 보도·자료 링크 나열 | ' +
+  'table(표): 거래처·계약 등 열이 정해진 데이터 | ' +
+  'pricing(요금 티어): 플랜 2~3개 비교 | ' +
+  'timeline(타임라인): 로드맵·절차·연혁 | ' +
+  'chart(차트): 추이=area/line, 항목 비교=bar, 구성비=donut/pie, 규모 비교=bubble, 포함 관계=concentric, 전환 퍼널=pyramid, 겹침=venn | ' +
+  'matrix(2×2): 포지셔닝·경쟁 지형 | ' +
+  'gallery(목업): 제품 화면 2~3개 | ' +
+  'closing(마무리): 인사+연락처';
+const PITCH_FIELD_DOC =
+  'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?} | ' +
+  'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
+  'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label:str},side:"left|right",bg?} | ' +
+  'grid:{eyebrow?,title,variant:"text|icon|card|person",cols:2~4,items:[{head,role?,text}],bg?} | ' +
+  'stats:{eyebrow?,title,cols:2~3,items:[{value,label}],bg?} | ' +
+  'bigstat:{eyebrow?,title,value,caption,bg?} | ' +
+  'list:{title,rows:[{label,sub}],bg?} | ' +
+  'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
+  'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
+  'timeline:{title,items:[{when,head,text}],bg?} | ' +
+  'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn",categories:[str],series:[{name:str,values:[숫자]}],emphasis?:정수,format?:{prefix,suffix}},bg?} | ' +
+  'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
+  'gallery:{title,items:[{head?,text?,image?:{label:str}}],bg?} | ' +
+  'closing:{title,contacts:[{k,v}]}';
+const PITCH_SYSTEM =
+  '너는 시니어 피치덱 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ]}\n' +
+  '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + PITCH_USE_DOC + '\n' +
+  '각 타입의 필드: ' + PITCH_FIELD_DOC + '\n' +
+  '규칙: 첫 장은 statement(bg green, pos bottom, eyebrow "PITCH DECK"류), 마지막은 closing. ' +
+  '수치가 있으면 stats/bigstat/chart로 시각화하고, 추이·비교·구성비 데이터는 chart를 적극 사용(값은 plan의 실제 수치). ' +
+  'plan의 구체 정보(수치·기능·일정)는 반드시 반영. 실제 내용으로 채운다(플레이스홀더 금지). ' +
+  'bg는 white/grey를 번갈아 리듬을 만들고 green은 전환점 1~3장에만. ' +
+  '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
+const PITCH_EDIT_SYSTEM =
+  '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +
+  '형식: {"slides":[...수정 후 전체 슬라이드 배열...],"message":"<사용자에게 보여줄 한 줄 요약>"}\n' +
+  '슬라이드 스키마: ' + PITCH_FIELD_DOC + '\n' +
+  '할 수 있는 것: 문구·수치·톤 수정, 슬라이드 추가·분할·삭제·순서 변경 — 전부 가능. 지시대로 실행하라.\n' +
+  '규칙:\n' +
+  '- 지시와 무관한 슬라이드는 원본 그대로 복사해 유지(임의 수정 금지). _pos/_hide/_fmt/_z/_grp 같은 밑줄 키도 그대로 보존.\n' +
+  '- 새로 만드는 슬라이드는 실제 내용으로 채운다(플레이스홀더 금지). 기존 덱의 맥락·톤을 따른다.\n' +
+  '- 덱은 1~24장.\n' +
+  '- 디자인(색·폰트·크기·배치·테마) 요청만 예외: slides를 null로 하고 message에 "디자인은 스타일 팩에서 일괄 관리돼요. 내용·구성 수정을 말씀해주세요." 취지로 안내.\n' +
+  '- 발표와 무관한 요청이면 slides null + 정중히 수정 요청을 유도.\n' +
+  '- message는 {LANG} 한두 문장, 무엇을 했는지 구체적으로.';
+
 /* 웹(랜딩/웹사이트) 초안 — 모든 필드를 채운다. 브리프에 근거 없는 항목은
    그럴듯한 예시로 채우되 assumed 목록에 표시 → 스튜디오가 "임의로 채운 부분" 안내. */
 const WEB_SYSTEM =
@@ -132,7 +189,7 @@ export default {
         outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
       };
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = SYSTEM;
+      system = clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch는 카탈로그 기반 타입 선택
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
       const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
@@ -155,7 +212,7 @@ export default {
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
       if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
-      system = EDIT_SYSTEM.replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
+      system = (clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
     }
 
