@@ -77,6 +77,7 @@
   .cwcard{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px}
   .cwact{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
   .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0}
+  .chiprow.choice{justify-content:flex-end}   /* 선택지=사용자 응답 → 우측 정렬 */
   .chiplabel{font-size:12px;font-weight:var(--fw-med);color:var(--body);margin:0 0 6px}
   .skipchip{background:none;border:1px dashed var(--hairline-strong);color:var(--mute);font-size:12.5px;cursor:pointer;padding:7px 14px;border-radius:var(--r-pill);font-family:inherit;transition:var(--dur) var(--ease)}
   .skipchip:hover{color:var(--body);border-color:var(--body-mid)}
@@ -313,14 +314,13 @@
   };
 
   /* ---- 선택 위젯들 ---- */
-  function askChips(items, current){
-    // items=[{id,label}] → Promise(id). 컴포저 비활성.
+  function askChips(items){
+    // items=[{id,label}] → Promise(id). 사용자 응답이므로 우측 정렬 + 기본 미선택.
     return new Promise(res=>{
-      const rowEl=el('div','chiprow');
-      items.forEach(it=>{ const b=el('button','ds-chip'+(it.id===current?' on':''),_L(it.label));
+      const rowEl=el('div','chiprow choice');
+      items.forEach(it=>{ const b=el('button','ds-chip',_L(it.label));
         b.onclick=()=>{ off(w); me(_L(it.label)); res(it.id); }; rowEl.append(b); });
-      const card=el('div','cwcard'); card.append(rowEl);
-      const w=widget(card);
+      const w=widget(rowEl);
     });
   }
 
@@ -338,60 +338,42 @@
   }
   function fitThumb(wrap, f){ requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
 
+  /* 스타일/템플릿 카드 — 기본 미선택, 카드 클릭 = 선택 완료(다음 버튼 없음) */
   function askStyle(kind){
     return new Promise(res=>{
-      const card=el('div','cwcard');
-      let picked=null, pickedName='';
       const sz=el('div','styles');
-      const paint=()=>{
-        sz.innerHTML='';
-        if(kind==='ppt'){
-          (window.PPT_STYLES||[]).forEach(s=>{
-            const c=el('div','sc'+(s.id===picked?' sel':''),`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
-            try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
-            c.onclick=()=>{ picked=s.id; pickedName=s.name; sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); };
-            sz.append(c);
-          });
-          if(!picked && (window.PPT_STYLES||[]).length){ picked=PPT_STYLES[0].id; pickedName=PPT_STYLES[0].name; sz.firstChild&&sz.firstChild.classList.add('sel'); }
-        } else if(kind==='edm'){
-          const tpls=(window.APP_TEMPLATES||[]).filter(t=>t.tag==='edm');
-          tpls.forEach(tpl=>{
-            const c=el('div','sc'+((S.edmTpl===tpl)?' sel':''),`<div class="sw"><div class="fallback" style="background:linear-gradient(135deg,#0B1220,#03C75A)"></div></div><div class="cap">${tpl.name}</div>`);
-            try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderEdmPage?renderEdmPage(tpl.pages[0].data,{}):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
-            c.onclick=()=>{ S.edmTpl=tpl; picked='edm'; pickedName=tpl.name; sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); };
-            sz.append(c);
-          });
-          if(!S.edmTpl && tpls.length){ S.edmTpl=tpls[0]; picked='edm'; pickedName=tpls[0].name; sz.firstChild&&sz.firstChild.classList.add('sel'); }
-        } else {
-          const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
-          const STYLES=[
-            { id:'aether', name:'다크 글로우', swatch:glow.swatch },
-            { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
-            { id:'midas', name:'MIDAS AX', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
-            { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
-          ];
-          if(!picked){ picked=STYLES[0].id; pickedName=STYLES[0].name; }
-          const recStyle=(ORGS.find(o=>o.id===S.org)||{}).rec;
-          STYLES.forEach(p=>{
-            const c=el('div','sc'+(p.id===picked?' sel':''),`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)}</div>`);
-            try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
-            c.onclick=()=>{ picked=p.id; pickedName=p.name; sz.querySelectorAll('.sc').forEach(x=>x.classList.remove('sel')); c.classList.add('sel'); };
-            sz.append(c);
-          });
-        }
-      };
-      if(kind==='single'||kind==='multi'){
-        card.append(el('div','chiplabel',_L('사업군 (추천 스타일에 반영)')));
-        const orow=el('div','chiprow'); orow.style.marginBottom='12px';
-        ORGS.forEach(o=>{ const b=el('button','ds-chip'+(o.id===S.org?' on':''),_L(o.label));
-          b.onclick=()=>{ S.org=o.id; picked=o.rec; orow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); paint(); }; orow.append(b); });
-        card.append(orow);
+      const pick=(id,name)=>{ off(w); me(name); S.styleName=name; res(id); };
+      if(kind==='ppt'){
+        (window.PPT_STYLES||[]).forEach(s=>{
+          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
+          try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); pick(s.id, s.name); };
+          sz.append(c);
+        });
+      } else if(kind==='edm'){
+        (window.APP_TEMPLATES||[]).filter(t=>t.tag==='edm').forEach(tpl=>{
+          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:linear-gradient(135deg,#0B1220,#03C75A)"></div></div><div class="cap">${tpl.name}</div>`);
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderEdmPage?renderEdmPage(tpl.pages[0].data,{}):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); S.edmTpl=tpl; pick('edm', tpl.name); };
+          sz.append(c);
+        });
+      } else {
+        const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
+        const STYLES=[
+          { id:'aether', name:'다크 글로우', swatch:glow.swatch },
+          { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
+          { id:'midas', name:'MIDAS AX', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
+          { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
+        ];
+        const recStyle=(ORGS.find(o=>o.id===S.org)||{}).rec;
+        STYLES.forEach(p=>{
+          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)}</div>`);
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); pick(p.id, _L(p.name)); };
+          sz.append(c);
+        });
       }
-      card.append(sz); paint();
-      const act=el('div','cwact');
-      const nx=el('button','ds-btn primary',_L('다음 →'));
-      nx.onclick=()=>{ off(w); me(pickedName||picked||''); S.styleName=pickedName||picked||''; res(picked); };
-      act.append(nx); card.append(act);
+      const card=el('div','cwcard'); card.append(sz);
       const w=widget(card);
     });
   }
@@ -542,7 +524,7 @@
 
       if(S.kind==='ppt' && S.plan){
         bot(_L('분량은 어느 정도로 할까요?'));
-        S.len=await askChips(PPT_LENGTHS.map(([id,label])=>({id,label})), S.len);
+        S.len=await askChips(PPT_LENGTHS.map(([id,label])=>({id,label})));
       }
 
       // AI 되묻기 — 브리프에서 이름·제품명 추출 + 부족 정보만 질문. 실패해도 계속.
@@ -566,6 +548,11 @@
       }
     }
 
+    // 사업군 → 스타일: 각각 별개 질문, 선택 즉시 다음으로
+    if(S.kind==='single'||S.kind==='multi'){
+      bot(_L('어느 사업군 프로젝트인가요? 어울리는 스타일을 추천해드릴게요.'));
+      S.org=await askChips(ORGS.map(o=>({id:o.id,label:o.label})));
+    }
     bot(_L(S.kind==='edm'?'템플릿을 골라주세요.':'디자인 스타일을 골라주세요.'));
     const st=await askStyle(S.kind);
     if(S.kind==='ppt') S.pptStyle=st||'ax';
