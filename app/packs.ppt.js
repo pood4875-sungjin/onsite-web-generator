@@ -23,20 +23,20 @@
   var R = {
     cover: function (s, P) {
       var meta = (s.meta || []);
-      var cells = meta.map(function (m, i) { var sp = (meta.length > 1 && i === meta.length - 1) ? ' class="spacer"' : ''; return '<div' + sp + '><p class="meta-k">' + esc(m.k) + '</p><p class="meta-v">' + esc(m.v) + '</p></div>'; }).join('');
+      var cells = meta.map(function (m, i) { var sp = (meta.length > 1 && i === meta.length - 1) ? ' class="spacer"' : ''; return '<div' + sp + '><p class="meta-k"' + de(P + '.meta.' + i + '.k') + '>' + esc(m.k) + '</p><p class="meta-v"' + de(P + '.meta.' + i + '.v') + '>' + esc(m.v) + '</p></div>'; }).join('');
       return '<section class="slide dark cover" data-kind="Cover"><div class="cover-meta">' + cells + '</div><div class="cover-foot"><div>' +
-        (s.eyebrow ? '<p class="meta-k" style="margin-bottom:18px;letter-spacing:.14em">' + esc(s.eyebrow) + '</p>' : '') +
+        (s.eyebrow ? '<p class="meta-k"' + de(P + '.eyebrow') + ' style="margin-bottom:18px;letter-spacing:.14em">' + esc(s.eyebrow) + '</p>' : '') +
         '<h1 class="cover-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
         (s.subtitle ? '<p class="block-p"' + de(P + '.subtitle') + ' style="color:var(--muted-alt);margin-top:24px;max-width:600px">' + esc(s.subtitle) + '</p>' : '') +
         '</div><div class="cover-arrow">→</div></div></section>';
     },
     agenda: function (s, P) {
       var items = s.items || [];
-      return '<section class="slide" data-kind="Agenda"><div class="agenda"><div class="agenda-title">' + esc(s.title || 'Agenda') + '</div><div class="agenda-list">' +
+      return '<section class="slide" data-kind="Agenda"><div class="agenda"><div class="agenda-title"' + de(P + '.title') + '>' + esc(s.title || 'Agenda') + '</div><div class="agenda-list">' +
         items.map(function (it, i) { return '<div class="agenda-row"><p class="agenda-label"' + de(P + '.items.' + i) + '>' + esc(it) + '</p><span class="agenda-badge">' + pad2(i + 1) + '</span></div>'; }).join('') + '</div></div></section>';
     },
     rows: function (s, P) {
-      var rows = (s.rows || []).map(function (r, j) { return '<div class="row"><span class="row-num">' + esc(r.num || '') + '</span><h3 class="row-label"' + de(P + '.rows.' + j + '.label') + '>' + esc(r.label || '') + '</h3><p class="row-desc"' + de(P + '.rows.' + j + '.desc') + '>' + ml(r.desc || '') + '</p></div>'; }).join('');
+      var rows = (s.rows || []).map(function (r, j) { return '<div class="row"><span class="row-num"' + de(P + '.rows.' + j + '.num') + '>' + esc(r.num || '') + '</span><h3 class="row-label"' + de(P + '.rows.' + j + '.label') + '>' + esc(r.label || '') + '</h3><p class="row-desc"' + de(P + '.rows.' + j + '.desc') + '>' + ml(r.desc || '') + '</p></div>'; }).join('');
       return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><div class="rows">' + rows + '</div></div></section>';
     },
     cols: function (s, P) { return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body">' + colsBlock(s.cols || [], P + '.cols') + '</div></section>'; },
@@ -53,11 +53,30 @@
     },
     closing: function (s, P) {
       var contacts = s.contacts || [], fills = [0, 2, 4], cells = '';
-      for (var i = 0; i < 6; i++) { var ci = fills.indexOf(i); if (ci > -1 && contacts[ci]) cells += '<div class="contact-cell fill"><p class="contact-k">' + esc(contacts[ci].k) + '</p><p class="contact-v">' + esc(contacts[ci].v) + '</p></div>'; else cells += '<div class="contact-cell"></div>'; }
-      return '<section class="slide dark contact" data-kind="Closing"><div class="contact-grid">' + cells + '</div><div class="contact-foot">' + (s.sub ? '<p class="contact-email">' + esc(s.sub) + '</p>' : '') + '<h2 class="contact-title"' + de(P + '.title') + '>' + ml(s.title || 'Thank you') + '</h2></div></section>';
+      for (var i = 0; i < 6; i++) { var ci = fills.indexOf(i); if (ci > -1 && contacts[ci]) cells += '<div class="contact-cell fill"><p class="contact-k"' + de(P + '.contacts.' + ci + '.k') + '>' + esc(contacts[ci].k) + '</p><p class="contact-v"' + de(P + '.contacts.' + ci + '.v') + '>' + esc(contacts[ci].v) + '</p></div>'; else cells += '<div class="contact-cell"></div>'; }
+      return '<section class="slide dark contact" data-kind="Closing"><div class="contact-grid">' + cells + '</div><div class="contact-foot">' + (s.sub ? '<p class="contact-email"' + de(P + '.sub') + '>' + esc(s.sub) + '</p>' : '') + '<h2 class="contact-title"' + de(P + '.title') + '>' + ml(s.title || 'Thank you') + '</h2></div></section>';
     },
   };
   function renderSlides(slides) { return (slides || []).map(function (s, i) { var fn = R[s.type] || R.rows; try { return fn(s, 'slides.' + i); } catch (e) { return ''; } }).join('\n'); }
+
+  /* ---- 편집 상태 적용 — 슬라이드별 _pos(블록 오프셋)/_hide(블록 숨김)/_fmt(텍스트 굵기, 상대경로 키).
+     블록 키 = MV_SEL 매칭 순서 m0,m1… (deck·viewer·PPTX 좌표까지 일관 반영) ---- */
+  var MV_SEL = '.s-head, .s-body > *, .cover-meta, .cover-foot > *, .agenda, .contact-grid, .contact-foot';
+  function stateScript(slides) {
+    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {} }; });
+    var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
+      'var sl=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");' +
+      'for(var i=0;i<sl.length;i++){var c=ST[i];if(!c)continue;var s=sl[i];' +
+      'var mv=s.querySelectorAll(SEL);' +
+      'for(var k=0;k<mv.length;k++){var key="m"+k;mv[k].setAttribute("data-mvkey",key);' +
+      'var p=c.p[key];if(p)mv[k].style.transform="translate("+p[0]+"px,"+p[1]+"px)";' +
+      'if(c.h[key])mv[k].style.display="none";}' +
+      'var ed=s.querySelectorAll("[data-edit]");' +
+      'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
+      'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;}' +
+      '}})();';
+    return '<scr' + 'ipt>' + js + '</scr' + 'ipt>';
+  }
 
   /* ---- CSS: ppt-template tokens+deck 포팅 (뷰어 크롬 제거, 세로 스택) ---- */
   function css() {
@@ -91,7 +110,7 @@
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + '</style></head><body data-style="' + esc(style) + '"' + (accent ? ' data-accent="' + esc(accent) + '"' : '') + '>' +
-      '<div class="ppt-stack">' + renderSlides(slides) + '</div></body></html>';
+      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
   }
 
   /* ---- 스타터 덱 (결정론적 · 슬롯 채움) ---- */
@@ -145,12 +164,13 @@
       '})();';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + vcss + '</style></head><body data-style="' + esc(style) + '"' + (accent ? ' data-accent="' + esc(accent) + '"' : '') + '>' +
-      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' +
+      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' + stateScript(slides) +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button></div>' +
       '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
   }
 
   window.renderPptViewer = renderPptViewer;
+  window.PPT_MV_SEL = MV_SEL;
   window.renderPptDeck = renderPptDeck;
   window.PPT_DEFAULT_DECK = DEFAULT_DECK;
   window.PPT_STYLE = { id: 'ppt', name: 'PPT', desc: '슬라이드 · 16:9 · MIDAS AX', swatch: 'linear-gradient(135deg,#0b1f3a,#2f93e3)' };

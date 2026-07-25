@@ -332,6 +332,7 @@
         <div class="stylemenu" id="stylemenu"></div>
       </div>
       <div style="display:flex;align-items:center;gap:6px">
+        <button class="dl" id="histBtn" title="되돌리기" style="display:none">↺</button>
         <button class="dl" id="editBtn" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
         <button class="dl" id="previewBtn" data-i18n-title="생성된 페이지를 새 창에서 미리보기" title="생성된 페이지를 새 창에서 미리보기" data-i18n="미리보기">미리보기</button>
         <button class="dl" id="save" data-i18n="저장">저장</button>
@@ -562,7 +563,11 @@
       if(!elm.__wired){ elm.__wired=1;
         elm.addEventListener('blur',()=>{ if(!editMode)return;
           if(isRawPack()){ persistRawEdits(doc); }   // eDM 등 raw 섹션: 편집 DOM을 html로 되씀(WYSIWYG)
-          else { setField(elm.getAttribute('data-edit'), elm.textContent.replace(/\s+/g,' ').trim()); }
+          else {
+            const before=curMode().slides?JSON.stringify(data.slides||[]):null;   // PPT: 텍스트 수정도 되돌리기 스택에
+            setField(elm.getAttribute('data-edit'), elm.textContent.replace(/\s+/g,' ').trim());
+            if(before!==null && before!==JSON.stringify(data.slides||[])) pushUndo(before);
+          }
           persist(); });
         elm.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && elm.tagName!=='P'){ e.preventDefault(); elm.blur(); } });
       }
@@ -583,6 +588,7 @@
       sec.appendChild(bar);
     });
     renderSectionAdd();
+    if(curMode().slides) decoratePpt(doc);   // PPT: 블록 핸들·굵기 툴바(편집모드 토글 시 즉시 반영)
   }
   frame.addEventListener('load', ()=>{
     // 프리뷰 네비게이션 가드 — 미리보기 안의 링크/폼이 iframe을 다른 페이지로 이동시키지 않게
@@ -601,6 +607,7 @@
       doc.addEventListener('submit', e=>e.preventDefault(), true);
     }
     if(editMode) applyEdit();
+    else if(curMode().slides) decoratePpt(frame.contentDocument);   // 슬라이드 호버 [↑↓✕]는 항상
   });
   editBtn.onclick=()=>{
     if(!generated){ editBtn.textContent=tL('먼저 생성하세요'); setTimeout(()=>editBtn.textContent=tL('편집'),1200); return; }
@@ -770,7 +777,7 @@
   }
   // AI가 방금 추가/수정한 슬라이드 인덱스 표시(패널 배지 + 프리뷰 플래시). 수동 조작 시 해제.
   let _pptMarks={};   // {idx:'new'|'mod'}
-  function pptMutate(fn){ if(!Array.isArray(data.slides)) data.slides=[]; _pptMarks={}; fn(data.slides); persist(); render(); refreshPptPanel(); }
+  function pptMutate(fn){ if(!Array.isArray(data.slides)) data.slides=[]; pushUndo(); _pptMarks={}; fn(data.slides); persist(); render(); refreshPptPanel(); }
   // 프리뷰에서 해당 장들로 시선 유도: 첫 변경 장으로 스크롤 + 잠시 액센트 테두리
   function flashSlides(idxs){
     if(!idxs.length) return;
@@ -812,7 +819,97 @@
     }, 1000);
     return { row, done(){ clearInterval(stT); clearInterval(scT); row.remove(); } };
   }
-  const _pptUndo=[];
+  /* ---- 통합 되돌리기(PPT): 텍스트·블록이동·숨김·굵기·슬라이드조작·AI수정 전부 한 스택 ---- */
+  const _undoStack=[];
+  function pushUndo(prevJson){ _undoStack.push(prevJson||JSON.stringify(data.slides||[])); if(_undoStack.length>40)_undoStack.shift(); syncUndoUI(); }
+  function syncUndoUI(){
+    const h=document.getElementById('histBtn'); if(h){ h.style.display=curMode().slides?'':'none'; h.disabled=!_undoStack.length; }
+    const u=document.getElementById('pptcUndo'); if(u) u.style.display=_undoStack.length?'':'none';
+  }
+  function undoAll(){ const s=_undoStack.pop(); if(!s) return; data.slides=JSON.parse(s); _pptMarks={}; persist(); render(); refreshPptPanel(); syncUndoUI(); }
+
+  /* ---- PPT 편집 v2 — 블록(⠿이동·✕숨김) + 텍스트 굵기 툴바 + 슬라이드 호버 [↑↓✕] ----
+     오프셋/숨김/굵기는 슬라이드 데이터(_pos/_hide/_fmt)에 저장 → 렌더·뷰어·PPTX 전부 반영 */
+  function slideIndexOf(node){ const sl=node.closest('.ppt-stack > .slide'); return sl? [...sl.parentElement.children].indexOf(sl) : -1; }
+  function relPathOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
+  function decoratePpt(doc){
+    if(!curMode().slides || !doc || !doc.body) return;
+    if(!doc.getElementById('pptedcss')){ const st=doc.createElement('style'); st.id='pptedcss'; st.textContent=
+      '[data-editing] [data-mvkey]:hover{outline:1px dashed rgba(108,43,255,.5);outline-offset:4px}'
+      +'.mvctl{position:absolute;top:-14px;right:-10px;z-index:60;display:none;gap:4px}'
+      +'[data-editing] [data-mvkey]:hover > .mvctl{display:flex}'
+      +'.mvctl button{border:none;width:24px;height:24px;border-radius:8px;background:rgba(108,43,255,.95);color:#fff;font-size:12px;cursor:pointer;line-height:1;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.35)}'
+      +'.mvctl .mvh{cursor:grab}.mvctl .mvx{background:rgba(230,60,60,.95)}'
+      +'.slctl{position:absolute;top:12px;right:12px;z-index:70;display:none;gap:4px}'
+      +'.ppt-stack > .slide:hover > .slctl{display:flex}'
+      +'.slctl button{width:26px;height:26px;border-radius:8px;background:rgba(10,10,16,.78);color:#fff;font-size:13px;cursor:pointer;line-height:1;display:grid;place-items:center;border:1px solid rgba(255,255,255,.18)}'
+      +'.slctl button:hover{background:rgba(108,43,255,.95)}.slctl .sx:hover{background:rgba(230,60,60,.95)}.slctl button:disabled{opacity:.3}'
+      +'.fmtbar{position:absolute;z-index:80;display:flex;gap:3px;padding:4px;border-radius:10px;background:rgba(10,10,16,.92);box-shadow:0 8px 24px rgba(0,0,0,.45)}'
+      +'.fmtbar button{border:none;min-width:26px;height:24px;border-radius:7px;background:rgba(255,255,255,.14);color:#fff;font-size:11.5px;cursor:pointer;padding:0 7px}'
+      +'.fmtbar button.on{background:#6c2bff}';
+      doc.head.appendChild(st); }
+    // 슬라이드 호버 [↑↓✕] — 편집모드 무관, 항상
+    const arr=doc.querySelectorAll('.ppt-stack > .slide');
+    arr.forEach((sl,i)=>{
+      const old=sl.querySelector(':scope > .slctl'); if(old) old.remove();
+      const bar=doc.createElement('div'); bar.className='slctl';
+      bar.innerHTML='<button class="su"'+(i===0?' disabled':'')+' title="'+tL('위로')+'">↑</button><button class="sd"'+(i===arr.length-1?' disabled':'')+' title="'+tL('아래로')+'">↓</button><button class="sx" title="'+tL('삭제')+'">✕</button>';
+      bar.querySelector('.su').onclick=(e)=>{ e.stopPropagation(); pptMutate(a=>{ const t=a[i]; a[i]=a[i-1]; a[i-1]=t; }); };
+      bar.querySelector('.sd').onclick=(e)=>{ e.stopPropagation(); pptMutate(a=>{ const t=a[i]; a[i]=a[i+1]; a[i+1]=t; }); };
+      bar.querySelector('.sx').onclick=(e)=>{ e.stopPropagation();
+        if((data.slides||[]).length<=1){ uiAlert(tL('마지막 슬라이드는 삭제할 수 없어요.')); return; }
+        uiConfirm(tL('이 슬라이드를 삭제할까요?'),{title:tL('슬라이드 삭제'),okText:tL('삭제'),danger:true}).then(ok=>{ if(ok) pptMutate(a=>a.splice(i,1)); }); };
+      sl.appendChild(bar);
+    });
+    if(!editMode) return;
+    // 블록 핸들 — ⠿ 드래그(오프셋 저장) · ✕ 숨김
+    doc.querySelectorAll('[data-mvkey]').forEach(blk=>{
+      if(blk.querySelector(':scope > .mvctl')) return;
+      if(doc.defaultView.getComputedStyle(blk).position==='static') blk.style.position='relative';
+      const key=blk.getAttribute('data-mvkey'); const si=slideIndexOf(blk); if(si<0) return;
+      const ctl=doc.createElement('span'); ctl.className='mvctl';
+      ctl.innerHTML='<button class="mvh" title="'+tL('끌어서 이동')+'">⠿</button><button class="mvx" title="'+tL('숨기기')+'">✕</button>';
+      ctl.querySelector('.mvh').addEventListener('pointerdown',(e)=>{
+        e.preventDefault(); e.stopPropagation();
+        const before=JSON.stringify(data.slides||[]);
+        const base=((data.slides[si]||{})._pos||{})[key]||[0,0];
+        const sx=e.clientX, sy=e.clientY; let dx=0,dy=0;
+        const mv=(ev)=>{ dx=ev.clientX-sx; dy=ev.clientY-sy; blk.style.transform='translate('+(base[0]+dx)+'px,'+(base[1]+dy)+'px)'; };
+        const up=()=>{ doc.removeEventListener('pointermove',mv); doc.removeEventListener('pointerup',up);
+          if(Math.abs(dx)<2&&Math.abs(dy)<2) return;
+          pushUndo(before); const s=data.slides[si]; s._pos=s._pos||{}; s._pos[key]=[Math.round(base[0]+dx),Math.round(base[1]+dy)]; persist(); };
+        doc.addEventListener('pointermove',mv); doc.addEventListener('pointerup',up);
+      });
+      ctl.querySelector('.mvx').onclick=(e)=>{ e.stopPropagation();
+        pushUndo(); const s=data.slides[si]; s._hide=s._hide||{}; s._hide[key]=1; blk.style.display='none'; persist(); };
+      blk.appendChild(ctl);
+    });
+    // 굵기 툴바 — [data-edit] 포커스 시 [B|L|기본]
+    let fb=doc.getElementById('fmtbar');
+    if(!fb){ fb=doc.createElement('div'); fb.id='fmtbar'; fb.className='fmtbar'; fb.style.display='none';
+      fb.addEventListener('mousedown',e=>e.preventDefault());   // 클릭해도 blur 안 되게
+      doc.body.appendChild(fb); }
+    const showFmt=(el)=>{
+      const si=slideIndexOf(el), rel=relPathOf(el); if(si<0||!rel){ fb.style.display='none'; return; }
+      const cur=((data.slides[si]||{})._fmt||{})[rel]||'';
+      fb.innerHTML='<button data-f="b"'+(cur==='b'?' class="on"':'')+' style="font-weight:800">B</button>'
+        +'<button data-f="l"'+(cur==='l'?' class="on"':'')+' style="font-weight:300">L</button>'
+        +'<button data-f="">'+tL('기본')+'</button>';
+      const r=el.getBoundingClientRect(), w=doc.defaultView;
+      fb.style.left=Math.max(4,r.left+w.scrollX)+'px'; fb.style.top=Math.max(4,r.top+w.scrollY-34)+'px'; fb.style.display='flex';
+      fb.querySelectorAll('button').forEach(b=>{ b.onclick=(e)=>{ e.stopPropagation();
+        const f=b.getAttribute('data-f'); pushUndo(); const s=data.slides[si]; s._fmt=s._fmt||{};
+        if(f) s._fmt[rel]=f; else delete s._fmt[rel];
+        el.style.fontWeight= f==='b'?700 : f==='l'?300 : '';
+        persist(); showFmt(el);
+      };});
+    };
+    doc.querySelectorAll('.ppt-stack [data-edit]').forEach(el=>{
+      if(el.__fmtw) return; el.__fmtw=1;
+      el.addEventListener('focus',()=>showFmt(el));
+      el.addEventListener('blur',()=>setTimeout(()=>{ if(doc.activeElement!==el) fb.style.display='none'; },150));
+    });
+  }
   function initPptChat(){
     if(!(window.LLM && LLM.aiAvailable())) return;   // AI 없으면 컴포저 미노출(직접 편집만)
     const box=document.getElementById('pptChat'), inp=document.getElementById('pptcInp');
@@ -834,7 +931,7 @@
         LLM.recordDur('edit', Date.now()-t0);   // 실측 기록 → 다음부터 '보통 N초' 정확해짐
         wk.done();
         if(res.slides){
-          _pptUndo.push(snap);
+          pushUndo(snap);
           // 변경 감지: 그대로/이동만 된 장은 제외, 내용 바뀐 장='수정', 완전 새 장='NEW'
           const oldArr=JSON.parse(snap);
           const oldSet=new Set(oldArr.map(s=>JSON.stringify(s)));
@@ -848,7 +945,7 @@
           persist(); render(); refreshPptPanel();
           const idxs=Object.keys(_pptMarks).map(Number);
           flashSlides(idxs); idxs.length&&scrollToSlide(idxs[0]);
-          undoB.style.display='';
+          syncUndoUI();
           botBubble((res.message||tL('수정했어요.'))+' '+tL('(↺로 되돌릴 수 있어요)'));
         } else {
           botBubble(res.message||tL('요청을 이해하지 못했어요. 슬라이드 내용 수정을 말씀해주세요.'));
@@ -858,11 +955,7 @@
     }
     send.onclick=doSend;
     inp.onkeydown=(e)=>{ if(e.key==='Enter'){ e.preventDefault(); doSend(); } };
-    undoB.onclick=()=>{ const s=_pptUndo.pop(); if(!s) return;
-      data.slides=JSON.parse(s); _pptMarks={}; persist(); render(); refreshPptPanel();
-      if(!_pptUndo.length) undoB.style.display='none';
-      botBubble(tL('마지막 AI 수정을 되돌렸어요.')); scroll();
-    };
+    undoB.onclick=()=>{ if(!_undoStack.length) return; undoAll(); botBubble(tL('마지막 수정을 되돌렸어요.')); scroll(); };
   }
   function buildPptPanel(){
     const TL = window.PPT_TYPE_LABEL||{}; const TYPES = window.PPT_SLIDE_TYPES||[];
@@ -1169,8 +1262,8 @@
     badge.style.cursor='default';
     // eDM=편집전용 → 대화 패널은 그대로 유지(생성 위젯 없이 편집 안내만). 자동 편집모드.
     setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
-    // PPT: 내용수정 채팅(AI 가능 시) — 문구·수치·톤만, 디자인·구조는 안내로 리다이렉트
-    if(curMode().slides) initPptChat();
+    // PPT: 내용수정 채팅(AI 가능 시) + 통합 되돌리기 버튼
+    if(curMode().slides){ initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI(); }
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 
   // PPT: .pptx 내보내기 버튼
