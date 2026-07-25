@@ -62,12 +62,20 @@
     return (slides || []).map(function (s, i) {
       var fn = R[s.type] || R.rows; var html = '';
       try { html = fn(s, 'slides.' + i); } catch (e) { return ''; }
-      // 슬라이드 이미지(선택) — 이동/숨김 대상(.s-img가 MV_SEL에 포함), PPTX에도 추출됨
-      if (s.img && s.img.src) {
-        var ist = '';
-        if (s.img.w) ist += 'width:' + (+s.img.w) + 'px;max-width:none;';
-        if (s.img.h) ist += 'height:' + (+s.img.h) + 'px;max-height:none;';
-        html = html.replace(/<\/section>\s*$/, '<div class="s-imgwrap"><img class="s-img" src="' + esc(s.img.src) + '"' + (ist ? ' style="' + ist + '"' : '') + ' alt=""></div></section>');
+      // 슬라이드 이미지 여러 장(s.imgs[], 구버전 s.img 단일도 수용)
+      // 각 장이 개별 이동/숨김/리사이즈 블록(.s-imgwrap ∈ MV_SEL), PPTX에도 추출됨
+      var imgs = (s.imgs && s.imgs.length) ? s.imgs : ((s.img && s.img.src) ? [s.img] : []);
+      if (imgs.length) {
+        var ih = imgs.map(function (im, k) {
+          if (!im || !im.src) return '';
+          var ist = '';
+          if (im.w) ist += 'width:' + (+im.w) + 'px;max-width:none;';
+          if (im.h) ist += 'height:' + (+im.h) + 'px;max-height:none;';
+          // 계단 배치로 겹침 방지(이후 드래그로 자유 이동)
+          var pos = 'top:' + (150 + k * 34) + 'px;right:' + (60 + k * 34) + 'px';
+          return '<div class="s-imgwrap" data-imgi="' + k + '" style="' + pos + '"><img class="s-img" src="' + esc(im.src) + '"' + (ist ? ' style="' + ist + '"' : '') + ' alt=""></div>';
+        }).join('');
+        html = html.replace(/<\/section>\s*$/, ih + '</section>');
       }
       return html;
     }).join('\n');
