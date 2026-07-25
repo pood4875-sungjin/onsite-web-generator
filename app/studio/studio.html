@@ -931,14 +931,46 @@
   function refreshPptPanel(){ rebuildThumbRail(); }
   let _curThumb=0;
   function setCurThumb(i){ _curThumb=i; document.querySelectorAll('#thumbRail .thumb').forEach((t,k)=>t.classList.toggle('cur',k===i)); }
+
+  /* 썸네일 재정렬 DnD — 드롭 판정을 레일 전체에 위임한다.
+     썸네일에만 걸면 썸네일 사이 여백(gap 8px)·레일 패딩에 놓을 때 무반응이고,
+     드롭라인이 삽입되며 요소가 밀려 커서가 그 여백에 빠지기 쉽다. */
+  let _dragI=null, _dropAt=null;
+  const _dropline=el('div','dropline');
+  function clearThumbDnd(){ _dropline.remove(); _dropAt=null; }
+  function wireThumbRailDnd(rail){
+    if(rail.__dndWired) return; rail.__dndWired=true;   // 레일 엘리먼트는 재빌드에도 유지 → 1회만 배선
+    rail.addEventListener('dragover',(e)=>{
+      if(_dragI==null) return;
+      e.preventDefault(); e.dataTransfer.dropEffect='move';
+      _dropline.remove();   // 측정 전 제거 — 드롭라인 높이가 판정에 끼어들어 흔들리는 것 방지
+      const ts=[...rail.querySelectorAll('.thumb')];
+      let at=ts.length;
+      for(let k=0;k<ts.length;k++){ const rc=ts[k].getBoundingClientRect();
+        if(e.clientY < rc.top+rc.height/2){ at=k; break; } }
+      _dropAt=at;
+      rail.insertBefore(_dropline, ts[at] || rail.querySelector('.thumb-add'));
+      // 레일 위·아래 끝에서 자동 스크롤 — 장수가 많아 화면 밖인 위치로도 옮길 수 있게
+      const rr=rail.getBoundingClientRect(), edge=48;
+      if(e.clientY<rr.top+edge) rail.scrollTop-=16;
+      else if(e.clientY>rr.bottom-edge) rail.scrollTop+=16;
+    });
+    rail.addEventListener('dragleave',(e)=>{ if(!rail.contains(e.relatedTarget)) clearThumbDnd(); });
+    rail.addEventListener('drop',(e)=>{
+      e.preventDefault(); const from=_dragI, at=_dropAt; clearThumbDnd();
+      if(from==null||at==null) return;
+      let to=at; if(from<to) to--; if(to===from) return;
+      pptMutate(a=>{ const m=a.splice(from,1)[0]; a.splice(to,0,m); });
+      setTimeout(()=>{ setCurThumb(to); scrollToSlide(to); },100);
+    });
+  }
+
   function rebuildThumbRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     if(!curMode().slides || typeof renderPptDeck!=='function'){ rail.style.display='none'; return; }
     rail.style.display='flex'; rail.innerHTML='';
     const W=132, sc=(W-4)/1280;   // 테두리 2px×2 제외한 내부 폭 기준 — 위아래 빈틈 없이 꽉 채움
-    let dragI=null, dropAt=null;
-    const dropline=el('div','dropline');
-    const clearDnd=()=>{ dropline.remove(); dropAt=null; };
+    wireThumbRailDnd(rail);
     (data.slides||[]).forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdel" title="'+tL('삭제')+'">✕</button>');
       t.style.width=W+'px';   // 높이는 aspect-ratio 16/9가 결정(비율 정확)
@@ -950,18 +982,10 @@
       t.querySelector('.tdel').onclick=(e)=>{ e.stopPropagation();
         if((data.slides||[]).length<=1){ uiAlert(tL('마지막 슬라이드는 삭제할 수 없어요.')); return; }
         uiConfirm(tL('이 슬라이드를 삭제할까요?'),{title:tL('슬라이드 삭제'),okText:tL('삭제'),danger:true}).then(ok=>{ if(ok) pptMutate(a=>a.splice(i,1)); }); };
-      // 드래그&드롭으로 원하는 위치에 재배치
+      // 드래그&드롭으로 원하는 위치에 재배치 (드롭 판정은 wireThumbRailDnd가 레일에서 담당)
       t.draggable=true;
-      t.addEventListener('dragstart',(e)=>{ dragI=i; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',String(i)); setTimeout(()=>t.classList.add('dragging'),0); });
-      t.addEventListener('dragend',()=>{ t.classList.remove('dragging'); dragI=null; clearDnd(); });
-      t.addEventListener('dragover',(e)=>{ e.preventDefault(); if(dragI==null||dragI===i) return;
-        const rc=t.getBoundingClientRect(); const before=(e.clientY-rc.top)/rc.height<0.5;
-        dropAt = before? i : i+1;
-        rail.insertBefore(dropline, before? t : t.nextSibling);   // 실제 자리 벌어지며 '여기 놓임' 표시
-      });
-      t.addEventListener('drop',(e)=>{ e.preventDefault(); const at=dropAt; clearDnd(); if(dragI==null||at==null) return;
-        let to=at; if(dragI<to) to--; if(to===dragI) return; const from=dragI;
-        pptMutate(a=>{ const m=a.splice(from,1)[0]; a.splice(to,0,m); }); setTimeout(()=>{ setCurThumb(to); scrollToSlide(to); },100); });
+      t.addEventListener('dragstart',(e)=>{ _dragI=i; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',String(i)); setTimeout(()=>t.classList.add('dragging'),0); });
+      t.addEventListener('dragend',()=>{ t.classList.remove('dragging'); _dragI=null; clearThumbDnd(); });
       rail.append(t);
     });
     const add=el('div','thumb-add');

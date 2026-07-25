@@ -385,18 +385,31 @@
     });
   }
 
+  // 프로젝트 이름 자동 생성 — AI가 뽑은 이름 → 제품명 → 브리프 첫 구절 → 종류+날짜
+  function autoName(){
+    const kt=_L((KINDS.find(k=>k.id===S.kind)||{}).kt||'프로젝트');
+    if(S.name) return S.name;
+    if(S.product) return S.product+' '+kt;
+    const t=(S.plan||'').replace(/\s+/g,' ').trim();
+    if(t){
+      let head=t.split(/[.!?·:,\n]/)[0].trim();
+      if(head.length>24) head=head.slice(0,24).trim();
+      if(head) return head+' '+kt;
+    }
+    const d=new Date();
+    return kt+' '+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  }
+
   function askSummary(){
     return new Promise(res=>{
       const card=el('div','cwcard');
       const kindLabel=(KINDS.find(k=>k.id===S.kind)||{}).kt||S.kind;
       const styleLabel = S.styleName || (S.kind==='edm' ? (S.edmTpl&&S.edmTpl.name)||'eDM' : S.kind==='ppt' ? S.pptStyle : S.stylePack);
-      const nameIn=el('input','ds-input'); nameIn.value=S.name||S.product||''; nameIn.placeholder=_L('예: 온사이트 제품사이트');
-      const prodIn=el('input','ds-input'); prodIn.value=S.product||''; prodIn.placeholder=_L('예: Onsite (선택)');
+      const nameIn=el('input','ds-input'); nameIn.value=autoName(); nameIn.placeholder=_L('예: 온사이트 제품사이트');
       const rows=el('div','');
       const row=(k,node)=>{ const r=el('div','sumrow'); r.append(el('span','sk',_L(k))); const v=el('div','sv'); (typeof node==='string')?(v.className='sv dim',v.textContent=node):v.append(node); r.append(v); return r; };
       rows.append(row('종류',_L(kindLabel)));
       rows.append(row('이름',nameIn));
-      if(S.kind!=='edm') rows.append(row('제품명',prodIn));
       rows.append(row('스타일',String(styleLabel)));
       if(S.plan) rows.append(row('요약',S.plan.length>90?S.plan.slice(0,90)+'…':S.plan));
       const lrow=el('div','chiprow'); lrow.style.margin='0';
@@ -409,7 +422,7 @@
       cbox.classList.add('away');
       const g=document.getElementById('genCta');
       setTimeout(()=>{ cbox.style.display='none'; g.hidden=false; },340);
-      g.onclick=()=>{ S.name=nameIn.value.trim(); S.product=prodIn.value.trim();
+      g.onclick=()=>{ S.name=nameIn.value.trim()||autoName();
         g.disabled=true; g.textContent=_L('생성 중…'); off(w); me(_L('생성할게요!')); res(true); };
     });
   }
