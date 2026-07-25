@@ -29,33 +29,32 @@
   .kscreen[hidden]{display:none}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .kscreen h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0 0 40px;color:var(--ink)}
-  .kcards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap;max-width:980px}
-  .kc{flex:1 1 0;min-width:0;max-width:290px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
+  .kcards{display:flex;gap:18px;justify-content:center;flex-wrap:nowrap;max-width:1180px;width:100%}
+  .kc{flex:1 1 0;min-width:0;max-width:340px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
   .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
-  .kc .thumb{height:150px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  /* 썸네일 = 영역을 꽉 채우는 창(하단에서 솟는 형태, 아래 모서리는 잘림) */
+  .kc .thumb{height:172px;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding:22px 26px 0}
   .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
   .tb-web{background:radial-gradient(130% 130% at 50% -10%,#2e0a80 0%,#6d3bf5 44%,#d0bffb 100%)}
   .tb-mail{background:radial-gradient(130% 130% at 50% -10%,#00401f 0%,#12b46a 46%,#c6f0da 100%)}
   .tb-ppt{background:radial-gradient(130% 130% at 50% -10%,#5e0a0a 0%,#e23b3b 46%,#f7cfcf 100%)}
-  .gw{position:relative;border-radius:12px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.2);overflow:hidden;padding:28px 12px 14px;display:flex;flex-direction:column;gap:8px}
-  .gwd{position:absolute;top:11px;left:12px;display:flex;gap:5px}.gwd i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.65)}
-  .gwhero{height:34px;border-radius:8px;flex:none;margin-bottom:3px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
-  .gwbar{height:8px;border-radius:5px;flex:none;background:rgba(255,255,255,.72)}
+  .gw{position:relative;border-radius:14px 14px 0 0;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);border-bottom:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.2);overflow:hidden;padding:34px 16px 12px;display:flex;flex-direction:column;gap:10px}
+  .gwd{position:absolute;top:13px;left:15px;display:flex;gap:5px}.gwd i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.65)}
+  .gwhero{height:44px;border-radius:9px;flex:none;margin-bottom:3px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
+  .gwbar{height:9px;border-radius:5px;flex:none;background:rgba(255,255,255,.72)}
   .w70{width:70%}.w60{width:60%}.w56{width:56%}.w52{width:52%}.w50{width:50%}.w40{width:40%}.cc{align-self:center}
-  .gw-land{width:158px;height:112px}
-  .gw-mail{width:108px;height:132px}
-  .gw-ppt{width:162px;height:100px}.gw-ppt .gwhero{height:30px}
-  .gwstack{position:relative;width:158px;height:120px}
-  .gws{position:absolute;left:0;bottom:0;width:150px;height:106px;border-radius:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-  .gws1{z-index:3;padding:26px 12px 12px;display:flex;flex-direction:column;gap:7px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
-  .gws2{z-index:2;transform:translate(8px,-9px);opacity:.62}
-  .gws3{z-index:1;transform:translate(16px,-18px);opacity:.36}
-  .gws1 .gwhero{height:30px;margin-bottom:2px}
-  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .tb-land .gw,.tb-mail .gw,.tb-ppt .gw{animation:thmFloat 3.8s var(--ease) infinite}
-  .tb-web .gwstack{animation:thmFloat 4.2s var(--ease) infinite}
-  .kc:hover .gw,.kc:hover .gwstack{filter:brightness(1.05)}
-  @media (prefers-reduced-motion:reduce){.tb-land .gw,.tb-mail .gw,.tb-ppt .gw,.tb-web .gwstack{animation:none}}
+  /* 창이 썸네일 영역을 가득 채우고 하단에서 잘리는 형태 */
+  .gw-land,.gw-mail,.gw-ppt{width:100%;height:100%}
+  .gw-mail{max-width:62%}
+  .gw-ppt .gwhero{height:40px}
+  .gwstack{position:relative;width:100%;height:100%}
+  .gws{position:absolute;left:0;bottom:0;width:94%;height:88%;border-radius:14px 14px 0 0;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);border-bottom:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .gws1{z-index:3;padding:32px 15px 10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  .gws2{z-index:2;transform:translate(10px,-11px);opacity:.62}
+  .gws3{z-index:1;transform:translate(20px,-22px);opacity:.36}
+  .gws1 .gwhero{height:38px;margin-bottom:2px}
+  .kc:hover .gw,.kc:hover .gws1{filter:brightness(1.07)}
+  .kc .gw,.kc .gws{transition:filter var(--dur) var(--ease)}
   .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
   .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
   .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
@@ -147,7 +146,8 @@
 
 <!-- 1) 종류 선택 — 단독 풀페이지 -->
 <div class="kscreen" id="kscreen">
-  <h1 data-i18n="어떤 종류의|프로젝트를 만들까요?">어떤 종류의<br>프로젝트를 만들까요?</h1>
+  <!-- data-i18n 금지: I18N.apply가 textContent로 덮어 <br>가 깨짐 -->
+  <h1>어떤 종류의<br>프로젝트를 만들까요?</h1>
   <div class="kcards" id="kcards"></div>
 </div>
 
