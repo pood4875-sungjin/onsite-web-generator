@@ -153,6 +153,35 @@
     var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 6000 });
     return _parseEdit(txt);
   }
+  /* 인테이크 되묻기 — 브리프에서 이름/제품명 추출 + 부족 정보 질문 0~2개.
+     실패해도 흐름을 막지 않도록 호출측에서 catch → 질문 없이 진행. */
+  var INTAKE_SYSTEM =
+    '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고 JSON 하나만 출력한다.\n' +
+    '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str}]}\n' +
+    '규칙: name/product는 브리프에서 추출 가능할 때만. questions는 결과물 품질에 정말 필요한데 빠진 것만 최대 2개, ' +
+    '충분하면 []. 이미 있는 건 다시 묻지 않기. 디자인 취향 금지. q는 한국어 존댓말 한 문장.';
+  async function intake(brief) {
+    brief = brief || {};
+    var txt;
+    if (usingProxy()) {
+      var r = await fetch(proxyUrl() + '/intake', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ kind: brief.kind || '', plan: brief.plan || '' }),
+      });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
+      txt = j.text;
+    } else {
+      txt = await messages({ system: INTAKE_SYSTEM, user: '브리프(kind=' + (brief.kind || '') + '):\n' + (brief.plan || ''), maxTokens: 500 });
+    }
+    var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+    var i = s.indexOf('{'), k = s.lastIndexOf('}');
+    if (i < 0 || k < 0) throw new Error('BAD_JSON');
+    var o = JSON.parse(s.slice(i, k + 1));
+    var qs = (Array.isArray(o.questions) ? o.questions : []).map(function (x) { return x && { key: String(x.key || ''), q: String(x.q || '').trim() }; }).filter(function (x) { return x && x.q; }).slice(0, 2);
+    return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
+  }
+
   /* 웹(랜딩/웹사이트) 초안 — 브리프 → 사이트 콘텐츠 필드. 근거 없는 항목은 null로 와서
      스튜디오가 후속 질문으로 채움. 실패 시 throw → 호출측이 기존 대화 플로우로 폴백. */
   var WEB_SYSTEM =
@@ -221,7 +250,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
-    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, parseDeck: parseDeck,
+    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, intake: intake, parseDeck: parseDeck,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();

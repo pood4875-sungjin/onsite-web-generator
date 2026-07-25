@@ -57,6 +57,19 @@ const WEB_SYSTEM =
   '- 문구는 lang 값의 언어로(ko=한국어, en=영어). 톤은 간결·자신감, 과장 금지.\n' +
   '- tagline은 12자 내외 한 줄, subcopy는 1~2문장.';
 
+/* 인테이크 되묻기 — 브리프를 읽고 "생성 품질에 정말 필요한데 빠진 정보"만 0~2개 질문.
+   이름/제품명도 브리프에서 추출(따로 폼으로 안 물음). 질문 없으면 빈 배열. */
+const INTAKE_SYSTEM =
+  '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고,\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 금지.\n' +
+  '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str}]}\n' +
+  '규칙:\n' +
+  '- name=프로젝트/페이지 이름 후보, product=제품·서비스명. 브리프에서 추출 가능할 때만, 없으면 null.\n' +
+  '- questions는 결과물 품질에 정말 필요한데 브리프에 없는 것만 최대 2개. 브리프가 충분하면 빈 배열 [].\n' +
+  '- 좋은 질문 예: 대상 고객이 누구인지(kind=web), 청중·발표 목적(kind=ppt), 강조할 수치가 있는지.\n' +
+  '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름).\n' +
+  '- q는 한국어 존댓말 한 문장, 짧게. key는 영문 스네이크(예: target_audience).';
+
 /* 내용 수정(채팅) — 전체 slides 교체 계약. 내용·구조(추가/분할/삭제/순서) 전부 허용, 디자인만 거절 */
 const EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
@@ -77,7 +90,8 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
     const route = url.pathname;
-    if (req.method !== 'POST' || (route !== '/compose' && route !== '/edit' && route !== '/compose-web')) return json({ error: 'NOT_FOUND' }, 404);
+    const ROUTES = ['/compose', '/edit', '/compose-web', '/intake'];
+    if (req.method !== 'POST' || ROUTES.indexOf(route) < 0) return json({ error: 'NOT_FOUND' }, 404);
 
     // ---- IP당 일일 제한 (KV) ----
     const ip = req.headers.get('cf-connecting-ip') || 'unknown';
@@ -106,6 +120,11 @@ export default {
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = SYSTEM;
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
+    } else if (route === '/intake') {
+      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 6000) };
+      if (!safe.plan) return json({ error: 'EMPTY_BRIEF' }, 400);
+      system = INTAKE_SYSTEM;
+      userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan;
     } else if (route === '/compose-web') {
       const safe = {
         product: clip(body.product, 100),
@@ -142,7 +161,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 2000 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안은 짧음
+        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 2000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
         system: system,
         messages: [{ role: 'user', content: userMsg }],
       }),
