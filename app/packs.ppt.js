@@ -71,8 +71,9 @@
           var ist = '';
           if (im.w) ist += 'width:' + (+im.w) + 'px;max-width:none;';
           if (im.h) ist += 'height:' + (+im.h) + 'px;max-height:none;';
-          // 계단 배치로 겹침 방지(이후 드래그로 자유 이동)
-          var pos = 'top:' + (150 + k * 34) + 'px;right:' + (60 + k * 34) + 'px';
+          // 계단 배치로 겹침 방지(이후 드래그로 자유 이동). 리사이즈하면 좌상단 고정(l/t 저장)으로 전환
+          var pos = 'top:' + (im.t != null ? +im.t : (150 + k * 34)) + 'px;' +
+            (im.l != null ? 'left:' + (+im.l) + 'px;right:auto' : 'right:' + (60 + k * 34) + 'px');
           return '<div class="s-imgwrap" data-imgi="' + k + '" style="' + pos + '"><img class="s-img" src="' + esc(im.src) + '"' + (ist ? ' style="' + ist + '"' : '') + ' alt=""></div>';
         }).join('');
         html = html.replace(/<\/section>\s*$/, ih + '</section>');

@@ -220,7 +220,12 @@
     return '<div class="ch-ph"></div>';
   }
 
-  var MV_SEL = '[data-edit], .p-media, .qt-stars, .l-div, .tl-dot, .mx-dot, .p-tick';
+  /* 모든 시각 개체가 "낱개" 선택/이동/숨김 단위 — 텍스트([data-edit]) + 이미지 + 차트 내부 요소(막대·조각·라벨) + 선·점 장식.
+     컨테이너(카드·셀·패널)는 단위로 안 잡는다 — 묶여 선택되는 그룹핑 금지(사용자 요구). 묶고 싶으면 다중선택→그룹.
+     주의: 셀렉터 추가/순서 변경은 기존 덱의 _pos 키(m0…)를 밀 수 있다. */
+  var MV_SEL = '[data-edit], .s-imgwrap, .p-media, ' +
+    'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
+    '.qt-stars, .l-div, .l-arrow, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -253,6 +258,9 @@
       '.ppt-stack{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 0}' +
       '.slide{position:relative;width:var(--slide-w);height:var(--slide-h);flex:none;background:var(--paper);color:var(--ink);' +
       'padding:var(--mg);word-break:keep-all;overflow-wrap:break-word;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.4)}' +
+      /* 첨부 이미지 블록 — ppt 팩과 동일 계약(이동/숨김/리사이즈 대상) */
+      '.s-imgwrap{position:absolute;right:60px;top:150px;z-index:5}' +
+      '.s-imgwrap img{display:block;max-width:420px;max-height:440px;border-radius:var(--rad);object-fit:cover;-webkit-user-drag:none;user-select:none;pointer-events:none}' +
       /* 배경 변형 — 원본은 흰색/연회색/그린 풀블리드 3종 */
       '.bg-grey{background:var(--grey)}.bg-green{background:var(--pg);color:#fff}.bg-dark{background:var(--ink);color:#fff}' +
       '.bg-green .p-eyebrow,.bg-dark .p-eyebrow{color:rgba(255,255,255,.8)}' +
@@ -277,7 +285,11 @@
       '.p-callout .p-c-head{font-size:var(--fs-head);font-weight:700;margin:0}' +
       '.p-c-text{font-size:var(--fs-body);line-height:1.4;margin:13px 0 0}' +
       /* statement */
-      '.st{display:flex}.st.bottom .st-in{margin-top:auto}.st.center{align-items:center}.st.center .st-in{margin:0 auto;text-align:center;max-width:900px}' +
+      '.st{display:flex}.st.center{align-items:center}.st.center .st-in{margin:0 auto;text-align:center;max-width:900px}' +
+      /* 표지(bottom) — 원본 31:1462 그대로: 블록 top 477@1080(→318, 패딩 80 제외 238), 타이틀 130px@1920(→87px)·행간 1.16·자간 -3%, 아이브로 18px(→12px)·간격 26px(→17px) */
+      '.st.bottom .st-in{margin-top:238px}' +
+      '.st.bottom .p-eyebrow{font-size:12px;font-weight:500;margin:0 0 17px}' +
+      '.st.bottom .st-title{font-size:87px;line-height:1.16;letter-spacing:-.03em;font-weight:600}' +
       '.st-title{font-size:var(--fs-title);font-weight:600;line-height:1.2;letter-spacing:-.03em;margin:0}' +
       '.st-sub{font-size:var(--fs-lead);margin:24px 0 0;max-width:760px}' +
       '.st.center .st-sub{margin-left:auto;margin-right:auto}' +
@@ -378,6 +390,21 @@
     return (slides || []).map(function (s, i) {
       var fn = R[s.type] || R.statement, html = '';
       try { html = fn(s, 'slides.' + i); } catch (e) { return ''; }
+      // 슬라이드 첨부 이미지(s.imgs[], 구버전 s.img 단일도 수용) — ppt 팩과 동일 계약(.s-imgwrap ∈ MV_SEL, PPTX 추출 대상)
+      var imgs = (s.imgs && s.imgs.length) ? s.imgs : ((s.img && s.img.src) ? [s.img] : []);
+      if (imgs.length) {
+        var ih = imgs.map(function (im, k) {
+          if (!im || !im.src) return '';
+          var ist = '';
+          if (im.w) ist += 'width:' + (+im.w) + 'px;max-width:none;';
+          if (im.h) ist += 'height:' + (+im.h) + 'px;max-height:none;';
+          // 계단 배치로 겹침 방지(이후 드래그로 자유 이동). 리사이즈하면 좌상단 고정(l/t 저장)으로 전환
+          var pos = 'top:' + (im.t != null ? +im.t : (150 + k * 34)) + 'px;' +
+            (im.l != null ? 'left:' + (+im.l) + 'px;right:auto' : 'right:' + (60 + k * 34) + 'px');
+          return '<div class="s-imgwrap" data-imgi="' + k + '" style="' + pos + '"><img class="s-img" src="' + esc(im.src) + '"' + (ist ? ' style="' + ist + '"' : '') + ' alt=""></div>';
+        }).join('');
+        html = html.replace(/<\/section>\s*$/, ih + '</section>');
+      }
       return html;
     }).join('\n');
   }
@@ -388,6 +415,49 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + (window.Charts && window.Charts.css ? window.Charts.css() : '') + '</style></head><body data-style="pitch">' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
+  }
+
+  /* ---- 발표 뷰어 — 한 장씩 ←→/클릭 넘김, F 전체화면. ppt 팩 뷰어와 동일 UX(팩 자기완결 원칙상 사본) ---- */
+  function renderPitchViewer(data) {
+    data = data || {};
+    var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
+    var vcss =
+      'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
+      '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +
+      '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;flex:none;transform-origin:top center}' +
+      '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
+      /* 기본 block, 슬라이드 자체가 flex인 타입(statement/quote/closing)만 flex 복원 */
+      '.vscale .slide.cur{display:block}' +
+      '.vscale .slide.cur.st,.vscale .slide.cur.qt,.vscale .slide.cur.cl{display:flex}' +
+      '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
+      '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
+      '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
+      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}';
+    var vjs =
+      '(function(){var s=[].slice.call(document.querySelectorAll(".vscale .slide")),n=0;' +
+      'var c=document.querySelector(".vcount"),pb=document.querySelector(".vprev"),nb=document.querySelector(".vnext");' +
+      'function fs(){return !!document.fullscreenElement}' +
+      'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
+      'var ty=Math.max(0,(area-720*sc)/2);' +
+      'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
+      'var v=document.querySelector(".vscale");v.style.transform="translateY("+ty+"px) scale("+sc+")";}' +
+      'function show(i){n=Math.max(0,Math.min(s.length-1,i));s.forEach(function(x,k){x.classList.toggle("cur",k===n)});c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
+      'function toggleFs(){ if(fs()) document.exitFullscreen&&document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); }' +
+      'document.addEventListener("fullscreenchange",fit);' +
+      'addEventListener("resize",fit);fit();show(0);' +
+      'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
+      'document.addEventListener("click",function(e){if(e.target.closest(".vbar"))return;show(n+1)});' +
+      'document.addEventListener("keydown",function(e){' +
+      'if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" ")show(n+1);' +
+      'else if(e.key==="ArrowLeft"||e.key==="PageUp")show(n-1);' +
+      'else if(e.key==="f"||e.key==="F")toggleFs();' +
+      'else if(e.key==="Escape"){if(fs())return;try{parent.postMessage({pptViewerClose:1},"*")}catch(x){}}});' +
+      '})();';
+    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<style>' + css() + (window.Charts && window.Charts.css ? window.Charts.css() : '') + vcss + '</style></head><body data-style="pitch">' +
+      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' + stateScript(slides) +
+      '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button></div>' +
+      '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
   }
 
   /* ---- 레이아웃 카탈로그 — "언제 쓰나"가 계약의 일부.
@@ -484,6 +554,7 @@
   }
 
   window.renderPitchDeck = renderPitchDeck;
+  window.renderPitchViewer = renderPitchViewer;
   window.PITCH_SCHEMA_DOC = SCHEMA_DOC;
   window.PITCH_FIELD_DOC = FIELD_DOC;
   window.pitchComposeDeck = pitchComposeDeck;

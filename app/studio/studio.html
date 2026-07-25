@@ -1406,12 +1406,15 @@
       const im=wrap.querySelector('img'); if(!im || wrap.__imgw) return; wrap.__imgw=1;
       ['e','s','se'].forEach(dir=>{ const h=doc.createElement('span'); h.className='imgrs '+dir;
         h.addEventListener('pointerdown',(e)=>{ e.preventDefault(); e.stopPropagation(); const si=slideIndexOf(wrap); if(si<0)return;
+          // 좌상단 고정 — 초기 right 앵커를 left로 전환해 우하단 방향으로만 늘고 줄게 (offsetLeft = transform 제외 레이아웃 위치)
+          wrap.style.left=wrap.offsetLeft+'px'; wrap.style.top=wrap.offsetTop+'px'; wrap.style.right='auto';
           const before=JSON.stringify(data.slides||[]); const r=im.getBoundingClientRect(); const w0=r.width,h0=r.height,sx=e.clientX,sy=e.clientY; let w=w0,ht=h0;
           const mv=(ev)=>{ if(dir!=='s'){ w=Math.max(80,Math.min(1160,w0+(ev.clientX-sx))); im.style.width=w+'px'; im.style.maxWidth='none'; } if(dir!=='e'){ ht=Math.max(60,Math.min(680,h0+(ev.clientY-sy))); im.style.height=ht+'px'; im.style.maxHeight='none'; } };
           const up=()=>{ doc.removeEventListener('pointermove',mv); doc.removeEventListener('pointerup',up);
             if(Math.abs(w-w0)<3&&Math.abs(ht-h0)<3) return;
             pushUndo(before); const e2=imgEntry(wrap,si); if(!e2) return;
             const ni=Object.assign({},e2.s.imgs[e2.k]); if(dir!=='s')ni.w=Math.round(w); if(dir!=='e')ni.h=Math.round(ht);
+            ni.l=Math.round(wrap.offsetLeft); ni.t=Math.round(wrap.offsetTop);   // 좌상단 앵커 영구화 — 재렌더에도 위치 유지
             e2.s.imgs[e2.k]=ni; delete e2.s.img; persist(); };
           doc.addEventListener('pointermove',mv); doc.addEventListener('pointerup',up); });
         wrap.appendChild(h); });
@@ -1564,9 +1567,11 @@
   const pvFull=document.getElementById('pvFull'), pvfFrame=document.getElementById('pvfFrame');
   function openPreview(){
     persist();
-    const isPptPack = pack && pack.id==='ppt' && typeof renderPptViewer==='function';
+    // 발표 뷰어 — PPT 계열 팩(ppt·pitch)은 한 장씩 넘기는 프레젠테이션 뷰로
+    const viewerFn = pack && (pack.id==='pitch' ? window.renderPitchViewer : pack.id==='ppt' ? window.renderPptViewer : null);
+    const isPptPack = typeof viewerFn==='function';
     document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기 — ← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기') : tL('미리보기');
-    pvfFrame.srcdoc = isPptPack ? renderPptViewer(data) : previewHtml();
+    pvfFrame.srcdoc = isPptPack ? viewerFn(data) : previewHtml();
     pvFull.hidden=false;
     if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
   }
@@ -1576,7 +1581,12 @@
     openPreview();
   };
   document.getElementById('pvfClose').onclick=closePreview;
-  window.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && !pvFull.hidden) closePreview(); });
+  window.addEventListener('keydown',(e)=>{
+    if(pvFull.hidden) return;
+    if(e.key==='Escape') closePreview();
+    // F 전체화면 — 포커스가 iframe 밖에 있어도 동작(안이면 뷰어 자체 핸들러가 처리)
+    else if(e.key==='f'||e.key==='F'){ if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); } else if(pvfFrame.requestFullscreen) pvfFrame.requestFullscreen(); }
+  });
   window.addEventListener('message',(e)=>{ if(e.data && e.data.pptViewerClose) closePreview(); });
 
   /* ---- 저장: 현재 페이지를 프로젝트에 저장 ---- */
