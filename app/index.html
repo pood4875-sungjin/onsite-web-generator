@@ -24,8 +24,46 @@
   .homebtn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:var(--r-pill);border:1px solid var(--hairline);background:var(--surface-solid);color:var(--body);text-decoration:none;transition:var(--dur) var(--ease)}
   .homebtn:hover{color:var(--ink);border-color:var(--hairline-strong);background:var(--brand-weak)}
 
-  /* ---- 전면 챗 인테이크 ---- */
-  .cwrap{max-width:760px;margin:0 auto;padding:96px 24px 140px;display:flex;flex-direction:column;gap:4px}
+  /* ---- 1) 종류 선택 — 단독 풀페이지 ---- */
+  .kscreen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:104px 24px 96px;text-align:center;animation:fade .3s var(--ease)}
+  .kscreen[hidden]{display:none}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .kscreen h1{font-size:var(--fs-display-lg);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0 0 40px;color:var(--ink)}
+  .kcards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap;max-width:980px}
+  .kc{flex:1 1 0;min-width:0;max-width:290px;cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
+  .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .kc .thumb{height:150px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
+  .tb-web{background:radial-gradient(130% 130% at 50% -10%,#2e0a80 0%,#6d3bf5 44%,#d0bffb 100%)}
+  .tb-mail{background:radial-gradient(130% 130% at 50% -10%,#00401f 0%,#12b46a 46%,#c6f0da 100%)}
+  .tb-ppt{background:radial-gradient(130% 130% at 50% -10%,#5e0a0a 0%,#e23b3b 46%,#f7cfcf 100%)}
+  .gw{position:relative;border-radius:12px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px rgba(0,0,0,.2);overflow:hidden;padding:28px 12px 14px;display:flex;flex-direction:column;gap:8px}
+  .gwd{position:absolute;top:11px;left:12px;display:flex;gap:5px}.gwd i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.65)}
+  .gwhero{height:34px;border-radius:8px;flex:none;margin-bottom:3px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
+  .gwbar{height:8px;border-radius:5px;flex:none;background:rgba(255,255,255,.72)}
+  .w70{width:70%}.w60{width:60%}.w56{width:56%}.w52{width:52%}.w50{width:50%}.w40{width:40%}.cc{align-self:center}
+  .gw-land{width:158px;height:112px}
+  .gw-mail{width:108px;height:132px}
+  .gw-ppt{width:162px;height:100px}.gw-ppt .gwhero{height:30px}
+  .gwstack{position:relative;width:158px;height:120px}
+  .gws{position:absolute;left:0;bottom:0;width:150px;height:106px;border-radius:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .gws1{z-index:3;padding:26px 12px 12px;display:flex;flex-direction:column;gap:7px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  .gws2{z-index:2;transform:translate(8px,-9px);opacity:.62}
+  .gws3{z-index:1;transform:translate(16px,-18px);opacity:.36}
+  .gws1 .gwhero{height:30px;margin-bottom:2px}
+  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .tb-land .gw,.tb-mail .gw,.tb-ppt .gw{animation:thmFloat 3.8s var(--ease) infinite}
+  .tb-web .gwstack{animation:thmFloat 4.2s var(--ease) infinite}
+  .kc:hover .gw,.kc:hover .gwstack{filter:brightness(1.05)}
+  @media (prefers-reduced-motion:reduce){.tb-land .gw,.tb-mail .gw,.tb-ppt .gw,.tb-web .gwstack{animation:none}}
+  .kc .lab{padding:16px 20px;border-top:1px solid var(--hairline)}
+  .kc .kt{font-size:var(--fs-display-xs);font-weight:var(--fw-semi);margin-bottom:3px;letter-spacing:var(--tr-body)}
+  .kc .kd{font-size:var(--fs-body-sm);color:var(--body-mid)}
+  @media (max-width:760px){ .kcards{flex-wrap:wrap} .kc{flex:1 1 240px;max-width:none} }
+
+  /* ---- 2) 챗 화면 — 하단 고정 입력창 ---- */
+  .cshell[hidden]{display:none}
+  .cwrap{max-width:760px;margin:0 auto;padding:96px 24px 170px;display:flex;flex-direction:column;gap:4px;animation:fade .3s var(--ease)}
   .crow{display:flex;margin:6px 0;animation:cin .3s var(--ease)}
   .crow.me{justify-content:flex-end}
   @keyframes cin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -39,47 +77,31 @@
   .cwidget.off{opacity:.45;pointer-events:none;filter:saturate(.6)}
   .cwcard{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);padding:16px}
   .cwact{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-  .cwact .ghostbtn{background:none;border:none;color:var(--mute);font-size:13px;cursor:pointer;padding:8px 10px;font-family:inherit}
-  .cwact .ghostbtn:hover{color:var(--body)}
-  .cwhint{font-size:12px;color:var(--mute);margin-top:8px}
-  textarea.ds-input{resize:vertical;min-height:150px;line-height:1.6;font-family:inherit;font-size:13px;width:100%}
-  textarea.ds-input::placeholder{color:var(--mute);opacity:.85;line-height:1.6}
-  .qinput{display:flex;gap:8px}
-  .qinput .ds-input{flex:1}
-  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0}
   .chiplabel{font-size:12px;font-weight:var(--fw-med);color:var(--body);margin:0 0 6px}
+  .skipchip{background:none;border:1px dashed var(--hairline-strong);color:var(--mute);font-size:12.5px;cursor:pointer;padding:7px 14px;border-radius:var(--r-pill);font-family:inherit;transition:var(--dur) var(--ease)}
+  .skipchip:hover{color:var(--body);border-color:var(--body-mid)}
 
-  /* 종류 카드 (챗 임베드) */
-  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .kc{cursor:pointer;padding:0;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-md);transition:var(--dur) var(--ease)}
-  .kc:hover{border-color:var(--hairline-strong);transform:translateY(-3px);box-shadow:var(--shadow-2)}
-  .kc .thumb{height:104px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  .tb-land{background:radial-gradient(130% 130% at 50% -10%,#001a5e 0%,#2f6bd6 46%,#c3d6f7 100%)}
-  .tb-web{background:radial-gradient(130% 130% at 50% -10%,#2e0a80 0%,#6d3bf5 44%,#d0bffb 100%)}
-  .tb-mail{background:radial-gradient(130% 130% at 50% -10%,#00401f 0%,#12b46a 46%,#c6f0da 100%)}
-  .tb-ppt{background:radial-gradient(130% 130% at 50% -10%,#5e0a0a 0%,#e23b3b 46%,#f7cfcf 100%)}
-  .gw{position:relative;border-radius:9px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 10px 26px rgba(0,0,0,.2);overflow:hidden;padding:20px 9px 10px;display:flex;flex-direction:column;gap:6px}
-  .gwd{position:absolute;top:8px;left:9px;display:flex;gap:4px}.gwd i{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.65)}
-  .gwhero{height:24px;border-radius:6px;flex:none;margin-bottom:2px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.72))}
-  .gwbar{height:6px;border-radius:4px;flex:none;background:rgba(255,255,255,.72)}
-  .w70{width:70%}.w60{width:60%}.w56{width:56%}.w52{width:52%}.w50{width:50%}.w40{width:40%}.cc{align-self:center}
-  .gw-land{width:112px;height:80px}
-  .gw-mail{width:76px;height:92px}
-  .gw-ppt{width:114px;height:72px}.gw-ppt .gwhero{height:21px}
-  .gwstack{position:relative;width:112px;height:86px}
-  .gws{position:absolute;left:0;bottom:0;width:106px;height:75px;border-radius:9px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-  .gws1{z-index:3;padding:18px 9px 9px;display:flex;flex-direction:column;gap:5px;box-shadow:0 10px 22px rgba(0,0,0,.2)}
-  .gws2{z-index:2;transform:translate(6px,-7px);opacity:.62}
-  .gws3{z-index:1;transform:translate(12px,-13px);opacity:.36}
-  .gws1 .gwhero{height:21px;margin-bottom:1px}
-  @keyframes thmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-  .tb-land .gw,.tb-mail .gw,.tb-ppt .gw{animation:thmFloat 3.8s var(--ease) infinite}
-  .tb-web .gwstack{animation:thmFloat 4.2s var(--ease) infinite}
-  @media (prefers-reduced-motion:reduce){.tb-land .gw,.tb-mail .gw,.tb-ppt .gw,.tb-web .gwstack{animation:none}}
-  .kc .lab{padding:11px 13px;border-top:1px solid var(--hairline)}
-  .kc .kt{font-size:14px;font-weight:var(--fw-semi);margin-bottom:2px;letter-spacing:var(--tr-body)}
-  .kc .kd{font-size:11.5px;color:var(--body-mid)}
-  @media (max-width:640px){ .cards{grid-template-columns:repeat(2,1fr)} }
+  /* 하단 고정 컴포저 */
+  .composer{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:12px 24px 26px;background:linear-gradient(to top,var(--canvas) 62%,transparent)}
+  .cbox{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:8px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:20px;padding:12px 12px 12px 14px;box-shadow:var(--shadow-2);transition:var(--dur) var(--ease)}
+  .cbox:focus-within{border-color:var(--hairline-strong);box-shadow:var(--shadow-3)}
+  .cbox.dis{opacity:.55}
+  .cirow{display:flex;align-items:flex-end;gap:10px}
+  .attbtn{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--hairline);cursor:pointer;background:none;color:var(--body-mid);display:grid;place-items:center;transition:var(--dur) var(--ease)}
+  .attbtn:not(:disabled):hover{color:var(--ink);border-color:var(--hairline-strong);background:var(--brand-weak)}
+  .attbtn:disabled{opacity:.35;cursor:default}
+  .attrow{display:flex;flex-wrap:wrap;gap:6px;padding:2px 4px 0}
+  .attchip{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--body);background:var(--canvas-2);border:1px solid var(--hairline);border-radius:var(--r-pill);padding:5px 7px 5px 11px;max-width:240px}
+  .attchip .an{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .attchip .ax{border:none;background:none;cursor:pointer;color:var(--mute);font-size:13px;line-height:1;padding:2px 4px}
+  .attchip .ax:hover{color:var(--ink)}
+  .attchip.busy{opacity:.6}
+  #cinput{flex:1;border:none;outline:none;background:none;resize:none;font-family:inherit;font-size:14px;line-height:1.55;color:var(--ink);max-height:180px;padding:4px 0}
+  #cinput::placeholder{color:var(--mute)}
+  .sendbtn{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:var(--ink);color:var(--canvas);display:grid;place-items:center;transition:var(--dur) var(--ease)}
+  .sendbtn:disabled{opacity:.35;cursor:default}
+  .sendbtn:not(:disabled):hover{transform:translateY(-1px)}
 
   /* 스타일 카드 (챗 임베드) */
   .styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
@@ -123,11 +145,29 @@
   <a class="homebtn" href="dashboard.html" data-i18n-title="홈으로" title="홈으로" onclick="return leaveGuard(event)"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/></svg></a>
 </div>
 
-<div class="cwrap" id="cwrap">
-  <div id="cmsgs" style="display:contents"></div>
+<!-- 1) 종류 선택 — 단독 풀페이지 -->
+<div class="kscreen" id="kscreen">
+  <h1 data-i18n="어떤 종류의|프로젝트를 만들까요?">어떤 종류의<br>프로젝트를 만들까요?</h1>
+  <div class="kcards" id="kcards"></div>
 </div>
 
-<!-- AI 생성 로딩 오버레이 — 단계 메시지 + 진행바로 '생성되고 있음'을 체감시킴 -->
+<!-- 2) 챗 화면 — 하단 고정 입력창 -->
+<div class="cshell" id="cshell" hidden>
+  <div class="cwrap"><div id="cmsgs" style="display:contents"></div></div>
+  <div class="composer">
+    <div class="cbox" id="cbox">
+      <div class="attrow" id="attrow" hidden></div>
+      <div class="cirow">
+        <button class="attbtn" id="cattach" data-i18n-title="파일 첨부 (txt·md·pdf·docx)" title="파일 첨부 (txt·md·pdf·docx)"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l8.57-8.57a4 4 0 1 1 5.66 5.66l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <textarea id="cinput" rows="1"></textarea>
+        <button class="sendbtn" id="csend" title="보내기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+      </div>
+    </div>
+    <input type="file" id="cfile" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.pdf,.docx" hidden>
+  </div>
+</div>
+
+<!-- AI 생성 로딩 오버레이 -->
 <div class="aigen" id="aiGen" hidden>
   <div class="aigen-box">
     <div class="aigen-orb"><i></i><i></i><i></i></div>
@@ -140,10 +180,10 @@
 
 <script>
   /* ============================================================
-     전면 챗 인테이크 — 스텝 폼 완전 대체.
-     흐름: 종류 카드 → 브리프 자유입력(1회) → AI 되묻기(부족분 0~2개, 건너뛰기 가능)
-          → 스타일 선택 → 요약 확인 → 생성 → 스튜디오.
-     이후 조정은 스튜디오 좌측 챗(aiDraft 후속질문 포함)에서.
+     새 프로젝트 = 종류 선택(풀페이지) → 챗 인테이크(하단 고정 입력창).
+     자유 입력은 컴포저로, 선택지는 챗 위젯으로(그동안 컴포저 비활성).
+     흐름: 종류 → 브리프 입력(스킵 가능) → (PPT: 분량 칩) → AI 되묻기 0~2개
+          → 스타일 카드 → 요약 카드 → 생성 → 스튜디오.
      ============================================================ */
   const _L=(k)=>window.L?window.L(k):k;
   const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
@@ -159,18 +199,17 @@
   ];
   const PPT_LENGTHS=[['short','5–8장 · 짧은 발표'],['std','10–15장 · 표준 발표'],['deep','20장+ · 심층 자료']];
   const BRIEF_PROMPT={
-    single:'어떤 페이지인지 자유롭게 알려주세요. 제품·서비스가 무엇인지, 누구를 위한 것인지, 핵심 기능이나 자랑할 수치, 방문자가 했으면 하는 행동까지 적을수록 초안이 정확해져요.',
-    multi:'어떤 사이트인지 자유롭게 알려주세요. 제품·서비스 소개, 핵심 기능·강점, 수치, 유도할 행동(도입 문의 등)을 적을수록 초안이 정확해져요.',
-    ppt:'어떤 발표인지 자유롭게 알려주세요. 주제·청중·목적, 목차(있으면 그 순서대로), 강조할 수치나 꼭 들어갈 내용을 적을수록 정확해져요.',
+    single:'어떤 페이지인지 자유롭게 알려주세요.\n제품·서비스가 무엇인지, 누구를 위한 것인지, 핵심 기능이나 자랑할 수치, 방문자가 했으면 하는 행동까지 적을수록 초안이 정확해져요.',
+    multi:'어떤 사이트인지 자유롭게 알려주세요.\n제품·서비스 소개, 핵심 기능·강점, 수치, 유도할 행동(도입 문의 등)을 적을수록 초안이 정확해져요.',
+    ppt:'어떤 발표인지 자유롭게 알려주세요.\n주제·청중·목적, 목차(있으면 그 순서대로), 강조할 수치나 꼭 들어갈 내용을 적을수록 정확해져요.',
   };
   const BRIEF_PH={
-    single:'예) 건설현장 안전관리 SaaS \'세이프사이트\' 소개 랜딩.\n현장 사진을 올리면 AI가 위험요소를 자동 감지.\n핵심 기능: 위험 자동감지, 실시간 알림, 보고서 자동화.\n도입사 120곳, 감지 정확도 96%. 목표는 도입 문의.',
-    multi:'예) 협업툴 \'플로우\' 제품 사이트.\n메인·기능·요금 페이지 구성.\n핵심 기능: 프로젝트 보드, 자동 리포트, 연동 100+.\n무료 체험 가입 유도.',
-    ppt:'예) 2026 2분기 사업보고. 청중은 경영진.\n1. 시장 현황  2. 실적  3. 하반기 계획\n매출 32% 성장 강조, 신제품 3종 소개, 마지막에 채용 안내.',
+    single:'예) 건설현장 안전관리 SaaS 세이프사이트 소개 랜딩. AI 위험 감지·실시간 알림. 도입사 120곳. 목표는 도입 문의',
+    multi:'예) 협업툴 플로우 제품 사이트. 프로젝트 보드·자동 리포트. 무료 체험 가입 유도',
+    ppt:'예) 2026 2분기 사업보고. 청중은 경영진. 1.시장 현황 2.실적 3.하반기 계획. 매출 32% 성장 강조',
   };
 
-  // 수집 상태
-  const S={ kind:'', stylePack:'aether', org:'', lang:(window.I18N?I18N.getLang():'ko'), plan:'', answers:[], name:'', product:'', pptStyle:'ax', len:'short', edmTpl:null };
+  const S={ kind:'', stylePack:'aether', styleName:'', org:'', lang:(window.I18N?I18N.getLang():'ko'), plan:'', answers:[], name:'', product:'', pptStyle:'ax', len:'short', edmTpl:null };
   let leaving=false;
 
   /* ---- 챗 프리미티브 ---- */
@@ -182,65 +221,102 @@
   function widget(node){const w=el('div','cwidget');w.append(node);msgs.append(w);toBottom();return w;}
   function off(w){w.classList.add('off');w.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=true);}
   function toBottom(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));}
-  const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
 
-  /* ---- 위젯들 (Promise 반환) ---- */
-  function askKind(){
+  /* ---- 하단 고정 컴포저 — 자유 입력은 전부 여기로 ---- */
+  const cbox=document.getElementById('cbox'), cinput=document.getElementById('cinput'), csend=document.getElementById('csend');
+  const cattach=document.getElementById('cattach'), cfile=document.getElementById('cfile'), attrow=document.getElementById('attrow');
+  let _resolve=null, _skipW=null;
+  function grow(){ cinput.style.height='auto'; cinput.style.height=Math.min(cinput.scrollHeight,180)+'px'; }
+  cinput.addEventListener('input',grow);
+  function composerOff(ph){ cinput.disabled=true; csend.disabled=true; cattach.disabled=true; cbox.classList.add('dis'); cinput.placeholder=_L(ph||'위 선택지에서 골라주세요'); }
+  function composerOn(ph){ cinput.disabled=false; csend.disabled=false; cattach.disabled=false; cbox.classList.remove('dis'); cinput.placeholder=_L(ph||''); setTimeout(()=>cinput.focus(),80); }
+  function askInput(ph, skipLabel){
     return new Promise(res=>{
-      const c=el('div','cards');
-      KINDS.forEach(k=>{
-        const b=el('button','kc '+k.cls, k.th+`<div class="lab"><div class="kt">${_L(k.kt)}</div><div class="kd">${_L(k.kd)}</div></div>`);
-        b.onclick=()=>{ off(w); me(_L(k.kt)); res(k.id); };
-        c.append(b);
-      });
-      const w=widget(c);
-    });
-  }
-
-  function askBrief(kind){
-    return new Promise(res=>{
-      const card=el('div','cwcard');
-      let lenRow=null;
-      if(kind==='ppt'){
-        card.append(el('div','chiplabel',_L('분량')));
-        lenRow=el('div','chiprow');
-        PPT_LENGTHS.forEach(([id,label])=>{ const b=el('button','ds-chip'+(id===S.len?' on':''),_L(label));
-          b.onclick=()=>{ S.len=id; lenRow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; lenRow.append(b); });
-        card.append(lenRow);
+      _resolve=res; composerOn(ph);
+      if(skipLabel){
+        const b=el('button','skipchip',_L(skipLabel));
+        b.onclick=()=>{ finishInput('', true); };
+        _skipW=widget(b);
       }
-      const ta=el('textarea','ds-input'); ta.placeholder=_L(BRIEF_PH[kind]||BRIEF_PH.single); ta.rows=7;
-      card.append(ta);
-      const act=el('div','cwact');
-      const skip=el('button','ghostbtn',_L('건너뛰기 — 나중에 대화로 채울게요'));
-      const nx=el('button','ds-btn primary',_L('다음 →'));
-      skip.onclick=()=>{ off(w); me(_L('건너뛸게요')); res(''); };
-      nx.onclick=()=>{ const v=ta.value.trim(); if(!v){ ta.focus(); return; } off(w); me(v.length>120?v.slice(0,120)+'…':v); res(v); };
-      act.append(skip,nx); card.append(act);
-      if(window.LLM&&LLM.aiAvailable()) card.append(el('div','cwhint','🤖 '+_L(LLM.usingProxy()?'팀 공용 AI · Sonnet 5 — 내용을 해석해 초안을 채워요':'AI가 내용을 해석해 초안을 채워요')));
-      const w=widget(card);
-      setTimeout(()=>ta.focus(),120);
     });
   }
+  function finishInput(v, skipped){
+    if(!_resolve) return;
+    const r=_resolve; _resolve=null;
+    if(_skipW){ off(_skipW); _skipW=null; }
+    // 첨부 문서 → 브리프에 병합 (파일당 8000자 제한)
+    let out=v;
+    const names=attachments.map(a=>a.name);
+    if(!skipped && attachments.length){
+      out += attachments.map(a=>'\n\n[첨부 문서: '+a.name+']\n'+a.text.slice(0,8000)).join('');
+    }
+    let echo = skipped?_L('건너뛸게요'):(v.length>140?v.slice(0,140)+'…':v);
+    if(!skipped && names.length) echo = (echo?echo+'\n':'')+names.map(n=>'📎 '+n).join('\n');
+    me(echo||'…');
+    attachments=[]; paintAtt();
+    cinput.value=''; grow(); composerOff();
+    r(out);
+  }
+  function send(){ const v=cinput.value.trim(); if(!v && !attachments.length) return; finishInput(v,false); }
+  csend.onclick=send;
+  cinput.addEventListener('keydown',(e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+  composerOff('');
 
-  function askText(){
+  /* ---- 파일 첨부 — txt·md·csv·json·html은 즉시, pdf·docx는 CDN 파서 지연 로드 ---- */
+  let attachments=[];
+  function paintAtt(){
+    attrow.hidden=!attachments.length;
+    attrow.innerHTML='';
+    attachments.forEach((a,i)=>{
+      const c=el('span','attchip'+(a.busy?' busy':''),`<span class="an">📄 ${a.name}${a.busy?' …':''}</span>`);
+      const x=el('button','ax','✕'); x.onclick=()=>{ attachments.splice(i,1); paintAtt(); };
+      c.append(x); attrow.append(c);
+    });
+  }
+  function loadScript(src){ return new Promise((res,rej)=>{ if([].slice.call(document.scripts).some(s=>s.src===src)) return res();
+    const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('로드 실패: '+src)); document.head.appendChild(s); }); }
+  async function readFileText(f){
+    const ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(['txt','md','markdown','csv','json','html','htm'].includes(ext)) return await f.text();
+    if(ext==='pdf'){
+      await loadScript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+      let t=''; const N=Math.min(doc.numPages,30);
+      for(let i=1;i<=N;i++){ const pg=await doc.getPage(i); const tc=await pg.getTextContent(); t+=tc.items.map(x=>x.str).join(' ')+'\n'; }
+      return t;
+    }
+    if(ext==='docx'){
+      await loadScript('https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
+      const r=await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});
+      return r.value;
+    }
+    throw new Error(_L('지원하지 않는 형식이에요')+' (.'+ext+')');
+  }
+  cattach.onclick=()=>cfile.click();
+  cfile.onchange=async ()=>{
+    const files=[...cfile.files]; cfile.value='';
+    for(const f of files){
+      if(f.size>20*1024*1024){ if(window.uiAlert) await uiAlert(_L('20MB 이하 파일만 첨부할 수 있어요.')+' ('+f.name+')'); continue; }
+      const entry={name:f.name, text:'', busy:true}; attachments.push(entry); paintAtt();
+      try{ entry.text=await readFileText(f); entry.busy=false; }
+      catch(e){ attachments=attachments.filter(a=>a!==entry); if(window.uiAlert) await uiAlert(_L('파일을 읽지 못했어요.')+' '+(e&&e.message||'')); }
+      paintAtt();
+    }
+  };
+
+  /* ---- 선택 위젯들 ---- */
+  function askChips(items, current){
+    // items=[{id,label}] → Promise(id). 컴포저 비활성.
     return new Promise(res=>{
-      const card=el('div','cwcard');
-      const row=el('div','qinput');
-      const inp=el('input','ds-input'); inp.placeholder=_L('답변을 입력하세요');
-      const okb=el('button','ds-btn primary',_L('확인'));
-      const submit=()=>{ const v=inp.value.trim(); off(w); me(v||_L('건너뛸게요')); res(v); };
-      okb.onclick=submit;
-      inp.onkeydown=(e)=>{ if(e.key==='Enter') submit(); };
-      row.append(inp,okb); card.append(row);
-      const act=el('div','cwact'); const skip=el('button','ghostbtn',_L('건너뛰기'));
-      skip.onclick=()=>{ off(w); me(_L('건너뛸게요')); res(''); };
-      act.append(skip); card.append(act);
+      const rowEl=el('div','chiprow');
+      items.forEach(it=>{ const b=el('button','ds-chip'+(it.id===current?' on':''),_L(it.label));
+        b.onclick=()=>{ off(w); me(_L(it.label)); res(it.id); }; rowEl.append(b); });
+      const card=el('div','cwcard'); card.append(rowEl);
       const w=widget(card);
-      setTimeout(()=>inp.focus(),120);
     });
   }
 
-  // 미니 프리뷰용 샘플 데이터 + 팩별 렌더
   function styleThumb(id){
     const d=Object.assign((typeof emptyData==='function'?emptyData():{}), {
       productName:'MIDAS AX', tagline:'Design Once.\nScale with AX.',
@@ -260,7 +336,6 @@
       const card=el('div','cwcard');
       let picked=null, pickedName='';
       const sz=el('div','styles');
-
       const paint=()=>{
         sz.innerHTML='';
         if(kind==='ppt'){
@@ -283,12 +358,12 @@
         } else {
           const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
           const STYLES=[
-            { id:'aether', name:'다크 글로우', desc:'다크 · 네온 글로우', swatch:glow.swatch },
-            { id:'krds', name:'밝은 신뢰 블루', desc:'라이트 · 선명한 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
-            { id:'midas', name:'MIDAS AX', desc:'모노크롬 · Poppins', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
-            { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), desc:'다크 글래스 · 그린', swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
+            { id:'aether', name:'다크 글로우', swatch:glow.swatch },
+            { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
+            { id:'midas', name:'MIDAS AX', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
+            { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
           ];
-          if(!picked) picked=STYLES[0].id, pickedName=STYLES[0].name;
+          if(!picked){ picked=STYLES[0].id; pickedName=STYLES[0].name; }
           const recStyle=(ORGS.find(o=>o.id===S.org)||{}).rec;
           STYLES.forEach(p=>{
             const c=el('div','sc'+(p.id===picked?' sel':''),`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)}</div>`);
@@ -298,11 +373,9 @@
           });
         }
       };
-
-      // 웹: 사업군 칩 → 추천 배지 갱신
       if(kind==='single'||kind==='multi'){
         card.append(el('div','chiplabel',_L('사업군 (추천 스타일에 반영)')));
-        const orow=el('div','chiprow');
+        const orow=el('div','chiprow'); orow.style.marginBottom='12px';
         ORGS.forEach(o=>{ const b=el('button','ds-chip'+(o.id===S.org?' on':''),_L(o.label));
           b.onclick=()=>{ S.org=o.id; picked=o.rec; orow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); paint(); }; orow.append(b); });
         card.append(orow);
@@ -330,7 +403,6 @@
       if(S.kind!=='edm') rows.append(row('제품명',prodIn));
       rows.append(row('스타일',String(styleLabel)));
       if(S.plan) rows.append(row('요약',S.plan.length>90?S.plan.slice(0,90)+'…':S.plan));
-      // 출력 언어
       const lrow=el('div','chiprow'); lrow.style.margin='0';
       (window.I18N?I18N.LANGS:[['ko','한국어']]).forEach(Lg=>{ const b=el('button','ds-chip'+(Lg[0]===S.lang?' on':''),Lg[1]);
         b.onclick=()=>{ S.lang=Lg[0]; lrow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; lrow.append(b); });
@@ -344,7 +416,7 @@
     });
   }
 
-  /* ---- AI 생성 로딩 (단계 메시지 + 실측 시간) ---- */
+  /* ---- AI 생성 로딩 ---- */
   function showAiGen(job){
     job=job||'compose';
     const ov=document.getElementById('aiGen'), st=document.getElementById('aiGenStage'), bar=document.getElementById('aiGenBar'), hint=document.getElementById('aiGenHint');
@@ -367,7 +439,7 @@
     };
   }
 
-  /* ---- 생성 (기존 finish 분기 재사용) ---- */
+  /* ---- 생성 ---- */
   function planWithAnswers(){
     let t=S.plan||'';
     if(S.answers.length) t+='\n\n[추가 정보]\n'+S.answers.map(a=>a.q+'\n→ '+a.a).join('\n');
@@ -377,7 +449,6 @@
     await storeReady();
     const prod=S.product, plan=planWithAnswers();
 
-    // 이메일(eDM): 선택한 템플릿에서 시작
     if(S.kind==='edm'){
       const tpl=S.edmTpl||(window.APP_TEMPLATES||[]).find(t=>t.tag==='edm');
       if(!tpl){ (window.uiAlert?uiAlert(_L('사용할 이메일 템플릿이 없어요.')):alert('no eDM template')); return; }
@@ -386,7 +457,6 @@
       await storeFlush(); leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
     }
 
-    // PPT: 브리프 있으면 AI 조립(폴백=결정론), 없으면 스타터 덱
     if(S.kind==='ppt'){
       const outlineFromPlan = plan.split('\n').map(s=>s.replace(/^[\s•\-*·]*\d*[.)]?\s*/,'').trim()).filter(s=>s && s.length<=40).slice(0,8);
       const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle };
@@ -407,14 +477,13 @@
       await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
     }
 
-    // 랜딩/웹사이트
+    // 랜딩/웹사이트 — AI가 전 필드 초안 + 임의 채움 안내(assumed)
     const shared={ productName:prod };
     const name=S.name || prod || '무제 프로젝트';
     const p=createProject({ kind:S.kind, name, shared, stylePack:S.stylePack, org:S.org });
     p.lang=S.lang; upsertProject(p);
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
 
-    // AI 초안: 브리프 있으면 콘텐츠 필드 채움. 근거 없어 비운 항목은 aiDraft로 넘겨 스튜디오가 이어서 질문.
     if(plan && window.LLM && LLM.aiAvailable()){
       const stop=showAiGen('composeweb');
       let draft=null;
@@ -430,14 +499,15 @@
           seed.shownSections=['feature','cta'];
           seed.hiddenSections=['comparison','testimonial','blog','faq','stat'];
         } else { pg0.pageType='landing'; }
-        const missing=[];
-        if(!seed.productName || !seed.tagline) missing.push('facts');
-        if(!seed.features.length) missing.push('features');
-        if(!seed.stats.length) missing.push('stats');
-        if(!seed.bannerText) missing.push('banner');
-        if(!seed.footerLinks.length) missing.push('footer');
+        // 임의로 채운 부분 안내 — 완성본으로 시작하고, 예시 채움 위치를 알려 편집 유도
+        const A_LABEL={ productName:'제품명', tagline:'태그라인', subcopy:'소개 문구', primaryCta:'CTA 버튼',
+          features:'기능 카드', stats:'지표 수치', bannerText:'배너 문구', bannerCta:'배너 버튼',
+          footerLinks:'푸터 링크', footerCopyright:'저작권 문구' };
+        const assumed=[...new Set((draft.assumed||[]).map(k=>A_LABEL[k]).filter(Boolean))];
+        let msg=_L('✨ 입력한 내용으로 초안을 만들었어요. 오른쪽에서 확인해보세요.');
+        if(assumed.length) msg+='\n\n'+_L('참고로')+' '+assumed.join(' · ')+_L('은(는) 내용에 없어서 예시로 채워뒀어요. 편집 버튼을 눌러 실제 내용으로 다듬어보세요!');
         pg0.data=seed; pg0.volume='heavy';
-        pg0.chat={ log:[{r:'bot',t:_L('✨ 입력한 내용으로 초안을 만들었어요. 오른쪽에서 확인해보세요.')}], idx:0, generated:true, aiDraft:missing };
+        pg0.chat={ log:[{r:'bot',t:msg}], idx:9, generated:true };
         full.name=name; full.lang=S.lang; upsertProject(full);
         await storeFlush(); leaving=true;
         location.href=`studio/studio.html?p=${full.id}&page=${pg0.id}`; return;
@@ -449,15 +519,26 @@
   }
 
   /* ---- 메인 흐름 ---- */
-  async function run(){
-    bot(_L('안녕하세요 👋 어떤 프로젝트를 만들까요?'));
-    S.kind=await askKind();
+  const kc=document.getElementById('kcards');
+  KINDS.forEach(k=>{
+    const b=el('button','kc '+k.cls, k.th+`<div class="lab"><div class="kt">${_L(k.kt)}</div><div class="kd">${_L(k.kd)}</div></div>`);
+    b.onclick=()=>{ S.kind=k.id; document.getElementById('kscreen').hidden=true; document.getElementById('cshell').hidden=false; flow(k); };
+    kc.append(b);
+  });
+
+  async function flow(k){
+    bot(_L('좋아요,')+' '+_L(k.kt)+_L('를 만들게요!'));
 
     if(S.kind!=='edm'){
       bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));
-      S.plan=await askBrief(S.kind);
+      S.plan=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
 
-      // AI 되묻기 — 브리프를 읽고 정말 부족한 것만 질문(0~2개). 실패해도 흐름 계속.
+      if(S.kind==='ppt' && S.plan){
+        bot(_L('분량은 어느 정도로 할까요?'));
+        S.len=await askChips(PPT_LENGTHS.map(([id,label])=>({id,label})), S.len);
+      }
+
+      // AI 되묻기 — 브리프에서 이름·제품명 추출 + 부족 정보만 질문. 실패해도 계속.
       if(S.plan && window.LLM && LLM.aiAvailable()){
         const tp=typing();
         let it=null;
@@ -470,7 +551,7 @@
             bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.'));
             for(const q of it.questions){
               bot(q.q);
-              const a=await askText();
+              const a=await askInput('답변을 입력하세요', '건너뛰기');
               if(a) S.answers.push({q:q.q, a});
             }
           }
@@ -485,11 +566,11 @@
 
     bot(_L('이렇게 만들게요. 이름을 다듬고 생성해주세요!'));
     await askSummary();
+    composerOff(_L('생성 중…'));
     await generate();
   }
 
   if(window.I18N) I18N.apply(document);
-  run();
 
   /* ---- 종료 가드 ---- */
   function confirmLeave(){ return uiConfirm(_L('입력한 내용은 저장되지 않아요.'), { title:_L('프로젝트 생성을 종료할까요?'), okText:_L('나가기'), danger:true }); }

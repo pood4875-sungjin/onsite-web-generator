@@ -41,19 +41,21 @@ const SYSTEM =
   '레이아웃은 내용 성격에 맞게 다양하게. 수치는 plan에 있으면 그 값, 없으면 맥락상 그럴듯하게. ' +
   '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 
-/* 웹(랜딩/웹사이트) 초안 — 브리프에 근거 있는 것만 채우고, 없는 건 null.
-   null 필드는 스튜디오 채팅이 후속 질문으로 받아 채움(추측 수치 금지 원칙). */
+/* 웹(랜딩/웹사이트) 초안 — 모든 필드를 채운다. 브리프에 근거 없는 항목은
+   그럴듯한 예시로 채우되 assumed 목록에 표시 → 스튜디오가 "임의로 채운 부분" 안내. */
 const WEB_SYSTEM =
   '너는 시니어 웹 카피라이터 겸 콘텐츠 기획자다. 브리프로 제품 소개 페이지의 콘텐츠 초안을 만든다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
   '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
-  '"features":[{"title":str,"desc":str}]|null,"stats":[{"value":str,"label":str}]|null,' +
-  '"bannerText":str|null,"bannerCta":str|null,"footerLinks":[str]|null,"footerCopyright":str|null}\n' +
+  '"features":[{"title":str,"desc":str}],"stats":[{"value":str,"label":str}],' +
+  '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str]}\n' +
   '규칙:\n' +
-  '- 브리프(특히 plan 자유 텍스트)에서 파악되는 내용만 쓴다. 카피(태그라인·소개문·CTA·배너 문구)는 브리프 내용 기반 창작 허용.\n' +
-  '- 수치가 필요한 stats는 plan에 실제 수치가 있을 때만 채운다. 없으면 null — 절대 지어내지 마라.\n' +
-  '- features는 plan에서 기능·강점을 뽑을 수 있으면 정확히 3개(제목 2~6단어+한 줄 설명). 못 뽑으면 null.\n' +
-  '- footerLinks/footerCopyright는 브리프에 관련 정보 있을 때만. 없으면 null.\n' +
+  '- 모든 필드를 빠짐없이 채운다. 페이지는 완성된 모습으로 나가야 한다.\n' +
+  '- 브리프(특히 plan)에 근거 있는 건 그대로 반영. 근거 없는 항목은 제품 맥락에 맞는 그럴듯한 예시로 채운다.\n' +
+  '- 예시로 채운(=브리프에 없던) 필드명을 assumed 배열에 넣는다. 예: ["stats","footerLinks"]. 전부 근거 있으면 [].\n' +
+  '- 특히 stats처럼 지어낸 수치는 반드시 assumed에 포함(사용자가 실제 값으로 고치도록). 단, 브리프에 있는 실제 수치를 그대로 쓴 필드는 assumed에 넣지 않는다.\n' +
+  '- features는 정확히 3개(제목 2~6단어+한 줄 설명). stats는 3개.\n' +
+  '- footerLinks는 이용약관·개인정보처리방침 등 표준 3개 기본, footerCopyright는 "© 연도 제품명" 형태.\n' +
   '- 문구는 lang 값의 언어로(ko=한국어, en=영어). 톤은 간결·자신감, 과장 금지.\n' +
   '- tagline은 12자 내외 한 줄, subcopy는 1~2문장.';
 
@@ -113,7 +115,7 @@ export default {
         message: clip(body.message, 500),
         audience: clip(body.audience, 200),
         purpose: clip(body.purpose, 300),
-        plan: clip(body.plan, 6000),   // 자유 기획 텍스트 — 목차·수치·요구 전부 여기 담김
+        plan: clip(body.plan, 16000),   // 자유 기획 텍스트 — 목차·수치·요구 전부 여기 담김
         length: clip(body.length, 10), // short|std|deep → 목표 장수
         outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
       };
@@ -121,7 +123,7 @@ export default {
       system = SYSTEM;
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
-      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 6000) };
+      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000) };
       if (!safe.plan) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = INTAKE_SYSTEM;
       userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan;
@@ -130,13 +132,13 @@ export default {
         product: clip(body.product, 100),
         name: clip(body.name, 200),
         purpose: clip(body.purpose, 300),
-        plan: clip(body.plan, 6000),   // 자유 소개/기획 텍스트
+        plan: clip(body.plan, 16000),   // 자유 소개/기획 텍스트
         kind: clip(body.kind, 10),     // single|multi
         lang: clip(body.lang, 5) || 'ko',
       };
       if (!safe.plan && !safe.product && !safe.name) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = WEB_SYSTEM;
-      userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
+      userMsg = '브리프:\n' + JSON.stringify(safe, null, 2) + '\n(올해 연도: ' + new Date().getFullYear() + ')';
     } else { // /edit
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);

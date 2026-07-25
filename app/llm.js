@@ -182,16 +182,17 @@
     return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
   }
 
-  /* 웹(랜딩/웹사이트) 초안 — 브리프 → 사이트 콘텐츠 필드. 근거 없는 항목은 null로 와서
-     스튜디오가 후속 질문으로 채움. 실패 시 throw → 호출측이 기존 대화 플로우로 폴백. */
+  /* 웹(랜딩/웹사이트) 초안 — 모든 필드를 채워 완성된 페이지로. 근거 없는 항목은
+     그럴듯한 예시 + assumed 목록 표시 → 스튜디오가 "임의로 채운 부분" 안내. */
   var WEB_SYSTEM =
     '너는 시니어 웹 카피라이터 겸 콘텐츠 기획자다. 브리프로 제품 소개 페이지의 콘텐츠 초안을 만든다.\n' +
     '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
     '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
-    '"features":[{"title":str,"desc":str}]|null,"stats":[{"value":str,"label":str}]|null,' +
-    '"bannerText":str|null,"bannerCta":str|null,"footerLinks":[str]|null,"footerCopyright":str|null}\n' +
-    '규칙: 브리프에서 파악되는 내용만. 카피는 브리프 기반 창작 허용. stats는 실제 수치 있을 때만(지어내기 금지). ' +
-    'features는 뽑을 수 있으면 정확히 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장.';
+    '"features":[{"title":str,"desc":str}],"stats":[{"value":str,"label":str}],' +
+    '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str]}\n' +
+    '규칙: 모든 필드를 빠짐없이 채운다. 브리프 근거 없는 항목은 맥락에 맞는 그럴듯한 예시로 채우고 ' +
+    '그 필드명을 assumed에 넣는다(지어낸 수치 stats는 반드시, 단 브리프의 실제 수치를 쓴 필드는 제외). features 3개, stats 3개, ' +
+    'footerLinks 표준 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장.';
   async function composeSite(brief) {
     brief = brief || {};
     var payload = { product: brief.product || '', name: brief.name || '', purpose: brief.purpose || '', plan: brief.plan || '', kind: brief.kind || 'single', lang: brief.lang || 'ko' };
@@ -232,6 +233,8 @@
       var fl = o.footerLinks.map(function (x) { return str(x); }).filter(Boolean).slice(0, 8);
       if (fl.length) out.footerLinks = fl;
     }
+    // 임의로 채운(브리프 근거 없는) 필드명 — 스튜디오 안내용
+    out.assumed = (Array.isArray(o.assumed) ? o.assumed : []).map(function (x) { return str(x); }).filter(Boolean);
     if (!out.productName && !out.tagline && !out.features) throw new Error('EMPTY_DRAFT');
     return out;
   }
