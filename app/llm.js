@@ -166,7 +166,7 @@
         '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지. 형식: {"slides":[...]}\n' +
         '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.HONORS_SCHEMA_DOC + '\n' +
         '각 타입의 필드: ' + window.HONORS_FIELD_DOC + '\n' +
-        '규칙: 1장 statement(pos bottom, caption은 행사·연도 느낌의 영문 세리프 문구). 2장 toc(items=섹션 제목들). ' +
+        '규칙: 1장 statement(pos bottom). 2장 toc(items=섹션 제목들). ' +
         '각 섹션 시작마다 divider(no "01"…, title=toc 항목과 동일, v는 1→2→3 순환). ' +
         '수치는 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';

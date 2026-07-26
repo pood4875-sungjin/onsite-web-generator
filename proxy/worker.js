@@ -91,16 +91,16 @@ const HONORS_USE_DOC = PITCH_USE_DOC + ' | ' +
   'divider(간지): 각 섹션 시작 전 전환 장 — 목차 항목과 1:1';
 const HONORS_FIELD_DOC = PITCH_FIELD_DOC + ' | ' +
   'toc:{eyebrow?,title?,items:[문자열]} | ' +
-  'divider:{no:"01",title,sub?,v?:1~3(배경 변형),caption?} | ' +
-  'statement 추가필드: caption?(행사명 영문 세리프 캡션),v?:3~5(전면 블루 배경) | closing 추가필드: caption?,v?:3~5';
+  'divider:{no:"01",title,sub?,v?:1~3(배경 변형)} | ' +
+  'statement 추가필드: v?:3~5(전면 블루 배경) | closing 추가필드: v?:3~5';
 const HONORS_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
   '형식: {"slides":[ ... ]}\n' +
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + HONORS_USE_DOC + '\n' +
   '각 타입의 필드: ' + HONORS_FIELD_DOC + '\n' +
-  '규칙: 1장은 statement(pos bottom, v는 3~5 중 하나·기본 3, caption은 행사·연도 느낌의 영문 세리프 문구 예 "2026 MIDAS HONORS DAY"). ' +
-  '2장은 toc(items=섹션 제목들). 각 섹션이 시작될 때마다 divider(no "01"…, title은 toc 항목과 동일, v는 1→2→3 순환, caption은 표지와 동일). ' +
+  '규칙: 1장은 statement(pos bottom, v는 3~5 중 하나·기본 3). ' +
+  '2장은 toc(items=섹션 제목들). 각 섹션이 시작될 때마다 divider(no "01"…, title은 toc 항목과 동일, v는 1→2→3 순환). ' +
   'Q&A 장(statement, title "Q&A")을 넣는다면 반드시 덱 맨 끝(closing 바로 앞)에만 둔다. ' +
   '수치가 있으면 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). ' +
   '본문 bg는 white/grey 교대. 마지막은 closing. ' +

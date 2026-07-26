@@ -53,8 +53,7 @@
       var v = +s.v || 0;
       if (!v) { if (pos === 'bottom') v = 3; else if (qna) v = 5; else if (s.bg === 'green' || s.bg === 'blue') v = 4; }
       var bgc = v ? ' hbg' + v : bgClass(s);
-      var cap = s.caption ? '<p class="st-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</p>' : '';
-      return '<section class="slide st ' + pos + qna + (bimg ? ' has-bimg' : '') + bgc + '" data-kind="' + kind(s, 'Statement') + '">' + cap +
+      return '<section class="slide st ' + pos + qna + (bimg ? ' has-bimg' : '') + bgc + '" data-kind="' + kind(s, 'Statement') + '">' +
         '<div class="st-in">' +
         (s.badge ? '<p class="st-badge"' + de(P + '.badge') + '>' + esc(s.badge) + '</p>' : '') +
         (s.eyebrow ? '<p class="p-eyebrow"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</p>' : '') +
@@ -235,8 +234,7 @@
           '<p class="cl-v"' + de(P + '.contacts.' + i + '.v') + '>' + ml(c.v || '') + '</p></div>';
       }).join('');
       var v = +s.v || 4;
-      var cap = s.caption ? '<p class="st-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</p>' : '';
-      return '<section class="slide cl hbg' + v + '" data-kind="Closing">' + cap +
+      return '<section class="slide cl hbg' + v + '" data-kind="Closing">' +
         '<h1 class="st-title"' + de(P + '.title') + '>' + ml(s.title || 'Thank you') + '</h1>' +
         '<div class="cl-grid">' + cs + '</div></section>';
     },
@@ -256,8 +254,7 @@
     divider: function (s, P) {
       var idx = +(String(P).split('.')[1]) || 0;
       var v = +s.v ? 3 + ((+s.v - 1) % 3) : 3 + (idx % 3);
-      var cap = s.caption ? '<p class="st-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</p>' : '';
-      return '<section class="slide st center dv hbg' + v + '" data-kind="Divider">' + cap +
+      return '<section class="slide st center dv hbg' + v + '" data-kind="Divider">' +
         '<div class="st-in">' +
         (s.no ? '<p class="dv-no"' + de(P + '.no') + '>' + esc(s.no) + '</p>' : '') +
         '<h1 class="st-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
@@ -278,7 +275,7 @@
      주의: 셀렉터 추가/순서 변경은 기존 덱의 _pos 키(m0…)를 밀 수 있다. */
   var MV_SEL = '[data-edit], .s-imgwrap, .p-media, ' +
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
-    '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num, .st-cap';
+    '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -328,10 +325,7 @@
       '.hbg1{background-image:url("' + bgUrl(1) + '")}.hbg2{background-image:url("' + bgUrl(2) + '")}' +
       '.hbg3{background-image:url("' + bgUrl(3) + '")}.hbg4{background-image:url("' + bgUrl(4) + '")}.hbg5{background-image:url("' + bgUrl(5) + '")}' +
       '.hbg3 .p-eyebrow,.hbg4 .p-eyebrow,.hbg5 .p-eyebrow{color:rgba(255,255,255,.8)}' +
-      /* Cinzel 캡션 — 표지: 우상단 / 센터 장: 상단 중앙 (피그마 1524,102 · 786,75 실측) */
-      '.st-cap{position:absolute;top:66px;right:var(--mg);margin:0;font-family:var(--serif);font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase}' +
-      '.st.bottom.hbg3 .st-cap,.st.bottom.hbg4 .st-cap,.st.bottom.hbg5 .st-cap{top:auto;bottom:63px;right:70px;font-size:17px}' +
-      '.st.center .st-cap,.cl .st-cap,.dv .st-cap{right:auto;left:50%;top:48px;transform:translateX(-50%);font-size:17px;white-space:nowrap}' +
+
       /* 헤딩 블록 */
       '.p-head{max-width:1000px}.p-head.ctr{margin:0 auto;text-align:center}' +
       '.p-eyebrow{font-size:var(--fs-over);font-weight:500;letter-spacing:.02em;text-transform:uppercase;margin:0 0 27px}' +
@@ -583,8 +577,8 @@
      AI가 브리프를 읽고 섹션마다 타입을 고를 때 이 설명을 그대로 프롬프트에 넣는다. ---- */
   var CATALOG = [
     { type: 'toc', label: '목차', use: '표지 바로 다음 장. 발표 전체 목차를 번호 리스트로 (간지 divider의 title들과 1:1 일치)', needs: ['items'], opt: ['title', 'eyebrow'], cap: { items: '3~8개 · 각 ~20자' } },
-    { type: 'divider', label: '간지', use: '각 섹션이 시작될 때 넣는 전환 장 — no(01…)+섹션명. 목차 항목과 1:1, 배경은 v(1~3)로 변형', needs: ['title'], opt: ['no', 'sub', 'v', 'caption'], cap: { title: '~20자' } },
-    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. badge(아웃라인 필)와 bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 가능', needs: ['title'], opt: ['eyebrow', 'badge', 'sub', 'bg', 'pos', 'bottomImage', 'caption', 'v'], cap: { title: '~40자' } },
+    { type: 'divider', label: '간지', use: '각 섹션이 시작될 때 넣는 전환 장 — no(01…)+섹션명. 목차 항목과 1:1, 배경은 v(1~3)로 변형', needs: ['title'], opt: ['no', 'sub', 'v'], cap: { title: '~20자' } },
+    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. badge(아웃라인 필)와 bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 가능', needs: ['title'], opt: ['eyebrow', 'badge', 'sub', 'bg', 'pos', 'bottomImage', 'v'], cap: { title: '~40자' } },
     { type: 'quote', label: '인용', use: '고객·전문가 발언, 후기처럼 남의 말로 신뢰를 줄 때', needs: ['text', 'by'], opt: ['stat', 'image', 'bg'], cap: { text: '~90자' } },
     { type: 'split', label: '좌우 2분할', use: '설명과 시각자료를 나란히 — 문제 정의, 제품 화면, 경쟁 우위처럼 보여주며 설명할 때', needs: ['title'], opt: ['bullets', 'text', 'stat', 'visual', 'side'], cap: { bullets: '4개 · 각 ~50자' } },
     { type: 'grid', label: 'N열 반복', use: '동급 항목 3~4개를 나열 — 기능, 강점, 팀원, 경쟁사 카드. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조+화살표), 항목에 image를 주면 그 셀은 이미지 타일', needs: ['title', 'items'], opt: ['variant(text|icon|card|person|num)', 'cols', 'accent'], cap: { items: '2~4개', text: '~170자' } },
@@ -597,15 +591,15 @@
     { type: 'chart', label: '차트', use: '추이·비교·구성비를 그래프로 보여줄 때 (막대·라인·에어리어·도넛)', needs: ['chart'], opt: ['title', 'note'], cap: { series: '1~2계열', categories: '3~7개' } },
     { type: 'matrix', label: '2×2 매트릭스', use: '경쟁 지형, 포지셔닝처럼 두 축으로 자리를 잡아 보여줄 때', needs: ['points'], opt: ['title', 'axisX', 'axisY'], cap: { points: '3~6개' } },
     { type: 'gallery', label: '목업 나열', use: '제품 화면 2~3개를 나란히 보여줄 때', needs: ['items'], opt: ['title'], cap: { items: '2~3개' } },
-    { type: 'closing', label: '마무리', use: '마지막 인사 + 연락처', needs: ['title'], opt: ['contacts', 'caption', 'v'], cap: { contacts: '~3개' } },
+    { type: 'closing', label: '마무리', use: '마지막 인사 + 연락처', needs: ['title'], opt: ['contacts', 'v'], cap: { contacts: '~3개' } },
   ];
 
   var DEFAULT_DECK = {
     style: 'honors',
     slides: [
-      { type: 'statement', pos: 'bottom', title: '아너스데이\n발표제목을 입력하세요', sub: '서브텍스트를 입력하세요', caption: '2026 MIDAS HONORS DAY' },
+      { type: 'statement', pos: 'bottom', title: '아너스데이\n발표제목을 입력하세요', sub: '서브텍스트를 입력하세요' },
       { type: 'toc', eyebrow: 'CONTENTS', title: '목차', items: ['첫 번째 주제', '두 번째 주제', '세 번째 주제'] },
-      { type: 'divider', no: '01', title: '첫 번째 주제', caption: '2026 MIDAS HONORS DAY' },
+      { type: 'divider', no: '01', title: '첫 번째 주제' },
       { type: 'grid', bg: 'white', variant: 'icon', eyebrow: 'SOLUTION', title: '무엇을 해결하나요', cols: 3,
         items: [{ head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] },
       { type: 'stats', bg: 'grey', eyebrow: 'TRACTION', title: '성과', cols: 3,
@@ -616,7 +610,7 @@
 
   var STARTERS = {
     toc: { type: 'toc', bg: 'white', eyebrow: 'CONTENTS', title: '목차', items: ['첫 번째 주제', '두 번째 주제', '세 번째 주제', '네 번째 주제'] },
-    divider: { type: 'divider', no: '01', title: '섹션 제목', sub: '섹션 설명을 입력하세요', caption: '2026 MIDAS HONORS DAY' },
+    divider: { type: 'divider', no: '01', title: '섹션 제목', sub: '섹션 설명을 입력하세요' },
     statement: { type: 'statement', bg: 'green', pos: 'bottom', eyebrow: 'SECTION', title: '문장을 입력' },
     quote: { type: 'quote', bg: 'grey', text: '인용문을 입력하세요.', by: '— 이름' },
     split: { type: 'split', bg: 'white', side: 'right', eyebrow: 'SUBHEADING', title: '제목', bullets: ['내용', '내용'], visual: { label: 'ADD IMAGE' } },
@@ -654,8 +648,8 @@
   }).join('\n');
   var FIELD_DOC =
     'toc:{eyebrow?,title?,items:[문자열]} | ' +
-    'divider:{no:"01",title,sub?,v?:1~3(배경 변형),caption?} | ' +
-    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?(아웃라인 필 텍스트),title,sub?,bottomImage?:{label},caption?(행사명 세리프 캡션),v?:3~5(전면 블루 배경 — 표지·전환·Q&A는 이 중에서)} | ' +
+    'divider:{no:"01",title,sub?,v?:1~3(배경 변형)} | ' +
+    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?(아웃라인 필 텍스트),title,sub?,bottomImage?:{label},v?:3~5(전면 블루 배경 — 표지·전환·Q&A는 이 중에서)} | ' +
     'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
     'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label}|{kind:"panel"},side:"left|right",bg?} | ' +
     'grid:{eyebrow?,title,variant:"text|icon|card|person|num",cols:2~4,items:[{head?,role?,text,image?:{label}}],accent?:강조인덱스,bg?} | ' +
@@ -668,14 +662,14 @@
     'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn|gauge|ring",categories:[str],series:[{name,values:[숫자]}],max?:숫자(gauge·ring 상한),emphasis?:인덱스,format?:{prefix,suffix}},bg?} | ' +
     'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
     'gallery:{title,items:[{head?,text?,image?:{label}}],bg?} | ' +
-    'closing:{title,contacts:[{k,v}],caption?,v?:1~5}';
+    'closing:{title,contacts:[{k,v}],v?:1~5}';
 
   /* 결정론 폴백 — AI 실패/미가용 시. 내용 키워드로 장표 타입을 고른다(순환 배치가 아니라). */
   function honorsComposeDeck(brief) {
     brief = brief || {};
     var title = (brief.title || '').trim() || '제안 발표';
     var outline = (brief.outline || []).map(function (s) { return (s || '').trim(); }).filter(Boolean).slice(0, 8);
-    var slides = [{ type: 'statement', pos: 'bottom', title: title, sub: brief.message || '', caption: '2026 MIDAS HONORS DAY' }];
+    var slides = [{ type: 'statement', pos: 'bottom', title: title, sub: brief.message || '' }];
     if (outline.length > 1) slides.push({ type: 'toc', eyebrow: 'CONTENTS', title: '목차', items: outline.slice() });
     var pick = function (sec) {
       // 섹션 제목의 키워드 → 어울리는 장표. 매칭 없으면 grid(가장 범용).
@@ -689,7 +683,7 @@
       if (/(고객|후기|사례|보이스)/.test(sec)) return { type: 'quote', bg: 'green', text: '인용문을 입력하세요.', by: '— 이름' };
       return { type: 'grid', bg: 'white', variant: 'text', title: sec, cols: 3, items: [{ head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] };
     };
-    (outline.length ? outline : ['핵심 내용']).forEach(function (sec, si) { slides.push({ type: 'divider', no: ('0' + (si + 1)).slice(-2), title: sec, caption: '2026 MIDAS HONORS DAY' }); slides.push(pick(sec)); });
+    (outline.length ? outline : ['핵심 내용']).forEach(function (sec, si) { slides.push({ type: 'divider', no: ('0' + (si + 1)).slice(-2), title: sec }); slides.push(pick(sec)); });
     slides.push({ type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: brief.audience || '' }] });
     return { style: 'honors', slides: slides };
   }
