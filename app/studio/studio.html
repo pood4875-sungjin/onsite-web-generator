@@ -1648,7 +1648,9 @@
         const rq=pvfFrame.requestFullscreen||pvfFrame.webkitRequestFullscreen;
         let pr=null; try{ pr=rq&&rq.call(pvfFrame); }catch(_){}
         const fb=()=>{ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} };
-        if(pr&&pr.then) pr.then(()=>{},fb); else fb();
+        if(pr&&pr.then) pr.then(()=>{},()=>{});
+        // 프라미스가 안 끝나는 환경 대비 — 600ms 안에 전체화면 미진입이면 뷰어 유사 전체화면으로
+        setTimeout(()=>{ if(!document.fullscreenElement) fb(); },600);
       }
     }
   });

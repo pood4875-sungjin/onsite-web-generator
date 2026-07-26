@@ -182,7 +182,9 @@
       'if(pseudo){setPseudo(false);return}' +
       'var de2=document.documentElement,rq=de2.requestFullscreen||de2.webkitRequestFullscreen;' +
       'var p=null;try{p=rq&&rq.call(de2)}catch(e){}' +
-      'if(p&&p.then)p.then(null,function(){setPseudo(true)});else setPseudo(true);}' +
+      'if(p&&p.then)p.then(null,function(){});' +
+      // 일부 환경은 프라미스가 영영 안 끝난다(성공도 거부도 없음) — 600ms 안에 전체화면이 안 잡히면 유사 전체화면 폴백
+      'setTimeout(function(){if(!document.fullscreenElement&&!pseudo)setPseudo(true);},600);}' +
       'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
       'var ty=Math.max(0,(area-720*sc)/2);' +
       'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
