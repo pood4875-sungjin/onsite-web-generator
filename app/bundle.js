@@ -101,18 +101,19 @@ const SECTIONS = {
     // 없으면 기본 플레이스홀더.
     let nav;
     if (d.nav && d.nav.length) {
-      nav = d.nav.map((it) => {
+      nav = d.nav.map((it, ni) => {
         const on = it.active ? `color:${t.text};font-weight:600` : '';
         const hasKids = it.children && it.children.length;
         const sub = hasKids
           ? `<div class="nsub" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;padding:6px;min-width:150px;border-radius:12px;background:${t.bg};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 40px rgba(0,0,0,.4)">
-              ${it.children.map((c) => `<span data-nav-page="${c.id || ''}" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
+              ${it.children.map((c, ci) => `<span data-nav-page="${c.id || ''}" data-edit="nav.${ni}.children.${ci}.name" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
             </div>`
           : '';
-        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
+        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}"><span data-edit="nav.${ni}.name">${esc(it.name)}</span>${hasKids ? ' ▾' : ''}${sub}</div>`;
       }).join('');
     } else {
-      nav = `<span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>`;
+      // 단일 사이트 폴백 메뉴 — navLinks.N 필드로 편집 가능(폴백=기존 문구)
+      nav = ['기능', '가격', '문서', '고객사례'].map((m, i) => `<a data-edit="navLinks.${i}" style="color:inherit;text-decoration:none;cursor:pointer">${esc((d.navLinks && d.navLinks[i]) || m)}</a>`).join('');
     }
     return `
     <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;backdrop-filter:blur(20px);background:${t.bg}cc;border-bottom:1px solid ${t.surfaceBorder}">
@@ -121,7 +122,7 @@ const SECTIONS = {
         <span data-edit="productName" style="font-weight:600">${name(d)}</span>
       </div>
       <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px">${nav}</nav>
-      <button style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
+      <button data-edit="primaryCta" style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
     </header>`;
   },
 
@@ -139,12 +140,12 @@ const SECTIONS = {
     <section style="position:relative;overflow:hidden;padding:80px 32px 40px;text-align:center;background:${t.heroGradient}">
       <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:520px;height:320px;border-radius:999px;filter:blur(100px);background:${t.glow};pointer-events:none"></div>
       <div class="rise" style="position:relative;max-width:680px;margin:0 auto">
-        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span>Engine v2.0 · AX 웹 제너레이터</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span><span data-edit="heroBadge">${esc(d.heroBadge || 'Engine v2.0 · AX 웹 제너레이터')}</span></span>
         <h1 data-edit="tagline" style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
         <p data-edit="subcopy" style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
         <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:12px">
-          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}"><span data-edit="primaryCta">${cta(d)}</span> →</button>
-          <button style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">문서 보기</button>
+          <button data-edit="primaryCta" class="dg-arw" style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${cta(d)}</button>
+          <button data-edit="secondaryCta" style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">${esc(d.secondaryCta || '문서 보기')}</button>
         </div>
       </div>
       ${(d.images && d.images.hero)
@@ -176,8 +177,8 @@ const SECTIONS = {
     return `
     <section style="position:relative;padding:64px 32px">
       <div class="rise" style="max-width:680px;margin:0 auto;text-align:center">
-        <div style="color:${t.accent};font-size:13px;letter-spacing:.08em;text-transform:uppercase">Features</div>
-        <h2 style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em">명료함과 성능을 위해 설계됨</h2>
+        <div data-edit="featureEyebrow" style="color:${t.accent};font-size:13px;letter-spacing:.08em;text-transform:uppercase">${esc(d.featureEyebrow || 'Features')}</div>
+        <h2 data-edit="featureTitle" style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em">${esc(d.featureTitle || '명료함과 성능을 위해 설계됨')}</h2>
       </div>
       <div style="max-width:900px;margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
         ${features.map((f, i) => `<div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
@@ -198,7 +199,7 @@ const SECTIONS = {
         <div style="position:absolute;inset:0;background:${t.heroGradient};pointer-events:none"></div>
         <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:384px;height:256px;border-radius:999px;filter:blur(90px);background:${t.glow};pointer-events:none"></div>
         <h2 data-edit="bannerText" style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
-        <button style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta} →</button>
+        <button data-edit="bannerCta" class="dg-arw" style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta}</button>
       </div>
     </section>`;
   },
@@ -209,8 +210,8 @@ const SECTIONS = {
     return `
     <footer style="position:relative;padding:40px 32px;border-top:1px solid ${t.surfaceBorder};color:${t.textMuted};font-size:14px">
       <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span style="font-weight:600">${name(d)}</span></div>
-        <div style="display:flex;gap:24px">${links.map((l, i) => `<span data-edit="footerLinks.${i}">${esc(l)}</span>`).join('')}</div>
+        <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span data-edit="productName" style="font-weight:600">${name(d)}</span></div>
+        <div style="display:flex;gap:24px">${links.map((l, i) => `<a data-edit="footerLinks.${i}" style="color:inherit;text-decoration:none;cursor:pointer">${esc(l)}</a>`).join('')}</div>
         <span data-edit="footerCopyright">${copy}</span>
       </div>
     </footer>`;
@@ -269,6 +270,8 @@ function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', v
 <style>
   *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
   .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
+  /* 화살표 버튼 — 텍스트(data-edit 저장분) 밖에서 렌더: 편집 저장 시 '→'가 필드에 섞이지 않음 */
+  .dg-arw::after{content:"→"}
   img{max-width:100%;height:auto}
   /* 반응형 세이프티 넷 — 인라인 스타일(고정폭) 팩을 좁은 뷰포트서 정렬 */
   @media (max-width:900px){

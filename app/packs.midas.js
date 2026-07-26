@@ -178,8 +178,9 @@ const motion = (level = 'subtle') => level === 'static' ? { css: '', js: '' } : 
 
 // ── ④ 컴포넌트 (source: btn-pill hover 반전, p-card) ──
 const components = {
-  button(l, { variant = 'primary', size = 'lg', href = '#' } = {}) { return `<a class="btn-pill btn-pill--${variant} btn-pill--${size}" href="${esc(href)}">${esc(l)}</a>`; },
-  link(l, { href = '#', arrow = false } = {}) { return `<a class="lnk" href="${esc(href)}">${esc(l)}${arrow ? '<span class="arw">→</span>' : ''}</a>`; },
+  // edit: 스튜디오 data-edit 경로(선택) — 버튼/링크 텍스트 편집 + 🔗 링크 칩용
+  button(l, { variant = 'primary', size = 'lg', href = '#', edit } = {}) { return `<a class="btn-pill btn-pill--${variant} btn-pill--${size}" href="${esc(href)}"${edit ? ` data-edit="${esc(edit)}"` : ''}>${esc(l)}</a>`; },
+  link(l, { href = '#', arrow = false, edit } = {}) { const t = String(l == null ? '' : l).replace(/\s*→\s*$/, ''); /* 편집 저장 시 화살표 중복 방지 */ return `<a class="lnk" href="${esc(href)}"${edit ? ` data-edit="${esc(edit)}"` : ''}>${esc(t)}${arrow ? '<span class="arw">→</span>' : ''}</a>`; },
   badge(l) { return `<span class="badge">${esc(l)}</span>`; },
   card(inner) { return `<div class="p-card">${inner}</div>`; },
   icon(path) { return `<svg class="ico" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`; },
@@ -212,15 +213,16 @@ const sparkle = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentCo
 // 스튜디오 레일 위계(ctx.data.nav) → GNB 메뉴. 없으면 정적 데모 링크.
 const navLinks = (c, ctx) => {
   const nv = ctx.data && ctx.data.nav;
-  if (nv && nv.length) return nv.map((it) => {
+  if (nv && nv.length) return nv.map((it, i) => {
     const cur = it.active ? ' aria-current="page"' : '';
     if (it.children && it.children.length) {
-      const sub = it.children.map((ch) => `<a class="gnb__subitem" href="#" data-nav-page="${ch.id || ''}"${ch.active ? ' aria-current="page"' : ''}>${esc(ch.name)}</a>`).join('');
-      return `<span class="gnb__grp"><a href="#" data-nav-page="${it.id || ''}"${cur}>${esc(it.name)} ▾</a><span class="gnb__sub">${sub}</span></span>`;
+      const sub = it.children.map((ch, j) => `<a class="gnb__subitem" href="#" data-nav-page="${ch.id || ''}"${ch.active ? ' aria-current="page"' : ''} data-edit="nav.${i}.children.${j}.name">${esc(ch.name)}</a>`).join('');
+      // ▾ 장식은 편집 저장에 섞이지 않게 data-edit를 이름 span에만 건다
+      return `<span class="gnb__grp"><a href="#" data-nav-page="${it.id || ''}"${cur}><span data-edit="nav.${i}.name">${esc(it.name)}</span> ▾</a><span class="gnb__sub">${sub}</span></span>`;
     }
-    return `<a href="#" data-nav-page="${it.id || ''}"${cur}>${esc(it.name)}</a>`;
+    return `<a href="#" data-nav-page="${it.id || ''}"${cur} data-edit="nav.${i}.name">${esc(it.name)}</a>`;
   }).join('');
-  return (c.links || ['Get Started', 'Foundation', 'Components', 'Pattern']).map((l, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ''}>${esc(l)}</a>`).join('');
+  return (c.links || (ctx.data.navLinks && ctx.data.navLinks.length ? ctx.data.navLinks : ['Get Started', 'Foundation', 'Components', 'Pattern'])).map((l, i) => `<a href="#"${i === 0 ? ' aria-current="page"' : ''} data-edit="navLinks.${i}">${esc(l)}</a>`).join('');
 };
 const sections = {
   nav: (c, ctx) => `
@@ -229,51 +231,51 @@ const sections = {
     <header class="gnb"><div class="gnb__inner">
       <a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a>
       <nav class="gnb__nav hide-sm">${navLinks(c, ctx)}</nav>
-      <a class="btn-pill btn-pill--md" href="#">${esc(c.primaryCta || ctx.data.primaryCta || '시작하기')}</a>
+      <a class="btn-pill btn-pill--md" href="#" data-edit="primaryCta">${esc(c.primaryCta || ctx.data.primaryCta || '시작하기')}</a>
     </div></header>`,
   hero: (c, ctx) => `
     <section class="hero"><div class="hero__content">
       <h1 class="hero__t" data-edit="tagline">${esc(c.title || ctx.data.tagline || 'Design Once.\nScale with AX.').replace(/\n/g, '<br>')}</h1>
       <p class="hero__lead rise" data-edit="subcopy">${esc(c.subcopy || ctx.data.subcopy || '사람과 AX가 함께 활용할 수 있도록\n패턴·정책·구조까지 연결된 시스템.').replace(/\n/g, '<br>')}</p>
-      <div class="hero__cta rise">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.link(esc(c.secondaryCta), { arrow: true }) : ''}</div>
+      <div class="hero__cta rise">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg', edit: 'primaryCta' })}${(c.secondaryCta || ctx.data.secondaryCta) ? C.link(esc(c.secondaryCta || ctx.data.secondaryCta), { arrow: true, edit: 'secondaryCta' }) : ''}</div>
     </div>
     <div class="hero__media rise" data-img="hero">${(ctx.data.images && ctx.data.images.hero)
       ? `<img src="${esc(ctx.data.images.hero)}" alt="">`
       : `<div class="hero__ph">이미지 영역 · 편집에서 교체</div>`}</div>
     </section>`,
   feature: (c, ctx) => `
-    <section class="container section"><div class="rise">${c.eyebrow ? `<div class="badge">${esc(c.eyebrow)}</div>` : ''}<h2 class="sec-title">${esc(c.title || '핵심 기능')}</h2></div>
+    <section class="container section"><div class="rise">${(c.eyebrow || ctx.data.featureEyebrow) ? `<div class="badge" data-edit="featureEyebrow">${esc(c.eyebrow || ctx.data.featureEyebrow)}</div>` : ''}<h2 class="sec-title" data-edit="featureTitle">${esc(c.title || ctx.data.featureTitle || '핵심 기능')}</h2></div>
       <div class="card-grid" style="margin-top:40px">${(c.items || [{ icon: 'layers', title: 'Design Once', desc: PH }, { icon: 'sync', title: 'Scale with AX', desc: PH }, { icon: 'bolt', title: 'Connected System', desc: PH }]).map((it, i) => `<div class="p-card rise"><div class="p-card__media">${C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="p-card__desc" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`,
   stat: (c, ctx) => `
     <section class="container section"><div class="card-grid stat">${(c.items || [{ value: '2.4ms', label: '렌더 지연' }, { value: '8종', label: '페이지 타입' }, { value: '99.9%', label: '일관성' }]).map((s, i) => `<div class="stat__it rise"><div class="stat__v" data-edit="stats.${i}.value">${esc(s.value)}</div><div class="stat__l" data-edit="stats.${i}.label">${esc(s.label)}</div></div>`).join('')}</div></section>`,
   cta: (c, ctx) => `
-    <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t" data-edit="bannerText">${esc(c.title || '지금 시작해 보세요')}</h2><p class="cta__s">${esc(c.subcopy || PH)}</p>
-      <div class="cta__act">${C.button(esc(c.primaryCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg' })}${c.secondaryCta ? C.button(esc(c.secondaryCta), { variant: 'ghost', size: 'lg' }) : ''}</div></div></section>`,
+    <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t" data-edit="bannerText">${esc(c.title || ctx.data.bannerText || '지금 시작해 보세요')}</h2><p class="cta__s" data-edit="bannerSub">${esc(c.subcopy || ctx.data.bannerSub || PH)}</p>
+      <div class="cta__act">${C.button(esc(c.primaryCta || ctx.data.bannerCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg', edit: 'bannerCta' })}${(c.secondaryCta || ctx.data.bannerSecondaryCta) ? C.button(esc(c.secondaryCta || ctx.data.bannerSecondaryCta), { variant: 'ghost', size: 'lg', edit: 'bannerSecondaryCta' }) : ''}</div></div></section>`,
   comparison: (c, ctx) => {
     const rows = c.items || (ctx.data.comparison && ctx.data.comparison.length ? ctx.data.comparison : [{ label: '온브랜드 일관성', a: '자동 보장', b: '수작업' }, { label: '생성 속도', a: '수 분', b: '수 일' }, { label: '유지보수', a: '토큰 한 곳', b: '페이지마다' }]);
-    return `<section class="container section"><div class="rise"><div class="badge">Comparison</div><h2 class="sec-title" data-edit="compareTitle">${esc(c.title || ctx.data.compareTitle || '기존 방식과의 차이')}</h2></div>
-      <div class="cmp rise"><div class="cmp__row cmp__head"><span></span><span class="cmp__us">${esc(ctx.data.productName || 'AX')}</span><span class="cmp__them">기존 방식</span></div>
-      ${rows.map((r, i) => `<div class="cmp__row"><span class="cmp__k" data-edit="comparison.${i}.label">${esc(r.label)}</span><span class="cmp__v cmp__v--us" data-edit="comparison.${i}.a">✓ ${esc(r.a)}</span><span class="cmp__v" data-edit="comparison.${i}.b">${esc(r.b)}</span></div>`).join('')}</div></section>`;
+    return `<section class="container section"><div class="rise"><div class="badge" data-edit="compareEyebrow">${esc(ctx.data.compareEyebrow || 'Comparison')}</div><h2 class="sec-title" data-edit="compareTitle">${esc(c.title || ctx.data.compareTitle || '기존 방식과의 차이')}</h2></div>
+      <div class="cmp rise"><div class="cmp__row cmp__head"><span></span><span class="cmp__us" data-edit="productName">${esc(ctx.data.productName || 'AX')}</span><span class="cmp__them" data-edit="compareThem">${esc(ctx.data.compareThem || '기존 방식')}</span></div>
+      ${rows.map((r, i) => `<div class="cmp__row"><span class="cmp__k" data-edit="comparison.${i}.label">${esc(r.label)}</span><span class="cmp__v cmp__v--us" data-edit="comparison.${i}.a">✓ ${esc(String(r.a == null ? '' : r.a).replace(/^✓\s*/, ''))}</span><span class="cmp__v" data-edit="comparison.${i}.b">${esc(r.b)}</span></div>`).join('')}</div></section>`;
   },
   testimonial: (c, ctx) => {
     const items = c.items || (ctx.data.testimonials && ctx.data.testimonials.length ? ctx.data.testimonials : [{ quote: '도입 후 페이지 제작이 며칠에서 몇 분으로 줄었어요.', who: '김기획 · 프로덕트' }, { quote: '브랜드 일관성 걱정이 사라졌습니다.', who: '이디자인 · 디자인' }, { quote: '개발 리소스 없이 사이트를 냈어요.', who: '박사업 · 사업개발' }]);
-    return `<section class="container section"><div class="rise"><div class="badge">Case Study</div><h2 class="sec-title" data-edit="caseTitle">${esc(c.title || ctx.data.caseTitle || '고객이 말하는 가치')}</h2></div>
-      <div class="card-grid" style="margin-top:40px">${items.map((t, i) => `<div class="p-card rise quote"><p class="quote__t" data-edit="testimonials.${i}.quote">"${esc(t.quote)}"</p><div class="quote__w" data-edit="testimonials.${i}.who">${esc(t.who)}</div></div>`).join('')}</div></section>`;
+    return `<section class="container section"><div class="rise"><div class="badge" data-edit="caseEyebrow">${esc(ctx.data.caseEyebrow || 'Case Study')}</div><h2 class="sec-title" data-edit="caseTitle">${esc(c.title || ctx.data.caseTitle || '고객이 말하는 가치')}</h2></div>
+      <div class="card-grid" style="margin-top:40px">${items.map((t, i) => `<div class="p-card rise quote"><p class="quote__t" data-edit="testimonials.${i}.quote">"${esc(String(t.quote == null ? '' : t.quote).replace(/^"+|"+$/g, ''))}"</p><div class="quote__w" data-edit="testimonials.${i}.who">${esc(t.who)}</div></div>`).join('')}</div></section>`;
   },
   blog: (c, ctx) => {
     const posts = c.items || (ctx.data.posts && ctx.data.posts.length ? ctx.data.posts : [{ tag: 'Guide', title: '디자인 토큰 시작하기', desc: PH }, { tag: 'Story', title: 'AX로 사이트 만든 이야기', desc: PH }, { tag: 'Update', title: '9월 릴리즈 노트', desc: PH }]);
-    return `<section class="container section"><div class="rise"><div class="badge">Blog</div><h2 class="sec-title" data-edit="blogTitle">${esc(c.title || ctx.data.blogTitle || '콘텐츠 · 자료실')}</h2></div>
+    return `<section class="container section"><div class="rise"><div class="badge" data-edit="blogEyebrow">${esc(ctx.data.blogEyebrow || 'Blog')}</div><h2 class="sec-title" data-edit="blogTitle">${esc(c.title || ctx.data.blogTitle || '콘텐츠 · 자료실')}</h2></div>
       <div class="card-grid" style="margin-top:40px">${posts.map((p, i) => `<a class="p-card rise post" href="#"><div class="p-card__media post__thumb"></div><div class="p-card__body"><span class="post__tag" data-edit="posts.${i}.tag">${esc(p.tag || 'Post')}</span><h3 class="p-card__title" data-edit="posts.${i}.title">${esc(p.title)}</h3><p class="p-card__desc" data-edit="posts.${i}.desc">${esc(p.desc || PH)}</p></div></a>`).join('')}</div></section>`;
   },
   faq: (c, ctx) => {
     const items = c.items || (ctx.data.faqs && ctx.data.faqs.length ? ctx.data.faqs : [{ q: '도입에 개발이 필요한가요?', a: '아니요. 대화로 값만 채우면 됩니다.' }, { q: '디자인을 바꿀 수 있나요?', a: '스타일 팩을 교체하면 전체 룩이 바뀝니다.' }, { q: '다국어를 지원하나요?', a: '한국어·영어·일본어·중국어를 지원합니다.' }]);
-    return `<section class="container section"><div class="rise"><div class="badge">FAQ</div><h2 class="sec-title" data-edit="faqTitle">${esc(c.title || ctx.data.faqTitle || '자주 묻는 질문')}</h2></div>
+    return `<section class="container section"><div class="rise"><div class="badge" data-edit="faqEyebrow">${esc(ctx.data.faqEyebrow || 'FAQ')}</div><h2 class="sec-title" data-edit="faqTitle">${esc(c.title || ctx.data.faqTitle || '자주 묻는 질문')}</h2></div>
       <div class="faq rise" style="margin-top:32px">${items.map((f, i) => `<details class="faq__it"${i === 0 ? ' open' : ''}><summary class="faq__q" data-edit="faqs.${i}.q">${esc(f.q)}</summary><div class="faq__a" data-edit="faqs.${i}.a">${esc(f.a)}</div></details>`).join('')}</div></section>`;
   },
   footer: (c, ctx) => `
     <footer class="footer"><div class="footer__inner">
-      <div class="footer__l"><a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a><span class="badge">AX Design System</span></div>
-      <div class="footer__links">${(c.columns ? c.columns.flatMap((col) => col.items) : ['이용약관', '개인정보', '문의']).map((l) => `<a href="#">${esc(l)}</a>`).join('')}<span class="footer__copy">© 2026 ${name(ctx)}</span></div>
+      <div class="footer__l"><a class="gnb__logo" href="#">${sparkle}<span data-edit="productName">${name(ctx)}</span></a><span class="badge" data-edit="footerBadge">${esc(ctx.data.footerBadge || 'AX Design System')}</span></div>
+      <div class="footer__links">${(c.columns ? c.columns.flatMap((col) => col.items) : (ctx.data.footerLinks && ctx.data.footerLinks.length ? ctx.data.footerLinks : ['이용약관', '개인정보', '문의'])).map((l, i) => `<a href="#" data-edit="footerLinks.${i}">${esc(l)}</a>`).join('')}<span class="footer__copy" data-edit="footerCopyright">${ctx.data.footerCopyright ? esc(ctx.data.footerCopyright) : `© 2026 ${name(ctx)}`}</span></div>
     </div></footer>`,
 };
 const sectionsCss = () => `
@@ -393,9 +395,9 @@ const midasPack = {
   window.MIDAS_PACK=midasPack; window.MIDAS_STYLE={id:"midas",name:"MIDAS AX",desc:"모노크롬 · 라이트 · Poppins",swatch:"linear-gradient(135deg,#e9eaec 0%,#1b1c1e 100%)"};
   window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",comparison:"비교",testimonial:"고객사례",blog:"블로그",faq:"FAQ",cta:"CTA"} };
   window.renderMidasPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
-    if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"bolt",title:f.title,desc:f.desc}})};
+    if(shared.features&&shared.features.length)content.feature={eyebrow:shared.featureEyebrow||"FEATURES",title:shared.featureTitle||"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"bolt",title:f.title,desc:f.desc}})};
     if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
-    if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.subcopy};
+    if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.bannerSub||shared.subcopy};
     // 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
     var vol=opts.volume||"heavy", tpl=DEMO_TEMPLATE.sections, fixedT=window.MIDAS_SECTION_SPEC.fixed;
     var head=tpl.filter(function(s){return s.type==="nav"}), foot=tpl.filter(function(s){return s.type==="footer"});

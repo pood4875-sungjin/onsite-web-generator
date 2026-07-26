@@ -89,12 +89,12 @@
     /* Navbar 3 (38:1050 내장): 로고 좌 — 메뉴 중앙 — Login/Sign up 우. 높이 104(패딩 24) */
     nav: function (c, ctx) {
       var d = ctx.data;
-      var menu = (d.nav && d.nav.length ? d.nav.map(function (it) { return '<a data-nav-page="' + (it.id || '') + '"' + (it.active ? ' class="on"' : '') + '>' + esc(it.name) + '</a>'; })
-        : ['기능', '가격', '고객사례', '문의'].map(function (m) { return '<a>' + m + '</a>'; })).join('');
+      var menu = (d.nav && d.nav.length ? d.nav.map(function (it, i) { return '<a data-nav-page="' + (it.id || '') + '"' + (it.active ? ' class="on"' : '') + de('nav.' + i + '.name') + '>' + esc(it.name) + '</a>'; })
+        : ['기능', '가격', '고객사례', '문의'].map(function (m, i) { return '<a' + de('navLinks.' + i) + '>' + esc((d.navLinks && d.navLinks[i]) || m) + '</a>'; })).join('');
       return '<header class="s-nav"><div class="wrap s-nav-in">' +
         '<span class="s-logo"><i>' + icon(IC.spark, 20) + '</i><b' + de('productName') + '>' + esc(d.productName || '제품명') + '</b></span>' +
         '<nav class="s-menu">' + menu + '</nav>' +
-        '<span class="s-nav-r"><button class="btn btn--txt">Login</button>' +
+        '<span class="s-nav-r"><button class="btn btn--txt"' + de('loginLabel') + '>' + esc(d.loginLabel || 'Login') + '</button>' +
         '<button class="btn btn--pri"' + de('primaryCta') + '>' + esc(d.primaryCta || '시작하기') + '</button></span>' +
         '</div></header>';
     },
@@ -140,7 +140,7 @@
     cta: function (c, ctx) {
       var d = ctx.data;
       return '<section class="band"><div class="wrap s-cta">' +
-        '<p class="eyebrow up">GET STARTED</p>' +
+        '<p class="eyebrow up"' + de('bannerEyebrow') + '>' + esc(d.bannerEyebrow || 'GET STARTED') + '</p>' +
         '<h2 class="s-h2 up d1"' + de('bannerText') + '>' + esc(d.bannerText || '지금 시작해보세요') + '</h2>' +
         '<p class="s-cta-s up d2"' + de('subcopy') + '>' + esc(d.subcopy || '') + '</p>' +
         '<div class="up d3"><button class="btn btn--pri"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta || '시작하기') + '</button></div>' +
@@ -150,15 +150,17 @@
     footer: function (c, ctx) {
       var d = ctx.data;
       var links = (d.footerLinks && d.footerLinks.length ? d.footerLinks : ['이용약관', '개인정보처리방침', '고객센터']);
-      var col = function (h, ls, base) {
-        return '<div class="s-fcol"><b>' + h + '</b>' + ls.map(function (l, i) { return '<a' + de(base ? base + '.' + (i) : '') + '>' + esc(l) + '</a>'; }).join('') + '</div>';
+      var prodLinks = (d.footerProductLinks && d.footerProductLinks.length ? d.footerProductLinks : ['기능', '가격', '업데이트']);
+      var compLinks = (d.footerCompanyLinks && d.footerCompanyLinks.length ? d.footerCompanyLinks : ['소개', '블로그', '채용']);
+      var col = function (h, hPath, ls, base) {
+        return '<div class="s-fcol"><b' + de(hPath) + '>' + esc(h) + '</b>' + ls.map(function (l, i) { return '<a' + de(base ? base + '.' + (i) : '') + '>' + esc(l) + '</a>'; }).join('') + '</div>';
       };
       return '<footer class="s-foot"><div class="wrap">' +
         '<div class="s-foot-top">' +
         '<span class="s-logo"><i>' + icon(IC.spark, 20) + '</i><b' + de('productName') + '>' + esc(d.productName || '제품명') + '</b></span>' +
-        col('NAVIGATION', links, 'footerLinks') +
-        col('PRODUCT', ['기능', '가격', '업데이트']) +
-        col('COMPANY', ['소개', '블로그', '채용']) +
+        col(d.footerNavTitle || 'NAVIGATION', 'footerNavTitle', links, 'footerLinks') +
+        col(d.footerProductTitle || 'PRODUCT', 'footerProductTitle', prodLinks, 'footerProductLinks') +
+        col(d.footerCompanyTitle || 'COMPANY', 'footerCompanyTitle', compLinks, 'footerCompanyLinks') +
         '</div>' +
         '<p class="s-copy"' + de('footerCopyright') + '>' + esc(d.footerCopyright || ('© ' + (d.productName || '') + '. All rights reserved')) + '</p>' +
         '</div></footer>';

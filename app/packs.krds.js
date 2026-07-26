@@ -251,16 +251,17 @@ function motion(level = 'subtle') {
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 const components = {
-  button(label, { variant = 'primary', size = 'md', href = '#' } = {}) {
-    return `<a class="btn btn--${variant} btn--${size}" href="${esc(href)}">${esc(label)}</a>`;
+  // edit: 스튜디오 data-edit 경로(옵션) — 버튼/링크는 a 태그라 링크 칩도 함께 동작
+  button(label, { variant = 'primary', size = 'md', href = '#', edit = '' } = {}) {
+    return `<a class="btn btn--${variant} btn--${size}" href="${esc(href)}"${edit ? ` data-edit="${esc(edit)}"` : ''}>${esc(label)}</a>`;
   },
-  link(label, { href = '#', arrow = false } = {}) {
-    return `<a class="lnk" href="${esc(href)}">${esc(label)}${arrow ? '<span class="lnk__arw">→</span>' : ''}</a>`;
+  link(label, { href = '#', arrow = false, edit = '' } = {}) {
+    return `<a class="lnk" href="${esc(href)}"${edit ? ` data-edit="${esc(edit)}"` : ''}>${esc(label)}${arrow ? '<span class="lnk__arw">→</span>' : ''}</a>`;
   },
   badge(label, { tone = 'brand' } = {}) {
     return `<span class="badge badge--${tone}">${esc(label)}</span>`;
   },
-  eyebrow(label) { return `<div class="eyebrow">${esc(label)}</div>`; },
+  eyebrow(label, { edit = '' } = {}) { return `<div class="eyebrow"${edit ? ` data-edit="${esc(edit)}"` : ''}>${esc(label)}</div>`; },
   card(inner, { pad = true } = {}) {
     return `<div class="card${pad ? ' card--pad' : ''}">${inner}</div>`;
   },
@@ -350,7 +351,9 @@ const name = (ctx) => ctx.esc(ctx.data.productName || ctx.data.name || 'ONSITE')
 
 const sections = {
   nav(c, ctx) {
-    const nv = ctx.data && ctx.data.nav;
+    const d = ctx.data;
+    const nv = d && d.nav;
+    const nl = (d && d.navLinks) || [];   // 편집 오버라이드(인덱스별) — 기본 메뉴 문구 유지
     const menu = (nv && nv.length)
       ? nv.map((it) => {
           const cur = it.active ? ' aria-current="page"' : '';
@@ -360,34 +363,36 @@ const sections = {
           }
           return `<a href="#" data-nav-page="${it.id || ''}"${cur}>${ctx.esc(it.name)}</a>`;
         }).join('')
-      : (c.links || ['서비스', '기능', '이용안내', '고객지원']).map((l) => `<a href="#">${ctx.esc(l)}</a>`).join('');
+      : (c.links || ['서비스', '기능', '이용안내', '고객지원']).map((l, i) => `<a href="#" data-edit="navLinks.${i}">${ctx.esc(nl[i] != null ? nl[i] : l)}</a>`).join('');
     return `
     <header class="nav">
       <div class="container nav__in">
         <a class="nav__brand" href="#" data-edit="productName">${name(ctx)}</a>
         <nav class="nav__menu hide-sm">${menu}</nav>
         <div class="nav__act">
-          ${C.button(ctx.esc(c.secondaryCta || '로그인'), { variant: 'ghost', size: 'sm' })}
-          ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '신청하기'), { variant: 'primary', size: 'sm' })}
+          ${C.button(ctx.esc(d.navSecondaryCta || c.secondaryCta || '로그인'), { variant: 'ghost', size: 'sm', edit: 'navSecondaryCta' })}
+          ${C.button(ctx.esc(d.primaryCta || c.primaryCta || '신청하기'), { variant: 'primary', size: 'sm', edit: 'primaryCta' })}
         </div>
       </div>
     </header>`;
   },
 
   hero(c, ctx) {
-    const eyebrow = ctx.esc(c.eyebrow || '서비스 플랫폼');
+    const eyebrow = ctx.esc(ctx.data.heroEyebrow || c.eyebrow || '서비스 플랫폼');
     const title = ctx.esc(c.title || ctx.data.tagline || '필요한 서비스를\n한 곳에서 간편하게');
     const sub = ctx.esc(c.subcopy || ctx.data.subcopy || H);
+    // 링크 라벨 편집 시 화살표 장식(→)이 textContent로 딸려 저장될 수 있어 렌더 시 제거
+    const secondary = String(ctx.data.secondaryCta || c.secondaryCta || '이용안내 보기').replace(/\s*→\s*$/, '');
     return `
     <section class="band hero">
       <div class="container hero__grid">
         <div class="hero__copy rise">
-          ${C.eyebrow(eyebrow)}
+          ${C.eyebrow(eyebrow, { edit: 'heroEyebrow' })}
           <h1 class="hero__title" data-edit="tagline">${title.replace(/\n/g, '<br>')}</h1>
           <p class="hero__sub" data-edit="subcopy">${sub}</p>
           <div class="hero__cta">
-            ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg' })}
-            ${C.link(ctx.esc(c.secondaryCta || '이용안내 보기'), { arrow: true })}
+            ${C.button(ctx.esc(ctx.data.primaryCta || c.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg', edit: 'primaryCta' })}
+            ${C.link(ctx.esc(secondary), { arrow: true, edit: 'secondaryCta' })}
           </div>
         </div>
         <div class="hero__visual rise" data-img="hero">
@@ -416,8 +421,8 @@ const sections = {
     <section class="band band--alt">
       <div class="container">
         <div class="sec-head rise">
-          ${C.eyebrow(ctx.esc(c.eyebrow || 'FEATURES'))}
-          <h2 class="sec-title">${ctx.esc(c.title || '핵심 기능')}</h2>
+          ${C.eyebrow(ctx.esc(ctx.data.featureEyebrow || c.eyebrow || 'FEATURES'), { edit: 'featureEyebrow' })}
+          <h2 class="sec-title" data-edit="featureTitle">${ctx.esc(ctx.data.featureTitle || c.title || '핵심 기능')}</h2>
         </div>
         <div class="grid cols-3" style="margin-top:32px">
           ${items.map((it, i) => C.card(
@@ -449,16 +454,18 @@ const sections = {
     <section class="band band--alt cta">
       <div class="container cta__in rise">
         <h2 class="cta__t" data-edit="bannerText">${ctx.esc(c.title || '지금 바로 이용해 보세요')}</h2>
-        <p class="cta__s">${ctx.esc(c.subcopy || H)}</p>
+        <p class="cta__s" data-edit="subcopy">${ctx.esc(c.subcopy || ctx.data.subcopy || H)}</p>
         <div class="cta__act">
-          ${C.button(ctx.esc(c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg' })}
-          ${C.button(ctx.esc(c.secondaryCta || '문의하기'), { variant: 'secondary', size: 'lg' })}
+          ${C.button(ctx.esc(ctx.data.bannerCta || c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg', edit: 'bannerCta' })}
+          ${C.button(ctx.esc(ctx.data.bannerSecondaryCta || c.secondaryCta || '문의하기'), { variant: 'secondary', size: 'lg', edit: 'bannerSecondaryCta' })}
         </div>
       </div>
     </section>`;
   },
 
   footer(c, ctx) {
+    const d = ctx.data;
+    const ov = d.footerCols || [];   // 편집 오버라이드(인덱스별) — 기본 컬럼 문구 유지
     const cols = c.columns || [
       { h: '서비스', items: ['서비스 소개', '이용안내', '자주 묻는 질문'] },
       { h: '정보', items: ['공지사항', '자료실', '관련 사이트'] },
@@ -469,10 +476,10 @@ const sections = {
       <div class="container ft__in">
         <div class="ft__brand" data-edit="productName">${name(ctx)}</div>
         <div class="ft__cols">
-          ${cols.map((col) => `<div><div class="ft__h">${ctx.esc(col.h)}</div>${col.items.map((i) => `<a class="ft__l" href="#">${ctx.esc(i)}</a>`).join('')}</div>`).join('')}
+          ${cols.map((col, ci) => `<div><div class="ft__h" data-edit="footerCols.${ci}.h">${ctx.esc(ov[ci] && ov[ci].h != null ? ov[ci].h : col.h)}</div>${col.items.map((it, ii) => `<a class="ft__l" href="#" data-edit="footerCols.${ci}.items.${ii}">${ctx.esc(ov[ci] && ov[ci].items && ov[ci].items[ii] != null ? ov[ci].items[ii] : it)}</a>`).join('')}</div>`).join('')}
         </div>
       </div>
-      <div class="container ft__copy">© 2026 ${name(ctx)}. All rights reserved.</div>
+      <div class="container ft__copy" data-edit="footerCopyright">${d.footerCopyright ? ctx.esc(d.footerCopyright) : `© 2026 ${name(ctx)}. All rights reserved.`}</div>
     </footer>`;
   },
 };

@@ -29,12 +29,14 @@
 
   /* ── 섹션 렌더러 ── */
   function navLinks(shared) {
-    var items = (shared.nav && shared.nav.length) ? shared.nav
+    var useNav = !!(shared.nav && shared.nav.length);
+    var items = useNav ? shared.nav
       : (shared.footerLinks || []).map(function (t) { return { name: t }; });
-    return items.slice(0, 5).map(function (l) {
+    return items.slice(0, 5).map(function (l, i) {
       var href = l.pageId ? ('#' + l.pageId) : '#';
       var attr = l.pageId ? (' data-nav-page="' + esc(l.pageId) + '"') : '';
-      return '<a href="' + href + '"' + attr + '>' + esc(l.name) + '</a>';
+      var path = useNav ? ('nav.' + i + '.name') : ('footerLinks.' + i);
+      return '<a href="' + href + '"' + attr + ' data-edit="' + path + '">' + esc(l.name) + '</a>';
     }).join('');
   }
   var S = {
@@ -51,11 +53,13 @@
       var title = words.map(function (line) {
         return '<span class="ag-hl">' + line.split(' ').map(function (w, i) { return '<span class="ag-w" style="--d:' + (i * 0.09) + 's">' + esc(w) + '</span>'; }).join(' ') + '</span>';
       }).join('');
+      var mstats = (s.mockStats && s.mockStats.length) ? s.mockStats
+        : [{ label: '처리량', value: '2.4M/s' }, { label: '지연', value: '2.4ms' }, { label: '정확도', value: '99.9%' }];
       var mock = img
         ? '<div class="ag-mock rv"><div class="ag-mock-in glass"><img src="' + esc(img) + '" data-img="hero" alt=""></div></div>'
         : '<div class="ag-mock rv"><div class="ag-mock-in glass">' +
-        '<div class="ag-mrow"><span class="ag-macc">' + icon('activity', 20) + '</span><b>실시간 대시보드</b></div>' +
-        '<div class="ag-mstats">' + [['처리량', '2.4M/s'], ['지연', '2.4ms'], ['정확도', '99.9%']].map(function (k) { return '<div class="glass ag-mstat"><span>' + k[0] + '</span><b>' + k[1] + '</b></div>'; }).join('') + '</div>' +
+        '<div class="ag-mrow"><span class="ag-macc">' + icon('activity', 20) + '</span><b data-edit="mockTitle">' + esc(s.mockTitle || '실시간 대시보드') + '</b></div>' +
+        '<div class="ag-mstats">' + mstats.map(function (k, i) { return '<div class="glass ag-mstat"><span data-edit="mockStats.' + i + '.label">' + esc(k.label) + '</span><b data-edit="mockStats.' + i + '.value">' + esc(k.value) + '</b></div>'; }).join('') + '</div>' +
         '<div class="ag-bars glass">' + [42, 68, 55, 88, 60, 74, 96].map(function (h, i) { return '<i style="--h:' + h + '%;--i:' + i + '"></i>'; }).join('') + '</div>' +
         '</div></div>';
       return '<section class="ag-hero"><div class="ag-aurora" aria-hidden="true"><div class="ag-a1"></div><div class="ag-a2"></div></div><div class="ag-grid-tx" aria-hidden="true"></div>' +
@@ -64,7 +68,7 @@
         (s.subcopy ? '<p class="ag-sub" data-edit="subcopy">' + esc(s.subcopy) + '</p>' : '') +
         '<div class="ag-cta-row">' +
         '<a class="ag-btn ag-btn-pri ag-mag" href="#" data-edit="primaryCta">' + esc(s.primaryCta || '무료로 시작하기') + '</a>' +
-        '<a class="ag-btn ag-btn-gh" href="#">데모 살펴보기</a>' +
+        '<a class="ag-btn ag-btn-gh" href="#" data-edit="secondaryCta">' + esc(s.secondaryCta || '데모 살펴보기') + '</a>' +
         '</div>' + mock +
         '</div></section>';
     },
@@ -72,7 +76,7 @@
       var items = s.features || [];
       if (!items.length) return '';
       return '<section class="ag-sec"><div class="ag-wrap">' +
-        '<div class="ag-head rv"><p class="ag-eyebrow">Why ' + esc(s.productName || 'Aether') + '</p><h2 data-edit="featureTitle">' + esc(s.featureTitle || '복잡함은 숨기고, 인사이트만 남깁니다') + '</h2></div>' +
+        '<div class="ag-head rv"><p class="ag-eyebrow" data-edit="featureEyebrow">' + esc(s.featureEyebrow || ('Why ' + (s.productName || 'Aether'))) + '</p><h2 data-edit="featureTitle">' + esc(s.featureTitle || '복잡함은 숨기고, 인사이트만 남깁니다') + '</h2></div>' +
         '<div class="ag-cards">' + items.map(function (f, i) {
           return '<div class="ag-card glass rv" style="--d:' + (i * 0.1) + 's">' +
             '<div class="ag-ic glass">' + icon(f.icon || 'bolt') + '</div>' +
@@ -90,10 +94,10 @@
       var pts = (s.showcasePoints && s.showcasePoints.length) ? s.showcasePoints : ['드래그 앤 드롭 파이프라인 빌더', '자동 이상탐지 & 알림', '예측 지표 & 시나리오 시뮬레이션'];
       var steps = (s.pipeline && s.pipeline.length) ? s.pipeline : [{ k: '수집 · Kafka', v: '2.4ms' }, { k: '변환 · dbt', v: '2.0ms' }, { k: '적재 · Warehouse', v: '1.6ms' }, { k: '예측 · ML', v: '1.2ms' }];
       return '<section class="ag-sec"><div class="ag-wrap ag-show">' +
-        '<div class="rv ag-show-l"><p class="ag-eyebrow">Live Showcase</p><h2 data-edit="showcaseTitle">' + esc(s.showcaseTitle || '한 화면에서 수집부터 예측까지') + '</h2>' +
+        '<div class="rv ag-show-l"><p class="ag-eyebrow" data-edit="showcaseEyebrow">' + esc(s.showcaseEyebrow || 'Live Showcase') + '</p><h2 data-edit="showcaseTitle">' + esc(s.showcaseTitle || '한 화면에서 수집부터 예측까지') + '</h2>' +
         '<p class="ag-show-d" data-edit="showcaseDesc">' + esc(s.showcaseDesc || '스트림·배치·외부 API를 하나의 파이프라인으로. 이상 징후는 자동 감지되고, 예측 모델이 다음 지표를 미리 알려줍니다.') + '</p>' +
         '<ul class="ag-show-ul">' + pts.map(function (t, i) { return '<li><span class="ag-macc">' + icon('chart', 20) + '</span><span data-edit="showcasePoints.' + i + '">' + esc(t) + '</span></li>'; }).join('') + '</ul></div>' +
-        '<div class="rv ag-show-r glass" style="--d:.12s"><div class="ag-show-h"><b>파이프라인 · prod</b><span class="ag-run">running</span></div>' +
+        '<div class="rv ag-show-r glass" style="--d:.12s"><div class="ag-show-h"><b data-edit="pipelineTitle">' + esc(s.pipelineTitle || '파이프라인 · prod') + '</b><span class="ag-run" data-edit="pipelineStatus">' + esc(s.pipelineStatus || 'running') + '</span></div>' +
         steps.map(function (st, i) { return '<div class="glass ag-step" style="--d:' + (0.1 + i * 0.08) + 's"><span data-edit="pipeline.' + i + '.k">' + esc(st.k) + '</span><i data-edit="pipeline.' + i + '.v">' + esc(st.v) + '</i></div>'; }).join('') +
         '</div></div></section>';
     },
@@ -167,6 +171,8 @@
       '.ag-grid-tx{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.10) 1px,transparent 1px);background-size:24px 24px;-webkit-mask-image:radial-gradient(circle at 50% 40%,#000,transparent 72%);mask-image:radial-gradient(circle at 50% 40%,#000,transparent 72%)}' +
       '.ag-hero-in{position:relative;z-index:2;max-width:900px;padding:0 24px}' +
       '.ag-title{font-size:clamp(40px,7vw,76px);font-weight:700;letter-spacing:-.02em}' +
+      /* 편집 중(contenteditable) 새로 입력한 글자도 그라디언트 유지 — .ag-w 밖 텍스트가 흰색으로 보이는 문제 방지 */
+      '.ag-title[contenteditable="true"]{background:linear-gradient(135deg,#86efac,#4ade80 45%,#4ade80);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}' +
       '.ag-hl{display:block}' +
       '.ag-w{display:inline-block;background:linear-gradient(135deg,#86efac,#4ade80 45%,#4ade80);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 40px rgba(3,199,90,.35)' + (anim ? ';opacity:0;transform:translateY(40px);animation:ag-up .7s cubic-bezier(.2,.9,.3,1) forwards;animation-delay:var(--d)' : '') + '}' +
       '.ag-sub{margin:26px auto 0;max-width:640px;font-size:19px;line-height:1.7;color:' + T.muted + '}' +
@@ -197,7 +203,7 @@
       '.ag-run{font-size:12px;color:' + T.green + ';display:inline-flex;align-items:center;gap:6px}.ag-run:before{content:"";width:7px;height:7px;border-radius:50%;background:' + T.green + '}' +
       '.ag-step{border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.ag-step:last-child{margin-bottom:0}.ag-step span{font-size:14px;color:rgba(226,232,240,.9)}.ag-step i{font-size:12px;color:' + T.muted + ';font-style:normal}' +
       '.ag-stat-sec{border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}' +
-      '.ag-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}' +
+      '.ag-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:24px;text-align:center}' +
       '@media(max-width:720px){.ag-stats{grid-template-columns:repeat(2,1fr)}}' +
       '.ag-stat-v{font-family:' + T.fontD + ';font-size:clamp(30px,4vw,46px);font-weight:700;color:#fff}.ag-stat-l{margin-top:6px;font-size:14px;color:' + T.muted + '}' +
       '.ag-cta{position:relative;overflow:hidden;border-radius:26px;text-align:center;padding:64px 32px;max-width:900px;margin:0 auto}' +
