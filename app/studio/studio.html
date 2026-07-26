@@ -1315,12 +1315,23 @@
           persist(); render(); refreshPptPanel(); }); };
       sl.appendChild(bar);
     });
-    // 손상 이동값 치유 — 텍스트를 장 위/왼쪽 밖으로 미는 _pos는 잘못 저장된 값(주로 AI 산출)이라 데이터에서 삭제
+    // 손상 이동값 치유 — (1) 텍스트를 장 밖으로 밀거나 (2) 다른 텍스트와 겹치게 만드는 _pos는
+    // 잘못 저장된 값(주로 AI 산출)이라 데이터에서 삭제. 의도적 텍스트 위 텍스트 배치는 드물어 오탐 낮음.
     (function healPos(){ let changed=false;
+      const inter=(a,b)=>{ const w=Math.min(a.right,b.right)-Math.max(a.left,b.left), h=Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top);
+        if(w<=0||h<=0) return 0; return (w*h)/Math.min(a.width*a.height,b.width*b.height); };
       doc.querySelectorAll('.ppt-stack > .slide').forEach((sl,i)=>{ const s2=data.slides&&data.slides[i]; if(!s2||!s2._pos) return;
         const sr=sl.getBoundingClientRect(); if(!sr.width) return;
-        sl.querySelectorAll('[data-mvkey][data-edit]').forEach(u=>{ const key=u.getAttribute('data-mvkey'); if(!s2._pos[key]) return;
-          const r=u.getBoundingClientRect(); if(r.top<sr.top-2||r.left<sr.left-2){ delete s2._pos[key]; u.style.transform=''; changed=true; } });
+        const texts=[...sl.querySelectorAll('[data-mvkey][data-edit]')];
+        const kill=new Set();
+        texts.forEach(u=>{ const key=u.getAttribute('data-mvkey'); if(!s2._pos[key]) return;
+          const r=u.getBoundingClientRect();
+          if(r.top<sr.top-2||r.left<sr.left-2){ kill.add(key); return; }
+          texts.forEach(o=>{ if(o===u) return; if(inter(r,o.getBoundingClientRect())>0.15){ kill.add(key);
+            const ok2=o.getAttribute('data-mvkey'); if(s2._pos[ok2]) kill.add(ok2);   // 겹침을 만든 쌍은 양쪽 이동값 모두 오염으로 간주
+          } });
+        });
+        if(kill.size){ kill.forEach(k2=>{ delete s2._pos[k2]; }); texts.forEach(u=>{ if(kill.has(u.getAttribute('data-mvkey'))) u.style.transform=''; }); changed=true; }
       });
       if(changed){ persist(); if(typeof rebuildThumbRail==='function') rebuildThumbRail(); } })();
     if(!editMode) return;
