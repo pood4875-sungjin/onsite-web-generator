@@ -432,18 +432,34 @@
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
-      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}';
+      '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}' +
+      /* 발표 모션 — 장 자체는 즉시 표시, 내용 요소만 순차 등장(요소는 opacity만 — 블록 _pos 오프셋 보존) */
+      '@keyframes vfu{from{opacity:0}to{opacity:1}}' +
+      'body.pfs .vbar{display:none!important}';
     var vjs =
-      '(function(){var s=[].slice.call(document.querySelectorAll(".vscale .slide")),n=0;' +
+      '(function(){var s=[].slice.call(document.querySelectorAll(".vscale .slide")),n=-1;' +
       'var c=document.querySelector(".vcount"),pb=document.querySelector(".vprev"),nb=document.querySelector(".vnext");' +
-      'function fs(){return !!document.fullscreenElement}' +
+      'var pseudo=false;' +
+      'function fs(){return !!document.fullscreenElement||pseudo}' +
+      'function setPseudo(v){pseudo=v;document.body.classList.toggle("pfs",v);fit();try{parent.postMessage({pptViewerPseudoFs:v?1:0},"*")}catch(x){}}' +
+      'function toggleFs(){if(document.fullscreenElement){document.exitFullscreen&&document.exitFullscreen();return}' +
+      'if(pseudo){setPseudo(false);return}' +
+      'var p=null;try{p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}' +
+      'if(p&&p.then)p.then(null,function(){setPseudo(true)});else setPseudo(true);}' +
       'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
       'var ty=Math.max(0,(area-720*sc)/2);' +
       'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
       'var v=document.querySelector(".vscale");v.style.transform="translateY("+ty+"px) scale("+sc+")";}' +
-      'function show(i){n=Math.max(0,Math.min(s.length-1,i));s.forEach(function(x,k){x.classList.toggle("cur",k===n)});c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
-      'function toggleFs(){ if(fs()) document.exitFullscreen&&document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); }' +
+      'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
+      's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
+      'var cur=s[n];if(cur){' +
+      // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
+      'var us=cur.querySelectorAll("[data-mvkey]");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var de=u.getAttribute("data-edit")||"";if(/^slides\\.\\d+\\.(title|eyebrow|sub|subtitle|lead|note|text)$/.test(de)){u.style.animation="";continue;}' +
+      'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}}' +
+      'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
+      'addEventListener("message",function(e){if(e.data&&e.data.pptFsKey)toggleFs();});' +
       'addEventListener("resize",fit);fit();show(0);' +
       'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
       'document.addEventListener("click",function(e){if(e.target.closest(".vbar"))return;show(n+1)});' +
@@ -451,7 +467,7 @@
       'if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" ")show(n+1);' +
       'else if(e.key==="ArrowLeft"||e.key==="PageUp")show(n-1);' +
       'else if(e.key==="f"||e.key==="F")toggleFs();' +
-      'else if(e.key==="Escape"){if(fs())return;try{parent.postMessage({pptViewerClose:1},"*")}catch(x){}}});' +
+      'else if(e.key==="Escape"){if(document.fullscreenElement)return;if(pseudo){setPseudo(false);return}try{parent.postMessage({pptViewerClose:1},"*")}catch(x){}}});' +
       '})();';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + (window.Charts && window.Charts.css ? window.Charts.css() : '') + vcss + '</style></head><body data-style="pitch">' +

@@ -148,7 +148,8 @@ const layoutCss = () => `
   .midas *{box-sizing:border-box}
   .midas .container{max-width:${layout.container};margin:0 auto;padding:0 40px;position:relative;z-index:1}
   .midas .section{padding:0 0 0}
-  .midas .section + .section{padding-top:120px}
+  /* 섹션 간 수직 리듬 — 조립기가 섹션마다 <div data-section> 래퍼를 씌우므로 .section+.section은 절대 안 맞는다(래퍼 기준으로) */
+  .midas [data-section]+[data-section] .section{padding-top:120px}
   .midas .grid{display:grid;gap:32px}.midas .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
   .midas h1,.midas h2,.midas h3{margin:0;color:var(--ink);line-height:var(--lh-tight)}
   .midas p{margin:0}.midas a{color:inherit;text-decoration:none}
@@ -326,6 +327,7 @@ const sectionsCss = () => `
   .midas .post__thumb{height:150px;background:linear-gradient(135deg,var(--bg-2),var(--line-2));border-radius:var(--radius-md);margin-bottom:16px}
   .midas .post__tag{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
   /* faq */
+  .midas .section > .faq.rise{text-align:left}   /* .section>.rise 센터 규칙보다 우선 — FAQ 질문·답변은 좌정렬 */
   .midas .faq{max-width:760px;margin-left:auto;margin-right:auto;text-align:left}
   .midas .faq__it{border-bottom:1px solid var(--line-2)}
   .midas .faq__q{font-size:17px;font-weight:600;color:var(--ink);padding:20px 4px;cursor:pointer;list-style:none;position:relative;padding-right:32px}
@@ -344,7 +346,7 @@ const sectionsCss = () => `
   .midas .footer__l{display:flex;align-items:center;gap:12px}
   .midas .footer__links{display:flex;align-items:center;gap:20px;flex-wrap:wrap}.midas .footer__links a:hover{color:var(--ink)}
   .midas .footer__copy{color:var(--soft);font-size:var(--fs-cap)}
-  @media (max-width:767px){.midas .hero{padding:120px 0 96px}.midas .hero__t{font-size:40px;letter-spacing:-2px}.midas .hero__lead,.midas .cta__s{font-size:16px}.midas .stat__v{font-size:36px}.midas .section + .section{padding-top:72px}}`;
+  @media (max-width:767px){.midas .hero{padding:120px 0 96px}.midas .hero__t{font-size:40px;letter-spacing:-2px}.midas .hero__lead,.midas .cta__s{font-size:16px}.midas .stat__v{font-size:36px}.midas [data-section]+[data-section] .section{padding-top:72px}}`;
 
 // ── ⑥ 팩 조립 ──
 const midasPack = {

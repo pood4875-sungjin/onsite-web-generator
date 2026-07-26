@@ -5,17 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>설정 · MIDAS DRS</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
-<script src="bundle.js"></script>
-<script src="packs.krds.js"></script>
-<script src="packs.midas.js"></script>
-<script src="packs.edm.js"></script>
-<script src="packs.aether.js"></script>
-<script src="packs.ppt.js"></script>
-<script src="llm.js"></script>
-<script src="i18n.js"></script>
-<script src="icons.js"></script>
-<script src="shell.js"></script>
-<script src="modal.js"></script>
+<script>
+// 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
+['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.ppt.js','llm.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+</script>
 <link rel="stylesheet" href="ds.css">
 <style>
   html,body{background:var(--canvas)}

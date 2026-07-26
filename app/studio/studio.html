@@ -5,19 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MIDAS DRS</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
-<script src="../bundle.js"></script>
-<script src="../packs.krds.js"></script>
-<script src="../packs.midas.js"></script>
-<script src="../packs.edm.js"></script>
-<script src="../packs.aether.js"></script>
-<script src="../packs.ppt.js"></script>
-<script src="../charts.js"></script>
-<script src="../packs.pitch.js"></script>
-<script src="../export-pptx.js"></script>
-<script src="../llm.js"></script>
-<script src="../edm/promo01.js"></script>
-<script src="../modal.js"></script>
-<script src="../i18n.js"></script>
+<script>
+// 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
+['../bundle.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+</script>
 <link rel="stylesheet" href="../ds.css">
 <style>
   /* 제너레이터 셸 — 다크 글로우 (사용자 Figma Make App.tsx/ChatPanel 포팅) */
@@ -279,6 +270,7 @@
   .pvf-x{border:none;background:rgba(255,255,255,.1);color:#fff;width:30px;height:30px;border-radius:999px;font-size:13px;cursor:pointer;line-height:1}
   .pvf-x:hover{background:rgba(255,255,255,.22)}
   #pvfFrame{flex:1;border:0;width:100%;background:#fff}
+  .pvfull.pfs .pvf-top{display:none}   /* 유사 전체화면 — 뷰어가 네이티브 전체화면 거부당했을 때 상단바까지 숨겨 꽉 채움 */
   /* PPT 슬라이드 관리 패널 — 채팅 위 고정 도킹(#pptDock). 대화가 쌓여도 안 밀림 */
   .pptdock{flex:0 0 auto;max-height:42%;overflow-y:auto;padding:12px 18px 14px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surf2) 60%,transparent)}
   .pptdock .pptpanel{margin-top:0;border-top:none;padding-top:0}
@@ -883,7 +875,8 @@
     {id:'pricing',  label:'요금 비교',    hint:'플랜·가격표'},
     {id:'landing',  label:'랜딩',        hint:'캠페인·전환 유도'},
   ];
-  function aiPageFlow(){ const m=curMode(); return !!(project && project.kind==='multi' && !m.editOnly && !m.slides && window.LLM && LLM.aiAvailable()); }
+  // 웹 계열(랜딩·웹사이트) + AI 가용이면 대화형 인테이크 — 메인홈/랜딩도 폼 스텝 대신 대화로 채운다
+  function aiPageFlow(){ const m=curMode(); return !!(project && !m.editOnly && !m.slides && window.LLM && LLM.aiAvailable()); }
 
   function askChips(opts){ return new Promise(res=>{ mountNode(chips(opts, o=>{ clearWidget(); res(o); })); }); }
   // 자유 입력 위젯 — 여러 줄. Enter=전송(조합 중 Enter는 글자 확정이라 무시), Shift+Enter=줄바꿈.
@@ -932,14 +925,23 @@
   async function startPageIntake(){
     const my=++flowSeq;
     const dead=()=>my!==flowSeq;
-    idx=STEPS.indexOf('pageType');
-    botBubble(PROMPT.pageType);
-    const t=await askChips(PAGE_KINDS); if(dead()) return;
-    pageType=t.id;
-    if(project&&pageRef){ pageRef.pageType=t.id; pageRef.name=tL(t.label); upsertProject(project); renderRail(); }
-    meBubble(tL(t.label)); render();
-
-    botBubble(tL('이 페이지에 담을 내용을 자유롭게 적어주세요. 목적·대상·꼭 넣을 항목이면 충분해요. 나머지는 초안으로 채워드릴게요.'));
+    // 메인홈/랜딩(단일)도 대화형으로 — 유형 선택 없이 바로 내용부터. 하위 페이지만 유형을 묻는다.
+    const isMain = !project || project.kind==='single' || (pageRef && (pageRef.pageType||'main')==='main');
+    let t;
+    if(isMain){
+      pageType='main';
+      t={ id:'main', label: (project&&project.kind==='single') ? '랜딩페이지' : '메인홈' };
+      if(project&&pageRef){ pageRef.pageType='main'; upsertProject(project); }
+      botBubble(tL('어떤 페이지를 만들지 자유롭게 적어주세요. 무엇을 소개하는지, 누구에게 보여줄지, 꼭 들어갈 내용이면 충분해요. 나머지는 초안으로 채워드릴게요.'));
+    } else {
+      idx=STEPS.indexOf('pageType');
+      botBubble(PROMPT.pageType);
+      t=await askChips(PAGE_KINDS); if(dead()) return;
+      pageType=t.id;
+      if(project&&pageRef){ pageRef.pageType=t.id; pageRef.name=tL(t.label); upsertProject(project); renderRail(); }
+      meBubble(tL(t.label)); render();
+      botBubble(tL('이 페이지에 담을 내용을 자유롭게 적어주세요. 목적·대상·꼭 넣을 항목이면 충분해요. 나머지는 초안으로 채워드릴게요.'));
+    }
     const plan=await askText('예: 스타터·프로·엔터프라이즈 3개 요금제 비교. 중소기업 대상이고 연간 결제 20% 할인 강조.', '건너뛰기 — 알아서 채워줘'); if(dead()) return;
     if(plan) meBubble(plan);
 
@@ -948,14 +950,14 @@
     if(plan){
       const tp=pendingBubble('내용 읽는 중…');
       let it=null;
-      /* 사이트 하위 페이지라 타겟 고객·브랜드 톤은 이미 메인홈에서 정해진 것 — 다시 묻지 않는다.
-         프롬프트로 막고, 그래도 나오면 아래 SKIP_Q로 걸러낸다. */
-      const ipl='기존 사이트의 하위 페이지다. 타겟 고객·대상 독자·브랜드 톤은 사이트 전체에서 이미 정해져 있으니 묻지 말 것.\n'
+      /* 하위 페이지는 타겟 고객·브랜드 톤이 이미 사이트에서 정해진 것 — 다시 묻지 않는다(프롬프트로 막고 SKIP_Q로 이중 차단).
+         메인홈/랜딩은 사이트의 얼굴이라 타겟 질문 허용. */
+      const ipl=(isMain ? '' : '기존 사이트의 하위 페이지다. 타겟 고객·대상 독자·브랜드 톤은 사이트 전체에서 이미 정해져 있으니 묻지 말 것.\n')
               + tL(t.label)+' 페이지: '+plan;
       try{ it=await LLM.intake({kind:'web-page', plan:ipl}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
       tp.remove(); if(dead()) return;
       const SKIP_Q=/(타겟|대상\s*(고객|독자|층)|고객층|주요\s*고객|브랜드\s*톤|target\s*(audience|customer)|tone)/i;
-      const qs=(it&&it.questions||[]).filter(q=>!SKIP_Q.test(q.q));
+      const qs=(it&&it.questions||[]).filter(q=>isMain||!SKIP_Q.test(q.q));
       if(qs.length){
         botBubble(tL('좋아요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.'));
         for(const q of qs){
@@ -1273,6 +1275,15 @@
   let _sel=new Set(), _selSi=-1;
   function pptEditor(doc){
     const W=doc.defaultView;
+    // 텍스트 유닛은 쓰인 만큼만 폭 차지 — 풀폭 블록이면 다중선택·정렬이 무의미해짐(편집모드 한정, 일반 흐름 블록만)
+    doc.querySelectorAll('.ppt-stack [data-edit]').forEach(el=>{ if(el.closest('svg')||el.__fitw) return; el.__fitw=1;
+      const cs=W.getComputedStyle(el); if(cs.display!=='block'||cs.position!=='static') return;
+      const pd=el.parentElement?W.getComputedStyle(el.parentElement).display:'';
+      if(pd!=='block'&&pd!=='flow-root') return;   // 그리드/플렉스 자식은 컨테이너가 정렬 소유 — 건드리면 칸 정렬 깨짐
+      el.style.width='fit-content'; el.style.maxWidth='100%';
+      if(cs.textAlign==='center'){ el.style.marginLeft='auto'; el.style.marginRight='auto'; }
+      else if(cs.textAlign==='right'||cs.textAlign==='end'){ el.style.marginLeft='auto'; }
+    });
     let utb=doc.getElementById('utb');
     if(!utb){ utb=doc.createElement('div'); utb.id='utb'; utb.className='utb'; utb.style.display='none';
       utb.addEventListener('pointerdown',e=>{ e.stopPropagation(); });
@@ -1347,8 +1358,9 @@
       els.forEach((e,i)=>{ const r=rs[i], k=e.getAttribute('data-mvkey'); const p=(s._pos[k]||[0,0]).slice(); let dx=0,dy=0;
         if(type==='left') dx=minL-r.left; else if(type==='centerH') dx=cx-(r.left+r.width/2); else if(type==='right') dx=maxR-r.right;
         else if(type==='top') dy=minT-r.top; else if(type==='middleV') dy=cy-(r.top+r.height/2); else if(type==='bottom') dy=maxB-r.bottom;
-        s._pos[k]=[Math.round(p[0]+dx),Math.round(p[1]+dy)]; });
-      persist(); render(); refreshPptPanel(); }
+        s._pos[k]=[Math.round(p[0]+dx),Math.round(p[1]+dy)];
+        e.style.transform='translate('+s._pos[k][0]+'px,'+s._pos[k][1]+'px)'; });   // 리렌더 없이 제자리 반영 — 정렬 시 깜빡임 제거
+      persist(); showTb(); }
     function doGroup(){ pushUndo(); const s=data.slides[_selSi]; s._grp=s._grp||{}; const gid='g'+(_undoStack.length)+_sel.size+[..._sel][0]; [..._sel].forEach(k=>s._grp[k]=gid); persist(); showTb(); }
     function doUngroup(){ pushUndo(); const s=data.slides[_selSi]; if(s._grp)[..._sel].forEach(k=>delete s._grp[k]); persist(); showTb(); }
     function selectUnit(si,key,add){ if(_selSi!==si){ _sel.clear(); _selSi=si; } let ks; if(add){ ks=new Set(_sel); if(ks.has(key))ks.delete(key); else ks.add(key); } else ks=new Set([key]); _sel=expandGroup(si,[...ks]); applyCss(); showTb(); }
@@ -1547,7 +1559,7 @@
   // 스타일(팩)은 진입 후 스튜디오에서 변경 불가 — '내 프로젝트' 관리에서만 변경(일관성 유지)
   function reset(){
     data=structuredClone(EMPTY); generated=false; volume='heavy'; chatLog=[];
-    if(project && pageRef && pageRef.pageType!=='main' && aiPageFlow()){ pageType=pageRef.pageType||'features'; msgs.innerHTML=''; startPageIntake(); }
+    if(project && pageRef && aiPageFlow()){ pageType=pageRef.pageType||'main'; msgs.innerHTML=''; startPageIntake(); }
     else if(project && pageRef){ pageType=pageRef.pageType||'main'; idx=STEPS.indexOf('pageType'); msgs.innerHTML=''; botBubble(PROMPT.pageType); mountWidget('pageType'); }
     else { pack=DARK_PACKS[0]; motion='subtle'; pageType='main'; idx=0; msgs.innerHTML=''; botBubble(PROMPT.kind); mountWidget('kind'); }
     render();
@@ -1591,10 +1603,12 @@
   document.getElementById('pvfClose').onclick=closePreview;
   window.addEventListener('keydown',(e)=>{
     if(pvFull.hidden) return;
-    if(e.key==='Escape') closePreview();
-    // F 전체화면 — 포커스가 iframe 밖에 있어도 동작(안이면 뷰어 자체 핸들러가 처리)
-    else if(e.key==='f'||e.key==='F'){ if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); } else if(pvfFrame.requestFullscreen) pvfFrame.requestFullscreen(); }
+    if(e.key==='Escape'){ if(pvFull.classList.contains('pfs')){ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} return; } closePreview(); }
+    // F 전체화면 — 뷰어에 위임(네이티브 시도 → 거부 시 유사 전체화면 폴백은 뷰어가 처리)
+    else if(e.key==='f'||e.key==='F'){ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} }
   });
+  // 유사 전체화면(pfs) — 뷰어가 네이티브 전체화면을 거부당했을 때: 상단바 숨겨 꽉 채움
+  window.addEventListener('message',(e)=>{ if(e.data && 'pptViewerPseudoFs' in e.data) pvFull.classList.toggle('pfs', !!e.data.pptViewerPseudoFs); });
   window.addEventListener('message',(e)=>{ if(e.data && e.data.pptViewerClose) closePreview(); });
 
   /* ---- 저장: 현재 페이지를 프로젝트에 저장 ---- */
@@ -1788,6 +1802,7 @@
       chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
       const step = STEPS[idx] || 'done';
       if(generated || step==='done'){ generated=true; mountWidget('done'); }
+      else if(aiPageFlow()) startPageIntake();   // 인테이크 도중 이탈 복귀 — 옛 스텝 위젯 대신 대화형 재개
       else mountWidget(step);
       render(); scroll();
     } else if(curMode().editOnly){
@@ -1796,10 +1811,10 @@
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
+      else if(aiPageFlow()){ startPageIntake(); }                                              // 메인홈·랜딩·하위 전부 대화형 AI 인테이크
       else if(project && project.kind==='multi' && (pageRef.pageType==='main' || (project.pages[0]&&project.pages[0].id===pageRef.id))){
-        pageType='main'; idx=STEPS.indexOf('mainSections'); botBubble(PROMPT.mainSections); mountWidget('mainSections'); } // 다중=메인홈부터 섹션 선택
-      else if(aiPageFlow()){ startPageIntake(); }                                              // 새 하위 페이지 = 대화형 AI 인테이크
-      else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // 폴백: 페이지 타입부터 손으로
+        pageType='main'; idx=STEPS.indexOf('mainSections'); botBubble(PROMPT.mainSections); mountWidget('mainSections'); } // AI 불가 폴백: 다중=메인홈부터 섹션 선택
+      else { idx=STEPS.indexOf('pageType'); botBubble(PROMPT.pageType); mountWidget('pageType'); } // AI 불가 폴백: 페이지 타입부터 손으로
       render();
     }
   } else {
