@@ -294,7 +294,7 @@
       '.p-body{font-size:var(--fs-body);line-height:1.55;margin:24px 0 0;max-width:560px}' +
       '.p-note{font-size:var(--fs-body);opacity:.7;margin:24px 0 0}' +
       '.p-bullets{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:20px 27px}' +
-      '.p-bullets li{display:flex;gap:13px;font-size:var(--fs-body);line-height:1.5}' +
+      '.p-bullets li{display:flex;align-items:center;gap:13px;font-size:var(--fs-body);line-height:1.5}' +   /* 체크 아이콘 세로 중앙(사용자 지시) */
       '.p-tick{flex:none;width:22px;height:22px;border-radius:50%;background:var(--pg);position:relative}' +
       '.p-tick::after{content:"";position:absolute;left:7px;top:6px;width:6px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(45deg)}' +
       '.p-tick.lg{width:30px;height:30px;margin-bottom:16px}.p-tick.lg::after{left:10px;top:8px;width:8px;height:13px}' +
