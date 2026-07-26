@@ -76,8 +76,8 @@
       var pL = pol(cx, cy, r, 270), pR = pol(cx, cy, r, 90), pV = pol(cx, cy, r, 270 + 180 * ratio);
       var track = '<path d="M' + pL[0] + ' ' + pL[1] + ' A' + r + ' ' + r + ' 0 0 1 ' + pR[0] + ' ' + pR[1] + '" fill="none" stroke="var(--grey,#F1F1F1)" stroke-width="' + sw + '" stroke-linecap="round"/>';
       var arc = ratio <= 0 ? '' : '<path d="M' + pL[0] + ' ' + pL[1] + ' A' + r + ' ' + r + ' 0 0 1 ' + pV[0] + ' ' + pV[1] + '" fill="none" stroke="' + main + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
-      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 34, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
-      return svg(d.w, d.h, track + arc + txt(cx, cy - 4, fmt(val, sp.format), 'cht-v g', P && P + '.series.0.values.0') + lab, 'cht-gauge');
+      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 6, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
+      return svg(d.w, d.h, track + arc + txt(cx, cy - 28, fmt(val, sp.format), 'cht-v g', P && P + '.series.0.values.0') + lab, 'cht-gauge');
     },
     /* 진행 링 — 진행률·비중 하나를 %로 크게. 원본 31:2771 스탯 카드 모음 */
     ring: function (sp, P) {
@@ -93,8 +93,8 @@
         var p0 = pol(cx, cy, r, 0), p1 = pol(cx, cy, r, 360 * ratio);
         arc = '<path d="M' + p0[0] + ' ' + p0[1] + ' A' + r + ' ' + r + ' 0 ' + (ratio > 0.5 ? 1 : 0) + ' 1 ' + p1[0] + ' ' + p1[1] + '" fill="none" stroke="' + main + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
       }
-      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 40, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
-      return svg(d.w, d.h, track + arc + txt(cx, cy + (lab ? 4 : 14), fmt(val, sp.format), 'cht-v g', P && P + '.series.0.values.0') + lab, 'cht-ring');
+      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 52, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
+      return svg(d.w, d.h, track + arc + txt(cx, cy + (lab ? 10 : 22), fmt(val, sp.format), 'cht-v gx', P && P + '.series.0.values.0') + lab, 'cht-ring');
     },
     /* 도넛 — 구성비. 원본 31:4148 (외350/내140 → hole 0.4, 세그먼트 사이 #EEE 갭) */
     donut: function (sp, P) {
@@ -156,7 +156,7 @@
     arc: function (sp, P) {
       var d = size(sp, 640, 380), v = vals(sp), cats = sp.categories || [];
       var max = Math.max.apply(null, v.concat([1])), cx = d.w / 2, base = d.h - (cats.length ? 44 : 12);
-      var th = 30, rMax = Math.min(cx - 12, base - 40);
+      var th = 44, rMax = Math.min(cx - 12, base - 40);
       // 값 내림차순으로 바깥→안쪽. 비례 반지름이 겹치면 최소 간격(th+12)을 강제해 라벨이 붙어버리는 걸 막는다
       var order = v.map(function (x, i) { return { v: x, i: i }; }).sort(function (a, b) { return b.v - a.v; });
       var prev = Infinity;
@@ -197,12 +197,12 @@
       var d = size(sp, 620, 380), v = vals(sp), cats = sp.categories || [];
       var r = Math.min(d.h / 2 - 10, d.w / 3.2), cy = d.h / 2, cx1 = d.w / 2 - r * 0.55, cx2 = d.w / 2 + r * 0.55;
       var inner = '<defs><clipPath id="vnA"><circle cx="' + cx1 + '" cy="' + cy + '" r="' + r + '"/></clipPath></defs>' +
-        '<circle cx="' + cx1 + '" cy="' + cy + '" r="' + r + '" fill="' + color(0) + '" opacity=".7"/>' +
-        '<circle cx="' + cx2 + '" cy="' + cy + '" r="' + r + '" fill="' + color(1) + '" opacity=".4"/>' +
+        '<circle cx="' + cx1 + '" cy="' + cy + '" r="' + r + '" fill="' + color(0) + '" opacity=".96"/>' +
+        '<circle cx="' + cx2 + '" cy="' + cy + '" r="' + r + '" fill="' + color(1) + '" opacity=".85"/>' +
         '<g clip-path="url(#vnA)"><circle cx="' + cx2 + '" cy="' + cy + '" r="' + r + '" fill="var(--pg4,#498467)"/></g>' +
-        txt(cx1 - r * 0.42, cy + 10, fmt(v[0], sp.format), 'cht-v on lg', P && P + '.series.0.values.0') +
-        txt(cx2 + r * 0.42, cy + 10, fmt(v[1], sp.format), 'cht-v on', P && P + '.series.0.values.1') +
-        (v.length > 2 ? txt(d.w / 2, cy + 8, fmt(v[2], sp.format), 'cht-v on', P && P + '.series.0.values.2') : '') +
+        txt(cx1 - r * 0.42, cy + 12, fmt(v[0], sp.format), 'cht-v on lg', P && P + '.series.0.values.0') +
+        txt(cx2 + r * 0.42, cy + 12, fmt(v[1], sp.format), 'cht-v on lg', P && P + '.series.0.values.1') +
+        (v.length > 2 ? txt(d.w / 2, cy + 12, fmt(v[2], sp.format), 'cht-v on lg', P && P + '.series.0.values.2') : '') +
         (cats[0] ? txt(cx1 - r * 0.42, cy + 38, cats[0], 'cht-c inv', P && P + '.categories.0') : '') +
         (cats[1] ? txt(cx2 + r * 0.42, cy + 38, cats[1], 'cht-c inv', P && P + '.categories.1') : '');
       return svg(d.w, d.h, inner, 'cht-venn');
@@ -249,6 +249,7 @@
       '.cht text{font-family:var(--font,"Pretendard",system-ui,sans-serif);fill:var(--ink,#181918)}' +
       '.cht-v{font-size:24px;font-weight:600;letter-spacing:-.02em}' +
       '.cht-v.on{fill:#fff}.cht-v.lg{font-size:34px}.cht-v.g{font-size:58px;font-weight:700;letter-spacing:-.03em;text-anchor:middle}' +
+      '.cht-v.gx{font-size:76px;font-weight:700;letter-spacing:-.03em;text-anchor:middle}' +
       '.cht-c{font-size:14px;fill:var(--ink,#181918);opacity:.75}.cht-c.inv{fill:#fff;opacity:.9}' +
       '.cht-ax{stroke:var(--pg2,#52B788);stroke-width:2}' +
       '.cht-seg{stroke:var(--line,#EEEEEE);stroke-width:6}';
