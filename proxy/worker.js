@@ -44,7 +44,7 @@ const SYSTEM =
 /* Pitch(Creatable) 팩 — 레이아웃 카탈로그("언제 쓰나")를 기준으로 AI가 장표 타입을 고른다.
    app/packs.pitch.js의 PITCH_CATALOG·FIELD_DOC과 동일 계약. 팩이 늘면 여기도 팩별 스키마가 붙는다. */
 const PITCH_USE_DOC =
-  'statement(대형 문장): 표지·미션·섹션 전환·투자 요청. bg=green이 브랜드 강조면. badge(아웃라인 필)+bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 | ' +
+  'statement(대형 문장): 표지·미션·섹션 전환·투자 요청. bg=green이 브랜드 강조면. ' +
   'quote(인용): 고객·전문가 발언으로 신뢰 | ' +
   'split(좌우 2분할): 설명+시각자료 나란히 — 문제 정의·제품 화면·경쟁 우위 | ' +
   'grid(N열 반복): 동급 항목 3~4개 — 기능·강점·팀원·경쟁사. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조), 항목 image=이미지 타일 셀 | ' +
@@ -59,7 +59,7 @@ const PITCH_USE_DOC =
   'gallery(목업): 제품 화면 2~3개 | ' +
   'closing(마무리): 인사+연락처';
 const PITCH_FIELD_DOC =
-  'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?,title,sub?,bottomImage?:{label}} | ' +
+  'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?,bottomImage?:{label}} | ' +
   'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
   'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label:str},side:"left|right",bg?} | ' +
   'grid:{eyebrow?,title,variant:"text|icon|card|person|num",cols:2~4,items:[{head?,role?,text,image?:{label}}],accent?:정수,bg?} | ' +
@@ -139,6 +139,7 @@ const WEB_SYSTEM =
   'faq·pricing·features:{faq:[{q,a}]} | contact:{form:{title,sub,fields:[str],submit},infoCards:[{title,text}]} | ' +
   'manual:{docs:[{title,desc}],steps:[{title,text}]} | blog:{posts:[{title,desc,date,tag}]} | ' +
   'event:{overview:{title,text,points:[str]},intro:{title,text},agenda:[{time,title,desc}],speakers:[{name,role,desc}],notices:[{title,text}]} | 공통:{testimonials:[{text,by}]}\n' +
+  '- variants(섹션 표현 변형, 최상위·각 페이지 객체에 선택): {hero:"center|split|screenshot|stat", pagehero:"banner|breadcrumb", overview:"split|center|problem", intro:"center|quote", featurerows:"zigzag|numbered|checks", feature:"icons|cards|bento|list", gallery:"grid|mosaic", stats:"numbers|kpi|big", compare:"table|beforeafter|cards", testimonial:"cards|single|logos", steps:"horizontal|vertical|cards", agenda:"timeline|table", faq:"accordion|twocol|category", form:"center|split", cta:"banner|simple|cards", bloglist:"cards|list|featured", doclist:"cards|list", pricing:"cards|table"} — 콘텐츠 성격에 맞게(수치 강조면 hero:stat, 기능 많으면 feature:bento). 페이지마다 똑같은 조합 반복 금지.\n' +
   '  features=그 페이지 주제에 맞는 카드 3개(메인홈 것과 겹치지 않게). 최대 6개 페이지, 메인홈은 제외.\n' +
   '- productName은 브리프에 있는 실제 제품·서비스명을 그대로 쓴다. 브리프에 없어 지어냈다면 assumed에 "productName"을 넣어라.\n' +
   '- 브리프(특히 plan)에 근거 있는 건 그대로 반영. 근거 없는 항목은 제품 맥락에 맞는 그럴듯한 예시로 채운다.\n' +

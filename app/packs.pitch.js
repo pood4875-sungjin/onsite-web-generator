@@ -49,7 +49,6 @@
       var qna = /^\s*Q\s*&?\s*A\s*$/i.test(String(s.title || '').trim()) ? ' qna' : '';
       return '<section class="slide st ' + pos + qna + (bimg ? ' has-bimg' : '') + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
         '<div class="st-in">' +
-        (s.badge ? '<p class="st-badge"' + de(P + '.badge') + '>' + esc(s.badge) + '</p>' : '') +
         (s.eyebrow ? '<p class="p-eyebrow"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</p>' : '') +
         '<h1 class="st-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
         (s.sub ? '<p class="st-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') +
@@ -346,14 +345,17 @@
       '.g-role{font-size:var(--fs-over);text-transform:uppercase;letter-spacing:.02em;opacity:.7;margin:6px 0 0}' +
       '.g-text{font-size:var(--fs-body);line-height:1.5;margin:13px 0 0}' +
       /* stats */
-      '.s-grid{display:grid;gap:40px var(--gut);margin-top:60px}' +
+      '.sg{display:flex;flex-direction:column}' +
+      '.s-grid{display:grid;gap:40px var(--gut);margin:auto 0}' +   /* 헤더 아래 남은 높이의 세로 중앙(사용자 지시) */
       '.s-grid.c2{grid-template-columns:repeat(2,1fr)}.s-grid.c3{grid-template-columns:repeat(3,1fr)}' +
       '.s-num{font-size:var(--fs-huge);font-weight:600;line-height:1;letter-spacing:-.03em;margin:0}' +
       '.s-lab{font-size:var(--fs-body);margin:12px 0 0}' +
       /* bigstat */
-      '.bs-in{margin-top:60px;display:flex;align-items:baseline;gap:var(--gut)}' +
-      '.bs-num{font-size:var(--fs-huge);font-weight:600;line-height:1;letter-spacing:-.03em;margin:0;color:var(--pg)}' +
-      '.bg-green .bs-num{color:#fff}.bs-cap{font-size:var(--fs-body);line-height:1.5;margin:0;max-width:420px}' +
+      /* bigstat — 숫자 초대형·슬라이드 중앙(사용자 지시). 캡션은 숫자 아래 중앙 */
+      '.bs{display:flex;flex-direction:column}' +
+      '.bs-in{flex:1;margin-top:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:22px}' +
+      '.bs-num{font-size:200px;font-weight:600;line-height:.95;letter-spacing:-.03em;margin:0;color:var(--pg)}' +
+      '.bg-green .bs-num{color:#fff}.bs-cap{font-size:var(--fs-lead);line-height:1.5;margin:0;max-width:640px}' +
       /* list */
       /* 넘버드 카드 리스트 — 라운드 20 카드 행, 큰 번호 43px(Regular), 첫 행 그린 액센트. 1920→1280 환산 */
       '.l-wrap{margin-top:40px;display:grid;gap:30px;align-items:stretch}' +
@@ -470,7 +472,7 @@
       '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
       /* 기본 block, 슬라이드 자체가 flex인 타입(statement/quote/closing)만 flex 복원 */
       '.vscale .slide.cur{display:block}' +
-      '.vscale .slide.cur.st,.vscale .slide.cur.qt,.vscale .slide.cur.cl{display:flex}' +
+      '.vscale .slide.cur.st,.vscale .slide.cur.qt,.vscale .slide.cur.cl,.vscale .slide.cur.bs,.vscale .slide.cur.sg{display:flex}' +
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
@@ -501,7 +503,16 @@
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
       // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
       'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
-      'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}}' +
+      'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
+      // 숫자 카운트업 — 대형 수치(.bs-num/.bignum)와 수치 그리드(.s-num)가 0→값으로 빠르게 상승(사용자 지시)
+      'var cu=cur.querySelectorAll(".bs-num,.s-num,.bignum");for(var w=0;w<cu.length;w++){(function(el){' +
+      'var t=el.getAttribute("data-cv");if(t==null){t=el.textContent;el.setAttribute("data-cv",t);}' +
+      'var m=t.match(/[\\d,.]+/);if(!m)return;var num=parseFloat(m[0].replace(/,/g,""));if(!isFinite(num))return;' +
+      'var dec=(m[0].split(".")[1]||"").length;var cm=m[0].indexOf(",")>=0;var st=null,dur=850;' +
+      'function fmt(v){var x=v.toFixed(dec);if(cm)x=x.replace(/\\B(?=(\\d{3})+(?!\\d))/g,",");return t.replace(m[0],x);}' +
+      'function stp(ts){if(!st)st=ts;var p2=Math.min(1,(ts-st)/dur);p2=1-Math.pow(1-p2,3);el.textContent=fmt(num*p2);if(p2<1)requestAnimationFrame(stp);else el.textContent=t;}' +
+      'requestAnimationFrame(stp);})(cu[w]);}' +
+      '}' +
       'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
       'addEventListener("message",function(e){if(!e.data)return;if(e.data.pptFsKey)toggleFs();else if(e.data.pptFsUi!=null)setPseudo(!!e.data.pptFsUi);});' +
@@ -526,7 +537,7 @@
   /* ---- 레이아웃 카탈로그 — "언제 쓰나"가 계약의 일부.
      AI가 브리프를 읽고 섹션마다 타입을 고를 때 이 설명을 그대로 프롬프트에 넣는다. ---- */
   var CATALOG = [
-    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. badge(아웃라인 필)와 bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 가능', needs: ['title'], opt: ['eyebrow', 'badge', 'sub', 'bg', 'pos', 'bottomImage'], cap: { title: '~40자' } },
+    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. bottomImage는 실제 이미지 첨부 시에만', needs: ['title'], opt: ['eyebrow', 'sub', 'bg', 'pos', 'bottomImage'], cap: { title: '~40자' } },
     { type: 'quote', label: '인용', use: '고객·전문가 발언, 후기처럼 남의 말로 신뢰를 줄 때', needs: ['text', 'by'], opt: ['stat', 'image', 'bg'], cap: { text: '~90자' } },
     { type: 'split', label: '좌우 2분할', use: '설명과 시각자료를 나란히 — 문제 정의, 제품 화면, 경쟁 우위처럼 보여주며 설명할 때', needs: ['title'], opt: ['bullets', 'text', 'stat', 'visual', 'side'], cap: { bullets: '4개 · 각 ~50자' } },
     { type: 'grid', label: 'N열 반복', use: '동급 항목 3~4개를 나열 — 기능, 강점, 팀원, 경쟁사 카드. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조+화살표), 항목에 image를 주면 그 셀은 이미지 타일', needs: ['title', 'items'], opt: ['variant(text|icon|card|person|num)', 'cols', 'accent'], cap: { items: '2~4개', text: '~170자' } },
@@ -589,7 +600,7 @@
     return c.type + '(' + c.label + '): ' + c.use + ' | 필수 ' + c.needs.join(',') + (c.opt ? ' | 선택 ' + c.opt.join(',') : '');
   }).join('\n');
   var FIELD_DOC =
-    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?(아웃라인 필 텍스트),title,sub?,bottomImage?:{label}} | ' +
+    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?,bottomImage?:{label}} | ' +
     'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
     'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label}|{kind:"panel"},side:"left|right",bg?} | ' +
     'grid:{eyebrow?,title,variant:"text|icon|card|person|num",cols:2~4,items:[{head?,role?,text,image?:{label}}],accent?:강조인덱스,bg?} | ' +

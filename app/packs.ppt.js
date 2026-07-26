@@ -43,7 +43,7 @@
     cols: function (s, P) { return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body">' + colsBlock(s.cols || [], P + '.cols') + '</div></section>'; },
     bigstat: function (s, P) {
       var sides = (s.sides || []).map(function (x, j) { return '<div><h3 class="block-sub"' + de(P + '.sides.' + j + '.sub') + '>' + esc(x.sub || '') + '</h3><p class="block-p"' + de(P + '.sides.' + j + '.text') + '>' + ml(x.text || '') + '</p></div>'; }).join('');
-      return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><div class="bigstat"><p class="bignum"' + de(P + '.big') + '>' + ml(s.big || '') + '</p><div class="bigstat-side">' + sides + '</div></div></div></section>';
+      return '<section class="slide bs ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '">' + head(s, P) + '<div class="s-body"><div class="bigstat"><p class="bignum"' + de(P + '.big') + '>' + ml(s.big || '') + '</p><div class="bigstat-side">' + sides + '</div></div></div></section>';
     },
     divider: function (s, P) {
       return '<section class="slide ' + (s.dark ? 'dark' : '') + '" data-kind="' + kind(s) + '"><div class="s-head"><h2 class="s-title"' + de(P + '.title') + ' style="font-size:128px;line-height:.9">' + ml(s.title || '') + '</h2><span class="s-index">' + esc(s.index || '') + '</span></div><div class="s-body" style="margin-top:40px"><p class="block-p"' + de(P + '.sub') + ' style="font-size:22px;' + (s.dark ? 'color:var(--on-alt-soft)' : '') + '">' + ml(s.sub || '') + '</p></div></section>';
@@ -130,7 +130,8 @@
       '.cols2{display:grid;grid-template-columns:1fr 1fr;gap:56px}.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}.cols2>div,.cols3>div{background:var(--card-bg);border:1px solid var(--card-bd);border-radius:var(--rad);padding:var(--card-pad)}.block-sub{font-family:var(--font-disp);font-weight:500;font-size:26px;margin:0 0 18px}.block-list{display:flex;flex-direction:column;gap:14px;margin:0;padding:0}.block-list li{list-style:none;font-weight:300;font-size:16px;line-height:1.55;color:var(--on-surf)}.block-p{font-weight:300;font-size:16px;line-height:1.6;color:var(--on-surf);margin:0;max-width:540px}' +
       '.cover{display:flex;flex-direction:column;justify-content:space-between}.cover-meta{display:flex;gap:56px}.cover-meta .spacer{margin-left:auto;text-align:right}.meta-k{font-size:13px;color:var(--muted-alt);margin:0 0 6px}.meta-v{font-size:14px;font-weight:600;color:var(--on-alt);margin:0}.cover-foot{display:flex;align-items:flex-end;justify-content:space-between}.cover-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:118px;line-height:.9;letter-spacing:-.02em;margin:0}.cover-arrow{width:84px;height:84px;flex:none;display:grid;place-items:center;background:#fff;color:var(--surf-alt);font-size:30px;border-radius:var(--rad)}' +
       '.agenda{display:grid;grid-template-columns:130px 1fr;gap:24px;height:100%}.agenda-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:64px;writing-mode:vertical-rl;transform:rotate(180deg);align-self:center}.agenda-list{display:flex;flex-direction:column;justify-content:center}.agenda-row{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 6px}.ag-div{position:absolute;left:0;right:0;top:0;height:1px;background:var(--line)}.ag-div.ag-last{position:relative;display:block;margin-top:0}.agenda-label{font-family:var(--font-disp);font-weight:600;font-size:28px;margin:0}.agenda-badge{width:64px;height:64px;flex:none;display:grid;place-items:center;background:var(--accent,var(--surf-alt));color:#fff;font-family:var(--font-num);font-size:22px;border-radius:var(--rad)}' +
-      '.bigstat{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}.bignum{font-family:var(--font-disp);font-weight:var(--title-weight);font-size:104px;line-height:.92;letter-spacing:-.02em;margin:0;color:var(--accent,currentColor)}.bigstat-side{display:flex;flex-direction:column;gap:44px}' +
+      '.slide.bs{display:flex;flex-direction:column}.slide.bs .s-body{flex:1;display:flex;align-items:center}' +   /* 대형 수치 세로 중앙(사용자 지시) */
+      '.bigstat{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;width:100%}.bignum{font-family:var(--font-disp);font-weight:var(--title-weight);font-size:136px;line-height:.92;letter-spacing:-.02em;margin:0;color:var(--accent,currentColor)}.bigstat-side{display:flex;flex-direction:column;gap:44px}' +
       '.contact{display:flex;flex-direction:column;justify-content:space-between}.contact-grid{position:absolute;top:0;right:0;width:600px;height:420px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}.contact-cell{display:grid;place-content:center;padding:28px}.contact-cell.fill{background:var(--surf);color:var(--on-surf)}.contact-k{font-size:13px;color:var(--muted);margin:0 0 6px}.contact-v{font-size:15px;font-weight:600;margin:0}.contact-foot{margin-top:auto}.contact-email{font-size:14px;color:var(--muted-alt);margin:0 0 14px}.contact-title{font-family:var(--font-disp);font-weight:var(--cover-weight);font-size:92px;line-height:.92;letter-spacing:-.02em;margin:0}';
   }
 
@@ -165,7 +166,7 @@
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +   // 세로 배치는 fit()이 translateY로 결정(그리드 센터링 오차 회피)
       '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;flex:none;transform-origin:top center}' +
       '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
-      '.vscale .slide.cur{display:flex}.vscale .slide.cur:not(.cover):not(.contact){display:block}' +
+      '.vscale .slide.cur{display:flex}.vscale .slide.cur:not(.cover):not(.contact):not(.bs){display:block}' +
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
@@ -198,7 +199,16 @@
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
       // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
       'var us=cur.querySelectorAll(".row,.cols2 > div,.cols3 > div,.agenda-badge,.contact-cell");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
-      'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}}' +
+      'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
+      // 숫자 카운트업 — 대형 수치(.bs-num/.bignum)와 수치 그리드(.s-num)가 0→값으로 빠르게 상승(사용자 지시)
+      'var cu=cur.querySelectorAll(".bs-num,.s-num,.bignum");for(var w=0;w<cu.length;w++){(function(el){' +
+      'var t=el.getAttribute("data-cv");if(t==null){t=el.textContent;el.setAttribute("data-cv",t);}' +
+      'var m=t.match(/[\\d,.]+/);if(!m)return;var num=parseFloat(m[0].replace(/,/g,""));if(!isFinite(num))return;' +
+      'var dec=(m[0].split(".")[1]||"").length;var cm=m[0].indexOf(",")>=0;var st=null,dur=850;' +
+      'function fmt(v){var x=v.toFixed(dec);if(cm)x=x.replace(/\\B(?=(\\d{3})+(?!\\d))/g,",");return t.replace(m[0],x);}' +
+      'function stp(ts){if(!st)st=ts;var p2=Math.min(1,(ts-st)/dur);p2=1-Math.pow(1-p2,3);el.textContent=fmt(num*p2);if(p2<1)requestAnimationFrame(stp);else el.textContent=t;}' +
+      'requestAnimationFrame(stp);})(cu[w]);}' +
+      '}' +
       'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
       'addEventListener("message",function(e){if(!e.data)return;if(e.data.pptFsKey)toggleFs();else if(e.data.pptFsUi!=null)setPseudo(!!e.data.pptFsUi);});' +
