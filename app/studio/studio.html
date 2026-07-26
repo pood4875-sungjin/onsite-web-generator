@@ -1626,7 +1626,7 @@
     // 발표 뷰어 — PPT 계열 팩(ppt·pitch)은 한 장씩 넘기는 프레젠테이션 뷰로
     const viewerFn = pack && (pack.id==='pitch' ? window.renderPitchViewer : pack.id==='ppt' ? window.renderPptViewer : null);
     const isPptPack = typeof viewerFn==='function';
-    document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기 — ← → 또는 클릭으로 넘기기 · F 전체화면 · ESC 닫기') : tL('미리보기');
+    document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기') : tL('미리보기');   // 조작 힌트 문구 제거(사용자 요청)
     pvfFrame.srcdoc = isPptPack ? viewerFn(data) : previewHtml();
     pvFull.hidden=false;
     if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
@@ -1645,7 +1645,8 @@
     else if(e.key==='f'||e.key==='F'){
       if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); }
       else{
-        let pr=null; try{ pr=pvfFrame.requestFullscreen&&pvfFrame.requestFullscreen(); }catch(_){}
+        const rq=pvfFrame.requestFullscreen||pvfFrame.webkitRequestFullscreen;
+        let pr=null; try{ pr=rq&&rq.call(pvfFrame); }catch(_){}
         const fb=()=>{ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} };
         if(pr&&pr.then) pr.then(()=>{},fb); else fb();
       }

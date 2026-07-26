@@ -180,7 +180,8 @@
       'function setPseudo(v){pseudo=v;document.body.classList.toggle("pfs",v);fit();try{parent.postMessage({pptViewerPseudoFs:v?1:0},"*")}catch(x){}}' +
       'function toggleFs(){if(document.fullscreenElement){document.exitFullscreen&&document.exitFullscreen();return}' +
       'if(pseudo){setPseudo(false);return}' +
-      'var p=null;try{p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}catch(e){}' +
+      'var de2=document.documentElement,rq=de2.requestFullscreen||de2.webkitRequestFullscreen;' +
+      'var p=null;try{p=rq&&rq.call(de2)}catch(e){}' +
       'if(p&&p.then)p.then(null,function(){setPseudo(true)});else setPseudo(true);}' +
       'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
       'var ty=Math.max(0,(area-720*sc)/2);' +
@@ -199,6 +200,8 @@
       'addEventListener("message",function(e){if(!e.data)return;if(e.data.pptFsKey)toggleFs();else if(e.data.pptFsUi!=null)setPseudo(!!e.data.pptFsUi);});' +
       'addEventListener("resize",fit);fit();show(0);' +
       'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
+      'var fbn=document.querySelector(".vfs");if(fbn)fbn.onclick=function(e){e.stopPropagation();toggleFs();};' +   // 버튼 클릭=확실한 사용자 제스처 → 네이티브 전체화면 보장
+
       'document.addEventListener("click",function(e){if(e.target.closest(".vbar"))return;show(n+1)});' +
       'document.addEventListener("keydown",function(e){' +
       'if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" ")show(n+1);' +
@@ -209,7 +212,7 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + vcss + '</style></head><body data-style="' + esc(style) + '"' + (accent ? ' data-accent="' + esc(accent) + '"' : '') + '>' +
       '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' + stateScript(slides) +
-      '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button></div>' +
+      '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button><button class="vbtn vfs" title="\uc804\uccb4\ud654\uba74 (F)">\u26f6</button></div>' +
       '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
   }
 
