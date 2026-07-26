@@ -150,11 +150,13 @@
     /* 표 — 파이프라인·비교표처럼 열/행이 있는 데이터. 원본 21 */
     table: function (s, P) {
       var cols = s.columns || [], rows = s.rows || [];
-      var head = '<div class="t-row t-head">' + cols.map(function (c, i) {
+      // 열 수에 맞춰 그리드 동적 지정 — 4열 이상이면 3열 고정 CSS에 밀려 마지막 열이 다음 줄로 떨어졌음
+      var tg = ' style="grid-template-columns:1.4fr ' + new Array(Math.max((cols.length || 3) - 1, 1) + 1).join('1fr ').trim() + '"';
+      var head = '<div class="t-row t-head"' + tg + '>' + cols.map(function (c, i) {
         return '<span' + de(P + '.columns.' + i) + '>' + esc(c) + '</span>';
       }).join('') + '</div>';
       var body = rows.map(function (r, i) {
-        return '<div class="t-row">' + (r.cells || []).map(function (c, j) {
+        return '<div class="t-row"' + tg + '>' + (r.cells || []).map(function (c, j) {
           return '<span' + de(P + '.rows.' + i + '.cells.' + j) + '>' + esc(c) + '</span>';
         }).join('') + '</div>';
       }).join('');
