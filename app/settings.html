@@ -77,6 +77,16 @@
     </div>
 
     <div class="card">
+      <h2 data-i18n="백업 · 이사">백업 · 이사</h2>
+      <p class="sub" data-i18n="프로젝트 전체를 JSON 파일로 내보내고, 다른 브라우저/주소에서 가져올 수 있어요. (데이터는 브라우저별로 따로 저장되기 때문에 이사할 때 필요해요)">프로젝트 전체를 JSON 파일로 내보내고, 다른 브라우저/주소에서 가져올 수 있어요. (데이터는 브라우저별로 따로 저장되기 때문에 이사할 때 필요해요)</p>
+      <div class="acts">
+        <button class="ds-btn" id="bakExport" data-i18n="전체 내보내기 (JSON)">전체 내보내기 (JSON)</button>
+        <button class="ds-btn" id="bakImport" data-i18n="가져오기">가져오기</button>
+      </div>
+      <p class="note" id="bakNote"></p>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="프로젝트 관리">프로젝트 관리</h2>
       <p class="sub" data-i18n="용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.">용량이 큰 순으로 정렬됩니다. 미구축(생성 전) 프로젝트는 한 번에 정리할 수 있어요.</p>
       <div class="acts">
@@ -170,6 +180,38 @@
   };
 
   if(window.I18N) I18N.apply(document);
+  /* ---- 백업 · 이사 — 전체 프로젝트 JSON 내보내기/가져오기 (브라우저·주소 간 데이터 이동용) ---- */
+  document.getElementById('bakExport').onclick=async ()=>{
+    await storeReady();
+    const payload={ app:'midas-drs', v:1, exportedAt:new Date().toISOString(), projects:getProjects() };
+    const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download='midas-drs-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    document.getElementById('bakNote').textContent='✅ '+LL('내보냈어요. 옮길 브라우저의 설정에서 가져오기 하세요.');
+  };
+  document.getElementById('bakImport').onclick=()=>{
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
+    inp.onchange=async ()=>{
+      const f=inp.files&&inp.files[0]; if(!f) return;
+      try{
+        const obj=JSON.parse(await f.text());
+        const inc=Array.isArray(obj)?obj:(obj&&Array.isArray(obj.projects)?obj.projects:null);
+        if(!inc) throw new Error('projects 배열이 없는 파일');
+        await storeReady();
+        const cur=getProjects(); const by={}; cur.forEach(p=>by[p.id]=p);
+        let add=0,rep=0;
+        inc.forEach(p=>{ if(!p||!p.id) return; if(by[p.id])rep++; else add++; by[p.id]=p; });
+        const ok=await uiConfirm(LL('가져오기: 새 프로젝트')+' '+add+LL('개, 같은 항목 교체')+' '+rep+LL('개. 진행할까요?'),{title:LL('백업 가져오기'),okText:LL('가져오기')});
+        if(!ok) return;
+        saveProjects(Object.values(by)); await storeFlush();
+        document.getElementById('bakNote').textContent='✅ '+LL('가져왔어요.');
+        setTimeout(()=>location.reload(),600);
+      }catch(e){ uiAlert(LL('가져오기 실패: 올바른 백업 파일이 아니에요.')+' ('+(e&&e.message||'')+')'); }
+    };
+    inp.click();
+  };
+
   storeReady().then(renderAll);
 
 </script>
