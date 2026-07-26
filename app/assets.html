@@ -72,7 +72,7 @@
     var h='<div class="seg">'+['green','blue'].map(function(c){ return '<button data-c="'+c+'"'+(c===gColor?' class="on"':'')+'>'+(c==='green'?L('그린'):L('블루'))+'</button>'; }).join('')+'</div>'
       +'<a class="chlink" href="chart-inspector.html">📊 '+L('차트 라이브러리')+' →</a>';
     h+='<div class="grid">'+G.filter(function(g){return g.color===gColor}).map(function(g){
-      return '<div class="cell big" data-src="'+g.src+'"><span class="pv"><img src="'+g.src+'" alt="'+g.name+'" loading="lazy"></span><span class="nm">'+g.name+'</span></div>';
+      return '<div class="cell big" data-src="'+g.src+'"><span class="pv"><img src="'+g.src+'" alt="'+g.name+'"></span><span class="nm">'+g.name+'</span></div>';
     }).join('')+'</div>';
     body.innerHTML=h;
     body.querySelectorAll('.seg button').forEach(function(b){ b.onclick=function(){ gColor=b.getAttribute('data-c'); renderGraphics(); }; });
