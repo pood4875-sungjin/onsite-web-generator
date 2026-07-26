@@ -536,7 +536,7 @@
     'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
     'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
     'timeline:{title,items:[{when,head,text}],bg?} | ' +
-    'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn",categories:[str],series:[{name,values:[숫자]}],emphasis?:인덱스,format?:{prefix,suffix}},bg?} | ' +
+    'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn|gauge|ring",categories:[str],series:[{name,values:[숫자]}],max?:숫자(gauge·ring 상한),emphasis?:인덱스,format?:{prefix,suffix}},bg?} | ' +
     'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
     'gallery:{title,items:[{head?,text?,image?:{label}}],bg?} | ' +
     'closing:{title,contacts:[{k,v}]}';

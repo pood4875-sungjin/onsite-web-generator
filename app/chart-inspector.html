@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>차트 라이브러리 — MIDAS DRS</title>
+<style>
+  /* 공통 차트 자산 열람 페이지 — charts.js CATALOG를 그대로 그린다.
+     새 차트를 charts.js에 추가하면 여기 자동으로 나타난다(샘플 데이터만 SAMPLES에 한 줄 추가). */
+  :root{ /* 미리보기 기본 토큰 = Creatable Pitch 그린. 아래 팔레트 토글로 교체 */
+    --pg:#39B966;--pg2:#52B788;--pg3:#9CDCB2;--pg4:#498467;--pblue:#4677FF;
+    --ink:#181918;--grey:#F1F1F1;--line:#EEEEEE;
+    --font:"Pretendard",-apple-system,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fafafa;color:var(--ink);font-family:var(--font)}
+  header{padding:34px 40px 10px;max-width:1280px;margin:0 auto}
+  h1{font-size:26px;letter-spacing:-.02em;margin:0 0 6px}
+  .sub{font-size:13.5px;color:#666;line-height:1.6;margin:0}
+  .sub code{background:#eee;border-radius:5px;padding:1px 6px;font-size:12px}
+  .tools{max-width:1280px;margin:14px auto 0;padding:0 40px;display:flex;gap:8px;align-items:center;font-size:13px;color:#666}
+  .pal{display:inline-flex;gap:6px}
+  .pal button{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer}
+  .pal button.on{border-color:#181918}
+  .grid{max-width:1280px;margin:18px auto 60px;padding:0 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:18px}
+  .card{background:#fff;border:1px solid #ececec;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px}
+  .card h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+  .card h3 code{font-size:11.5px;font-weight:500;color:#777;background:#f2f2f2;border-radius:5px;padding:2px 7px}
+  .use{margin:0;font-size:13px;color:#555;line-height:1.5;min-height:38px}
+  .box{background:#fff;border:1px dashed #e4e4e4;border-radius:10px;padding:14px;height:250px;display:grid;place-items:center}
+  .box svg{max-width:100%;max-height:100%}
+  .src{max-width:1280px;margin:0 auto;padding:0 40px;font-size:12.5px;color:#8a8a8a}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 차트 라이브러리 <span style="font-size:13px;font-weight:500;color:#888">공통 자산 · 전 팩 공용</span></h1>
+  <p class="sub">
+    PPT·웹·이메일 어디서든 같은 차트를 쓴다. 색은 사용하는 스타일 팩의 토큰을 자동으로 물려받는다.<br>
+    새 차트 쌓는 법: <code>charts.js</code>에 렌더러+카탈로그 등록 → 이 페이지에 자동 표시. AI는 각 카드의 "언제 쓰나"를 읽고 내용에 맞는 차트를 고른다.
+  </p>
+</header>
+<div class="tools">
+  팔레트 미리보기:
+  <span class="pal" id="pal"></span>
+  <span id="palName"></span>
+</div>
+<div class="grid" id="grid"></div>
+<p class="src" id="src"></p>
+<script src="charts.js"></script>
+<script>
+  /* 타입별 샘플 데이터 — 새 타입 추가 시 여기 한 줄. 없으면 GENERIC으로 렌더된다. */
+  var SAMPLES = {
+    bar:        { categories:['1분기','2분기','3분기','4분기'], series:[{name:'매출',values:[12,19,26,38]}], emphasis:3, format:{suffix:'억'} },
+    area:       { categories:['2023','2024','2025','2026'], series:[{name:'사용자',values:[8,21,34,52]}], emphasis:3, format:{suffix:'만'} },
+    line:       { categories:['1월','2월','3월','4월','5월'], series:[{name:'전환율',values:[2.1,2.8,3.2,4.1,5.6]}], format:{suffix:'%',decimals:1} },
+    donut:      { categories:['구독','라이선스','용역'], series:[{name:'매출 구성',values:[55,30,15]}], emphasis:0 },
+    pie:        { series:[{name:'점유율',values:[42,33,25]}], emphasis:0, format:{suffix:'%'} },
+    bubble:     { categories:['TAM','SAM','SOM'], series:[{name:'시장',values:[120,48,12]}], emphasis:2, format:{suffix:'조'} },
+    concentric: { categories:['전체 시장','목표 시장','초기 시장'], series:[{name:'시장',values:[100,45,12]}], format:{suffix:'조'} },
+    arc:        { categories:['2024','2025','2026'], series:[{name:'누적',values:[30,72,140]}], emphasis:2, format:{suffix:'억'} },
+    pyramid:    { categories:['방문','가입','활성','결제'], series:[{name:'전환',values:[100,46,22,9]}], format:{suffix:'만'} },
+    venn:       { categories:['우리 고객','경쟁사 고객'], series:[{name:'중복',values:[60,45]}] },
+    gauge:      { categories:['고객 만족도'], series:[{name:'점수',values:[87]}], max:100, format:{suffix:'점'} },
+    ring:       { categories:['목표 달성률'], series:[{name:'진행',values:[68]}], max:100, format:{suffix:'%'} },
+  };
+  var GENERIC = { categories:['A','B','C'], series:[{name:'값',values:[30,55,80]}] };
+
+  /* 팔레트 미리보기 — 팩 토큰만 갈아끼우면 차트가 어떻게 물드는지 확인 */
+  var PALETTES = [
+    { name:'Creatable Pitch (그린)', vars:{ '--pg':'#39B966','--pg2':'#52B788','--pg3':'#9CDCB2','--pg4':'#498467','--pblue':'#4677FF' } },
+    { name:'MIDAS AX (블루)',        vars:{ '--pg':'#2f93e3','--pg2':'#5fb0ec','--pg3':'#a8d4f5','--pg4':'#1d6db3','--pblue':'#0b1f3a' } },
+    { name:'Ember (레드)',           vars:{ '--pg':'#ff4327','--pg2':'#ff7a5c','--pg3':'#ffb7a6','--pg4':'#c22c15','--pblue':'#4677FF' } },
+  ];
+  var palBox = document.getElementById('pal'), palName = document.getElementById('palName');
+  PALETTES.forEach(function (p, i) {
+    var b = document.createElement('button');
+    b.style.background = 'linear-gradient(135deg,' + p.vars['--pg'] + ',' + p.vars['--pg4'] + ')';
+    b.title = p.name;
+    b.onclick = function () { applyPal(i); };
+    palBox.appendChild(b);
+  });
+  function applyPal(i) {
+    var p = PALETTES[i];
+    Object.keys(p.vars).forEach(function (k) { document.documentElement.style.setProperty(k, p.vars[k]); });
+    palName.textContent = p.name;
+    [].slice.call(palBox.children).forEach(function (b, k) { b.classList.toggle('on', k === i); });
+  }
+
+  var grid = document.getElementById('grid');
+  var style = document.createElement('style'); style.textContent = Charts.css(); document.head.appendChild(style);
+  Charts.CATALOG.forEach(function (c) {
+    var card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = '<h3>' + c.label + ' <code>' + c.type + '</code></h3>' +
+      '<p class="use">' + c.use + '</p>' +
+      '<div class="box">' + Charts.render(Object.assign({ type: c.type }, SAMPLES[c.type] || GENERIC)) + '</div>';
+    grid.appendChild(card);
+  });
+  document.getElementById('src').textContent =
+    '출처: Figma 웹 제너레이터 — Infographic slides 20장(31:4034~31:4477) · 스탯 카드 모음(31:2771). 총 ' + Charts.CATALOG.length + '종.';
+  applyPal(0);
+</script>
+</body>
+</html>

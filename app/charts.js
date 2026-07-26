@@ -1,5 +1,7 @@
 /* charts.js — 공통 차트 자산. classic <script src>. PPT·웹·eDM 어느 팩에서든 같은 함수로 호출한다.
-   출처: Figma "웹 제너레이터" > Infographic slides 20장(31:4034~31:4477)에서 도출.
+   출처: Figma "웹 제너레이터" > Infographic slides 20장(31:4034~31:4477) + 스탯 카드 모음(31:2771 — gauge·ring).
+   ※ 새 차트를 쌓는 곳은 여기 하나 — T에 렌더러, CATALOG에 "언제 쓰나", chart-inspector.html의 SAMPLES에 샘플 데이터,
+     그리고 AI 스키마 3곳(worker.js chart 문서 2줄 · packs.pitch.js FIELD_DOC)에 타입을 등록하면 끝. 열람은 chart-inspector.html.
 
    설계 원칙
    1) 출력은 **순수 SVG**(스크립트·캔버스 없음) — PPTX 내보내기·PDF 인쇄·새창 미리보기에서 그대로 살아남는다.
@@ -63,6 +65,37 @@
     /* 에어리어/라인 — 시간에 따른 추이. 원본 31:4369(축·그리드 없음, 값 라벨만) */
     area: function (sp, P) { return lineLike(sp, P, true); },
     line: function (sp, P) { return lineLike(sp, P, false); },
+    /* 반원 게이지 — 목표 대비 수준 하나를 크게(점수·달성률). 원본 31:2771 스탯 카드 모음.
+       값 = series.0.values.0, 상한 = max(기본 100). 라벨 = categories.0 */
+    gauge: function (sp, P) {
+      var d = size(sp, 460, 300), v = vals(sp);
+      var val = v[0] || 0, max = num(sp.max) || Math.max(100, val);
+      var ratio = Math.max(0, Math.min(1, val / max));
+      var cx = d.w / 2, cy = d.h - 56, r = Math.min(d.w / 2 - 40, d.h - 96), sw = 26;
+      var main = sp.emphasis != null ? 'var(--pblue,#4677FF)' : 'var(--pg,#39B966)';
+      var pL = pol(cx, cy, r, 270), pR = pol(cx, cy, r, 90), pV = pol(cx, cy, r, 270 + 180 * ratio);
+      var track = '<path d="M' + pL[0] + ' ' + pL[1] + ' A' + r + ' ' + r + ' 0 0 1 ' + pR[0] + ' ' + pR[1] + '" fill="none" stroke="var(--grey,#F1F1F1)" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      var arc = ratio <= 0 ? '' : '<path d="M' + pL[0] + ' ' + pL[1] + ' A' + r + ' ' + r + ' 0 0 1 ' + pV[0] + ' ' + pV[1] + '" fill="none" stroke="' + main + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 34, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
+      return svg(d.w, d.h, track + arc + txt(cx, cy - 4, fmt(val, sp.format), 'cht-v g', P && P + '.series.0.values.0') + lab, 'cht-gauge');
+    },
+    /* 진행 링 — 진행률·비중 하나를 %로 크게. 원본 31:2771 스탯 카드 모음 */
+    ring: function (sp, P) {
+      var d = size(sp, 380, 380), v = vals(sp);
+      var val = v[0] || 0, max = num(sp.max) || 100;
+      var ratio = Math.max(0, Math.min(1, val / max));
+      var cx = d.w / 2, cy = d.h / 2, r = Math.min(d.w, d.h) / 2 - 36, sw = 30;
+      var main = sp.emphasis != null ? 'var(--pblue,#4677FF)' : 'var(--pg,#39B966)';
+      var track = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--grey,#F1F1F1)" stroke-width="' + sw + '"/>';
+      var arc = '';
+      if (ratio >= 1) arc = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + main + '" stroke-width="' + sw + '"/>';
+      else if (ratio > 0) {
+        var p0 = pol(cx, cy, r, 0), p1 = pol(cx, cy, r, 360 * ratio);
+        arc = '<path d="M' + p0[0] + ' ' + p0[1] + ' A' + r + ' ' + r + ' 0 ' + (ratio > 0.5 ? 1 : 0) + ' 1 ' + p1[0] + ' ' + p1[1] + '" fill="none" stroke="' + main + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      }
+      var lab = (sp.categories && sp.categories[0]) ? txt(cx, cy + 40, sp.categories[0], 'cht-c', P && P + '.categories.0') : '';
+      return svg(d.w, d.h, track + arc + txt(cx, cy + (lab ? 4 : 14), fmt(val, sp.format), 'cht-v g', P && P + '.series.0.values.0') + lab, 'cht-ring');
+    },
     /* 도넛 — 구성비. 원본 31:4148 (외350/내140 → hole 0.4, 세그먼트 사이 #EEE 갭) */
     donut: function (sp, P) {
       var d = size(sp, 460, 380), v = vals(sp), cats = sp.categories || [];
@@ -207,13 +240,15 @@
     { type: 'arc', label: '반원 아치', use: '누적 규모를 아치 크기로 비교할 때(연도별 누적)', needs: ['series'] },
     { type: 'pyramid', label: '피라미드·퍼널', use: '단계별로 줄어드는 전환 흐름(유입→가입→결제)', needs: ['series'] },
     { type: 'venn', label: '벤 다이어그램', use: '두 집단의 겹치는 영역을 보여줄 때', needs: ['series'] },
+    { type: 'gauge', label: '반원 게이지', use: '목표 대비 달성 수준·점수 하나를 강조할 때(달성률·만족도). max로 상한 지정', needs: ['series'] },
+    { type: 'ring', label: '진행 링', use: '진행률·비중 하나를 %로 크게 보여줄 때(진척도·완료율). max 기본 100', needs: ['series'] },
   ];
 
   function css() {
     return '.cht{display:block;max-width:100%}' +
       '.cht text{font-family:var(--font,"Pretendard",system-ui,sans-serif);fill:var(--ink,#181918)}' +
       '.cht-v{font-size:24px;font-weight:600;letter-spacing:-.02em}' +
-      '.cht-v.on{fill:#fff}.cht-v.lg{font-size:34px}' +
+      '.cht-v.on{fill:#fff}.cht-v.lg{font-size:34px}.cht-v.g{font-size:58px;font-weight:700;letter-spacing:-.03em;text-anchor:middle}' +
       '.cht-c{font-size:14px;fill:var(--ink,#181918);opacity:.75}.cht-c.inv{fill:#fff;opacity:.9}' +
       '.cht-ax{stroke:var(--pg2,#52B788);stroke-width:2}' +
       '.cht-seg{stroke:var(--line,#EEEEEE);stroke-width:6}';

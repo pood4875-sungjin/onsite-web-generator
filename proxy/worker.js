@@ -54,7 +54,7 @@ const PITCH_USE_DOC =
   'table(표): 거래처·계약 등 열이 정해진 데이터 | ' +
   'pricing(요금 티어): 플랜 2~3개 비교 | ' +
   'timeline(타임라인): 로드맵·절차·연혁 | ' +
-  'chart(차트): 추이=area/line, 항목 비교=bar, 구성비=donut/pie, 규모 비교=bubble, 포함 관계=concentric, 전환 퍼널=pyramid, 겹침=venn | ' +
+  'chart(차트): 추이=area/line, 항목 비교=bar, 구성비=donut/pie, 규모 비교=bubble, 포함 관계=concentric, 전환 퍼널=pyramid, 겹침=venn, 목표 대비 달성·점수=gauge(max 필수), 진행률·완료율 %=ring | ' +
   'matrix(2×2): 포지셔닝·경쟁 지형 | ' +
   'gallery(목업): 제품 화면 2~3개 | ' +
   'closing(마무리): 인사+연락처';
@@ -69,7 +69,7 @@ const PITCH_FIELD_DOC =
   'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
   'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
   'timeline:{title,items:[{when,head,text}],bg?} | ' +
-  'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn",categories:[str],series:[{name:str,values:[숫자]}],emphasis?:정수,format?:{prefix,suffix}},bg?} | ' +
+  'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn|gauge|ring",categories:[str],series:[{name:str,values:[숫자]}],max?:숫자(gauge·ring 상한),emphasis?:정수,format?:{prefix,suffix}},bg?} | ' +
   'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
   'gallery:{title,items:[{head?,text?,image?:{label:str}}],bg?} | ' +
   'closing:{title,contacts:[{k,v}]}';
