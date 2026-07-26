@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -539,6 +539,7 @@
     const rd = nav ? Object.assign({}, d, {nav}) : d;
     if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
+    if(pack && pack.id==='saturn' && typeof renderSaturnPage==='function') return renderSaturnPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='ppt' && typeof renderPptDeck==='function') return renderPptDeck(rd);
     if(pack && pack.id==='pitch' && typeof renderPitchDeck==='function') return renderPitchDeck(rd);
     if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume:vol, motion:mot});
@@ -746,7 +747,7 @@
     if(window.AETHER_STYLE) l.push({id:'aglass',name:AETHER_STYLE.name,swatch:AETHER_STYLE.swatch});
     if(window.PPT_STYLE) l.push({id:'ppt',name:PPT_STYLE.name,swatch:PPT_STYLE.swatch});
     return l; }
-  function packById(id){ if(id==='pitch'&&window.PITCH_STYLE) return PITCH_STYLE; if(id==='ppt'&&window.PPT_STYLE) return PPT_STYLE; if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
+  function packById(id){ if(id==='saturn'&&window.SATURN_STYLE) return SATURN_STYLE; if(id==='pitch'&&window.PITCH_STYLE) return PITCH_STYLE; if(id==='ppt'&&window.PPT_STYLE) return PPT_STYLE; if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
@@ -1773,7 +1774,8 @@
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
-    pack = (project.stylePack==='pitch' && typeof PITCH_STYLE!=='undefined') ? PITCH_STYLE
+    pack = (project.stylePack==='saturn' && typeof SATURN_STYLE!=='undefined') ? SATURN_STYLE
+         : (project.stylePack==='pitch' && typeof PITCH_STYLE!=='undefined') ? PITCH_STYLE
          : (project.stylePack==='ppt' && typeof PPT_STYLE!=='undefined') ? PPT_STYLE
          : (project.stylePack==='edm') ? {id:'edm', name:'eDM'}
          : (project.stylePack==='aglass' && typeof AETHER_STYLE!=='undefined') ? AETHER_STYLE
@@ -1801,7 +1803,9 @@
       chatLog = pageRef.chat.log.slice(); idx = pageRef.chat.idx||0; generated = !!pageRef.chat.generated;
       chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
       const step = STEPS[idx] || 'done';
-      if(generated || step==='done'){ generated=true; mountWidget('done'); }
+      // 콘텐츠가 이미 있으면(외부 주입·이전 초안) 인테이크 재개 대신 편집 모드로
+      const hasBody = !!((data.features&&data.features.length) || (data.stats&&data.stats.length) || data.bannerText);
+      if(generated || step==='done' || (hasBody && !curMode().slides)){ generated=true; mountWidget('done'); }
       else if(aiPageFlow()) startPageIntake();   // 인테이크 도중 이탈 복귀 — 옛 스텝 위젯 대신 대화형 재개
       else mountWidget(step);
       render(); scroll();

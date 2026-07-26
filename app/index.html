@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.ppt.js','charts.js','packs.pitch.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -347,6 +347,7 @@
       features:[{title:'빠른 생성',desc:'대화만으로 완성'},{title:'온브랜드',desc:'스타일 팩 적용'},{title:'멀티페이지',desc:'사이트 구축'}],
       stats:[{value:'98%',label:'만족도'},{value:'3분',label:'생성 시간'},{value:'12k+',label:'사용자'}],
     });
+    if(id==='saturn'&&window.renderSaturnPage) return renderSaturnPage(d,{volume:'compact',motion:'static'});
     if(id==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:'compact',motion:'static'});
     if(id==='midas'&&window.renderMidasPage) return renderMidasPage(d,{volume:'compact',motion:'static'});
     if(id==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:'compact',motion:'static'});
@@ -385,6 +386,7 @@
         const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
         const STYLES=[
           { id:'aether', name:'다크 글로우', swatch:glow.swatch },
+          { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn 블루'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0F62FE,#CFE0FF)') },
           { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
           { id:'midas', name:'MIDAS AX', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
           { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
