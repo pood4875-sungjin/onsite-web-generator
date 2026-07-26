@@ -80,6 +80,7 @@ const PITCH_SYSTEM =
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + PITCH_USE_DOC + '\n' +
   '각 타입의 필드: ' + PITCH_FIELD_DOC + '\n' +
   '규칙: 첫 장은 statement(bg green, pos bottom, eyebrow "PITCH DECK"류), 마지막은 closing. ' +
+  'Q&A 장(statement, title "Q&A")을 넣는다면 반드시 덱 맨 끝(closing 바로 앞)에만 둔다. ' +
   '수치가 있으면 stats/bigstat/chart로 시각화하고, 추이·비교·구성비 데이터는 chart를 적극 사용(값은 plan의 실제 수치). ' +
   'plan의 구체 정보(수치·기능·일정)는 반드시 반영. 실제 내용으로 채운다(플레이스홀더 금지). ' +
   'bg는 white/grey를 번갈아 리듬을 만들고 green은 전환점 1~3장에만. ' +

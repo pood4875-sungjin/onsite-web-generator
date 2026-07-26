@@ -44,7 +44,9 @@
       var pos = s.pos || 'bottom';   // bottom(표지) | center(미션·전환)
       // badge=아웃라인 필, bottomImage=하단 풀블리드 이미지 밴드 (EcoTransit 커버/클로징 39:53628/53510)
       var bimg = s.bottomImage ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
-      return '<section class="slide st ' + pos + (bimg ? ' has-bimg' : '') + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
+      // Q&A 장은 표지와 동일한 타이틀 크기(87px) — 사용자 규칙
+      var qna = /^\s*Q\s*&?\s*A\s*$/i.test(String(s.title || '').trim()) ? ' qna' : '';
+      return '<section class="slide st ' + pos + qna + (bimg ? ' has-bimg' : '') + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
         '<div class="st-in">' +
         (s.badge ? '<p class="st-badge"' + de(P + '.badge') + '>' + esc(s.badge) + '</p>' : '') +
         (s.eyebrow ? '<p class="p-eyebrow"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</p>' : '') +
@@ -307,6 +309,8 @@
       '.st.bottom .st-in{margin-top:238px}' +
       '.st.bottom .p-eyebrow{font-size:12px;font-weight:500;margin:0 0 17px}' +
       '.st.bottom .st-title{font-size:87px;line-height:1.16;letter-spacing:-.03em;font-weight:600}' +
+      /* Q&A·클로징 타이틀 = 표지와 동일 크기 — 사용자 규칙 */
+      '.st.qna .st-title,.cl .st-title{font-size:87px;line-height:1.16;letter-spacing:-.03em;font-weight:600}' +
       '.st-title{font-size:var(--fs-title);font-weight:600;line-height:1.2;letter-spacing:-.03em;margin:0}' +
       '.st-sub{font-size:var(--fs-lead);margin:24px 0 0;max-width:760px}' +
       '.st.center .st-sub{margin-left:auto;margin-right:auto}' +

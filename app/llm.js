@@ -101,6 +101,18 @@
     return out.length ? out : null;
   }
 
+  /* 덱 순서 규칙 강제 — Q&A(statement)와 closing은 무조건 마지막(Q&A → closing 순).
+     AI가 중간에 끼워도 여기서 결정론으로 재배치. 나머지 순서는 그대로 보존. */
+  function _endOrder(slides) {
+    var main = [], qna = [], close = [];
+    slides.forEach(function (sl) {
+      if (sl.type === 'closing') close.push(sl);
+      else if (sl.type === 'statement' && /^\s*Q\s*&?\s*A\s*$/i.test(String(sl.title || '').trim())) qna.push(sl);
+      else main.push(sl);
+    });
+    return main.concat(qna, close);
+  }
+
   // 응답 텍스트에서 JSON 덱 추출+검증. 실패 시 throw → 호출측 결정론 폴백.
   // pitch 팩 허용 타입 — packs.pitch.js CATALOG와 동일 목록
   var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, table: 1, pricing: 1, timeline: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
@@ -115,7 +127,7 @@
     var slides = obj.slides || obj.deck || [];
     if (!Array.isArray(slides) || !slides.length) throw new Error('NO_SLIDES');
     var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;
-    slides = slides.filter(function (sl) { return sl && ok[sl.type]; });
+    slides = _endOrder(slides.filter(function (sl) { return sl && ok[sl.type]; }));
     if (!slides.length) throw new Error('NO_VALID_SLIDES');
     return { slides: slides, style: obj.style, accent: obj.accent };
   }
@@ -308,7 +320,7 @@
     if (!obj) { var sv = _salvageSlides(s); if (sv) obj = { slides: sv, message: '' }; }
     if (!obj) throw new Error('BAD_JSON');
     var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
-    var slides = Array.isArray(obj.slides) ? obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24) : null;
+    var slides = Array.isArray(obj.slides) ? _endOrder(obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24)) : null;
     if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
     return { slides: slides, message: String(obj.message || '') };
   }

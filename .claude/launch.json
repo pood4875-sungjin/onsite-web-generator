@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "4610"],
       "port": 4610
+    },
+    {
+      "name": "static-verify",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["serve.py", "4611"],
+      "port": 4611
     }
   ]
 }
