@@ -143,7 +143,8 @@
       '.aglass p{margin:0}.aglass a{color:inherit;text-decoration:none}' +
       '.glass{background:' + T.glassBg + ';border:1px solid ' + T.glassBd + ';-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}' +
       '.ag-wrap{max-width:1120px;margin:0 auto;padding:0 24px}' +
-      '.ag-sec{padding:112px 0}.ag-sec:first-child{padding-top:0}' +
+      /* 조립기가 섹션마다 <div data-section> 래퍼를 씌움 → .ag-sec는 항상 first-child라 padding-top:0이 전 섹션에 걸렸었다(여백 실종 버그). 페이지 첫 래퍼일 때만 0 */
+      '.ag-sec{padding:112px 0}[data-section]:first-child > .ag-sec{padding-top:0}' +
       /* nav */
       '.ag-nav{position:fixed;top:16px;left:0;right:0;z-index:50;display:flex;justify-content:center;padding:0 16px}' +
       '.ag-nav-in{width:100%;max-width:880px;border-radius:999px;display:flex;align-items:center;gap:24px;padding:8px 8px 8px 20px}' +

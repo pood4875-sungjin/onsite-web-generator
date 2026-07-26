@@ -494,7 +494,7 @@
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}}' +
       'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
-      'addEventListener("message",function(e){if(e.data&&e.data.pptFsKey)toggleFs();});' +
+      'addEventListener("message",function(e){if(!e.data)return;if(e.data.pptFsKey)toggleFs();else if(e.data.pptFsUi!=null)setPseudo(!!e.data.pptFsUi);});' +
       'addEventListener("resize",fit);fit();show(0);' +
       'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
       'document.addEventListener("click",function(e){if(e.target.closest(".vbar"))return;show(n+1)});' +

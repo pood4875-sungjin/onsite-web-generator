@@ -109,7 +109,7 @@
         '<p class="s-hero-s up d1"' + de('subcopy') + '>' + esc(d.subcopy || '한 줄 설명이 들어갑니다.') + '</p>' +
         '<div class="s-hero-cta up d2">' +
         '<button class="btn btn--pri"' + de('primaryCta') + '>' + esc(d.primaryCta || '무료로 시작하기') + '</button>' +
-        '<button class="btn btn--out">더 알아보기</button></div>' +
+        '<button class="btn btn--out"' + de('secondaryCta') + '>' + esc(d.secondaryCta || '더 알아보기') + '</button></div>' +
         img + '</div></section>';
     },
     /* 기능 3열 — 킷 타입 램프(24/32 SB + 18/24 M)·아이콘 시트·Primary 20% 원형으로 구성. 카드 라운드 0 플랫 기조 */

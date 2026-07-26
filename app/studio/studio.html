@@ -560,14 +560,15 @@
     const r=elm.getBoundingClientRect(), W=doc.defaultView;
     chip.style.left=Math.max(4,(r.right+W.scrollX-8))+'px'; chip.style.top=Math.max(4,(r.top+W.scrollY-30))+'px'; chip.style.display='block';
     chip.onmousedown=(e)=>{ e.preventDefault(); e.stopPropagation(); };   // 버튼 blur(저장) 방해 금지
-    chip.onclick=(e)=>{ e.stopPropagation();
+    chip.onclick=async (e)=>{ e.stopPropagation(); chip.style.display='none';
       const cur=(data.links||{})[path]||'';
-      const url=window.prompt(tL('이 버튼이 이동할 링크 URL (비우면 제거)'), cur);
+      // 디자인된 모달(uiPrompt) — 네이티브 prompt 금지
+      const url=await uiPrompt(tL('비우고 저장하면 링크가 제거돼요.'),{title:tL('버튼 링크'),value:cur,placeholder:'https://example.com'});
       if(url===null) return;
       data.links=data.links||{};
       if(url.trim()) data.links[path]=/^https?:\/\//i.test(url.trim())?url.trim():'https://'+url.trim();
       else delete data.links[path];
-      persist(); chip.style.display='none';
+      persist();
     };
   }
   // 버튼 링크 런타임 — data.links={<data-edit 경로>:url}. 팩 수정 없이 렌더 결과에 주입(미리보기·HTML 내보내기 생존)
@@ -1639,9 +1640,20 @@
   window.addEventListener('keydown',(e)=>{
     if(pvFull.hidden) return;
     if(e.key==='Escape'){ if(pvFull.classList.contains('pfs')){ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} return; } closePreview(); }
-    // F 전체화면 — 뷰어에 위임(네이티브 시도 → 거부 시 유사 전체화면 폴백은 뷰어가 처리)
-    else if(e.key==='f'||e.key==='F'){ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} }
+    // F 전체화면 — 부모 keydown은 사용자 제스처가 유효하므로 여기서 직접 네이티브 요청(iframe 전체화면).
+    // postMessage로 넘기면 제스처 자격이 사라져 거부됨. 네이티브 거부 시에만 뷰어의 유사 전체화면 폴백.
+    else if(e.key==='f'||e.key==='F'){
+      if(document.fullscreenElement){ if(document.exitFullscreen) document.exitFullscreen(); }
+      else{
+        let pr=null; try{ pr=pvfFrame.requestFullscreen&&pvfFrame.requestFullscreen(); }catch(_){}
+        const fb=()=>{ try{ pvfFrame.contentWindow.postMessage({pptFsKey:1},'*'); }catch(_){} };
+        if(pr&&pr.then) pr.then(()=>{},fb); else fb();
+      }
+    }
   });
+  // 네이티브 전체화면 진입/이탈 시 뷰어에 UI 상태 전달(하단 바 숨김·스케일 재계산)
+  document.addEventListener('fullscreenchange',()=>{ if(pvFull.hidden) return;
+    try{ pvfFrame.contentWindow.postMessage({pptFsUi:document.fullscreenElement?1:0},'*'); }catch(_){} });
   // 유사 전체화면(pfs) — 뷰어가 네이티브 전체화면을 거부당했을 때: 상단바 숨겨 꽉 채움
   window.addEventListener('message',(e)=>{ if(e.data && 'pptViewerPseudoFs' in e.data) pvFull.classList.toggle('pfs', !!e.data.pptViewerPseudoFs); });
   window.addEventListener('message',(e)=>{ if(e.data && e.data.pptViewerClose) closePreview(); });
