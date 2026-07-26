@@ -8,7 +8,7 @@
    배포: proxy/README.md 참조. 시크릿: wrangler secret put ANTHROPIC_API_KEY */
 
 const MODEL = 'claude-sonnet-5';   // 서버 고정 — 클라이언트가 못 바꿈
-const MAX_TOKENS = 4000;
+const MAX_TOKENS = 8000;   // deep(20~24장) 덱 JSON이 4000에서 잘리던 문제 — 상한 확대
 const DAILY_LIMIT = 999;           // 임시 해제(혼자 사용 중). 팀 배포 시 9로 복원할 것
 
 const CORS = {

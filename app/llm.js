@@ -69,6 +69,38 @@
     'statement:{title,index?,text,cols?} | ' +
     'closing:{title,sub?,contacts?:[{k,v}]}';
 
+  /* LLM 출력 JSON 자가수리 — 모델이 가끔 따옴표 누락·끝 쉼표를 낸다(실측: "],side": ).
+     정상 파스 실패 시에만 적용하므로 본문 오탐 리스크는 실패 케이스로 한정. */
+  function _repairText(raw) {
+    return raw
+      .replace(/([{,\[]\s*)([A-Za-z_][A-Za-z0-9_]*)"\s*:/g, '$1"$2":')   // 여는 따옴표 누락: ,side":
+      .replace(/"([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '"$1":')                 // 닫는 따옴표 누락: "side:
+      .replace(/,\s*([}\]])/g, '$1');                                      // 끝 쉼표
+  }
+  function _repairParse(raw) {
+    try { return JSON.parse(raw); } catch (e0) {}
+    try { return JSON.parse(_repairText(raw)); } catch (e1) {}
+    return null;
+  }
+  /* 최후 샐비지 — slides 배열에서 완전한 슬라이드 객체만 문자열 스캔으로 건져냄.
+     한 장이 깨지거나 max_tokens로 뒤가 잘려도 나머지는 살린다.
+     따옴표 누락이 스캐너의 문자열 짝을 꼬이게 하므로 스캔 전에 텍스트 교정 먼저. */
+  function _salvageSlides(s) {
+    s = _repairText(s);
+    var m = s.indexOf('"slides"'); if (m < 0) return null;
+    var a = s.indexOf('[', m); if (a < 0) return null;
+    var out = [], depth = 0, inS = false, esc = false, start = -1;
+    for (var i = a + 1; i < s.length; i++) {
+      var c = s[i];
+      if (inS) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inS = false; continue; }
+      if (c === '"') { inS = true; continue; }
+      if (c === '{') { if (depth === 0) start = i; depth++; }
+      else if (c === '}') { depth--; if (depth === 0 && start >= 0) { var one = _repairParse(s.slice(start, i + 1)); if (one) out.push(one); start = -1; } }
+      else if (c === ']' && depth === 0) break;
+    }
+    return out.length ? out : null;
+  }
+
   // 응답 텍스트에서 JSON 덱 추출+검증. 실패 시 throw → 호출측 결정론 폴백.
   // pitch 팩 허용 타입 — packs.pitch.js CATALOG와 동일 목록
   var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, table: 1, pricing: 1, timeline: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
@@ -77,7 +109,9 @@
     s = s.replace(/^```(?:json)?/i, '').replace(/```$/,'').trim();  // 코드펜스 제거
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
     if (i < 0 || j < 0) throw new Error('BAD_JSON');
-    var obj = JSON.parse(s.slice(i, j + 1));
+    var obj = _repairParse(s.slice(i, j + 1));
+    if (!obj) { var sv = _salvageSlides(s); if (sv) obj = { slides: sv }; }
+    if (!obj) throw new Error('BAD_JSON');
     var slides = obj.slides || obj.deck || [];
     if (!Array.isArray(slides) || !slides.length) throw new Error('NO_SLIDES');
     var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;
@@ -194,7 +228,7 @@
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), k = s.lastIndexOf('}');
     if (i < 0 || k < 0) throw new Error('BAD_JSON');
-    var o = JSON.parse(s.slice(i, k + 1));
+    var o = _repairParse(s.slice(i, k + 1)) || {};
     var qs = (Array.isArray(o.questions) ? o.questions : []).map(function (x) { return x && { key: String(x.key || ''), q: String(x.q || '').trim() }; }).filter(function (x) { return x && x.q; }).slice(0, 2);
     return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
   }
@@ -233,7 +267,8 @@
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
     if (i < 0 || j < 0) throw new Error('BAD_JSON');
-    var o = JSON.parse(s.slice(i, j + 1));
+    var o = _repairParse(s.slice(i, j + 1));
+    if (!o) throw new Error('BAD_JSON');
     var str = function (v) { return (typeof v === 'string' && v.trim()) ? v.trim() : ''; };
     var out = {
       productName: str(o.productName), tagline: str(o.tagline), subcopy: str(o.subcopy), primaryCta: str(o.primaryCta),
@@ -269,7 +304,9 @@
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
     if (i < 0 || j < 0) throw new Error('BAD_JSON');
-    var obj = JSON.parse(s.slice(i, j + 1));
+    var obj = _repairParse(s.slice(i, j + 1));
+    if (!obj) { var sv = _salvageSlides(s); if (sv) obj = { slides: sv, message: '' }; }
+    if (!obj) throw new Error('BAD_JSON');
     var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
     var slides = Array.isArray(obj.slides) ? obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24) : null;
     if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
