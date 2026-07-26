@@ -44,13 +44,13 @@ const SYSTEM =
 /* Pitch(Creatable) 팩 — 레이아웃 카탈로그("언제 쓰나")를 기준으로 AI가 장표 타입을 고른다.
    app/packs.pitch.js의 PITCH_CATALOG·FIELD_DOC과 동일 계약. 팩이 늘면 여기도 팩별 스키마가 붙는다. */
 const PITCH_USE_DOC =
-  'statement(대형 문장): 표지·미션·섹션 전환·투자 요청. bg=green이 브랜드 강조면 | ' +
+  'statement(대형 문장): 표지·미션·섹션 전환·투자 요청. bg=green이 브랜드 강조면. badge(아웃라인 필)+bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 | ' +
   'quote(인용): 고객·전문가 발언으로 신뢰 | ' +
   'split(좌우 2분할): 설명+시각자료 나란히 — 문제 정의·제품 화면·경쟁 우위 | ' +
-  'grid(N열 반복): 동급 항목 3~4개 — 기능·강점·팀원·경쟁사 | ' +
+  'grid(N열 반복): 동급 항목 3~4개 — 기능·강점·팀원·경쟁사. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조), 항목 image=이미지 타일 셀 | ' +
   'stats(수치 그리드): 트랙션·성과 지표 2~6개 | ' +
   'bigstat(단일 대형 수치): 시장 규모·점유율 숫자 하나로 임팩트 | ' +
-  'list(행 리스트): 언론 보도·자료 링크 나열 | ' +
+  'list(넘버드 카드 리스트): 해결책·핵심 기능·문제점을 번호 카드 행으로(첫 행 강조). image 주면 좌측 이미지+우측 카드 | ' +
   'table(표): 거래처·계약 등 열이 정해진 데이터 | ' +
   'pricing(요금 티어): 플랜 2~3개 비교 | ' +
   'timeline(타임라인): 로드맵·절차·연혁 | ' +
@@ -59,13 +59,13 @@ const PITCH_USE_DOC =
   'gallery(목업): 제품 화면 2~3개 | ' +
   'closing(마무리): 인사+연락처';
 const PITCH_FIELD_DOC =
-  'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?} | ' +
+  'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?,title,sub?,bottomImage?:{label}} | ' +
   'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
   'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label:str},side:"left|right",bg?} | ' +
-  'grid:{eyebrow?,title,variant:"text|icon|card|person",cols:2~4,items:[{head,role?,text}],bg?} | ' +
+  'grid:{eyebrow?,title,variant:"text|icon|card|person|num",cols:2~4,items:[{head?,role?,text,image?:{label}}],accent?:정수,bg?} | ' +
   'stats:{eyebrow?,title,cols:2~3,items:[{value,label}],bg?} | ' +
   'bigstat:{eyebrow?,title,value,caption,bg?} | ' +
-  'list:{title,rows:[{label,sub}],bg?} | ' +
+  'list:{title,rows:[{label,sub}],image?:{label},accent?:정수,bg?} | ' +
   'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
   'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
   'timeline:{title,items:[{when,head,text}],bg?} | ' +

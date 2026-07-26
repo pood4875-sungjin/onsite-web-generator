@@ -42,12 +42,15 @@
     /* 표지·미션·전환·섹션 구분 — 큰 문장 하나. 원본 01/02/06/26/28 */
     statement: function (s, P) {
       var pos = s.pos || 'bottom';   // bottom(표지) | center(미션·전환)
-      return '<section class="slide st ' + pos + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
+      // badge=아웃라인 필, bottomImage=하단 풀블리드 이미지 밴드 (EcoTransit 커버/클로징 39:53628/53510)
+      var bimg = s.bottomImage ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
+      return '<section class="slide st ' + pos + (bimg ? ' has-bimg' : '') + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
         '<div class="st-in">' +
+        (s.badge ? '<p class="st-badge"' + de(P + '.badge') + '>' + esc(s.badge) + '</p>' : '') +
         (s.eyebrow ? '<p class="p-eyebrow"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</p>' : '') +
         '<h1 class="st-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
         (s.sub ? '<p class="st-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') +
-        '</div></section>';
+        '</div>' + bimg + '</section>';
     },
     /* 인용 — 고객·전문가 발언. 옵션으로 우하단 수치(리뷰 수 등). 원본 35/37 */
     quote: function (s, P) {
@@ -86,9 +89,18 @@
        원본 04/08/13/15/18/23/24/29/34 */
     grid: function (s, P) {
       var items = s.items || [], cols = s.cols || Math.min(items.length || 3, 4);
-      var variant = s.variant || 'text';   // text | icon | card | person
+      var variant = s.variant || 'text';   // text | icon | card | person | num(번호 카드 — EcoTransit 39:53589/53573/53517)
+      var accIdx = s.accent == null ? 0 : +s.accent;   // num 변형: 강조 카드 인덱스
       var cells = items.map(function (it, i) {
         var IP = P + '.items.' + i, inner = '';
+        if (variant === 'num') {
+          if (it.image) return '<div class="g-cell num img">' + media(it.image, IP + '.image', 'full') + '</div>';   // 셀 하나를 이미지 타일로
+          var on = i === accIdx;
+          return '<div class="g-cell num' + (on ? ' on' : '') + '">' + (on ? '<span class="g-arrow">↗</span>' : '') +
+            '<span class="l-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+            (it.head ? '<p class="g-head"' + de(IP + '.head') + '>' + esc(it.head) + '</p>' : '') +
+            '<p class="g-text"' + de(IP + '.text') + '>' + ml(it.text || '') + '</p></div>';
+        }
         if (variant === 'card' || variant === 'person') inner += media(it.image || {}, IP + '.image', variant === 'person' ? 'sq' : 'card');
         if (variant === 'icon') inner += '<span class="p-tick lg"></span>';
         inner += '<p class="g-head"' + de(IP + '.head') + '>' + esc(it.head || '') + '</p>';
@@ -116,17 +128,22 @@
         '<div class="bs-in"><p class="bs-num"' + de(P + '.value') + '>' + esc(s.value || '') + '</p>' +
         '<p class="bs-cap"' + de(P + '.caption') + '>' + ml(s.caption || '') + '</p></div></section>';
     },
-    /* 행 리스트 — 언론 보도·자료 링크처럼 제목+보조가 반복되는 줄. 원본 32 */
+    /* 넘버드 카드 리스트 — 항목을 라운드 카드 행으로(큰 번호 + 라벨/굵은 설명), 첫 행 액센트.
+       image 주면 좌측 이미지 슬롯. 원본 EcoTransit 39:53607(2×2)/53556(4행)/53536(5행 슬림) — 색은 pitch 토큰 */
     list: function (s, P) {
-      var rows = (s.rows || []).map(function (r, i) {
+      var rowsArr = s.rows || [];
+      var acc = s.accent == null ? 0 : +s.accent;   // 강조 행 인덱스(기본 첫 행)
+      var rows = rowsArr.map(function (r, i) {
         var RP = P + '.rows.' + i;
-        return '<div class="l-row"><span class="l-div"></span>' +
-          '<p class="l-label"' + de(RP + '.label') + '>' + esc(r.label || '') + '</p>' +
-          '<p class="l-sub"' + de(RP + '.sub') + '>' + esc(r.sub || '') + '</p>' +
-          '<span class="l-arrow">↗</span></div>';
+        return '<div class="l-cardrow' + (i === acc ? ' on' : '') + '">' +
+          '<span class="l-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+          '<p class="l-body"><span' + de(RP + '.label') + '>' + esc(r.label || '') + '</span>' +
+          (r.sub ? ' <b' + de(RP + '.sub') + '>' + esc(r.sub) + '</b>' : '') + '</p></div>';
       }).join('');
-      return '<section class="slide ls' + bgClass(s) + '" data-kind="' + kind(s, 'List') + '">' +
-        headBlock(s, P) + '<div class="l-list">' + rows + '<span class="l-div l-last"></span></div></section>';
+      var img = s.image ? '<div class="l-media">' + media(s.image, P + '.image', 'full') + '</div>' : '';
+      return '<section class="slide ls' + (img ? ' with-img' : '') + bgClass(s) + '" data-kind="' + kind(s, 'List') + '">' +
+        headBlock(s, P) + '<div class="l-wrap">' + img +
+        '<div class="l-cards' + (rowsArr.length >= 5 ? ' n5' : '') + '">' + rows + '</div></div></section>';
     },
     /* 표 — 파이프라인·비교표처럼 열/행이 있는 데이터. 원본 21 */
     table: function (s, P) {
@@ -225,7 +242,7 @@
      주의: 셀렉터 추가/순서 변경은 기존 덱의 _pos 키(m0…)를 밀 수 있다. */
   var MV_SEL = '[data-edit], .s-imgwrap, .p-media, ' +
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
-    '.qt-stars, .l-div, .l-arrow, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick';
+    '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -331,11 +348,29 @@
       '.bs-num{font-size:var(--fs-huge);font-weight:600;line-height:1;letter-spacing:-.03em;margin:0;color:var(--pg)}' +
       '.bg-green .bs-num{color:#fff}.bs-cap{font-size:var(--fs-body);line-height:1.5;margin:0;max-width:420px}' +
       /* list */
-      '.l-list{margin-top:44px;position:relative}' +
-      '.l-row{position:relative;display:grid;grid-template-columns:1fr auto 30px;align-items:center;gap:20px;padding:20px 4px}' +
-      '.l-div{position:absolute;left:0;right:0;top:0;height:1px;background:var(--line)}.l-div.l-last{position:relative;display:block}' +
-      '.l-label{font-size:var(--fs-head);font-weight:600;margin:0}.l-sub{font-size:var(--fs-body);opacity:.7;margin:0}' +
-      '.l-arrow{font-size:18px;opacity:.6}' +
+      /* 넘버드 카드 리스트 — 라운드 20 카드 행, 큰 번호 43px(Regular), 첫 행 그린 액센트. 1920→1280 환산 */
+      '.l-wrap{margin-top:40px;display:grid;gap:30px;align-items:stretch}' +
+      '.ls.with-img .l-wrap{grid-template-columns:450px 1fr}' +
+      '.l-media .p-media{height:100%;min-height:320px}' +
+      '.l-cards{display:flex;flex-direction:column;gap:20px;justify-content:center}' +
+      '.l-cardrow{display:flex;align-items:center;gap:36px;background:var(--grey);border-radius:20px;padding:24px 34px}' +
+      '.l-cardrow.on{background:var(--pg);color:#fff}' +
+      '.bg-grey .l-cardrow{background:var(--paper)}.bg-grey .l-cardrow.on{background:var(--pg)}' +
+      '.l-num{font-size:43px;font-weight:400;line-height:1;flex:none;letter-spacing:-.02em;min-width:64px}' +
+      '.l-body{margin:0;font-size:var(--fs-body);line-height:1.5}.l-body b{font-weight:700}' +
+      '.l-cards.n5{gap:14px}.l-cards.n5 .l-cardrow{padding:14px 28px}' +
+      /* grid num 변형 — 세로 번호 카드(라운드 20), 강조 카드 우상단 화살표, 이미지 타일 셀 */
+      '.g-cell.num{position:relative;background:var(--grey);border-radius:20px;padding:32px 33px;min-height:300px;display:flex;flex-direction:column}' +
+      '.g-cell.num.on{background:var(--pg);color:#fff}' +
+      '.bg-grey .g-cell.num{background:var(--paper)}.bg-grey .g-cell.num.on{background:var(--pg)}' +
+      '.g-cell.num .l-num{margin-bottom:36px}' +
+      '.g-cell.num .g-text{margin-top:0;max-width:220px}' +
+      '.g-cell.num.img{padding:0;overflow:hidden}.g-cell.num.img .p-media{width:100%;height:100%;border-radius:0}' +
+      '.g-arrow{position:absolute;right:25px;top:28px;font-size:28px;line-height:1}' +
+      /* statement 확장 — 아웃라인 배지 필 + 하단 풀블리드 이미지 밴드 */
+      '.st-badge{display:inline-block;border:1px solid currentColor;border-radius:33px;padding:10px 33px;font-size:20px;margin:0 0 27px;width:fit-content}' +
+      '.st-bimg{position:absolute;left:0;right:0;bottom:0;height:360px}.st-bimg .p-media{width:100%;height:100%;border-radius:0}' +
+      '.st.has-bimg .st-in{margin-top:64px}.st.bottom.has-bimg .st-in{margin-top:64px}' +
       /* table */
       '.tb{display:grid;grid-template-columns:1fr 1.6fr;gap:var(--gut)}' +
       '.tb .tb-txt{display:flex;flex-direction:column;justify-content:center}' +
@@ -479,13 +514,13 @@
   /* ---- 레이아웃 카탈로그 — "언제 쓰나"가 계약의 일부.
      AI가 브리프를 읽고 섹션마다 타입을 고를 때 이 설명을 그대로 프롬프트에 넣는다. ---- */
   var CATALOG = [
-    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때', needs: ['title'], opt: ['eyebrow', 'sub', 'bg', 'pos'], cap: { title: '~40자' } },
+    { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. badge(아웃라인 필)와 bottomImage(하단 풀블리드 이미지)로 커버·클로징 연출 가능', needs: ['title'], opt: ['eyebrow', 'badge', 'sub', 'bg', 'pos', 'bottomImage'], cap: { title: '~40자' } },
     { type: 'quote', label: '인용', use: '고객·전문가 발언, 후기처럼 남의 말로 신뢰를 줄 때', needs: ['text', 'by'], opt: ['stat', 'image', 'bg'], cap: { text: '~90자' } },
     { type: 'split', label: '좌우 2분할', use: '설명과 시각자료를 나란히 — 문제 정의, 제품 화면, 경쟁 우위처럼 보여주며 설명할 때', needs: ['title'], opt: ['bullets', 'text', 'stat', 'visual', 'side'], cap: { bullets: '4개 · 각 ~50자' } },
-    { type: 'grid', label: 'N열 반복', use: '동급 항목 3~4개를 나열 — 기능, 강점, 팀원, 경쟁사 카드', needs: ['title', 'items'], opt: ['variant(text|icon|card|person)', 'cols'], cap: { items: '2~4개', text: '~170자' } },
+    { type: 'grid', label: 'N열 반복', use: '동급 항목 3~4개를 나열 — 기능, 강점, 팀원, 경쟁사 카드. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조+화살표), 항목에 image를 주면 그 셀은 이미지 타일', needs: ['title', 'items'], opt: ['variant(text|icon|card|person|num)', 'cols', 'accent'], cap: { items: '2~4개', text: '~170자' } },
     { type: 'stats', label: '수치 그리드', use: '트랙션·성과 지표를 2~6개 한 화면에 모아 보여줄 때', needs: ['items'], opt: ['title', 'cols'], cap: { items: '2~6개' } },
     { type: 'bigstat', label: '단일 대형 수치', use: '숫자 하나로 임팩트를 줄 때 — 시장 규모, 점유율, 성장률', needs: ['value'], opt: ['title', 'caption'], cap: { value: '~6자' } },
-    { type: 'list', label: '행 리스트', use: '언론 보도, 자료 링크, 항목+보조설명이 줄줄이 이어질 때', needs: ['rows'], opt: ['title'], cap: { rows: '3~6줄' } },
+    { type: 'list', label: '넘버드 카드 리스트', use: '해결책·핵심 기능·문제점을 번호 카드 행으로 나열(첫 행 강조). image를 주면 좌측 이미지+우측 카드 리스트', needs: ['rows'], opt: ['title', 'image', 'accent'], cap: { rows: '2~5줄, 각 label ~20자 + sub ~60자' } },
     { type: 'table', label: '표', use: '거래처·계약처럼 열이 정해진 데이터를 나열할 때', needs: ['columns', 'rows'], opt: ['title', 'text'], cap: { rows: '~5행', columns: '3열' } },
     { type: 'pricing', label: '요금 티어', use: '플랜·가격을 2~3개 비교할 때', needs: ['tiers'], opt: ['title'], cap: { tiers: '2~3개', features: '4개' } },
     { type: 'timeline', label: '타임라인', use: '로드맵, 도입 절차, 연혁처럼 시간 순서가 핵심일 때', needs: ['items'], opt: ['title'], cap: { items: '3~6개' } },
@@ -542,13 +577,13 @@
     return c.type + '(' + c.label + '): ' + c.use + ' | 필수 ' + c.needs.join(',') + (c.opt ? ' | 선택 ' + c.opt.join(',') : '');
   }).join('\n');
   var FIELD_DOC =
-    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?} | ' +
+    'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,badge?(아웃라인 필 텍스트),title,sub?,bottomImage?:{label}} | ' +
     'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
     'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label}|{kind:"panel"},side:"left|right",bg?} | ' +
-    'grid:{eyebrow?,title,variant:"text|icon|card|person",cols:2~4,items:[{head,role?,text}],bg?} | ' +
+    'grid:{eyebrow?,title,variant:"text|icon|card|person|num",cols:2~4,items:[{head?,role?,text,image?:{label}}],accent?:강조인덱스,bg?} | ' +
     'stats:{eyebrow?,title,cols:2~3,items:[{value,label}],bg?} | ' +
     'bigstat:{eyebrow?,title,value,caption,bg?} | ' +
-    'list:{title,rows:[{label,sub}],bg?} | ' +
+    'list:{title,rows:[{label,sub}],image?:{label},accent?:강조행인덱스,bg?} | ' +
     'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
     'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
     'timeline:{title,items:[{when,head,text}],bg?} | ' +
