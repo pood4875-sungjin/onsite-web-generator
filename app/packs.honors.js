@@ -46,7 +46,8 @@
     /* 표지·미션·전환·섹션 구분 — 큰 문장 하나. 원본 01/02/06/26/28 */
     statement: function (s, P) {
       var pos = s.pos || 'bottom';   // bottom(표지) | center(미션·전환)
-      var bimg = s.bottomImage ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
+      // honors는 전면이 이미 이미지 배경 — 하단 밴드는 실제 이미지가 있을 때만(회색 자리 표시자 금지, 사용자 지시)
+      var bimg = (s.bottomImage && s.bottomImage.src) ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
       // Q&A 장은 표지와 동일한 타이틀 크기(87px) — 사용자 규칙
       var qna = /^\s*Q\s*&?\s*A\s*$/i.test(String(s.title || '').trim()) ? ' qna' : '';
       /* 전면 배경(hbg 1~5) — 표지=1(라이트 오로라), Q&A=5(radial), 전환(bg green/blue)=3. v로 직접 지정 가능 */

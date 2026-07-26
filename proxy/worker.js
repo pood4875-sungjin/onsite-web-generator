@@ -99,7 +99,7 @@ const HONORS_SYSTEM =
   '형식: {"slides":[ ... ]}\n' +
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + HONORS_USE_DOC + '\n' +
   '각 타입의 필드: ' + HONORS_FIELD_DOC + '\n' +
-  '규칙: 1장은 statement(pos bottom, v는 3~5 중 하나·기본 3). ' +
+  '규칙: 1장은 statement(pos bottom, v는 3~5 중 하나·기본 3). 전면 배경이 이미 이미지이므로 statement에 bottomImage는 쓰지 않는다. ' +
   '2장은 toc(items=섹션 제목들). 각 섹션이 시작될 때마다 divider(no "01"…, title은 toc 항목과 동일, v는 1→2→3 순환). ' +
   'Q&A 장(statement, title "Q&A")을 넣는다면 반드시 덱 맨 끝(closing 바로 앞)에만 둔다. ' +
   '수치가 있으면 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). ' +

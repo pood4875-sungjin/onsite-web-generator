@@ -43,7 +43,8 @@
     statement: function (s, P) {
       var pos = s.pos || 'bottom';   // bottom(표지) | center(미션·전환)
       // badge=아웃라인 필, bottomImage=하단 풀블리드 이미지 밴드 (EcoTransit 커버/클로징 39:53628/53510)
-      var bimg = s.bottomImage ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
+      // 하단 이미지 밴드는 실제 이미지가 있을 때만 — 자리 표시자(회색 네모)는 표지에 안 그린다(사용자 지시)
+      var bimg = (s.bottomImage && s.bottomImage.src) ? '<div class="st-bimg">' + media(s.bottomImage, P + '.bottomImage', 'full') + '</div>' : '';
       // Q&A 장은 표지와 동일한 타이틀 크기(87px) — 사용자 규칙
       var qna = /^\s*Q\s*&?\s*A\s*$/i.test(String(s.title || '').trim()) ? ' qna' : '';
       return '<section class="slide st ' + pos + qna + (bimg ? ' has-bimg' : '') + bgClass(s) + '" data-kind="' + kind(s, 'Statement') + '">' +
