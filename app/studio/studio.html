@@ -580,7 +580,8 @@
       +'else{el.style.cursor="pointer";el.addEventListener("click",function(){window.open(L[k],"_blank")});}});});})();</scr'+'ipt>'; }
   function pageHtml(){ const h=renderWith(data, pageType, volume, buildNav(), motion); const lr=linkRuntime(data); return lr?h.replace('</body>', lr+'</body>'):h; }
   // 프로젝트 내 임의 페이지 렌더(미리보기용) — 해당 페이지 기준 nav 활성/데이터 사용, 모션 정적
-  function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), 'static'); }
+  // 미리보기는 실제 화면 그대로 — 모션 포함(과거 'static' 강제였음, 사용자 요청으로 해제)
+  function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), motion); }
   let _keepScrollY=null;
   function render(){
     // PPT 편집 중 리렌더(이미지 삽입 등) 시 현재 스크롤 위치 유지(1페이지로 안 튐)
@@ -679,6 +680,8 @@
     const doc=frame.contentDocument; if(!doc||!doc.body) return;
     if(!doc.getElementById('editcss')){ const st=doc.createElement('style'); st.id='editcss';
       st.textContent='[data-editing] [data-edit]{cursor:text} [data-editing] [data-edit]:hover{outline:1px dashed rgba(108,43,255,.65);outline-offset:3px;border-radius:3px} [data-editing] [data-edit]:focus{outline:2px solid #6c2bff;outline-offset:3px;border-radius:3px} [data-editing] [data-img]{cursor:pointer} [data-editing] [data-img]:hover{outline:2px dashed #6c2bff;outline-offset:3px}'
+        /* 편집 중 공백 보존 — 안 하면 HTML 공백 접기 때문에 띄어쓰기가 씹히는 것처럼 보임 */
+        +'[data-edit][contenteditable="true"]{white-space:pre-wrap}'
         +'[data-editing] [data-section]{position:relative} [data-editing] [data-section]:hover{outline:1px dashed rgba(108,43,255,.4);outline-offset:-1px}'
         +'.secctl{position:absolute;top:10px;right:10px;z-index:50;display:flex;align-items:center;gap:4px;padding:3px 5px;border-radius:999px;background:rgba(108,43,255,.94);box-shadow:0 4px 16px rgba(0,0,0,.35)}'
         +'.secctl button{border:none;background:rgba(255,255,255,.22);color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;display:grid;place-items:center}'

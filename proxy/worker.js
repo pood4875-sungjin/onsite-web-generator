@@ -253,7 +253,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 3000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
+        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 5000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
         system: system,
         messages: [{ role: 'user', content: userMsg }],
       }),

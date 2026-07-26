@@ -77,9 +77,29 @@
       .replace(/"([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '"$1":')                 // 닫는 따옴표 누락: "side:
       .replace(/,\s*([}\]])/g, '$1');                                      // 끝 쉼표
   }
+  /* 잘린 JSON 마저 닫기 — max_tokens로 뒤가 끊긴 응답을 마지막 온전한 값까지 잘라내고 괄호를 닫는다 */
+  function _closeTruncated(raw) {
+    var st = [], inS = false, esc = false, cut = -1, cutSt = [];
+    for (var i = 0; i < raw.length; i++) {
+      var c = raw[i];
+      if (inS) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') { inS = false; cut = i + 1; cutSt = st.slice(); } continue; }
+      if (c === '"') inS = true;
+      else if (c === '{' || c === '[') st.push(c === '{' ? '}' : ']');
+      else if (c === '}' || c === ']') { st.pop(); cut = i + 1; cutSt = st.slice(); }
+      else if (/[0-9el]/.test(c)) { cut = i + 1; cutSt = st.slice(); }   // 숫자·true/false/null 끝
+    }
+    if (cut < 0 || !cutSt.length) return null;
+    var t = raw.slice(0, cut).replace(/,\s*$/, '');
+    // 값 없이 키만 남고 끊긴 꼬리 제거: {"a":"b","tagline" ← 이런 끝
+    t = t.replace(/([{,]\s*)"(?:[^"\\]|\\.)*"\s*:?\s*$/, '$1').replace(/,\s*$/, '');
+    return t + cutSt.reverse().join('');
+  }
   function _repairParse(raw) {
     try { return JSON.parse(raw); } catch (e0) {}
-    try { return JSON.parse(_repairText(raw)); } catch (e1) {}
+    var t = _repairText(raw);
+    try { return JSON.parse(t); } catch (e1) {}
+    var closed = _closeTruncated(t);
+    if (closed) { try { return JSON.parse(closed); } catch (e2) {} }
     return null;
   }
   /* 최후 샐비지 — slides 배열에서 완전한 슬라이드 객체만 문자열 스캔으로 건져냄.
