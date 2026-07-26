@@ -703,7 +703,8 @@
           else {
             const before=curMode().slides?JSON.stringify(data.slides||[]):null;   // PPT: 텍스트 수정도 되돌리기 스택에
             // PPT는 줄바꿈(Enter) 보존 — innerText로 \n 유지(렌더러 ml()이 \n→<br>). 그 외는 공백 정규화.
-            const val=curMode().slides ? elm.innerText.replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').trim()
+            // PPT는 띄어쓰기도 입력 그대로 보존(연속 공백 압축 금지 — 사용자 지시). 줄 정리만.
+            const val=curMode().slides ? elm.innerText.replace(/\r/g,'').replace(/\n{3,}/g,'\n\n').replace(/[ \t]+\n/g,'\n').replace(/\s+$/,'')
                                        : elm.textContent.replace(/\s+/g,' ').trim();
             setField(elm.getAttribute('data-edit'), val);
             if(before!==null && before!==JSON.stringify(data.slides||[])) pushUndo(before);

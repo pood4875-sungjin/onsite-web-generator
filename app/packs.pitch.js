@@ -278,6 +278,8 @@
       '.ppt-stack{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 0}' +
       '.slide{position:relative;width:var(--slide-w);height:var(--slide-h);flex:none;background:var(--paper);color:var(--ink);' +
       'padding:var(--mg);word-break:keep-all;overflow-wrap:break-word;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.4)}' +
+      /* 편집에서 친 연속 공백·줄바꿈 보존 — HTML 공백 접기 방지(사용자: 띄어쓰기 반영) */
+      '.slide [data-edit]{white-space:pre-wrap}' +
       /* 첨부 이미지 블록 — ppt 팩과 동일 계약(이동/숨김/리사이즈 대상) */
       '.s-imgwrap{position:absolute;right:60px;top:150px;z-index:5}' +
       '.s-imgwrap img{display:block;max-width:420px;max-height:440px;border-radius:var(--rad);object-fit:cover;-webkit-user-drag:none;user-select:none;pointer-events:none}' +
@@ -497,8 +499,8 @@
       's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
       'var cur=s[n];if(cur){' +
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
-      'var us=cur.querySelectorAll("[data-mvkey]");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
-      'var de=u.getAttribute("data-edit")||"";if(/^slides\\.\\d+\\.(title|eyebrow|sub|subtitle|lead|note|text)$/.test(de)){u.style.animation="";continue;}' +
+      // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
+      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}}' +
       'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
