@@ -248,7 +248,7 @@
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
     '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick';
   function stateScript(slides) {
-    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {} }; });
+    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
       'var sl=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");' +
       'for(var i=0;i<sl.length;i++){var c=ST[i];if(!c)continue;var s=sl[i];var mv=s.querySelectorAll(SEL);' +
@@ -258,7 +258,8 @@
       'if(c.h[key])mv[k].style.display="none";}' +
       'var ed=s.querySelectorAll("[data-edit]");' +
       'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
-      'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;}' +
+      'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;' +
+      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";}' +   // 텍스트 정렬(_ta) 적용
       '}' +
       // 저장된 이동값(_pos)이 텍스트를 슬라이드 위/왼쪽 밖으로 밀면 안쪽으로 클램프 — "타이틀 잘림" 방지.
       // 숨겨진 장은 rect가 0이라 측정 불가 → 보이는 장만, 뷰어는 show() 시점에 __clampSlide 호출.
@@ -307,8 +308,8 @@
       '.p-bullets{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:20px 27px}' +
       '.p-bullets li{display:flex;align-items:center;gap:13px;font-size:var(--fs-body);line-height:1.5}' +   /* 체크 아이콘 세로 중앙(사용자 지시) */
       '.p-tick{flex:none;width:22px;height:22px;border-radius:50%;background:var(--pg);position:relative}' +
-      '.p-tick::after{content:"";position:absolute;left:7px;top:6px;width:6px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(45deg)}' +
-      '.p-tick.lg{width:30px;height:30px;margin-bottom:16px}.p-tick.lg::after{left:10px;top:8px;width:8px;height:13px}' +
+      '.p-tick::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:translate(-50%,-60%) rotate(45deg)}' +   /* 체크 시각 중앙 보정(사용자 지시) */
+      '.p-tick.lg{width:30px;height:30px;margin-bottom:16px}.p-tick.lg::after{width:8px;height:13px}' +
       /* 미디어 자리 */
       '.p-media{border-radius:var(--rad);overflow:hidden;background:var(--ph);display:grid;place-items:center}' +
       '.p-media img{width:100%;height:100%;object-fit:cover;display:block}' +
@@ -514,7 +515,7 @@
       'var cur=s[n];if(cur){' +
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
       // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
-      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat,.tl-axis,.tl-node");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       // 숫자 카운트업 — 대형 수치(.bs-num/.bignum)와 수치 그리드(.s-num)가 0→값으로 빠르게 상승(사용자 지시)

@@ -258,7 +258,6 @@
       var v = +s.v ? 3 + ((+s.v - 1) % 3) : 3 + (idx % 3);
       return '<section class="slide st center dv hbg' + v + '" data-kind="Divider">' +
         '<div class="st-in">' +
-        (s.no ? '<p class="dv-no"' + de(P + '.no') + '>' + esc(s.no) + '</p>' : '') +
         '<h1 class="st-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</h1>' +
         (s.sub ? '<p class="st-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') +
         '</div></section>';
@@ -279,7 +278,7 @@
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
     '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num';
   function stateScript(slides) {
-    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {} }; });
+    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
       'var sl=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");' +
       'for(var i=0;i<sl.length;i++){var c=ST[i];if(!c)continue;var s=sl[i];var mv=s.querySelectorAll(SEL);' +
@@ -289,7 +288,8 @@
       'if(c.h[key])mv[k].style.display="none";}' +
       'var ed=s.querySelectorAll("[data-edit]");' +
       'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
-      'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;}' +
+      'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;' +
+      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";}' +   // 텍스트 정렬(_ta) 적용
       '}' +
       // 저장된 이동값(_pos)이 텍스트를 슬라이드 위/왼쪽 밖으로 밀면 안쪽으로 클램프 — "타이틀 잘림" 방지.
       // 숨겨진 장은 rect가 0이라 측정 불가 → 보이는 장만, 뷰어는 show() 시점에 __clampSlide 호출.
@@ -350,8 +350,8 @@
       '.p-bullets{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:20px 27px}' +
       '.p-bullets li{display:flex;align-items:center;gap:13px;font-size:var(--fs-body);line-height:1.5}' +   /* 체크 아이콘 세로 중앙(사용자 지시) */
       '.p-tick{flex:none;width:22px;height:22px;border-radius:50%;background:var(--pg);position:relative}' +
-      '.p-tick::after{content:"";position:absolute;left:7px;top:6px;width:6px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(45deg)}' +
-      '.p-tick.lg{width:30px;height:30px;margin-bottom:16px}.p-tick.lg::after{left:10px;top:8px;width:8px;height:13px}' +
+      '.p-tick::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:translate(-50%,-60%) rotate(45deg)}' +   /* 체크 시각 중앙 보정(사용자 지시) */
+      '.p-tick.lg{width:30px;height:30px;margin-bottom:16px}.p-tick.lg::after{width:8px;height:13px}' +
       /* 미디어 자리 */
       '.p-media{border-radius:var(--rad);overflow:hidden;background:var(--ph);display:grid;place-items:center}' +
       '.p-media img{width:100%;height:100%;object-fit:cover;display:block}' +
@@ -567,7 +567,7 @@
       'var cur=s[n];if(cur){' +
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
       // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
-      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat,.tl-axis,.tl-node");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       // 숫자 카운트업 — 대형 수치(.bs-num/.bignum)와 수치 그리드(.s-num)가 0→값으로 빠르게 상승(사용자 지시)
@@ -604,7 +604,7 @@
      AI가 브리프를 읽고 섹션마다 타입을 고를 때 이 설명을 그대로 프롬프트에 넣는다. ---- */
   var CATALOG = [
     { type: 'toc', label: '목차', use: '표지 바로 다음 장. 발표 전체 목차를 번호 리스트로 (간지 divider의 title들과 1:1 일치)', needs: ['items'], opt: ['title', 'eyebrow'], cap: { items: '3~8개 · 각 ~20자' } },
-    { type: 'divider', label: '간지', use: '각 섹션이 시작될 때 넣는 전환 장 — no(01…)+섹션명. 목차 항목과 1:1, 배경은 v(1~3)로 변형', needs: ['title'], opt: ['no', 'sub', 'v'], cap: { title: '~20자' } },
+    { type: 'divider', label: '간지', use: '각 섹션이 시작될 때 넣는 전환 장 — no(01…)+섹션명. 목차 항목과 1:1, 배경은 v(1~3)로 변형', needs: ['title'], opt: ['sub', 'v'], cap: { title: '~20자' } },
     { type: 'statement', label: '대형 문장', use: '표지, 미션, 섹션 전환, 투자 요청처럼 문장 하나로 전환점을 만들 때. bottomImage는 실제 이미지 첨부 시에만', needs: ['title'], opt: ['eyebrow', 'sub', 'bg', 'pos', 'bottomImage', 'v'], cap: { title: '~40자' } },
     { type: 'quote', label: '인용', use: '고객·전문가 발언, 후기처럼 남의 말로 신뢰를 줄 때', needs: ['text', 'by'], opt: ['stat', 'image', 'bg'], cap: { text: '~90자' } },
     { type: 'split', label: '좌우 2분할', use: '설명과 시각자료를 나란히 — 문제 정의, 제품 화면, 경쟁 우위처럼 보여주며 설명할 때', needs: ['title'], opt: ['bullets', 'text', 'stat', 'visual', 'side'], cap: { bullets: '4개 · 각 ~50자' } },
@@ -626,7 +626,7 @@
     slides: [
       { type: 'statement', pos: 'bottom', title: '아너스데이\n발표제목을 입력하세요', sub: '서브텍스트를 입력하세요' },
       { type: 'toc', eyebrow: 'CONTENTS', title: '목차', items: ['첫 번째 주제', '두 번째 주제', '세 번째 주제'] },
-      { type: 'divider', no: '01', title: '첫 번째 주제' },
+      { type: 'divider', title: '첫 번째 주제' },
       { type: 'grid', bg: 'white', variant: 'icon', eyebrow: 'SOLUTION', title: '무엇을 해결하나요', cols: 3,
         items: [{ head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] },
       { type: 'stats', bg: 'grey', eyebrow: 'TRACTION', title: '성과', cols: 3,
@@ -637,7 +637,7 @@
 
   var STARTERS = {
     toc: { type: 'toc', bg: 'white', eyebrow: 'CONTENTS', title: '목차', items: ['첫 번째 주제', '두 번째 주제', '세 번째 주제', '네 번째 주제'] },
-    divider: { type: 'divider', no: '01', title: '섹션 제목', sub: '섹션 설명을 입력하세요' },
+    divider: { type: 'divider', title: '섹션 제목', sub: '섹션 설명을 입력하세요' },
     statement: { type: 'statement', bg: 'green', pos: 'bottom', eyebrow: 'SECTION', title: '문장을 입력' },
     quote: { type: 'quote', bg: 'grey', text: '인용문을 입력하세요.', by: '— 이름' },
     split: { type: 'split', bg: 'white', side: 'right', eyebrow: 'SUBHEADING', title: '제목', bullets: ['내용', '내용'], visual: { label: 'ADD IMAGE' } },
@@ -675,7 +675,7 @@
   }).join('\n');
   var FIELD_DOC =
     'toc:{eyebrow?,title?,items:[문자열]} | ' +
-    'divider:{no:"01",title,sub?,v?:1~3(배경 변형)} | ' +
+    'divider:{title,sub?,v?:1~3(배경 변형)} | ' +
     'statement:{bg:"green|grey|white",pos:"bottom|center",eyebrow?,title,sub?,bottomImage?:{label},v?:3~5(전면 블루 배경 — 표지·전환·Q&A는 이 중에서)} | ' +
     'quote:{text,by,stat?:{value,label,stars?:true},bg?} | ' +
     'split:{eyebrow?,title,bullets?:[str],text?,stat?:{value,label},visual?:{label}|{kind:"panel"},side:"left|right",bg?} | ' +
@@ -710,7 +710,7 @@
       if (/(고객|후기|사례|보이스)/.test(sec)) return { type: 'quote', bg: 'green', text: '인용문을 입력하세요.', by: '— 이름' };
       return { type: 'grid', bg: 'white', variant: 'text', title: sec, cols: 3, items: [{ head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] };
     };
-    (outline.length ? outline : ['핵심 내용']).forEach(function (sec, si) { slides.push({ type: 'divider', no: ('0' + (si + 1)).slice(-2), title: sec }); slides.push(pick(sec)); });
+    (outline.length ? outline : ['핵심 내용']).forEach(function (sec, si) { slides.push({ type: 'divider', title: sec }); slides.push(pick(sec)); });
     slides.push({ type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: brief.audience || '' }] });
     return { style: 'honors', slides: slides };
   }

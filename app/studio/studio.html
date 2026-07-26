@@ -708,6 +708,7 @@
                                        : elm.textContent.replace(/\s+/g,' ').trim();
             setField(elm.getAttribute('data-edit'), val);
             if(before!==null && before!==JSON.stringify(data.slides||[])) pushUndo(before);
+            if(curMode().slides){ const si2=(el2=>{ const sl=el2.closest&&el2.closest('.ppt-stack > .slide'); return sl?[...sl.parentElement.children].indexOf(sl):-1; })(elm); if(si2>=0) refreshThumbAt(si2); }
           }
           persist(); });
         elm.addEventListener('keydown',(e)=>{
@@ -1171,6 +1172,9 @@
     });
   }
 
+  // 한 장만 가볍게 다시 그림 — 텍스트 blur·툴바 조작 후 좌측 썸네일 즉시 반영(사용자 지시)
+  function refreshThumbAt(i){ const t=document.querySelectorAll('#thumbRail .thumb')[i]; if(!t||typeof renderDeckFor!=='function'||!(data.slides&&data.slides[i])) return;
+    const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(data.slides[i]))]); }
   function rebuildThumbRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     if(!curMode().slides || typeof renderPptDeck!=='function'){ rail.style.display='none'; return; }
@@ -1311,6 +1315,14 @@
           persist(); render(); refreshPptPanel(); }); };
       sl.appendChild(bar);
     });
+    // 손상 이동값 치유 — 텍스트를 장 위/왼쪽 밖으로 미는 _pos는 잘못 저장된 값(주로 AI 산출)이라 데이터에서 삭제
+    (function healPos(){ let changed=false;
+      doc.querySelectorAll('.ppt-stack > .slide').forEach((sl,i)=>{ const s2=data.slides&&data.slides[i]; if(!s2||!s2._pos) return;
+        const sr=sl.getBoundingClientRect(); if(!sr.width) return;
+        sl.querySelectorAll('[data-mvkey][data-edit]').forEach(u=>{ const key=u.getAttribute('data-mvkey'); if(!s2._pos[key]) return;
+          const r=u.getBoundingClientRect(); if(r.top<sr.top-2||r.left<sr.left-2){ delete s2._pos[key]; u.style.transform=''; changed=true; } });
+      });
+      if(changed){ persist(); if(typeof rebuildThumbRail==='function') rebuildThumbRail(); } })();
     if(!editMode) return;
     pptEditor(doc);
   }
@@ -1350,7 +1362,13 @@
       if(only && only.hasAttribute('data-edit')){ const rel=relOf(only), cur=(data.slides[_selSi]._fmt||{})[rel]||'';
         utb.append(tbBtn('B',cur==='b','font-weight:800',()=>setFmt(only,'b')));
         utb.append(tbBtn('L',cur==='l','font-weight:300',()=>setFmt(only,'l')));
-        utb.append(tbBtn(tL('기본'),false,'',()=>setFmt(only,''))); }
+        utb.append(tbBtn(tL('기본'),false,'',()=>setFmt(only,'')));
+        // 텍스트 정렬(좌/중/우) — _ta 저장, 렌더는 팩 stateScript가 적용
+        const curTa=(data.slides[_selSi]._ta||{})[rel]||'';
+        const TA={l:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg>',
+          c:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M6 18h12"/></svg>',
+          r:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M10 12h10M7 18h13"/></svg>'};
+        [['l','왼쪽 정렬'],['c','가운데 정렬'],['r','오른쪽 정렬']].forEach(([v,tt])=>{ const b=tbBtn(TA[v],curTa===v,'',()=>setTa(only,curTa===v?'':v)); b.title=tL(tt); utb.append(b); }); }
       if(only && only.classList.contains('s-imgwrap')) utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
       // z-순서(앞/뒤) — 맨앞/맨뒤 아이콘(겹친 사각형)
       const Z_FWD='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M16 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h3"/></svg>';
@@ -1358,14 +1376,20 @@
       const zf=tbBtn(Z_FWD,false,'',()=>zOrder(1)); zf.title=tL('맨 앞으로'); utb.append(zf);
       const zb=tbBtn(Z_BACK,false,'',()=>zOrder(-1)); zb.title=tL('맨 뒤로'); utb.append(zb);
       // 다중 선택 정렬(좌·센터·우·위·중간·아래)
-      if(els.length>=2){
+      {
         const AL={ left:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M4 4v16"/><rect x="7" y="6" width="11" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="7" y="14" width="7" height="4" rx="1" fill="currentColor" stroke="none"/></svg>',
           centerH:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M12 4v16"/><rect x="6" y="6" width="12" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="8" y="14" width="8" height="4" rx="1" fill="currentColor" stroke="none"/></svg>',
           right:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M20 4v16"/><rect x="6" y="6" width="11" height="4" rx="1" fill="currentColor" stroke="none"/><rect x="10" y="14" width="7" height="4" rx="1" fill="currentColor" stroke="none"/></svg>',
           top:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M4 4h16"/><rect x="6" y="7" width="4" height="11" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="7" width="4" height="7" rx="1" fill="currentColor" stroke="none"/></svg>',
           middleV:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M4 12h16"/><rect x="6" y="6" width="4" height="12" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="8" width="4" height="8" rx="1" fill="currentColor" stroke="none"/></svg>',
           bottom:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"><path d="M4 20h16"/><rect x="6" y="6" width="4" height="11" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="10" width="4" height="7" rx="1" fill="currentColor" stroke="none"/></svg>' };
-        [['left','좌 정렬'],['centerH','가로 중앙'],['right','우 정렬'],['top','위 정렬'],['middleV','세로 중앙'],['bottom','아래 정렬']].forEach(([t,tt])=>{ const b=tbBtn(AL[t],false,'',()=>alignSel(t)); b.title=tL(tt); utb.append(b); });
+        if(els.length>=2) [['left','좌 정렬'],['centerH','가로 중앙'],['right','우 정렬'],['top','위 정렬'],['middleV','세로 중앙'],['bottom','아래 정렬']].forEach(([t,tt])=>{ const b=tbBtn(AL[t],false,'',()=>alignSel(t)); b.title=tL(tt); utb.append(b); });
+        // 슬라이드(장표) 기준 정렬 — 1개 이상 선택 시. 좌/우/상/하=여백(80px) 라인, 중앙=장표 정중앙
+        [['left','장표 왼쪽'],['centerH','장표 가로 중앙'],['right','장표 오른쪽'],['top','장표 위'],['middleV','장표 세로 중앙'],['bottom','장표 아래']].forEach(([t,tt])=>{
+          const b=tbBtn(AL[t],false,'opacity:.8;border:1px solid rgba(255,255,255,.35)',()=>alignSlide(t)); b.title=tL(tt); utb.append(b); });
+        // 위치 초기화 — 이동값(_pos) 제거해 원래 자리로
+        const posMap=(data.slides[_selSi]||{})._pos||{};
+        if([..._sel].some(k=>posMap[k])) { const rb=tbBtn('⟲',false,'',resetPos); rb.title=tL('위치 초기화'); utb.append(rb); }
       }
       const keys=[..._sel], g=grpMap(_selSi);
       const grouped=keys.length>=2 && keys.every(k=>g[k]!=null && g[k]===g[keys[0]]);
@@ -1376,7 +1400,28 @@
       utb.style.display='flex'; const uw=utb.offsetWidth||90, uh=utb.offsetHeight||34;
       utb.style.left=Math.max(4,r+W.scrollX-uw)+'px'; utb.style.top=Math.max(4,t+W.scrollY-uh-6)+'px';
     }
-    function setFmt(el,f){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fmt=s._fmt||{}; if(f)s._fmt[rel]=f; else delete s._fmt[rel]; el.style.fontWeight=f==='b'?700:f==='l'?300:''; persist(); showTb(); }
+    function setFmt(el,f){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fmt=s._fmt||{}; if(f)s._fmt[rel]=f; else delete s._fmt[rel]; el.style.fontWeight=f==='b'?700:f==='l'?300:''; persist(); refreshThumbAt(_selSi); showTb(); }
+    // 텍스트 정렬(좌/중/우) — slide._ta{상대경로:'l'|'c'|'r'}, 팩 stateScript가 렌더마다 적용(PPTX는 computed 반영)
+    function setTa(el,v){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._ta=s._ta||{}; if(v)s._ta[rel]=v; else delete s._ta[rel];
+      el.style.textAlign=v==='c'?'center':v==='r'?'right':v==='l'?'left':'';
+      // 편집모드 fit-content 마진 보정(중앙=auto/auto, 우=좌auto)
+      el.style.marginLeft=''; el.style.marginRight='';
+      if(v==='c'){ el.style.marginLeft='auto'; el.style.marginRight='auto'; } else if(v==='r'){ el.style.marginLeft='auto'; }
+      persist(); refreshThumbAt(_selSi); showTb(); }
+    // 장표 기준 정렬 — 좌/우/상/하는 여백(80px) 라인, 중앙은 장표 정중앙. _pos로 저장(그룹·다중은 각자 이동)
+    function alignSlide(type){ const els=selEls(); if(!els.length) return; pushUndo();
+      const s=data.slides[_selSi]; s._pos=s._pos||{};
+      els.forEach(e=>{ const sl=e.closest('.slide'); if(!sl) return; const sr=sl.getBoundingClientRect(); const kk=sr.width/(sl.offsetWidth||sr.width); const mg=80*kk;
+        const r=e.getBoundingClientRect(); const key=e.getAttribute('data-mvkey'); const p=(s._pos[key]||[0,0]).slice(); let dx=0,dy=0;
+        if(type==='left') dx=(sr.left+mg)-r.left; else if(type==='centerH') dx=(sr.left+(sr.width-r.width)/2)-r.left; else if(type==='right') dx=(sr.right-mg)-r.right;
+        else if(type==='top') dy=(sr.top+mg)-r.top; else if(type==='middleV') dy=(sr.top+(sr.height-r.height)/2)-r.top; else if(type==='bottom') dy=(sr.bottom-mg)-r.bottom;
+        s._pos[key]=[Math.round(p[0]+dx/kk),Math.round(p[1]+dy/kk)];
+        e.style.transform='translate('+s._pos[key][0]+'px,'+s._pos[key][1]+'px)'; });
+      persist(); refreshThumbAt(_selSi); showTb(); }
+    // 위치 초기화 — 저장된 이동값 삭제, 원래 레이아웃 자리로
+    function resetPos(){ const els=selEls(); if(!els.length) return; pushUndo();
+      const s=data.slides[_selSi]; if(s._pos) els.forEach(e=>{ delete s._pos[e.getAttribute('data-mvkey')]; e.style.transform=''; });
+      persist(); refreshThumbAt(_selSi); showTb(); }
     // 첨부된 이미지 목록(slide.imgs)에서 해당 장만 교체 — data-imgi로 식별
     function imgEntry(wrap, si){ const s=data.slides[si]; if(!s) return null;
       if(!s.imgs) s.imgs = (s.img&&s.img.src)?[s.img]:[];
@@ -1405,7 +1450,7 @@
         else if(type==='top') dy=minT-r.top; else if(type==='middleV') dy=cy-(r.top+r.height/2); else if(type==='bottom') dy=maxB-r.bottom;
         s._pos[k]=[Math.round(p[0]+dx),Math.round(p[1]+dy)];
         e.style.transform='translate('+s._pos[k][0]+'px,'+s._pos[k][1]+'px)'; });   // 리렌더 없이 제자리 반영 — 정렬 시 깜빡임 제거
-      persist(); showTb(); }
+      persist(); refreshThumbAt(_selSi); showTb(); }
     function doGroup(){ pushUndo(); const s=data.slides[_selSi]; s._grp=s._grp||{}; const gid='g'+(_undoStack.length)+_sel.size+[..._sel][0]; [..._sel].forEach(k=>s._grp[k]=gid); persist(); showTb(); }
     function doUngroup(){ pushUndo(); const s=data.slides[_selSi]; if(s._grp)[..._sel].forEach(k=>delete s._grp[k]); persist(); showTb(); }
     function selectUnit(si,key,add){ if(_selSi!==si){ _sel.clear(); _selSi=si; } let ks; if(add){ ks=new Set(_sel); if(ks.has(key))ks.delete(key); else ks.add(key); } else ks=new Set([key]); _sel=expandGroup(si,[...ks]); applyCss(); showTb(); }
