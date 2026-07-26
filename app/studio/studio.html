@@ -234,6 +234,8 @@
   .thumb iframe{width:1280px;height:720px;border:0;transform-origin:0 0;pointer-events:none;display:block}
   .thumb .tdel{position:absolute;right:4px;top:4px;z-index:3;width:20px;height:20px;border:none;border-radius:6px;background:rgba(10,10,16,.7);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;place-items:center}
   .thumb:hover .tdel{display:grid} .thumb .tdel:hover{background:rgba(230,60,60,.95)}
+  .thumb .tdup{position:absolute;right:28px;top:4px;z-index:3;width:20px;height:20px;border:none;border-radius:6px;background:rgba(10,10,16,.7);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;place-items:center}
+  .thumb:hover .tdup{display:grid} .thumb .tdup:hover{background:var(--accent)}
   .thumb.dragging{opacity:.4}
   /* 드롭 위치 표시 — 실제 자리(높이)를 차지해 사이가 벌어지며 '여기에 놓임'이 명확 */
   .dropline{flex:0 0 auto;height:5px;margin:1px 6px;border-radius:4px;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:dlPulse .9s ease-in-out infinite alternate}
@@ -1129,13 +1131,17 @@
     const W=132, sc=(W-4)/1280;   // 테두리 2px×2 제외한 내부 폭 기준 — 위아래 빈틈 없이 꽉 채움
     wireThumbRailDnd(rail);
     (data.slides||[]).forEach((s,i)=>{
-      const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdel" title="'+tL('삭제')+'">✕</button>');
+      const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdup" title="'+tL('복제')+'">⧉</button><button class="tdel" title="'+tL('삭제')+'">✕</button>');
       t.style.width=W+'px';   // 높이는 aspect-ratio 16/9가 결정(비율 정확)
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
       f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]);
       f.style.transform='scale('+sc+')';
       t.append(f);
-      t.onclick=(e)=>{ if(e.target.closest('.tdel')) return; setCurThumb(i); scrollToSlide(i); };
+      t.onclick=(e)=>{ if(e.target.closest('.tdel')||e.target.closest('.tdup')) return; setCurThumb(i); scrollToSlide(i); };
+      // 복제 — 이 장을 복사해 바로 뒤에 붙여넣기 (위치는 드래그로 조정)
+      t.querySelector('.tdup').onclick=(e)=>{ e.stopPropagation();
+        pptMutate(a=>{ a.splice(i+1,0,JSON.parse(JSON.stringify(a[i]))); });
+        setTimeout(()=>{ setCurThumb(i+1); scrollToSlide(i+1); },150); };
       t.querySelector('.tdel').onclick=(e)=>{ e.stopPropagation();
         if((data.slides||[]).length<=1){ uiAlert(tL('마지막 슬라이드는 삭제할 수 없어요.')); return; }
         uiConfirm(tL('이 슬라이드를 삭제할까요?'),{title:tL('슬라이드 삭제'),okText:tL('삭제'),danger:true}).then(ok=>{ if(ok) pptMutate(a=>a.splice(i,1)); }); };
@@ -1505,8 +1511,10 @@
       const ops=el('div','pptp-ops');
       const up=el('button','pptp-op'+(i===0?' off':''),'↑'); up.title=tL('위로'); up.onclick=(e)=>{ e.stopPropagation(); if(i===0)return; pptMutate(a=>{ const t=a[i]; a[i]=a[i-1]; a[i-1]=t; }); };
       const dn=el('button','pptp-op'+(i===(data.slides.length-1)?' off':''),'↓'); dn.title=tL('아래로'); dn.onclick=(e)=>{ e.stopPropagation(); if(i===data.slides.length-1)return; pptMutate(a=>{ const t=a[i]; a[i]=a[i+1]; a[i+1]=t; }); };
+      // 복제 — 이 장을 복사해 바로 뒤에 붙여넣기 (위치는 드래그로 조정)
+      const cp=el('button','pptp-op','⧉'); cp.title=tL('복제'); cp.onclick=(e)=>{ e.stopPropagation(); pptMutate(a=>{ a.splice(i+1,0,JSON.parse(JSON.stringify(a[i]))); }); setTimeout(()=>scrollToSlide(i+1),120); };
       const del=el('button','pptp-op del','✕'); del.title=tL('삭제'); del.onclick=(e)=>{ e.stopPropagation(); if((data.slides||[]).length<=1){ uiAlert(tL('마지막 슬라이드는 삭제할 수 없어요.')); return; } uiConfirm(tL('이 슬라이드를 삭제할까요?'),{title:tL('슬라이드 삭제'),okText:tL('삭제'),danger:true}).then(ok=>{ if(ok) pptMutate(a=>a.splice(i,1)); }); };
-      ops.append(up,dn,del); row.append(ops);
+      ops.append(up,dn,cp,del); row.append(ops);
       row.onclick=()=>scrollToSlide(i);
       list.append(row);
     });
