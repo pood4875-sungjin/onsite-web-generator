@@ -546,7 +546,37 @@
     if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume:vol, motion:mot});
     return renderComposed(rd, pack, mot, pt, vol);
   }
-  function pageHtml(){ return renderWith(data, pageType, volume, buildNav(), motion); }
+  // 편집모드 🔗 링크 칩 — 버튼/링크에 포커스하면 우상단에 떠서 URL 입력(비우면 제거). data.links[data-edit 경로]에 저장
+  function showLinkChip(doc, elm){
+    let chip=doc.getElementById('lnkchip');
+    if(!chip){
+      chip=doc.createElement('button'); chip.id='lnkchip'; chip.type='button';
+      chip.style.cssText='position:absolute;z-index:98;height:26px;padding:0 9px;border-radius:8px;border:none;background:#6c2bff;color:#fff;cursor:pointer;font-size:12px;line-height:1;font-family:inherit';
+      doc.body.appendChild(chip);
+      doc.addEventListener('pointerdown',(e)=>{ if(e.target!==chip && !e.target.closest('[data-edit]')) chip.style.display='none'; });
+    }
+    const path=elm.getAttribute('data-edit'); const has=!!((data.links||{})[path]);
+    chip.textContent='🔗 '+(has?tL('링크 수정'):tL('링크'));
+    const r=elm.getBoundingClientRect(), W=doc.defaultView;
+    chip.style.left=Math.max(4,(r.right+W.scrollX-8))+'px'; chip.style.top=Math.max(4,(r.top+W.scrollY-30))+'px'; chip.style.display='block';
+    chip.onmousedown=(e)=>{ e.preventDefault(); e.stopPropagation(); };   // 버튼 blur(저장) 방해 금지
+    chip.onclick=(e)=>{ e.stopPropagation();
+      const cur=(data.links||{})[path]||'';
+      const url=window.prompt(tL('이 버튼이 이동할 링크 URL (비우면 제거)'), cur);
+      if(url===null) return;
+      data.links=data.links||{};
+      if(url.trim()) data.links[path]=/^https?:\/\//i.test(url.trim())?url.trim():'https://'+url.trim();
+      else delete data.links[path];
+      persist(); chip.style.display='none';
+    };
+  }
+  // 버튼 링크 런타임 — data.links={<data-edit 경로>:url}. 팩 수정 없이 렌더 결과에 주입(미리보기·HTML 내보내기 생존)
+  function linkRuntime(d){ const L=(d&&d.links)||{}; if(!Object.keys(L).length) return '';
+    return '<scr'+'ipt>(function(){var L='+JSON.stringify(L)+';Object.keys(L).forEach(function(k){'
+      +'document.querySelectorAll(\'[data-edit="\'+k+\'"]\').forEach(function(el){'
+      +'if(el.tagName==="A"){el.setAttribute("href",L[k]);el.setAttribute("target","_blank");}'
+      +'else{el.style.cursor="pointer";el.addEventListener("click",function(){window.open(L[k],"_blank")});}});});})();</scr'+'ipt>'; }
+  function pageHtml(){ const h=renderWith(data, pageType, volume, buildNav(), motion); const lr=linkRuntime(data); return lr?h.replace('</body>', lr+'</body>'):h; }
   // 프로젝트 내 임의 페이지 렌더(미리보기용) — 해당 페이지 기준 nav 활성/데이터 사용, 모션 정적
   function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), 'static'); }
   let _keepScrollY=null;
@@ -656,6 +686,10 @@
     doc.querySelectorAll('[data-edit]').forEach(elm=>{
       if(editMode && !pptSel) elm.setAttribute('contenteditable','true'); else if(!editMode) elm.removeAttribute('contenteditable');
       if(!elm.__wired){ elm.__wired=1;
+        // 버튼·링크 요소 — 편집모드에서 포커스하면 🔗 칩 노출(텍스트는 그대로 수정, 링크는 칩으로)
+        if((elm.tagName==='BUTTON'||elm.tagName==='A') && !curMode().slides){
+          elm.addEventListener('focus',()=>{ if(editMode) showLinkChip(elm.ownerDocument, elm); });
+        }
         elm.addEventListener('blur',()=>{ if(!editMode)return;
           if(pptSel) elm.removeAttribute('contenteditable');   // 편집 종료 → 다시 선택모드
           if(isRawPack()){ persistRawEdits(doc); }   // eDM 등 raw 섹션: 편집 DOM을 html로 되씀(WYSIWYG)
@@ -1582,7 +1616,7 @@
       if(i===0) headHTML=doc.head.innerHTML;
       secs.push('<div data-ppage="'+pg.id+'"'+(pg.id===cur?'':' hidden')+'>'+doc.body.innerHTML+'</div>'); });
     const swap='<scr'+'ipt>document.addEventListener("click",function(e){var n=e.target.closest&&e.target.closest("[data-nav-page]");if(n){e.preventDefault();var t=document.querySelector(\'[data-ppage="\'+n.getAttribute("data-nav-page")+\'"]\');if(t){document.querySelectorAll("[data-ppage]").forEach(function(s){s.hidden=true});t.hidden=false;window.scrollTo(0,0);}return;}var a=e.target.closest&&e.target.closest(\'a[href^="#"]\');if(a)e.preventDefault();},true);document.addEventListener("submit",function(e){e.preventDefault()},true);</scr'+'ipt>';
-    return '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(data.productName||'미리보기')+'</title>'+headHTML+'</head><body>'+secs.join('')+swap+'</body></html>';
+    return '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(data.productName||'미리보기')+'</title>'+headHTML+'</head><body>'+secs.join('')+swap+linkRuntime(data)+'</body></html>';
   }
   /* 전체화면 오버레이로 미리보기(팝업 미사용 — 차단 무관). PPT는 발표 뷰어(←→ 넘김). */
   const pvFull=document.getElementById('pvFull'), pvfFrame=document.getElementById('pvfFrame');
