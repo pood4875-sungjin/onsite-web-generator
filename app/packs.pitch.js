@@ -509,6 +509,17 @@
     closing: { type: 'closing', title: 'Thank you', contacts: [{ k: 'EMAIL', v: '' }, { k: 'WEB', v: '' }] },
   };
 
+  /* 빈 브리프 → 전 타입 쇼케이스 덱 — 템플릿 라이브러리를 한 장씩 훑어보고 골라 쓰게 */
+  function pitchTemplateDeck() {
+    var slides = CATALOG.map(function (c) {
+      var s = JSON.parse(JSON.stringify(STARTERS[c.type] || STARTERS.statement));
+      if (s.title != null && c.type !== 'statement' && c.type !== 'closing') s.title = c.label;   // 장마다 타입 이름을 제목으로 — 뭐가 뭔지 보이게
+      return s;
+    });
+    if (slides[0]) { slides[0].eyebrow = 'PITCH DECK'; slides[0].title = '전체 템플릿'; slides[0].sub = '필요 없는 장은 지우고, 내용을 채워보세요'; }
+    return { slides: slides, style: 'pitch' };
+  }
+
   /* AI 프롬프트용 스키마 문서 — 카탈로그의 "언제 쓰나"를 그대로 실어
      브리프 내용에 따라 장표 타입을 고르게 한다(순환 배치 금지). */
   var SCHEMA_DOC = CATALOG.map(function (c) {
@@ -555,6 +566,7 @@
 
   window.renderPitchDeck = renderPitchDeck;
   window.renderPitchViewer = renderPitchViewer;
+  window.pitchTemplateDeck = pitchTemplateDeck;
   window.PITCH_SCHEMA_DOC = SCHEMA_DOC;
   window.PITCH_FIELD_DOC = FIELD_DOC;
   window.pitchComposeDeck = pitchComposeDeck;

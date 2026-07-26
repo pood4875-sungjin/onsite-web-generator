@@ -506,14 +506,17 @@
         try{ deck=await LLM.composeDeck(brief); stop(true); }
         catch(e){ stop(false); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       }
+      // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
       if(!deck) deck = isPitch
-                 ? ((hasBrief && window.pitchComposeDeck) ? pitchComposeDeck(brief) : JSON.parse(JSON.stringify(window.PITCH_DEFAULT_DECK||{slides:[]})))
+                 ? ((hasBrief && window.pitchComposeDeck) ? pitchComposeDeck(brief)
+                 : (window.pitchTemplateDeck ? pitchTemplateDeck() : JSON.parse(JSON.stringify(window.PITCH_DEFAULT_DECK||{slides:[]}))))
                  : ((hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
-                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle}));
+                 : (window.pptTemplateDeck ? pptTemplateDeck(S.pptStyle)
+                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle})));
       const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:isPitch?'pitch':'ppt' });
       const full=getProject(p.id); const pg0=full.pages[0];
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
-      pg0.chat={ log:[{r:'bot',t:'📊 '+_L('PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.')}], idx:8, generated:true };
+      pg0.chat={ log:[{r:'bot',t:'📊 '+_L(hasBrief?'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.':'전체 템플릿을 한 장씩 담았어요. 필요 없는 장은 지우고, 채팅으로 내용을 채워보세요.')}], idx:8, generated:true };
       full.lang=S.lang; upsertProject(full);
       await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
     }

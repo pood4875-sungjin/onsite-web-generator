@@ -233,6 +233,17 @@
   };
   window.pptNewSlide = function (type) { return JSON.parse(JSON.stringify(_SLIDE_STARTERS[type] || _SLIDE_STARTERS.rows)); };
 
+  /* 빈 브리프 → 전 타입 쇼케이스 덱 — 템플릿 라이브러리를 한 장씩 훑어보고 골라 쓰게 */
+  window.pptTemplateDeck = function (style) {
+    var slides = window.PPT_SLIDE_TYPES.map(function (t) {
+      var s = window.pptNewSlide(t.type);
+      if (s.title != null && t.type !== 'cover' && t.type !== 'closing') s.title = t.label;   // 장마다 타입 이름을 제목으로
+      return s;
+    });
+    if (slides[0]) { slides[0].title = '전체 템플릿'; slides[0].subtitle = '필요 없는 장은 지우고, 내용을 채워보세요'; }
+    return { slides: slides, style: style || 'ax' };
+  };
+
   /* ---- 브리프 → 결정론적 덱 조립 (백엔드 없이). 생성 흐름에서 사용.
      brief = { title, message, audience, outline:[문자열...], style, accent }
      제목·핵심메시지·목차 항목을 슬롯에 채우고 본문 레이아웃을 rows/cols/bigstat로 순환.
