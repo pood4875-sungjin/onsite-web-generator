@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../pagetypes.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -536,7 +536,7 @@
   }
   // 팩별 출력 — KRDS는 계약 렌더(renderKrdsPage), 그 외는 darkglow(renderComposed)
   function renderWith(d, pt, vol, nav, mot){
-    const rd = nav ? Object.assign({}, d, {nav}) : d;
+    const rd = Object.assign({}, d, nav?{nav}:{}, {pageType: d.pageType || pt});   // 팩이 PAGE_TYPES 구성표를 찾는 키
     if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='saturn' && typeof renderSaturnPage==='function') return renderSaturnPage(rd, {volume:vol, motion:mot});
@@ -912,11 +912,12 @@
      기존엔 유형→정보량→제품명→기능3개→지표→배너→푸터를 전부 손으로 입력해야 했다.
      이제는 "유형 + 담을 내용" 두 번만 묻고, 부족한 건 AI가 최대 2개 되묻고, 나머지는 초안으로 채운다.
      생성 중에는 우측 프리뷰에 진행 오버레이(#genning)를 띄운다. AI가 없거나 실패하면 옛 스텝 플로우로 폴백. */
-  const PAGE_KINDS = [
+  // 페이지 유형 — 공용 레지스트리(pagetypes.js) 기반. 미로드 시 구 3종 폴백
+  const PAGE_KINDS = (window.PAGE_TYPES ? Object.keys(PAGE_TYPES).filter(k=>k!=='main').map(k=>({id:k, label:PAGE_TYPES[k].label, hint:PAGE_TYPES[k].use})) : [
     {id:'features', label:'제품 기능소개', hint:'기능·가치 소개'},
     {id:'pricing',  label:'요금 비교',    hint:'플랜·가격표'},
     {id:'landing',  label:'랜딩',        hint:'캠페인·전환 유도'},
-  ];
+  ]);
   // 웹 계열(랜딩·웹사이트) + AI 가용이면 대화형 인테이크 — 메인홈/랜딩도 폼 스텝 대신 대화로 채운다
   function aiPageFlow(){ const m=curMode(); return !!(project && !m.editOnly && !m.slides && window.LLM && LLM.aiAvailable()); }
 
@@ -980,6 +981,7 @@
       botBubble(PROMPT.pageType);
       t=await askChips(PAGE_KINDS); if(dead()) return;
       pageType=t.id;
+      if(window.pageScaffold) Object.assign(data, pageScaffold(t.id, (project&&project.shared)||{}));   // 유형별 기본 섹션 콘텐츠(빈 화면 방지)
       if(project&&pageRef){ pageRef.pageType=t.id; pageRef.name=tL(t.label); upsertProject(project); renderRail(); }
       meBubble(tL(t.label)); render();
       botBubble(tL('이 페이지에 담을 내용을 자유롭게 적어주세요. 목적·대상·꼭 넣을 항목이면 충분해요. 나머지는 초안으로 채워드릴게요.'));

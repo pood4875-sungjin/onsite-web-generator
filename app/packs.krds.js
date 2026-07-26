@@ -484,6 +484,573 @@ const sections = {
   },
 };
 
+/* ============================================================
+   KRDS 페이지유형 확장 섹션 (pagetypes.js 공용 계약)
+   - data-edit 경로 = window.pageScaffold 필드명 그대로(overview.title, featureRows.i.desc …).
+   - 섹션 제목 등 스캐폴드에 없는 문구는 평평한 신규 필드(galleryTitle 등)로 전수 편집.
+   - 모션: CSS-only 등장(.krise) — 스크립트가 제거된 미리보기에서도 항상 보임.
+     (html[data-motion="static"]이면 애니 off. 기존 .rise/IO 방식은 레거시 섹션에 유지)
+   - 이미지 자리 = data-img(featureRow{i}·gallery{i}·speaker{i}), data.images[key]로 교체.
+   ============================================================ */
+
+/** 공통 섹션 헤딩(가운데) — 제목은 평평한 필드로 편집 */
+const secHead = (ctx, field, fallback) =>
+  `<div class="sec-head krise"><h2 class="sec-title" data-edit="${field}">${esc(ctx.data[field] || fallback)}</h2></div>`;
+
+/** 히어로와 동일한 목업 플레이스홀더(텍스트 없음 — 장식문자·더미문구 금지) */
+const mockHtml = () => `<div class="mock">
+            <div class="mock__bar"><i></i><i></i><i></i></div>
+            <div class="mock__body">
+              <span class="mock__ln mock__ln--t"></span>
+              <span class="mock__ln"></span><span class="mock__ln" style="width:72%"></span>
+              <div class="mock__row"><span></span><span></span></div>
+            </div>
+          </div>`;
+
+/** 체크리스트 — 항목별 data-edit 경로 프리픽스(예: overview.points) */
+const klist = (pts, prefix) =>
+  `<ul class="klist">${pts.map((p, i) => `<li>${C.icon(ICONS.check)}<span data-edit="${prefix}.${i}">${esc(p)}</span></li>`).join('')}</ul>`;
+
+Object.assign(sections, {
+  /* 서브페이지 헤더 — 회색 밴드·좌정렬(공공 정보 페이지의 명료한 위계) */
+  pagehero(c, ctx) {
+    const d = ctx.data;
+    const ptLabel = (typeof window !== 'undefined' && window.PAGE_TYPES && window.PAGE_TYPES[d.pageType] && window.PAGE_TYPES[d.pageType].label) || '';
+    const title = d.pageTitle || c.title || ptLabel || d.tagline || '페이지 제목';
+    return `
+    <section class="phero">
+      <div class="container krise">
+        ${C.eyebrow(d.pageEyebrow || c.eyebrow || '안내', { edit: 'pageEyebrow' })}
+        <h1 class="phero__t" data-edit="pageTitle">${esc(title)}</h1>
+        <p class="phero__s" data-edit="pageSub">${esc(d.pageSub || c.subcopy || d.subcopy || H)}</p>
+      </div>
+    </section>`;
+  },
+
+  /* 개요 — 좌 설명 / 우 핵심 포인트 카드 */
+  overview(c, ctx) {
+    const o = ctx.data.overview || c || {};
+    const pts = (o.points && o.points.length ? o.points : ['핵심 가치 1', '핵심 가치 2', '핵심 가치 3']);
+    return `
+    <section class="band">
+      <div class="container ov">
+        <div class="krise">
+          <h2 class="ov__t" data-edit="overview.title">${esc(o.title || '서비스 개요')}</h2>
+          <p class="ov__x" data-edit="overview.text">${esc(o.text || H)}</p>
+        </div>
+        <div class="card card--pad krise">${klist(pts, 'overview.points')}</div>
+      </div>
+    </section>`;
+  },
+
+  /* 소개 — 가운데 정렬 짧은 리드 문단 */
+  intro(c, ctx) {
+    const o = ctx.data.intro || c || {};
+    return `
+    <section class="band band--alt">
+      <div class="container intro__in krise">
+        <h2 class="sec-title" data-edit="intro.title">${esc(o.title || '소개')}</h2>
+        <p class="intro__x" data-edit="intro.text">${esc(o.text || H)}</p>
+      </div>
+    </section>`;
+  },
+
+  /* 상세 기능 교차 행 — 텍스트/비주얼 지그재그 */
+  featurerows(c, ctx) {
+    const rows = (ctx.data.featureRows && ctx.data.featureRows.length ? ctx.data.featureRows :
+      (c.rows && c.rows.length ? c.rows : [
+        { title: '대표 기능 하나', desc: H, points: ['포인트 1', '포인트 2'] },
+        { title: '대표 기능 둘', desc: H, points: ['포인트 1', '포인트 2'] },
+      ]));
+    const imgs = ctx.data.images || {};
+    return `
+    <section class="band">
+      <div class="container">
+        ${rows.map((r, i) => `
+        <div class="frow krise">
+          <div class="frow__tx">
+            <h3 class="frow__t" data-edit="featureRows.${i}.title">${esc(r.title)}</h3>
+            <p class="frow__d" data-edit="featureRows.${i}.desc">${esc(r.desc || H)}</p>
+            ${r.points && r.points.length ? `<div class="frow__pts">${klist(r.points, `featureRows.${i}.points`)}</div>` : ''}
+          </div>
+          <div class="frow__vis" data-img="featureRow${i}">
+            ${imgs['featureRow' + i] ? `<img src="${esc(imgs['featureRow' + i])}" alt="">` : mockHtml()}
+          </div>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  /* 화면 갤러리 */
+  gallery(c, ctx) {
+    const items = (ctx.data.gallery && ctx.data.gallery.length ? ctx.data.gallery :
+      (c.items && c.items.length ? c.items : [{ label: 'SCREEN 1' }, { label: 'SCREEN 2' }, { label: 'SCREEN 3' }]));
+    const imgs = ctx.data.images || {};
+    return `
+    <section class="band band--alt">
+      <div class="container">
+        ${secHead(ctx, 'galleryTitle', '주요 화면')}
+        <div class="grid cols-3" style="margin-top:32px">
+          ${items.map((g, i) => `
+          <figure class="gal krise">
+            <div class="kph" data-img="gallery${i}">${imgs['gallery' + i] ? `<img src="${esc(imgs['gallery' + i])}" alt="">` : ''}</div>
+            <figcaption class="gal__c" data-edit="gallery.${i}.label">${esc(g.label || '화면')}</figcaption>
+          </figure>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 비교표 — 자사 열 강조 */
+  compare(c, ctx) {
+    const cp = ctx.data.compare || c || {};
+    const rows = (cp.rows && cp.rows.length ? cp.rows : [
+      { k: '구축 시간', us: '몇 분', them: '몇 주' },
+      { k: '비용', us: '구독형', them: '고정 인건비' },
+      { k: '수정', us: '즉시 반영', them: '외주 왕복' },
+    ]);
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'compareTitle', '무엇이 다른가요')}
+        <div class="cmpwrap krise" style="margin-top:32px">
+          <table class="cmp">
+            <thead><tr>
+              <th scope="col" data-edit="compareColLabel">${esc(ctx.data.compareColLabel || '항목')}</th>
+              <th scope="col" class="cmp__us" data-edit="productName">${name(ctx)}</th>
+              <th scope="col" data-edit="compare.them">${esc(cp.them || '기존 방식')}</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map((r, i) => `<tr>
+                <th scope="row" data-edit="compare.rows.${i}.k">${esc(r.k)}</th>
+                <td class="cmp__us" data-edit="compare.rows.${i}.us">${esc(r.us)}</td>
+                <td data-edit="compare.rows.${i}.them">${esc(r.them)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* FAQ — 네이티브 details 아코디언(JS 불필요), +표시는 CSS ::after */
+  faq(c, ctx) {
+    const items = (ctx.data.faq && ctx.data.faq.length ? ctx.data.faq :
+      (c.items && c.items.length ? c.items : [
+        { q: '어떤 서비스인가요?', a: '서비스를 한 문장으로 설명해주세요.' },
+        { q: '이용까지 얼마나 걸리나요?', a: '보통 걸리는 기간과 절차를 안내하세요.' },
+        { q: '비용은 어떻게 되나요?', a: '과금 방식을 안내하세요.' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'faqTitle', '자주 묻는 질문')}
+        <div class="faq krise" style="margin-top:24px">
+          ${items.map((f, i) => `
+          <details class="faq__it"${i === 0 ? ' open' : ''}>
+            <summary class="faq__q"><span data-edit="faq.${i}.q">${esc(f.q)}</span></summary>
+            <p class="faq__a" data-edit="faq.${i}.a">${esc(f.a)}</p>
+          </details>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 이용자 후기 — 따옴표는 CSS ::before(장식문자 텍스트 금지) */
+  testimonial(c, ctx) {
+    const items = (ctx.data.testimonials && ctx.data.testimonials.length ? ctx.data.testimonials :
+      (c.items && c.items.length ? c.items : [
+        { text: '도입 후 처리 시간이 절반으로 줄었습니다.', by: '이용 기관 담당자' },
+        { text: '안내가 명확해서 처음 이용에도 어렵지 않았습니다.', by: '서비스 이용자' },
+        { text: '운영 부담이 줄어 본연의 업무에 집중하게 됐습니다.', by: '운영 부서 담당자' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'testimonialTitle', '이용자 후기')}
+        <div class="tsm-grid" style="margin-top:32px">
+          ${items.map((t, i) => `
+          <div class="card card--pad krise">
+            <p class="tsm__x" data-edit="testimonials.${i}.text">${esc(t.text)}</p>
+            <div class="tsm__by" data-edit="testimonials.${i}.by">${esc(t.by || '')}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 신청 폼 — 정적 데모(제출 비활성: type=button + aria-disabled) */
+  form(c, ctx) {
+    const fm = ctx.data.form || c || {};
+    const fields = (fm.fields && fm.fields.length ? fm.fields : ['회사명', '담당자 이름', '이메일', '문의 내용']);
+    return `
+    <section class="band band--alt">
+      <div class="container kform">
+        <div class="card kform__card krise">
+          <h2 class="kform__t" data-edit="form.title">${esc(fm.title || '신청하기')}</h2>
+          <p class="kform__s" data-edit="form.sub">${esc(fm.sub || '남겨주시면 순서대로 안내해 드립니다.')}</p>
+          ${fields.map((f, i) => {
+            const long = /내용|사유|메시지|요청/.test(String(f));
+            const ctrl = long
+              ? `<textarea class="kform__in" id="kf${i}" rows="4" placeholder="내용을 입력해 주세요"></textarea>`
+              : `<input class="kform__in" id="kf${i}" type="text" placeholder="입력해 주세요">`;
+            return `<div class="kform__row"><label class="kform__l" for="kf${i}" data-edit="form.fields.${i}">${esc(f)}</label>${ctrl}</div>`;
+          }).join('')}
+          <button type="button" class="btn btn--primary btn--lg kform__btn" aria-disabled="true" data-edit="form.submit">${esc(fm.submit || '신청하기')}</button>
+          <p class="kform__note" data-edit="formNote">${esc(ctx.data.formNote || '데모 화면으로, 실제 제출은 동작하지 않습니다.')}</p>
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 안내 카드 3열 */
+  infocards(c, ctx) {
+    const items = (ctx.data.infoCards && ctx.data.infoCards.length ? ctx.data.infoCards :
+      (c.items && c.items.length ? c.items : [
+        { title: '이메일', text: 'contact@example.com' },
+        { title: '전화', text: '02-000-0000' },
+        { title: '이용 절차', text: '신청 후 확인을 거쳐 처리 결과를 안내합니다.' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'infocardsTitle', '이용 안내')}
+        <div class="grid cols-3" style="margin-top:32px">
+          ${items.map((it, i) => `
+          <div class="card card--pad krise">
+            <h3 class="ifc__t" data-edit="infoCards.${i}.title">${esc(it.title)}</h3>
+            <p class="ifc__x" data-edit="infoCards.${i}.text">${esc(it.text || '')}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 안내/민원 목록 — 헤어라인 행 + 우측 바로가기(화살표는 CSS ::after) */
+  doclist(c, ctx) {
+    const docs = (ctx.data.docs && ctx.data.docs.length ? ctx.data.docs :
+      (c.items && c.items.length ? c.items : [
+        { title: '시작하기', desc: '설치와 첫 설정' },
+        { title: '핵심 기능', desc: '주요 기능 사용법' },
+        { title: '관리자 가이드', desc: '권한·설정 관리' },
+        { title: '자주 묻는 질문', desc: '문제 해결 모음' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'doclistTitle', '안내 자료')}
+        <div class="doclist krise" style="margin-top:24px">
+          ${docs.map((dc, i) => `
+          <div class="doc">
+            <div>
+              <h3 class="doc__t" data-edit="docs.${i}.title">${esc(dc.title)}</h3>
+              <p class="doc__d" data-edit="docs.${i}.desc">${esc(dc.desc || '')}</p>
+            </div>
+            <a class="doc__go" href="#" data-edit="docs.${i}.link">${esc(dc.link || '자세히 보기')}</a>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 이용 절차 — 번호 스텝(번호는 인덱스 파생·비편집) */
+  steps(c, ctx) {
+    const st = (ctx.data.steps && ctx.data.steps.length ? ctx.data.steps :
+      (c.items && c.items.length ? c.items : [
+        { title: '가입', text: '계정을 만듭니다.' },
+        { title: '설정', text: '기본 정보를 입력합니다.' },
+        { title: '시작', text: '첫 결과물을 만듭니다.' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'stepsTitle', '이용 절차')}
+        <div class="grid cols-3" style="margin-top:32px">
+          ${st.map((s, i) => `
+          <div class="card card--pad stp__it krise">
+            <span class="stp__n" aria-hidden="true">${i + 1}</span>
+            <h3 class="stp__t" data-edit="steps.${i}.title">${esc(s.title)}</h3>
+            <p class="stp__x" data-edit="steps.${i}.text">${esc(s.text || '')}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 소식/공지 목록 */
+  bloglist(c, ctx) {
+    const posts = (ctx.data.posts && ctx.data.posts.length ? ctx.data.posts :
+      (c.items && c.items.length ? c.items : [
+        { title: '첫 번째 소식', desc: '요약을 입력하세요.', date: '2026.07', tag: 'NEWS' },
+        { title: '두 번째 소식', desc: '요약을 입력하세요.', date: '2026.06', tag: 'UPDATE' },
+        { title: '세 번째 소식', desc: '요약을 입력하세요.', date: '2026.05', tag: 'TIP' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'bloglistTitle', '소식')}
+        <div class="postlist krise" style="margin-top:24px">
+          ${posts.map((p, i) => `
+          <article class="post">
+            <div class="post__hd">
+              <span class="badge badge--brand" data-edit="posts.${i}.tag">${esc(p.tag || 'NEWS')}</span>
+              <h3 class="post__t" data-edit="posts.${i}.title">${esc(p.title)}</h3>
+              <span class="post__dt" data-edit="posts.${i}.date">${esc(p.date || '')}</span>
+            </div>
+            <p class="post__d" data-edit="posts.${i}.desc">${esc(p.desc || '')}</p>
+          </article>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 행사 프로그램 — 시간 + 타임라인 도트 */
+  agenda(c, ctx) {
+    const ag = (ctx.data.agenda && ctx.data.agenda.length ? ctx.data.agenda :
+      (c.items && c.items.length ? c.items : [
+        { time: '14:00', title: '오프닝', desc: '환영 인사' },
+        { time: '14:30', title: '세션 1', desc: '주제 발표' },
+        { time: '15:30', title: '세션 2', desc: '사례 공유' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'agendaTitle', '프로그램')}
+        <div class="agd krise" style="margin-top:32px">
+          ${ag.map((a, i) => `
+          <div class="agd__it">
+            <div class="agd__tm" data-edit="agenda.${i}.time">${esc(a.time)}</div>
+            <div class="agd__bd">
+              <h3 class="agd__t" data-edit="agenda.${i}.title">${esc(a.title)}</h3>
+              <p class="agd__d" data-edit="agenda.${i}.desc">${esc(a.desc || '')}</p>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 연사 소개 — 아바타 이미지 자리(data-img="speaker{i}") */
+  speakers(c, ctx) {
+    const sp = (ctx.data.speakers && ctx.data.speakers.length ? ctx.data.speakers :
+      (c.items && c.items.length ? c.items : [
+        { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+        { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+        { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+      ]));
+    const imgs = ctx.data.images || {};
+    return `
+    <section class="band band--alt">
+      <div class="container">
+        ${secHead(ctx, 'speakersTitle', '연사 소개')}
+        <div class="grid cols-3" style="margin-top:32px">
+          ${sp.map((s, i) => `
+          <div class="card card--pad krise">
+            <div class="spk__av" data-img="speaker${i}">${imgs['speaker' + i] ? `<img src="${esc(imgs['speaker' + i])}" alt="">` : ''}</div>
+            <h3 class="spk__n" data-edit="speakers.${i}.name">${esc(s.name)}</h3>
+            <div class="spk__r" data-edit="speakers.${i}.role">${esc(s.role || '')}</div>
+            <p class="spk__d" data-edit="speakers.${i}.desc">${esc(s.desc || '')}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 참가/이용 안내 — 브랜드 키라인 카드 */
+  notice(c, ctx) {
+    const ns = (ctx.data.notices && ctx.data.notices.length ? ctx.data.notices :
+      (c.items && c.items.length ? c.items : [
+        { title: '참가 안내', text: '사전 등록 필수, 선착순 마감.' },
+        { title: '오시는 길', text: '장소와 교통편을 안내하세요.' },
+        { title: '문의', text: 'event@example.com' },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'noticeTitle', '안내 사항')}
+        <div class="grid cols-3" style="margin-top:32px">
+          ${ns.map((n, i) => `
+          <div class="card card--pad ntc krise">
+            <h3 class="ntc__t" data-edit="notices.${i}.title">${esc(n.title)}</h3>
+            <p class="ntc__x" data-edit="notices.${i}.text">${esc(n.text || '')}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 요금/수수료 안내 — 절제된 플랜 카드(공공: 수수료·이용료 안내 톤) */
+  pricing(c, ctx) {
+    const plans = (ctx.data.plans && ctx.data.plans.length ? ctx.data.plans :
+      (c.plans && c.plans.length ? c.plans : [
+        { name: '기본', price: '무료', desc: '개인·소규모 이용', points: ['핵심 기능', '기본 지원'] },
+        { name: '표준', price: '월 9,900원', desc: '팀·기관 표준', points: ['모든 기본 기능', '우선 지원', '사용량 확장'], featured: true },
+        { name: '기관', price: '별도 협의', desc: '대규모·맞춤 도입', points: ['전용 지원', '보안 검토', '맞춤 계약'] },
+      ]));
+    return `
+    <section class="band">
+      <div class="container">
+        ${secHead(ctx, 'pricingTitle', '이용 요금 안내')}
+        <div class="grid cols-3 prc" style="margin-top:32px">
+          ${plans.map((p, i) => `
+          <div class="card card--pad prc__it${p.featured ? ' prc__it--hot' : ''} krise">
+            <div class="prc__hd">
+              <h3 class="prc__n" data-edit="plans.${i}.name">${esc(p.name)}</h3>
+              ${p.featured ? `<span class="badge badge--brand" data-edit="plans.${i}.flag">${esc(p.flag || '추천')}</span>` : ''}
+            </div>
+            <div class="prc__p" data-edit="plans.${i}.price">${esc(p.price)}</div>
+            <p class="prc__d" data-edit="plans.${i}.desc">${esc(p.desc || '')}</p>
+            ${p.points && p.points.length ? `<div class="prc__pts">${klist(p.points, `plans.${i}.points`)}</div>` : ''}
+            ${C.button(p.cta || '신청하기', { variant: p.featured ? 'primary' : 'secondary', size: 'md', edit: `plans.${i}.cta` })}
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* pagetypes.js 어휘 별칭 — 기존 렌더러 재사용 */
+sections.stats = sections.stat;         // pagetypes 'stats' → KRDS 'stat'
+sections.metrics = sections.stat;       // SECTION_FALLBACK 대체 어휘
+sections.showcase = sections.gallery;   // 메인홈 rich 쇼케이스 = 갤러리
+sections.quote = sections.testimonial;  // testimonial 폴백 어휘
+sections.banner = sections.cta;         // cta 폴백 어휘
+
+/** 확장 섹션 CSS (.krds 스코프) — 기존 밴드/카드/헤어라인 문법 유지 */
+function pageSectionsCss() {
+  return `
+  /* CSS-only 등장 모션 — 스크립트 제거 미리보기에서도 항상 보임 */
+  .krds .krise{animation:kRise .5s ease-out both}
+  @keyframes kRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  html[data-motion="static"] .krds .krise{animation:none}
+  @media (prefers-reduced-motion:reduce){.krds .krise{animation:none}}
+  /* pagehero */
+  .krds .phero{background:var(--bg-2);border-bottom:var(--bw) solid var(--line);padding:64px 0}
+  .krds .phero__t{font-size:var(--fs-h1);font-weight:800;letter-spacing:-.02em}
+  .krds .phero__s{margin-top:12px;color:var(--muted);font-size:var(--fs-h3);max-width:36em}
+  /* 공통: 체크리스트·이미지 자리 */
+  .krds .klist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .krds .klist li{display:flex;gap:10px;align-items:flex-start;font-size:var(--fs-body)}
+  .krds .klist .ico{width:20px;height:20px;margin-top:2px}
+  .krds .kph{aspect-ratio:16/10;display:block;background:var(--bg-3);border:var(--bw) solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+  .krds .kph img{width:100%;height:100%;object-fit:cover;display:block}
+  /* overview */
+  .krds .ov{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+  .krds .ov__t{font-size:var(--fs-h1);font-weight:800}
+  .krds .ov__x{margin-top:16px;color:var(--muted)}
+  /* intro */
+  .krds .intro__in{max-width:640px;margin-inline:auto;text-align:center}
+  .krds .intro__x{margin-top:14px;color:var(--muted);font-size:var(--fs-h3)}
+  /* featurerows */
+  .krds .frow{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:36px 0}
+  .krds .frow+.frow{border-top:var(--bw) solid var(--line)}
+  .krds .frow:nth-child(even) .frow__vis{order:-1}
+  .krds .frow__t{font-size:var(--fs-h2);font-weight:700}
+  .krds .frow__d{margin-top:10px;color:var(--muted)}
+  .krds .frow__pts{margin-top:16px}
+  .krds .frow__vis img{width:100%;border-radius:var(--radius-lg);display:block;border:var(--bw) solid var(--line)}
+  /* gallery */
+  .krds .gal{margin:0}
+  .krds .gal__c{margin-top:10px;text-align:center;color:var(--soft);font-size:var(--fs-cap);font-weight:600;letter-spacing:.04em}
+  /* compare */
+  .krds .cmpwrap{overflow-x:auto}
+  .krds .cmp{width:100%;min-width:560px;border-collapse:separate;border-spacing:0;border:var(--bw) solid var(--line);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
+  .krds .cmp th,.krds .cmp td{padding:14px 18px;text-align:left;font-size:var(--fs-body-sm);border-top:var(--bw) solid var(--line)}
+  .krds .cmp thead th{border-top:0;background:var(--bg-2);font-weight:700;color:var(--ink)}
+  .krds .cmp tbody th{font-weight:600;color:var(--muted)}
+  .krds .cmp .cmp__us{background:var(--brand-weak);color:var(--brand-hover);font-weight:700}
+  /* faq */
+  .krds .faq{max-width:760px;margin-inline:auto}
+  .krds .faq__it{border-bottom:var(--bw) solid var(--line)}
+  .krds .faq__it:first-of-type{border-top:var(--bw) solid var(--line)}
+  .krds .faq__q{list-style:none;cursor:pointer;display:block;position:relative;padding:18px 36px 18px 2px;font-weight:700;font-size:var(--fs-body);color:var(--ink)}
+  .krds .faq__q::-webkit-details-marker{display:none}
+  .krds .faq__q::after{content:"+";position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--brand);font-size:22px;font-weight:400;transition:transform .15s ease-out}
+  .krds .faq__it[open] .faq__q::after{transform:translateY(-50%) rotate(45deg)}
+  .krds .faq__a{padding:0 2px 20px;color:var(--muted);max-width:60em}
+  /* testimonial */
+  .krds .tsm-grid{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .krds .tsm__x::before{content:"\\201C";display:block;font-size:32px;line-height:1;color:var(--brand);font-weight:700;margin-bottom:8px}
+  .krds .tsm__by{margin-top:14px;color:var(--soft);font-size:var(--fs-label);font-weight:600}
+  /* form */
+  .krds .kform{max-width:600px;margin-inline:auto}
+  .krds .kform__card{padding:32px}
+  .krds .kform__t{font-size:var(--fs-h2);font-weight:700}
+  .krds .kform__s{margin-top:8px;color:var(--muted);font-size:var(--fs-body-sm)}
+  .krds .kform__row{margin-top:18px}
+  .krds .kform__l{display:block;font-size:var(--fs-label);font-weight:700;color:var(--ink);margin-bottom:6px}
+  .krds .kform__in{width:100%;padding:12px 14px;border:var(--bw) solid var(--line-2);border-radius:var(--radius);font:inherit;font-size:var(--fs-body-sm);color:var(--ink-2);background:var(--bg)}
+  .krds .kform__in:focus{outline:2px solid var(--brand);outline-offset:0;border-color:var(--brand)}
+  .krds textarea.kform__in{resize:vertical}
+  .krds .kform__btn{width:100%;margin-top:24px}
+  .krds .kform__note{margin-top:12px;text-align:center;color:var(--soft);font-size:var(--fs-cap)}
+  /* infocards / notice */
+  .krds .ifc__t,.krds .ntc__t{font-size:var(--fs-h3);font-weight:700}
+  .krds .ifc__x,.krds .ntc__x{margin-top:8px;color:var(--muted);font-size:var(--fs-body-sm)}
+  .krds .ntc{border-left:3px solid var(--brand)}
+  /* doclist */
+  .krds .doclist{border-top:var(--bw) solid var(--line)}
+  .krds .doc{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 4px;border-bottom:var(--bw) solid var(--line)}
+  .krds .doc__t{font-size:var(--fs-h3);font-weight:700}
+  .krds .doc__d{margin-top:4px;color:var(--muted);font-size:var(--fs-body-sm)}
+  .krds .doc__go{color:var(--brand);font-weight:600;white-space:nowrap;flex:none}
+  .krds .doc__go::after{content:"\\2192";margin-left:4px;display:inline-block;transition:transform .15s ease-out}
+  .krds .doc:hover .doc__go::after{transform:translateX(2px)}
+  /* steps */
+  .krds .stp__n{display:inline-flex;width:36px;height:36px;border-radius:999px;background:var(--brand);color:var(--on-brand);align-items:center;justify-content:center;font-weight:700;font-size:var(--fs-body-sm)}
+  .krds .stp__t{margin-top:14px;font-size:var(--fs-h3);font-weight:700}
+  .krds .stp__x{margin-top:6px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* bloglist */
+  .krds .postlist{border-top:var(--bw) solid var(--line)}
+  .krds .post{padding:22px 4px;border-bottom:var(--bw) solid var(--line)}
+  .krds .post__hd{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .krds .post__t{font-size:var(--fs-h3);font-weight:700}
+  .krds .post__dt{margin-left:auto;color:var(--soft);font-size:var(--fs-cap)}
+  .krds .post__d{margin-top:6px;color:var(--muted);font-size:var(--fs-body-sm);max-width:60em}
+  /* agenda */
+  .krds .agd{max-width:720px;margin-inline:auto}
+  .krds .agd__it{display:grid;grid-template-columns:84px 1fr;gap:20px}
+  .krds .agd__tm{font-weight:700;color:var(--brand);font-size:var(--fs-body-sm);font-variant-numeric:tabular-nums;padding-top:2px}
+  .krds .agd__bd{position:relative;padding:0 0 28px 24px}
+  .krds .agd__bd::before{content:"";position:absolute;left:0;top:6px;width:10px;height:10px;border-radius:999px;background:var(--brand)}
+  .krds .agd__bd::after{content:"";position:absolute;left:4px;top:22px;bottom:4px;width:2px;background:var(--line)}
+  .krds .agd__it:last-child .agd__bd{padding-bottom:0}
+  .krds .agd__it:last-child .agd__bd::after{display:none}
+  .krds .agd__t{font-size:var(--fs-h3);font-weight:700}
+  .krds .agd__d{margin-top:4px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* speakers */
+  .krds .spk__av{width:72px;height:72px;border-radius:999px;background:var(--bg-3);border:var(--bw) solid var(--line);overflow:hidden;margin-bottom:16px}
+  .krds .spk__av img{width:100%;height:100%;object-fit:cover;display:block}
+  .krds .spk__n{font-size:var(--fs-h3);font-weight:700}
+  .krds .spk__r{margin-top:4px;color:var(--brand);font-size:var(--fs-label);font-weight:600}
+  .krds .spk__d{margin-top:8px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* pricing */
+  .krds .prc{align-items:stretch}
+  .krds .prc__it{display:flex;flex-direction:column}
+  .krds .prc__hd{display:flex;align-items:center;gap:8px}
+  .krds .prc__n{font-size:var(--fs-h3);font-weight:700}
+  .krds .prc__p{margin-top:12px;font-size:var(--fs-h1);font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+  .krds .prc__d{margin-top:6px;color:var(--muted);font-size:var(--fs-body-sm)}
+  .krds .prc__pts{margin-top:18px;margin-bottom:22px}
+  .krds .prc__it .btn{margin-top:auto;justify-content:center}
+  .krds .prc__it--hot{border-color:var(--brand);box-shadow:var(--shadow-2)}
+  /* responsive */
+  @media (max-width:1023px){
+    .krds .ov{grid-template-columns:1fr;gap:28px}
+  }
+  @media (max-width:767px){
+    .krds .phero{padding:44px 0}
+    .krds .phero__t{font-size:26px}
+    .krds .phero__s{font-size:var(--fs-body)}
+    .krds .frow{grid-template-columns:1fr;gap:24px;padding:28px 0}
+    .krds .frow:nth-child(even) .frow__vis{order:0}
+    .krds .intro__x{font-size:var(--fs-body)}
+    .krds .agd__it{grid-template-columns:64px 1fr;gap:12px}
+    .krds .post__dt{margin-left:0;width:100%}
+    .krds .kform__card{padding:24px 20px}
+  }`;
+}
+
 /** 섹션 전용 CSS (.krds 스코프) */
 function sectionsCss() {
   return `
@@ -575,6 +1142,7 @@ const krdsPack = {
       layoutCss(),
       componentsCss(),
       sectionsCss(),
+      pageSectionsCss(),
     ].join('\n');
   },
 
@@ -587,13 +1155,40 @@ const krdsPack = {
   var DEMO_TEMPLATE={ sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}] };
   window.KRDS_PACK=krdsPack; window.KRDS_STYLE={id:"krds",name:"밝은 신뢰 블루",desc:"라이트 · 선명한 블루",swatch:"linear-gradient(135deg,#256ef4,#0b50d0)"};
   // 스튜디오 편집모드(섹션 순서/숨김)용 섹션 스펙 — nav/footer 고정, body=hero/feature/stat/cta
-  window.KRDS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",cta:"CTA"} };
+  window.KRDS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",cta:"CTA",pagehero:"페이지 헤더",overview:"개요",intro:"소개",featurerows:"기능 상세",gallery:"갤러리",compare:"비교",faq:"FAQ",testimonial:"후기",form:"신청 폼",infocards:"안내 카드",doclist:"안내 목록",steps:"이용 절차",bloglist:"소식",agenda:"프로그램",speakers:"연사",notice:"안내",pricing:"요금"} };
   window.renderKrdsPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
     if(shared.features&&shared.features.length)content.feature={eyebrow:"FEATURES",title:"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"check",title:f.title,desc:f.desc}})};
     if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
     if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.subcopy};
-    // 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
     var vol=opts.volume||"heavy";
+    // ── 페이지유형 라우팅(pagetypes.js 계약) ─────────────────────────
+    // data.pageType이 있고 window.PAGE_TYPES가 로드된 경우에만 유형별 구성으로 렌더.
+    // 둘 중 하나라도 없으면 아래 기존 경로 그대로(하위호환 — 출력 불변).
+    var PTreg=(typeof window!=="undefined"&&window.PAGE_TYPES)||null;
+    var ptDef=PTreg&&shared.pageType&&PTreg[shared.pageType];
+    if(ptDef){
+      var FB=(typeof window!=="undefined"&&window.SECTION_FALLBACK)||{};
+      var ALIAS={stats:"stat",metrics:"stat",quote:"testimonial",banner:"cta",showcase:"gallery"};
+      var body2=[];
+      (ptDef.sections||[]).forEach(function(s){
+        var t=ALIAS[s.type]||s.type;
+        if(!krdsPack.sections[t]){
+          // 미구현 타입 → SECTION_FALLBACK 순서로 대체(끝까지 없으면 생략 — 깨지지 않는 게 우선)
+          var alts=(FB[s.type]||[]).map(function(x){return ALIAS[x]||x});
+          t=null;
+          for(var i2=0;i2<alts.length;i2++){ if(krdsPack.sections[alts[i2]]){t=alts[i2];break} }
+          if(!t) return;
+        }
+        body2.push({type:t,tier:s.tier||"core"});
+      });
+      var hid2=shared.hiddenSections||[], shw2=shared.shownSections||[];
+      var vis2=body2.filter(function(s){var def=includesTier(vol,s.tier);return def?hid2.indexOf(s.type)<0:shw2.indexOf(s.type)>=0;});
+      var ord2=shared.sectionOrder||[];
+      if(ord2.length){ var by2={}; vis2.forEach(function(s){if(!by2[s.type])by2[s.type]=s}); var o2=[]; ord2.forEach(function(t2){if(by2[t2]){o2.push(by2[t2]);delete by2[t2]}}); vis2.forEach(function(s){if(o2.indexOf(s)<0)o2.push(s)}); vis2=o2; }
+      var effTpl2={sections:[{type:"nav",tier:"core"}].concat(vis2,[{type:"footer",tier:"core"}])};
+      return renderPage(buildPageDoc({template:effTpl2,volume:"heavy",content:content,sharedFacts:shared}),krdsPack,{motion:opts.motion||"subtle"});
+    }
+    // ── 기존 경로(하위호환) — 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
     var tpl=DEMO_TEMPLATE.sections, fixedT=window.KRDS_SECTION_SPEC.fixed;
     var head=tpl.filter(function(s){return s.type==="nav"});
     var foot=tpl.filter(function(s){return s.type==="footer"});

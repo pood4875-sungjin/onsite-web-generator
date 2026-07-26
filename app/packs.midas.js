@@ -185,7 +185,7 @@ const components = {
   card(inner) { return `<div class="p-card">${inner}</div>`; },
   icon(path) { return `<svg class="ico" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`; },
 };
-const ICONS = { bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6Z"/>', layers: '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 12l9 4 9-4"/>', sync: '<path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5"/><path d="M18 3v4h-4M6 21v-4h4"/>', check: '<path d="M20 6 9 17l-5-5"/>' };
+const ICONS = { bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6Z"/>', layers: '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 12l9 4 9-4"/>', sync: '<path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5"/><path d="M18 3v4h-4M6 21v-4h4"/>', check: '<path d="M20 6 9 17l-5-5"/>', user: '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/>' };
 const componentsCss = () => `
   /* btn-pill (source: fill-normal → hover inverse) */
   .midas .btn-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--brand-weak);color:var(--ink);font-family:inherit;font-weight:600;border:0;cursor:pointer;white-space:nowrap;transition:background .25s cubic-bezier(.33,1,.68,1),color .25s}
@@ -252,6 +252,13 @@ const sections = {
     <section class="container section cta"><div class="cta__in rise"><h2 class="cta__t" data-edit="bannerText">${esc(c.title || ctx.data.bannerText || '지금 시작해 보세요')}</h2><p class="cta__s" data-edit="bannerSub">${esc(c.subcopy || ctx.data.bannerSub || PH)}</p>
       <div class="cta__act">${C.button(esc(c.primaryCta || ctx.data.bannerCta || ctx.data.primaryCta || '바로가기'), { variant: 'primary', size: 'lg', edit: 'bannerCta' })}${(c.secondaryCta || ctx.data.bannerSecondaryCta) ? C.button(esc(c.secondaryCta || ctx.data.bannerSecondaryCta), { variant: 'ghost', size: 'lg', edit: 'bannerSecondaryCta' }) : ''}</div></div></section>`,
   comparison: (c, ctx) => {
+    // pagetypes.js 계약 데이터(compare{them,rows[{k,us,them}]})가 있으면 그 필드명 그대로 렌더/편집
+    const cp = ctx.data.compare;
+    if (cp && cp.rows && cp.rows.length) {
+      return `<section class="container section"><div class="rise"><div class="badge" data-edit="compareEyebrow">${esc(ctx.data.compareEyebrow || 'Comparison')}</div><h2 class="sec-title" data-edit="compareTitle">${esc(c.title || ctx.data.compareTitle || '기존 방식과의 차이')}</h2></div>
+      <div class="cmp rise"><div class="cmp__row cmp__head"><span></span><span class="cmp__us" data-edit="productName">${esc(ctx.data.productName || 'AX')}</span><span class="cmp__them" data-edit="compare.them">${esc(cp.them || '기존 방식')}</span></div>
+      ${cp.rows.map((r, i) => `<div class="cmp__row"><span class="cmp__k" data-edit="compare.rows.${i}.k">${esc(r.k)}</span><span class="cmp__v cmp__v--us cmp__v--chk" data-edit="compare.rows.${i}.us">${esc(String(r.us == null ? '' : r.us).replace(/^✓\s*/, ''))}</span><span class="cmp__v" data-edit="compare.rows.${i}.them">${esc(r.them)}</span></div>`).join('')}</div></section>`;
+    }
     const rows = c.items || (ctx.data.comparison && ctx.data.comparison.length ? ctx.data.comparison : [{ label: '온브랜드 일관성', a: '자동 보장', b: '수작업' }, { label: '생성 속도', a: '수 분', b: '수 일' }, { label: '유지보수', a: '토큰 한 곳', b: '페이지마다' }]);
     return `<section class="container section"><div class="rise"><div class="badge" data-edit="compareEyebrow">${esc(ctx.data.compareEyebrow || 'Comparison')}</div><h2 class="sec-title" data-edit="compareTitle">${esc(c.title || ctx.data.compareTitle || '기존 방식과의 차이')}</h2></div>
       <div class="cmp rise"><div class="cmp__row cmp__head"><span></span><span class="cmp__us" data-edit="productName">${esc(ctx.data.productName || 'AX')}</span><span class="cmp__them" data-edit="compareThem">${esc(ctx.data.compareThem || '기존 방식')}</span></div>
@@ -260,17 +267,119 @@ const sections = {
   testimonial: (c, ctx) => {
     const items = c.items || (ctx.data.testimonials && ctx.data.testimonials.length ? ctx.data.testimonials : [{ quote: '도입 후 페이지 제작이 며칠에서 몇 분으로 줄었어요.', who: '김기획 · 프로덕트' }, { quote: '브랜드 일관성 걱정이 사라졌습니다.', who: '이디자인 · 디자인' }, { quote: '개발 리소스 없이 사이트를 냈어요.', who: '박사업 · 사업개발' }]);
     return `<section class="container section"><div class="rise"><div class="badge" data-edit="caseEyebrow">${esc(ctx.data.caseEyebrow || 'Case Study')}</div><h2 class="sec-title" data-edit="caseTitle">${esc(c.title || ctx.data.caseTitle || '고객이 말하는 가치')}</h2></div>
-      <div class="card-grid" style="margin-top:40px">${items.map((t, i) => `<div class="p-card rise quote"><p class="quote__t" data-edit="testimonials.${i}.quote">"${esc(String(t.quote == null ? '' : t.quote).replace(/^"+|"+$/g, ''))}"</p><div class="quote__w" data-edit="testimonials.${i}.who">${esc(t.who)}</div></div>`).join('')}</div></section>`;
+      <div class="card-grid" style="margin-top:40px">${items.map((t, i) => {
+        // pagetypes.js 계약 필드({text,by})도 그대로 지원 — 편집 경로는 실제 데이터 필드명을 따른다
+        const useTxt = t.quote == null && t.text != null;
+        const q = useTxt ? t.text : t.quote, w = t.who == null && t.by != null ? t.by : t.who;
+        const qPath = useTxt ? `testimonials.${i}.text` : `testimonials.${i}.quote`;
+        const wPath = t.who == null && t.by != null ? `testimonials.${i}.by` : `testimonials.${i}.who`;
+        return `<div class="p-card rise quote"><p class="quote__t" data-edit="${qPath}">"${esc(String(q == null ? '' : q).replace(/^"+|"+$/g, ''))}"</p><div class="quote__w" data-edit="${wPath}">${esc(w)}</div></div>`;
+      }).join('')}</div></section>`;
   },
   blog: (c, ctx) => {
     const posts = c.items || (ctx.data.posts && ctx.data.posts.length ? ctx.data.posts : [{ tag: 'Guide', title: '디자인 토큰 시작하기', desc: PH }, { tag: 'Story', title: 'AX로 사이트 만든 이야기', desc: PH }, { tag: 'Update', title: '9월 릴리즈 노트', desc: PH }]);
     return `<section class="container section"><div class="rise"><div class="badge" data-edit="blogEyebrow">${esc(ctx.data.blogEyebrow || 'Blog')}</div><h2 class="sec-title" data-edit="blogTitle">${esc(c.title || ctx.data.blogTitle || '콘텐츠 · 자료실')}</h2></div>
-      <div class="card-grid" style="margin-top:40px">${posts.map((p, i) => `<a class="p-card rise post" href="#"><div class="p-card__media post__thumb"></div><div class="p-card__body"><span class="post__tag" data-edit="posts.${i}.tag">${esc(p.tag || 'Post')}</span><h3 class="p-card__title" data-edit="posts.${i}.title">${esc(p.title)}</h3><p class="p-card__desc" data-edit="posts.${i}.desc">${esc(p.desc || PH)}</p></div></a>`).join('')}</div></section>`;
+      <div class="card-grid" style="margin-top:40px">${posts.map((p, i) => `<a class="p-card rise post" href="#"><div class="p-card__media post__thumb"></div><div class="p-card__body"><span class="post__tag" data-edit="posts.${i}.tag">${esc(p.tag || 'Post')}</span>${p.date ? `<span class="post__date" data-edit="posts.${i}.date">${esc(p.date)}</span>` : ''}<h3 class="p-card__title" data-edit="posts.${i}.title">${esc(p.title)}</h3><p class="p-card__desc" data-edit="posts.${i}.desc">${esc(p.desc || PH)}</p></div></a>`).join('')}</div></section>`;
   },
   faq: (c, ctx) => {
-    const items = c.items || (ctx.data.faqs && ctx.data.faqs.length ? ctx.data.faqs : [{ q: '도입에 개발이 필요한가요?', a: '아니요. 대화로 값만 채우면 됩니다.' }, { q: '디자인을 바꿀 수 있나요?', a: '스타일 팩을 교체하면 전체 룩이 바뀝니다.' }, { q: '다국어를 지원하나요?', a: '한국어·영어·일본어·중국어를 지원합니다.' }]);
+    // 편집 경로는 실제 데이터 필드명(faqs=기존, faq=pagetypes.js 계약)을 따라간다
+    let items = c.items, base = 'faqs';
+    if (!items && ctx.data.faq && ctx.data.faq.length) { items = ctx.data.faq; base = 'faq'; }
+    if (!items) items = (ctx.data.faqs && ctx.data.faqs.length ? ctx.data.faqs : [{ q: '도입에 개발이 필요한가요?', a: '아니요. 대화로 값만 채우면 됩니다.' }, { q: '디자인을 바꿀 수 있나요?', a: '스타일 팩을 교체하면 전체 룩이 바뀝니다.' }, { q: '다국어를 지원하나요?', a: '한국어·영어·일본어·중국어를 지원합니다.' }]);
     return `<section class="container section"><div class="rise"><div class="badge" data-edit="faqEyebrow">${esc(ctx.data.faqEyebrow || 'FAQ')}</div><h2 class="sec-title" data-edit="faqTitle">${esc(c.title || ctx.data.faqTitle || '자주 묻는 질문')}</h2></div>
-      <div class="faq rise" style="margin-top:32px">${items.map((f, i) => `<details class="faq__it"${i === 0 ? ' open' : ''}><summary class="faq__q" data-edit="faqs.${i}.q">${esc(f.q)}</summary><div class="faq__a" data-edit="faqs.${i}.a">${esc(f.a)}</div></details>`).join('')}</div></section>`;
+      <div class="faq rise" style="margin-top:32px">${items.map((f, i) => `<details class="faq__it"${i === 0 ? ' open' : ''}><summary class="faq__q" data-edit="${base}.${i}.q">${esc(f.q)}</summary><div class="faq__a" data-edit="${base}.${i}.a">${esc(f.a)}</div></details>`).join('')}</div></section>`;
+  },
+  /* ── 페이지 유형 공용 어휘 섹션 (pagetypes.js 계약 — pageScaffold 필드명 그대로 읽고 편집 경로도 동일) ── */
+  // 서브페이지용 얕은 히어로 — 페이지명 + 한 줄 (히어로와 같은 톤, 볼륨만 낮게)
+  pagehero: (c, ctx) => {
+    const def = ((typeof window !== 'undefined' && window.PAGE_TYPES) || {})[ctx.data.pageType] || null;
+    const t = c.title || ctx.data.pageTitle || (def && def.label) || name(ctx);
+    const s = c.sub || ctx.data.pageSub || (def && def.use) || PH;
+    return `
+    <section class="pagehero"><div class="container">
+      <h1 class="pagehero__t" data-edit="pageTitle">${esc(t)}</h1>
+      <p class="pagehero__s rise" data-edit="pageSub">${esc(s)}</p>
+    </div></section>`;
+  },
+  overview: (c, ctx) => {
+    const o = ctx.data.overview || c || {};
+    const points = o.points && o.points.length ? o.points : [];
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="overview.title">${esc(o.title || '개요')}</h2><p class="sec-lead" data-edit="overview.text">${esc(o.text || PH)}</p></div>
+      ${points.length ? `<ul class="pts pts--center rise">${points.map((p, i) => `<li class="pts__it" data-edit="overview.points.${i}">${esc(p)}</li>`).join('')}</ul>` : ''}</section>`;
+  },
+  intro: (c, ctx) => {
+    const o = ctx.data.intro || c || {};
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="intro.title">${esc(o.title || '소개')}</h2><p class="sec-lead" data-edit="intro.text">${esc(o.text || PH)}</p></div></section>`;
+  },
+  // 좌우 교차 상세 기능 — 텍스트/이미지 슬롯(data-img="rowN") 교대 배치
+  featurerows: (c, ctx) => {
+    const rows = (c.items && c.items.length ? c.items : null) || (ctx.data.featureRows && ctx.data.featureRows.length ? ctx.data.featureRows : [
+      { title: '대표 기능 하나', desc: PH, points: ['포인트 1', '포인트 2'] },
+      { title: '대표 기능 둘', desc: PH, points: ['포인트 1', '포인트 2'] },
+    ]);
+    return `
+    <section class="container section">${rows.map((r, i) => `
+      <div class="frow rise">
+        <div class="frow__txt"><h3 class="frow__t" data-edit="featureRows.${i}.title">${esc(r.title)}</h3><p class="frow__d" data-edit="featureRows.${i}.desc">${esc(r.desc || PH)}</p>${(r.points && r.points.length) ? `<ul class="pts">${r.points.map((p, j) => `<li class="pts__it" data-edit="featureRows.${i}.points.${j}">${esc(p)}</li>`).join('')}</ul>` : ''}</div>
+        <div class="frow__media" data-img="row${i}">${(ctx.data.images && ctx.data.images['row' + i]) ? `<img src="${esc(ctx.data.images['row' + i])}" alt="">` : `<span class="frow__ph">이미지 영역 · 편집에서 교체</span>`}</div>
+      </div>`).join('')}</section>`;
+  },
+  gallery: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.gallery && ctx.data.gallery.length ? ctx.data.gallery : [{ label: 'SCREEN 1' }, { label: 'SCREEN 2' }, { label: 'SCREEN 3' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="galleryTitle">${esc(c.title || ctx.data.galleryTitle || '화면 미리보기')}</h2></div>
+      <div class="card-grid" style="margin-top:40px">${items.map((g, i) => `<figure class="gal p-card rise"><div class="p-card__media" data-img="gallery${i}">${(ctx.data.images && ctx.data.images['gallery' + i]) ? `<img class="gal__img" src="${esc(ctx.data.images['gallery' + i])}" alt="">` : `<span class="gal__ph">이미지 영역 · 편집에서 교체</span>`}</div><figcaption class="gal__cap" data-edit="gallery.${i}.label">${esc(g.label || 'SCREEN')}</figcaption></figure>`).join('')}</div></section>`;
+  },
+  // 정적 데모 폼 — input은 placeholder만, 제출 버튼은 type=button(동작 없음)
+  form: (c, ctx) => {
+    const f = ctx.data.form || c || {};
+    const fields = f.fields && f.fields.length ? f.fields : ['회사명', '담당자 이름', '이메일', '문의 내용'];
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="form.title">${esc(f.title || '문의하기')}</h2><p class="sec-lead" data-edit="form.sub">${esc(f.sub || '남겨주시면 빠르게 연락드립니다.')}</p></div>
+      <div class="fm rise">${fields.map((fd, i) => {
+        const long = i === fields.length - 1;
+        return `<label class="fm__field"><span class="fm__label" data-edit="form.fields.${i}">${esc(fd)}</span>${long ? '<textarea class="fm__input fm__area" rows="4" placeholder="내용을 입력해 주세요"></textarea>' : '<input class="fm__input" type="text" placeholder="입력해 주세요">'}</label>`;
+      }).join('')}
+      <div class="fm__act"><button type="button" class="btn-pill btn-pill--lg" data-edit="form.submit">${esc(f.submit || '보내기')}</button></div></div></section>`;
+  },
+  infocards: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.infoCards && ctx.data.infoCards.length ? ctx.data.infoCards : [{ title: '이메일', text: 'contact@example.com' }, { title: '전화', text: '02-000-0000' }, { title: '도입 절차', text: '문의 → 상담 → 견적 → 도입' }]);
+    return `
+    <section class="container section"><div class="card-grid">${items.map((it, i) => `<div class="icard rise"><h3 class="icard__t" data-edit="infoCards.${i}.title">${esc(it.title)}</h3><p class="icard__d" data-edit="infoCards.${i}.text">${esc(it.text)}</p></div>`).join('')}</div></section>`;
+  },
+  doclist: (c, ctx) => {
+    const docs = (c.items && c.items.length ? c.items : null) || (ctx.data.docs && ctx.data.docs.length ? ctx.data.docs : [{ title: '시작하기', desc: '설치와 첫 설정' }, { title: '핵심 기능', desc: '주요 기능 사용법' }, { title: '관리자 가이드', desc: '권한·설정 관리' }, { title: '자주 묻는 질문', desc: '문제 해결 모음' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="docsTitle">${esc(c.title || ctx.data.docsTitle || '가이드 문서')}</h2></div>
+      <div class="doc-grid" style="margin-top:40px">${docs.map((d, i) => `<a class="doc rise" href="#"><span class="doc__t" data-edit="docs.${i}.title">${esc(d.title)}</span><span class="doc__d" data-edit="docs.${i}.desc">${esc(d.desc)}</span></a>`).join('')}</div></section>`;
+  },
+  // 시작 절차 — 번호는 CSS counter(장식은 텍스트에 넣지 않는다)
+  steps: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.steps && ctx.data.steps.length ? ctx.data.steps : [{ title: '가입', text: '계정을 만듭니다.' }, { title: '설정', text: '기본 정보를 입력합니다.' }, { title: '시작', text: '첫 결과물을 만듭니다.' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="stepsTitle">${esc(c.title || ctx.data.stepsTitle || '시작 절차')}</h2></div>
+      <ol class="stp" style="margin-top:40px">${items.map((s, i) => `<li class="stp__it rise"><h3 class="stp__t" data-edit="steps.${i}.title">${esc(s.title)}</h3><p class="stp__d" data-edit="steps.${i}.text">${esc(s.text)}</p></li>`).join('')}</ol></section>`;
+  },
+  // 행사 타임라인 — 시간(모노) · 도트/라인(CSS) · 내용
+  agenda: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.agenda && ctx.data.agenda.length ? ctx.data.agenda : [{ time: '14:00', title: '오프닝', desc: '환영 인사' }, { time: '14:30', title: '세션 1', desc: '주제 발표' }, { time: '15:30', title: '세션 2', desc: '사례 공유' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="agendaTitle">${esc(c.title || ctx.data.agendaTitle || '프로그램 안내')}</h2></div>
+      <div class="agd rise" style="margin-top:40px">${items.map((a, i) => `<div class="agd__it"><span class="agd__time" data-edit="agenda.${i}.time">${esc(a.time)}</span><span class="agd__dot" aria-hidden="true"></span><div class="agd__body"><h3 class="agd__t" data-edit="agenda.${i}.title">${esc(a.title)}</h3><p class="agd__d" data-edit="agenda.${i}.desc">${esc(a.desc || '')}</p></div></div>`).join('')}</div></section>`;
+  },
+  speakers: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.speakers && ctx.data.speakers.length ? ctx.data.speakers : [{ name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' }, { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' }, { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="speakersTitle">${esc(c.title || ctx.data.speakersTitle || '연사 소개')}</h2></div>
+      <div class="card-grid" style="margin-top:40px">${items.map((s, i) => `<div class="spk rise"><div class="spk__avatar" data-img="speaker${i}">${(ctx.data.images && ctx.data.images['speaker' + i]) ? `<img src="${esc(ctx.data.images['speaker' + i])}" alt="">` : C.icon(ICONS.user)}</div><h3 class="spk__n" data-edit="speakers.${i}.name">${esc(s.name)}</h3><div class="spk__r" data-edit="speakers.${i}.role">${esc(s.role)}</div><p class="spk__d" data-edit="speakers.${i}.desc">${esc(s.desc)}</p></div>`).join('')}</div></section>`;
+  },
+  notice: (c, ctx) => {
+    const items = (c.items && c.items.length ? c.items : null) || (ctx.data.notices && ctx.data.notices.length ? ctx.data.notices : [{ title: '참가 안내', text: '사전 등록 필수, 선착순 마감.' }, { title: '주차 안내', text: '행사장 주차 지원 여부를 안내하세요.' }, { title: '문의', text: 'event@example.com' }]);
+    return `
+    <section class="container section"><div class="rise"><h2 class="sec-title" data-edit="noticeTitle">${esc(c.title || ctx.data.noticeTitle || '안내 사항')}</h2></div>
+      <div class="ntc rise" style="margin-top:32px">${items.map((n, i) => `<div class="ntc__it"><span class="ntc__t" data-edit="notices.${i}.title">${esc(n.title)}</span><span class="ntc__d" data-edit="notices.${i}.text">${esc(n.text)}</span></div>`).join('')}</div></section>`;
   },
   footer: (c, ctx) => `
     <footer class="footer"><div class="footer__inner">
@@ -278,6 +387,11 @@ const sections = {
       <div class="footer__links">${(c.columns ? c.columns.flatMap((col) => col.items) : (ctx.data.footerLinks && ctx.data.footerLinks.length ? ctx.data.footerLinks : ['이용약관', '개인정보', '문의'])).map((l, i) => `<a href="#" data-edit="footerLinks.${i}">${esc(l)}</a>`).join('')}<span class="footer__copy" data-edit="footerCopyright">${ctx.data.footerCopyright ? esc(ctx.data.footerCopyright) : `© 2026 ${name(ctx)}`}</span></div>
     </div></footer>`,
 };
+// pagetypes.js 정식 어휘 별칭 — 같은 렌더러를 canonical 이름으로도 접근 (data-section 이름은 요청된 타입 그대로 남는다)
+sections.stats = sections.stat;           // stats(정식) ↔ stat(기존)
+sections.compare = sections.comparison;   // compare(정식) ↔ comparison(기존, compare{them,rows} 계약 지원)
+sections.bloglist = sections.blog;        // bloglist(정식) ↔ blog(기존, posts 계약 동일)
+sections.showcase = sections.gallery;     // showcase(main 유형) ↔ gallery(신규) — 화면 그리드 동일 의미
 const sectionsCss = () => `
   /* 부유 광원 (source page-gradient, blur 100, float) */
   .midas .pg{position:absolute;pointer-events:none;overflow:hidden;filter:blur(100px);z-index:0}
@@ -348,7 +462,95 @@ const sectionsCss = () => `
   .midas .footer__l{display:flex;align-items:center;gap:12px}
   .midas .footer__links{display:flex;align-items:center;gap:20px;flex-wrap:wrap}.midas .footer__links a:hover{color:var(--ink)}
   .midas .footer__copy{color:var(--soft);font-size:var(--fs-cap)}
-  @media (max-width:767px){.midas .hero{padding:120px 0 96px}.midas .hero__t{font-size:40px;letter-spacing:-2px}.midas .hero__lead,.midas .cta__s{font-size:16px}.midas .stat__v{font-size:36px}.midas [data-section]+[data-section] .section{padding-top:72px}}`;
+  /* ---- 페이지 유형 공용 어휘 섹션 ---- */
+  /* pagehero — hero와 같은 톤(Poppins·센터), 서브페이지용 낮은 볼륨 */
+  .midas .pagehero{position:relative;padding:150px 0 0;text-align:center}
+  .midas .pagehero__t{font-family:var(--font-display);font-size:48px;font-weight:500;letter-spacing:-2px;color:var(--ink);line-height:var(--lh-tight)}
+  .midas .pagehero__s{margin:18px auto 0;font-size:18px;line-height:1.6;color:var(--muted);max-width:36em}
+  /* 좌정렬 콘텐츠 블록 — .section>.rise 센터 규칙보다 뒤에 선언(동일 특이성, 후행 우선) */
+  .midas .section > .frow.rise,.midas .section > .fm.rise,.midas .section > .agd.rise,.midas .section > .ntc.rise{text-align:left}
+  /* 섹션 리드문 + 체크 포인트(overview/intro/form 공용) — ✓는 CSS 장식 */
+  .midas .sec-lead{margin:16px auto 0;font-size:18px;line-height:1.6;color:var(--muted);max-width:38em}
+  .midas .pts{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;text-align:left}
+  .midas .pts__it{position:relative;padding-left:26px;font-size:15px;color:var(--ink-2)}
+  .midas .pts__it::before{content:'✓';position:absolute;left:0;top:0;font-weight:600;color:var(--ink)}
+  .midas .pts--center{margin-top:28px;flex-direction:row;justify-content:center;flex-wrap:wrap;gap:12px}
+  .midas .pts--center .pts__it{padding:8px 16px 8px 34px;border:var(--bw) solid var(--line-2);border-radius:999px;background:var(--bg)}
+  .midas .pts--center .pts__it::before{left:14px;top:8px}
+  /* featurerows — 좌우 교차, 짝수 행은 미디어가 왼쪽 */
+  .midas .frow{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .midas .frow+.frow{margin-top:96px}
+  .midas .frow:nth-of-type(even) .frow__media{order:-1}
+  .midas .frow__t{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:600;letter-spacing:-.5px}
+  .midas .frow__d{margin-top:14px;font-size:var(--fs-body);line-height:1.6;color:var(--muted)}
+  .midas .frow__media{aspect-ratio:445/297;border-radius:var(--radius-lg);border:1px dashed var(--line-2);background:var(--bg-2);display:grid;place-items:center;color:var(--soft);font-size:14px;overflow:hidden}
+  .midas .frow__media img{width:100%;height:100%;object-fit:cover;display:block}
+  /* gallery — p-card__media 재사용 + 캡션 */
+  .midas .gal{margin:0}
+  .midas .gal__ph{color:var(--soft);font-size:13px}
+  .midas .gal__img{width:100%;height:100%;object-fit:cover;display:block}
+  .midas .gal__cap{margin-top:14px;text-align:center;font-size:13px;font-weight:600;letter-spacing:.5px;color:var(--muted)}
+  /* form — 정적 데모(1열, ux-patterns 단일 컬럼 폼) */
+  .midas .fm{max-width:520px;margin:40px auto 0;display:flex;flex-direction:column;gap:18px}
+  .midas .fm__field{display:flex;flex-direction:column;gap:8px}
+  .midas .fm__label{font-size:var(--fs-label);font-weight:600;color:var(--ink)}
+  .midas .fm__input{font:inherit;font-size:15px;line-height:1.5;color:var(--ink);background:var(--bg);border:var(--bw) solid var(--line-2);border-radius:var(--radius);padding:13px 16px;outline:none;transition:border-color .2s}
+  .midas .fm__input::placeholder{color:var(--soft)}
+  .midas .fm__input:focus{border-color:var(--ink)}
+  .midas .fm__area{resize:vertical;min-height:120px}
+  .midas .fm__act{display:flex;justify-content:center;margin-top:10px}
+  /* infocards */
+  .midas .icard{padding:28px;border:var(--bw) solid var(--line-2);border-radius:var(--radius-lg);background:var(--bg);text-align:left}
+  .midas .icard__t{font-family:var(--font-display);font-size:18px;font-weight:600;letter-spacing:-.2px}
+  .midas .icard__d{margin-top:10px;font-size:15px;line-height:1.6;color:var(--muted)}
+  /* doclist — 화살표는 CSS ::after */
+  .midas .doc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  .midas .doc{display:flex;flex-direction:column;gap:8px;padding:26px 28px;border:var(--bw) solid var(--line-2);border-radius:var(--radius-lg);background:var(--bg);text-align:left;transition:border-color .25s,transform .25s cubic-bezier(.33,1,.68,1)}
+  .midas .doc:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .midas .doc__t{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+  .midas .doc__t::after{content:'→';font-family:var(--font);transition:transform .25s}
+  .midas .doc:hover .doc__t::after{transform:translateX(3px)}
+  .midas .doc__d{font-size:14px;color:var(--muted)}
+  /* steps — 번호는 CSS counter */
+  .midas .stp{list-style:none;counter-reset:stp;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+  .midas .stp__it{counter-increment:stp;padding:28px;border:var(--bw) solid var(--line-2);border-radius:var(--radius-lg);background:var(--bg);text-align:left}
+  .midas .stp__it::before{content:counter(stp,decimal-leading-zero);display:block;margin-bottom:16px;font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:1px;color:var(--soft)}
+  .midas .stp__t{font-family:var(--font-display);font-size:20px;font-weight:600}
+  .midas .stp__d{margin-top:8px;font-size:15px;line-height:1.6;color:var(--muted)}
+  /* agenda — 타임라인(도트·라인은 CSS) */
+  .midas .agd{max-width:640px;margin-left:auto;margin-right:auto}
+  .midas .agd__it{display:grid;grid-template-columns:72px 20px 1fr;column-gap:16px;position:relative;padding-bottom:32px}
+  .midas .agd__it:last-child{padding-bottom:0}
+  .midas .agd__time{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--muted);padding-top:4px;text-align:right}
+  .midas .agd__dot{position:relative}
+  .midas .agd__dot::before{content:'';position:absolute;left:50%;top:7px;width:9px;height:9px;border-radius:999px;background:var(--ink);transform:translateX(-50%)}
+  .midas .agd__dot::after{content:'';position:absolute;left:50%;top:22px;bottom:-7px;width:1px;background:var(--line-2);transform:translateX(-50%)}
+  .midas .agd__it:last-child .agd__dot::after{display:none}
+  .midas .agd__t{font-size:17px;font-weight:600}
+  .midas .agd__d{margin-top:6px;font-size:15px;line-height:1.6;color:var(--muted)}
+  /* speakers — 인물 카드 */
+  .midas .spk{text-align:center}
+  .midas .spk__avatar{width:96px;height:96px;margin:0 auto 18px;border-radius:999px;background:var(--bg-2);border:var(--bw) solid var(--line-2);display:grid;place-items:center;overflow:hidden;color:var(--ink)}
+  .midas .spk__avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .midas .spk__avatar .ico{width:36px;height:36px}
+  .midas .spk__n{font-family:var(--font-display);font-size:20px;font-weight:600}
+  .midas .spk__r{margin-top:4px;font-size:14px;font-weight:500;color:var(--muted)}
+  .midas .spk__d{margin-top:10px;font-size:15px;color:var(--muted)}
+  /* notice — 제목/내용 2열 행 리스트(faq와 같은 폭 리듬) */
+  .midas .ntc{max-width:760px;margin-left:auto;margin-right:auto}
+  .midas .ntc__it{display:grid;grid-template-columns:160px 1fr;gap:16px;padding:18px 4px;border-bottom:var(--bw) solid var(--line-2)}
+  .midas .ntc__t{font-size:15px;font-weight:600;color:var(--ink)}
+  .midas .ntc__d{font-size:15px;line-height:1.6;color:var(--muted)}
+  /* compare(pagetypes 계약 경로) — ✓는 CSS 장식 */
+  .midas .cmp__v--chk::before{content:'✓ '}
+  /* blog 날짜(posts.date 있을 때만) */
+  .midas .post__date{display:inline-block;font-size:12px;color:var(--soft);margin:0 0 8px 10px}
+  @media (max-width:767px){.midas .hero{padding:120px 0 96px}.midas .hero__t{font-size:40px;letter-spacing:-2px}.midas .hero__lead,.midas .cta__s{font-size:16px}.midas .stat__v{font-size:36px}.midas [data-section]+[data-section] .section{padding-top:72px}
+    .midas .pagehero{padding:110px 0 0}.midas .pagehero__t{font-size:34px;letter-spacing:-1px}.midas .pagehero__s{font-size:16px}
+    .midas .frow{grid-template-columns:1fr;gap:24px}.midas .frow:nth-of-type(even) .frow__media{order:0}.midas .frow+.frow{margin-top:64px}
+    .midas .doc-grid,.midas .stp{grid-template-columns:1fr}
+    .midas .agd__it{grid-template-columns:56px 16px 1fr;column-gap:10px}
+    .midas .ntc__it{grid-template-columns:1fr;gap:4px}}`;
 
 // ── ⑥ 팩 조립 ──
 const midasPack = {
@@ -393,19 +595,42 @@ const midasPack = {
 
   var DEMO_TEMPLATE={sections:[{type:"nav",tier:"core"},{type:"hero",tier:"core"},{type:"feature",tier:"core"},{type:"stat",tier:"mid"},{type:"comparison",tier:"rich"},{type:"testimonial",tier:"rich"},{type:"blog",tier:"rich"},{type:"faq",tier:"rich"},{type:"cta",tier:"rich"},{type:"footer",tier:"core"}]};
   window.MIDAS_PACK=midasPack; window.MIDAS_STYLE={id:"midas",name:"MIDAS AX",desc:"모노크롬 · 라이트 · Poppins",swatch:"linear-gradient(135deg,#e9eaec 0%,#1b1c1e 100%)"};
-  window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",comparison:"비교",testimonial:"고객사례",blog:"블로그",faq:"FAQ",cta:"CTA"} };
+  window.MIDAS_SECTION_SPEC={ template:DEMO_TEMPLATE.sections, fixed:["nav","footer"], labels:{hero:"히어로",feature:"기능",stat:"지표",comparison:"비교",testimonial:"고객사례",blog:"블로그",faq:"FAQ",cta:"CTA",
+    pagehero:"페이지 히어로",overview:"개요",intro:"소개",featurerows:"상세 기능",gallery:"갤러리",showcase:"갤러리",form:"문의 폼",infocards:"안내 카드",doclist:"문서",steps:"절차",bloglist:"블로그",agenda:"아젠다",speakers:"연사",notice:"안내",stats:"지표",compare:"비교"} };
   window.renderMidasPage=function(shared,opts){opts=opts||{};shared=shared||{};var content={};
     if(shared.features&&shared.features.length)content.feature={eyebrow:shared.featureEyebrow||"FEATURES",title:shared.featureTitle||"핵심 기능",items:shared.features.map(function(f){return{icon:f.icon||"bolt",title:f.title,desc:f.desc}})};
-    if(shared.stats&&shared.stats.length)content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};
+    if(shared.stats&&shared.stats.length){content.stat={items:shared.stats.map(function(s){return{value:s.value,label:s.label}})};content.stats=content.stat;}
     if(shared.bannerText)content.cta={title:shared.bannerText,primaryCta:shared.bannerCta||shared.primaryCta,subcopy:shared.bannerSub||shared.subcopy};
-    // 섹션 순서/숨김/추가 반영 (nav 최상단·footer 최하단 고정)
-    var vol=opts.volume||"heavy", tpl=DEMO_TEMPLATE.sections, fixedT=window.MIDAS_SECTION_SPEC.fixed;
-    var head=tpl.filter(function(s){return s.type==="nav"}), foot=tpl.filter(function(s){return s.type==="footer"});
-    var bodyTpl=tpl.filter(function(s){return fixedT.indexOf(s.type)<0});
-    var hidden=shared.hiddenSections||[], shown=shared.shownSections||[];
-    var vis=bodyTpl.filter(function(s){var def=includesTier(vol,s.tier);return def?hidden.indexOf(s.type)<0:shown.indexOf(s.type)>=0;});
-    var order=shared.sectionOrder||[];
-    if(order.length){ var by={}; vis.forEach(function(s){by[s.type]=s}); var ord=[]; order.forEach(function(t){if(by[t])ord.push(by[t])}); vis.forEach(function(s){if(order.indexOf(s.type)<0)ord.push(s)}); vis=ord; }
-    var effTpl={ sections: head.concat(vis, foot) };
+    var vol=opts.volume||"heavy";
+    // 섹션 숨김/추가/순서 반영(스튜디오 레일) — 키는 요청된 원 타입명 기준
+    var hidden=shared.hiddenSections||[], shown=shared.shownSections||[], order=shared.sectionOrder||[];
+    function applyVis(list,keyOf){
+      var vis=list.filter(function(s){var def=includesTier(vol,s.tier);var k=keyOf(s);return def?hidden.indexOf(k)<0:shown.indexOf(k)>=0;});
+      if(order.length){ var by={}; vis.forEach(function(s){by[keyOf(s)]=s}); var ord=[]; order.forEach(function(t){if(by[t])ord.push(by[t])}); vis.forEach(function(s){if(order.indexOf(keyOf(s))<0)ord.push(s)}); vis=ord; }
+      return vis;
+    }
+    var effTpl;
+    var ptDef=shared.pageType&&typeof window!=="undefined"&&window.PAGE_TYPES?window.PAGE_TYPES[shared.pageType]:null;
+    if(ptDef&&ptDef.sections&&ptDef.sections.length){
+      // 페이지 유형 라우팅(pagetypes.js) — 유형의 섹션 구성을 tier×volume으로 필터, 렌더러 없으면 SECTION_FALLBACK 대체, 끝까지 없으면 생략
+      var fb=window.SECTION_FALLBACK||{};
+      var resolved=[], seen={};
+      ptDef.sections.forEach(function(s){
+        var t=sections[s.type]?s.type:null;
+        if(!t){var alts=fb[s.type]||[];for(var i=0;i<alts.length;i++){if(sections[alts[i]]){t=alts[i];break;}}}
+        if(!t)return;                       // 렌더러도 대체도 없음 → 생략
+        if(t!==s.type&&seen[t])return;      // 대체 결과가 이미 있는 섹션과 겹치면 중복 방지
+        seen[t]=1; resolved.push({type:t,tier:s.tier,key:s.type});
+      });
+      var visPt=applyVis(resolved,function(s){return s.key});
+      effTpl={ sections:[{type:"nav",tier:"core"}].concat(visPt.map(function(s){return{type:s.type,tier:s.tier}}),[{type:"footer",tier:"core"}]) };
+    }else{
+      // 기존 동작(하위호환) — 데모 템플릿 기준 (nav 최상단·footer 최하단 고정)
+      var tpl=DEMO_TEMPLATE.sections, fixedT=window.MIDAS_SECTION_SPEC.fixed;
+      var head=tpl.filter(function(s){return s.type==="nav"}), foot=tpl.filter(function(s){return s.type==="footer"});
+      var bodyTpl=tpl.filter(function(s){return fixedT.indexOf(s.type)<0});
+      var vis=applyVis(bodyTpl,function(s){return s.type});
+      effTpl={ sections: head.concat(vis, foot) };
+    }
     return renderPage(buildPageDoc({template:effTpl,volume:"heavy",content:content,sharedFacts:shared}),midasPack,{motion:opts.motion||"subtle"});};
 })();

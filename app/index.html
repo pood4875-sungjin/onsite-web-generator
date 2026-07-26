@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -558,13 +558,17 @@
           ia.forEach(ip=>{
             const sub=newPage(ip.type, full.shared||{}, null);
             sub.name=ip.name;
-            sub.data=Object.assign(sub.data, {
+            // 유형 스캐폴드(pagetypes.js) 먼저 깔고 → 공통 시드 → AI가 준 유형별 섹션 필드(faq/agenda 등) 순으로 덮음
+            const scaf = window.pageScaffold ? pageScaffold(ip.type, full.shared||{}) : {};
+            sub.data=Object.assign(sub.data, scaf, {
               productName:seed.productName, primaryCta:seed.primaryCta,
               tagline:ip.tagline||'', subcopy:ip.subcopy||'',
               // 비워두면 팩 기본 예시문("아토믹 생성" 등)이 그대로 보이므로 페이지별 카드 + 공통 지표로 채움
               features:(ip.features&&ip.features.length)?ip.features:seed.features,
               stats:seed.stats, bannerText:seed.bannerText, bannerCta:seed.bannerCta,
               footerLinks:seed.footerLinks, footerCopyright:seed.footerCopyright });
+            ['overview','intro','featureRows','gallery','compare','faq','form','infoCards','docs','steps','posts','agenda','speakers','notices','testimonials'].forEach(k=>{ if(ip[k]!=null) sub.data[k]=ip[k]; });
+            sub.data.pageType=ip.type;
             sub.volume='heavy';
             // 각 하위 페이지는 히어로만 채워진 골격 → 스튜디오 채팅으로 이어서 채우게 안내
             sub.chat={ log:[{r:'bot',t:_L('이 페이지는 메뉴 구성에 맞춰 만들어둔 골격이에요. 채우고 싶은 내용을 말해주세요.')}], idx:9, generated:true };

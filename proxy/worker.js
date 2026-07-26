@@ -127,13 +127,18 @@ const WEB_SYSTEM =
   '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
   '"features":[{"title":str,"desc":str}],"stats":[{"value":str,"label":str}],' +
   '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str],' +
-  '"pages":[{"name":str,"type":"features"|"pricing"|"landing","tagline":str,"subcopy":str,' +
+  '"pages":[{"name":str,"type":"product"|"features"|"pricing"|"faq"|"contact"|"manual"|"blog"|"landing"|"event","tagline":str,"subcopy":str,' +
   '"features":[{"title":str,"desc":str}]}]}\n' +
   '규칙:\n' +
   '- 모든 필드를 빠짐없이 채운다. 페이지는 완성된 모습으로 나가야 한다.\n' +
   '- pages = 사이트의 메인홈 외 하위 페이지(IA). kind=multi이고 브리프에 메뉴·페이지 구성(IA)이 드러날 때만 채운다.\n' +
   '  브리프에 IA 언급이 없거나 kind=single이면 반드시 빈 배열 []. 지어내지 마라.\n' +
   '  name=메뉴에 걸릴 이름(2~8자), type=성격이 가장 가까운 것, tagline/subcopy=그 페이지 히어로 문구,\n' +
+  '- 페이지 유형별 추가 필드(해당 유형 페이지 객체 안에, 브리프에 근거 있을 때 채움):\n' +
+  '  product:{overview:{title,text,points:[str]},featureRows:[{title,desc,points:[str]}],compare:{them,rows:[{k,us,them}]}} | ' +
+  'faq·pricing·features:{faq:[{q,a}]} | contact:{form:{title,sub,fields:[str],submit},infoCards:[{title,text}]} | ' +
+  'manual:{docs:[{title,desc}],steps:[{title,text}]} | blog:{posts:[{title,desc,date,tag}]} | ' +
+  'event:{overview:{title,text,points:[str]},intro:{title,text},agenda:[{time,title,desc}],speakers:[{name,role,desc}],notices:[{title,text}]} | 공통:{testimonials:[{text,by}]}\n' +
   '  features=그 페이지 주제에 맞는 카드 3개(메인홈 것과 겹치지 않게). 최대 6개 페이지, 메인홈은 제외.\n' +
   '- productName은 브리프에 있는 실제 제품·서비스명을 그대로 쓴다. 브리프에 없어 지어냈다면 assumed에 "productName"을 넣어라.\n' +
   '- 브리프(특히 plan)에 근거 있는 건 그대로 반영. 근거 없는 항목은 제품 맥락에 맞는 그럴듯한 예시로 채운다.\n' +
@@ -253,7 +258,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 5000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
+        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 8000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
         system: system,
         messages: [{ role: 'user', content: userMsg }],
       }),
