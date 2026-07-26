@@ -26,6 +26,10 @@ const spark = (c) => `<svg viewBox="0 0 24 24" width="16" height="16" fill="${c}
 const name = (d) => esc(d.productName || '제품명');
 const cta = (d) => esc(d.primaryCta || '무료로 시작하기');
 const btnCta = (t) => `background:${t.ctaGradient};color:${t.accentText};font-weight:700;border:none;border-radius:12px;cursor:pointer`;
+/* 신규 섹션 공용 조형 — 서피스 카드 / 섹션 표제(가운데 h2, 텍스트는 호출부에서 esc) */
+const card = (t) => `border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}`;
+const secHead = (path, txt) => `<div class="rise" style="max-width:680px;margin:0 auto 40px;text-align:center"><h2 data-edit="${path}" style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em">${txt}</h2></div>`;
+const inputCss = (t) => `padding:12px 14px;border-radius:10px;background:${t.bg};border:1px solid ${t.surfaceBorder};color:${t.text};font:inherit;font-size:15px;outline:none`;
 
 export const SECTIONS = {
   gnb(d, t) {
@@ -33,18 +37,19 @@ export const SECTIONS = {
     // 없으면 기본 플레이스홀더.
     let nav;
     if (d.nav && d.nav.length) {
-      nav = d.nav.map((it) => {
+      nav = d.nav.map((it, ni) => {
         const on = it.active ? `color:${t.text};font-weight:600` : '';
         const hasKids = it.children && it.children.length;
         const sub = hasKids
           ? `<div class="nsub" style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;padding:6px;min-width:150px;border-radius:12px;background:${t.bg};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 40px rgba(0,0,0,.4)">
-              ${it.children.map((c) => `<span data-nav-page="${c.id || ''}" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
+              ${it.children.map((c, ci) => `<span data-nav-page="${c.id || ''}" data-edit="nav.${ni}.children.${ci}.name" style="display:block;padding:8px 12px;border-radius:8px;white-space:nowrap;cursor:pointer;${c.active ? `color:${t.text};font-weight:600` : ''}">${esc(c.name)}</span>`).join('')}
             </div>`
           : '';
-        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}">${esc(it.name)}${hasKids ? ' ▾' : ''}${sub}</div>`;
+        return `<div class="nvi" data-nav-page="${it.id || ''}" style="position:relative;cursor:pointer;${on}"><span data-edit="nav.${ni}.name">${esc(it.name)}</span>${hasKids ? ' ▾' : ''}${sub}</div>`;
       }).join('');
     } else {
-      nav = `<span>기능</span><span>가격</span><span>문서</span><span>고객사례</span>`;
+      // 단일 사이트 폴백 메뉴 — navLinks.N 필드로 편집 가능(폴백=기존 문구)
+      nav = ['기능', '가격', '문서', '고객사례'].map((m, i) => `<a data-edit="navLinks.${i}" style="color:inherit;text-decoration:none;cursor:pointer">${esc((d.navLinks && d.navLinks[i]) || m)}</a>`).join('');
     }
     return `
     <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;backdrop-filter:blur(20px);background:${t.bg}cc;border-bottom:1px solid ${t.surfaceBorder}">
@@ -53,7 +58,7 @@ export const SECTIONS = {
         <span data-edit="productName" style="font-weight:600">${name(d)}</span>
       </div>
       <nav style="display:flex;gap:28px;color:${t.textMuted};font-size:14px">${nav}</nav>
-      <button style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
+      <button data-edit="primaryCta" style="padding:8px 16px;${btnCta(t)};border-radius:999px;font-size:14px">${cta(d)}</button>
     </header>`;
   },
 
@@ -71,12 +76,12 @@ export const SECTIONS = {
     <section style="position:relative;overflow:hidden;padding:80px 32px 40px;text-align:center;background:${t.heroGradient}">
       <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:520px;height:320px;border-radius:999px;filter:blur(100px);background:${t.glow};pointer-events:none"></div>
       <div class="rise" style="position:relative;max-width:680px;margin:0 auto">
-        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span>Engine v2.0 · AX 웹 제너레이터</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span><span data-edit="heroBadge">${esc(d.heroBadge || 'Engine v2.0 · AX 웹 제너레이터')}</span></span>
         <h1 data-edit="tagline" style="margin:24px 0 0;font-size:54px;font-weight:700;line-height:1.08;letter-spacing:-.03em">${tagline}</h1>
         <p data-edit="subcopy" style="max-width:520px;margin:20px auto 0;color:${t.textMuted};font-size:18px;line-height:1.6">${subcopy}</p>
         <div style="margin-top:32px;display:flex;align-items:center;justify-content:center;gap:12px">
-          <button style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}"><span data-edit="primaryCta">${cta(d)}</span> →</button>
-          <button style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">문서 보기</button>
+          <button data-edit="primaryCta" class="dg-arw" style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${cta(d)}</button>
+          <button data-edit="secondaryCta" style="padding:13px 24px;border-radius:12px;background:${t.surface};border:1px solid ${t.surfaceBorder};color:${t.text};font-weight:600;cursor:pointer">${esc(d.secondaryCta || '문서 보기')}</button>
         </div>
       </div>
       ${(d.images && d.images.hero)
@@ -108,8 +113,8 @@ export const SECTIONS = {
     return `
     <section style="position:relative;padding:64px 32px">
       <div class="rise" style="max-width:680px;margin:0 auto;text-align:center">
-        <div style="color:${t.accent};font-size:13px;letter-spacing:.08em;text-transform:uppercase">Features</div>
-        <h2 style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em">명료함과 성능을 위해 설계됨</h2>
+        <div data-edit="featureEyebrow" style="color:${t.accent};font-size:13px;letter-spacing:.08em;text-transform:uppercase">${esc(d.featureEyebrow || 'Features')}</div>
+        <h2 data-edit="featureTitle" style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em">${esc(d.featureTitle || '명료함과 성능을 위해 설계됨')}</h2>
       </div>
       <div style="max-width:900px;margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
         ${features.map((f, i) => `<div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
@@ -130,7 +135,7 @@ export const SECTIONS = {
         <div style="position:absolute;inset:0;background:${t.heroGradient};pointer-events:none"></div>
         <div style="position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);width:384px;height:256px;border-radius:999px;filter:blur(90px);background:${t.glow};pointer-events:none"></div>
         <h2 data-edit="bannerText" style="position:relative;font-size:36px;font-weight:700;letter-spacing:-.02em">${bannerText}</h2>
-        <button style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta} →</button>
+        <button data-edit="bannerCta" class="dg-arw" style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;${btnCta(t)};box-shadow:0 8px 40px ${t.glow}">${bannerCta}</button>
       </div>
     </section>`;
   },
@@ -141,10 +146,386 @@ export const SECTIONS = {
     return `
     <footer style="position:relative;padding:40px 32px;border-top:1px solid ${t.surfaceBorder};color:${t.textMuted};font-size:14px">
       <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span style="font-weight:600">${name(d)}</span></div>
-        <div style="display:flex;gap:24px">${links.map((l, i) => `<span data-edit="footerLinks.${i}">${esc(l)}</span>`).join('')}</div>
+        <div style="display:flex;align-items:center;gap:8px;color:${t.text}"><div style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:${t.ctaGradient}">${spark(t.accentText)}</div><span data-edit="productName" style="font-weight:600">${name(d)}</span></div>
+        <div style="display:flex;gap:24px">${links.map((l, i) => `<a data-edit="footerLinks.${i}" style="color:inherit;text-decoration:none;cursor:pointer">${esc(l)}</a>`).join('')}</div>
         <span data-edit="footerCopyright">${copy}</span>
       </div>
     </footer>`;
+  },
+
+  /* ============================================================
+     신규 섹션 — pagetypes.js 페이지 유형 계약(스캐폴드 필드명 = data-edit 경로).
+     모두 팩 토큰(t.*)만 사용 → aether/violet/ember 자동 리스킨.
+     ============================================================ */
+
+  // 서브페이지 히어로 — 메인 hero보다 낮고, 대시보드 목업 없음
+  pagehero(d, t) {
+    return `
+    <section style="position:relative;overflow:hidden;padding:72px 32px 48px;text-align:center;background:${t.heroGradient}">
+      <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:440px;height:260px;border-radius:999px;filter:blur(90px);background:${t.glow};pointer-events:none"></div>
+      <div class="rise" style="position:relative;max-width:640px;margin:0 auto">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:${t.accentSoft};border:1px solid ${t.surfaceBorder};color:${t.accent};font-size:12px;letter-spacing:.02em"><span style="width:6px;height:6px;border-radius:999px;background:${t.accent}"></span><span data-edit="heroBadge">${esc(d.heroBadge || d.productName || '제품명')}</span></span>
+        <h1 data-edit="tagline" style="margin:20px 0 0;font-size:44px;font-weight:700;line-height:1.12;letter-spacing:-.03em">${esc(d.tagline || '페이지 제목')}</h1>
+        <p data-edit="subcopy" style="max-width:480px;margin:16px auto 0;color:${t.textMuted};font-size:17px;line-height:1.6">${esc(d.subcopy || '이 페이지를 한 문장으로 소개하세요.')}</p>
+      </div>
+    </section>`;
+  },
+
+  // 개요 — 좌 텍스트 + 우 포인트 체크 카드 (overview{title,text,points[]})
+  overview(d, t) {
+    const o = d.overview || {};
+    const points = (o.points && o.points.length ? o.points : ['핵심 가치 1', '핵심 가치 2', '핵심 가치 3']);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div class="rise" style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:40px;align-items:center">
+        <div>
+          <div data-edit="overviewEyebrow" style="color:${t.accent};font-size:13px;letter-spacing:.08em;text-transform:uppercase">${esc(d.overviewEyebrow || 'Overview')}</div>
+          <h2 data-edit="overview.title" style="margin:12px 0 0;font-size:32px;font-weight:700;letter-spacing:-.02em">${esc(o.title || '개요 제목')}</h2>
+          <p data-edit="overview.text" style="margin:16px 0 0;color:${t.textMuted};font-size:16px;line-height:1.7">${esc(o.text || '무엇을 해결하는지 두세 문장으로 소개하세요.')}</p>
+        </div>
+        <div style="padding:26px 28px;${card(t)}">
+          ${points.map((p, i) => `<div style="display:flex;align-items:center;gap:10px;padding:11px 0${i ? `;border-top:1px solid ${t.surfaceBorder}` : ''}">
+            <span style="display:grid;place-items:center;width:22px;height:22px;flex:none;border-radius:999px;background:${t.accentSoft};color:${t.accent};font-size:12px">✓</span>
+            <span data-edit="overview.points.${i}" style="font-size:15px">${esc(p)}</span></div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+
+  // 소개 — 좁은 글로우 카드 한 장 (intro{title,text})
+  intro(d, t) {
+    const o = d.intro || {};
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div class="rise" style="position:relative;max-width:720px;margin:0 auto;overflow:hidden;padding:48px 40px;text-align:center;${card(t)}">
+        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:160px;border-radius:999px;filter:blur(70px);background:${t.glow};opacity:.5;pointer-events:none"></div>
+        <h2 data-edit="intro.title" style="position:relative;margin:0;font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(o.title || '소개 제목')}</h2>
+        <p data-edit="intro.text" style="position:relative;max-width:520px;margin:14px auto 0;color:${t.textMuted};font-size:16px;line-height:1.7">${esc(o.text || '목적과 기대효과를 소개하세요.')}</p>
+      </div>
+    </section>`;
+  },
+
+  // 상세 기능 교차 행 — 텍스트/이미지 지그재그 (featureRows[{title,desc,points[]}], 이미지 키 frowN)
+  featurerows(d, t) {
+    const rows = (d.featureRows && d.featureRows.length ? d.featureRows : [
+      { title: '대표 기능 하나', desc: '이 기능이 사용자의 어떤 문제를 어떻게 푸는지 설명하세요.', points: ['포인트 1', '포인트 2'] },
+      { title: '대표 기능 둘', desc: '두 번째 상세 기능 설명.', points: ['포인트 1', '포인트 2'] },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:56px">
+        ${rows.map((r, i) => {
+          const img = d.images && d.images['frow' + i];
+          const media = img
+            ? `<img data-img="frow${i}" src="${esc(img)}" alt="" style="width:100%;border-radius:${t.radius};border:1px solid ${t.surfaceBorder};box-shadow:0 12px 48px ${t.glow}">`
+            : `<div data-img="frow${i}" style="position:relative;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center;${card(t)}">
+                <div style="position:absolute;right:-40px;bottom:-40px;width:160px;height:160px;border-radius:999px;filter:blur(48px);background:${t.glow};opacity:.4;pointer-events:none"></div>
+                <div style="display:grid;place-items:center;width:52px;height:52px;border-radius:14px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
+              </div>`;
+          const pts = (r.points || []).map((p, pi) => `<li data-edit="featureRows.${i}.points.${pi}" style="margin:6px 0;color:${t.textMuted};font-size:14px">${esc(p)}</li>`).join('');
+          return `<div class="rise" style="display:grid;grid-template-columns:repeat(2,1fr);gap:40px;align-items:center">
+            <div style="order:${i % 2 ? 2 : 1}">
+              <h3 data-edit="featureRows.${i}.title" style="margin:0;font-size:26px;font-weight:700;letter-spacing:-.02em">${esc(r.title)}</h3>
+              <p data-edit="featureRows.${i}.desc" style="margin:12px 0 0;color:${t.textMuted};font-size:15px;line-height:1.7">${esc(r.desc)}</p>
+              ${pts ? `<ul style="margin:16px 0 0;padding-left:18px">${pts}</ul>` : ''}
+            </div>
+            <div style="order:${i % 2 ? 1 : 2}">${media}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 화면 갤러리 — 3열 이미지 자리 + 캡션 (gallery[{label}], 이미지 키 galleryN)
+  gallery(d, t) {
+    const items = (d.gallery && d.gallery.length ? d.gallery : [{ label: 'SCREEN 1' }, { label: 'SCREEN 2' }, { label: 'SCREEN 3' }]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('galleryTitle', esc(d.galleryTitle || '화면 미리보기'))}
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((g, i) => {
+          const img = d.images && d.images['gallery' + i];
+          return `<figure class="rise" style="margin:0">
+            ${img
+              ? `<img data-img="gallery${i}" src="${esc(img)}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:${t.radius};border:1px solid ${t.surfaceBorder}">`
+              : `<div data-img="gallery${i}" style="aspect-ratio:4/3;display:grid;place-items:center;${card(t)}">${spark(t.accent)}</div>`}
+            <figcaption data-edit="gallery.${i}.label" style="margin-top:10px;text-align:center;color:${t.textMuted};font-size:13px;letter-spacing:.04em">${esc(g.label)}</figcaption>
+          </figure>`;
+        }).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 비교표 — 우리(하이라이트) vs 기존 방식 (compare{them,rows[{k,us,them}]})
+  compare(d, t) {
+    const c = d.compare || {};
+    const rows = (c.rows && c.rows.length ? c.rows : [{ k: '구축 시간', us: '몇 분', them: '몇 주' }, { k: '비용', us: '구독형', them: '고정 인건비' }, { k: '수정', us: '즉시 반영', them: '외주 왕복' }]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('compareTitle', esc(d.compareTitle || '무엇이 다른가요'))}
+      <div class="rise" style="max-width:760px;margin:0 auto;overflow-x:auto;border-radius:${t.radius};border:1px solid ${t.surfaceBorder}">
+        <table style="width:100%;border-collapse:collapse;font-size:15px">
+          <thead><tr style="background:${t.surface}">
+            <th style="padding:16px 20px"></th>
+            <th style="padding:16px 20px;text-align:left;color:${t.accent};font-weight:700"><span data-edit="productName">${name(d)}</span></th>
+            <th data-edit="compare.them" style="padding:16px 20px;text-align:left;color:${t.textMuted};font-weight:600">${esc(c.them || '기존 방식')}</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((r, i) => `<tr style="border-top:1px solid ${t.surfaceBorder}">
+              <td data-edit="compare.rows.${i}.k" style="padding:14px 20px;color:${t.textMuted};font-size:13px">${esc(r.k)}</td>
+              <td data-edit="compare.rows.${i}.us" style="padding:14px 20px;background:${t.accentSoft};font-weight:600">${esc(r.us)}</td>
+              <td data-edit="compare.rows.${i}.them" style="padding:14px 20px;color:${t.textMuted}">${esc(r.them)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </section>`;
+  },
+
+  // FAQ — details 아코디언 (faq[{q,a}])
+  faq(d, t) {
+    const items = (d.faq && d.faq.length ? d.faq : [
+      { q: '어떤 서비스인가요?', a: '서비스를 한 문장으로 설명해주세요.' },
+      { q: '도입까지 얼마나 걸리나요?', a: '보통 걸리는 기간과 절차를 안내하세요.' },
+      { q: '요금은 어떻게 되나요?', a: '과금 방식을 안내하세요.' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('faqTitle', esc(d.faqTitle || '자주 묻는 질문'))}
+      <div class="rise" style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+        ${items.map((f, i) => `<details${i === 0 ? ' open' : ''} style="overflow:hidden;${card(t)}">
+          <summary style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;cursor:pointer;font-weight:600;font-size:16px;list-style:none"><span data-edit="faq.${i}.q">${esc(f.q)}</span><span style="color:${t.accent};flex:none">+</span></summary>
+          <p data-edit="faq.${i}.a" style="margin:0;padding:0 22px 18px;color:${t.textMuted};font-size:15px;line-height:1.7">${esc(f.a)}</p>
+        </details>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 고객 후기 — 3열 인용 카드 (testimonials[{text,by}])
+  testimonial(d, t) {
+    const items = (d.testimonials && d.testimonials.length ? d.testimonials : [
+      { text: '도입 후 페이지 제작 시간이 크게 줄었어요.', by: '고객사 담당자' },
+      { text: '스타일 팩 덕분에 브랜드 일관성이 지켜집니다.', by: '디자인 리드' },
+      { text: '개발 없이도 페이지를 계속 다듬을 수 있어요.', by: '마케팅 매니저' },
+    ]).slice(0, 3);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('testimonialTitle', esc(d.testimonialTitle || '먼저 써본 분들의 이야기'))}
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((q, i) => `<figure class="rise" style="margin:0;display:flex;flex-direction:column;gap:14px;padding:24px;${card(t)}">
+          <div style="color:${t.accent}">${spark(t.accent)}</div>
+          <blockquote data-edit="testimonials.${i}.text" style="margin:0;font-size:15px;line-height:1.7">${esc(q.text)}</blockquote>
+          <figcaption data-edit="testimonials.${i}.by" style="margin-top:auto;color:${t.textMuted};font-size:13px">${esc(q.by)}</figcaption>
+        </figure>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 요금 플랜 — 3열, 가운데(hot) 강조 (plans[{name,price,desc,points[],cta,hot}])
+  pricing(d, t) {
+    const plans = (d.plans && d.plans.length ? d.plans : [
+      { name: '스타터', price: '무료', desc: '개인·소규모 팀', points: ['페이지 1개', '기본 스타일 팩'], cta: '무료로 시작' },
+      { name: '프로', price: '월 29,000원', desc: '성장하는 팀', points: ['페이지 무제한', '전체 스타일 팩', 'AI 문구 생성'], cta: '프로 시작하기', hot: true },
+      { name: '엔터프라이즈', price: '문의', desc: '맞춤 도입', points: ['전담 지원', '보안·SSO'], cta: '도입 문의' },
+    ]).slice(0, 3);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('pricingTitle', esc(d.pricingTitle || '팀에 맞는 플랜을 고르세요'))}
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch">
+        ${plans.map((p, i) => `<div class="rise" style="position:relative;display:flex;flex-direction:column;gap:14px;overflow:hidden;padding:28px 24px;${card(t)}${p.hot ? `;border-color:${t.accent};box-shadow:0 12px 48px ${t.glow}` : ''}">
+          ${p.hot ? `<div style="position:absolute;inset:0;background:${t.heroGradient};pointer-events:none"></div><span data-edit="plans.${i}.badge" style="position:absolute;top:16px;right:16px;padding:3px 10px;border-radius:999px;background:${t.accentSoft};color:${t.accent};font-size:11px;letter-spacing:.04em">${esc(p.badge || '인기')}</span>` : ''}
+          <div style="position:relative">
+            <div data-edit="plans.${i}.name" style="font-weight:600;font-size:16px">${esc(p.name)}</div>
+            <div data-edit="plans.${i}.price" style="margin-top:10px;font-size:30px;font-weight:700;letter-spacing:-.02em">${esc(p.price)}</div>
+            <div data-edit="plans.${i}.desc" style="margin-top:6px;color:${t.textMuted};font-size:13px">${esc(p.desc)}</div>
+          </div>
+          <div style="position:relative;display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid ${t.surfaceBorder}">
+            ${(p.points || []).map((pt2, pi) => `<div style="display:flex;align-items:center;gap:8px;font-size:14px;color:${t.textMuted}"><span style="color:${t.accent}">✓</span><span data-edit="plans.${i}.points.${pi}">${esc(pt2)}</span></div>`).join('')}
+          </div>
+          <button data-edit="plans.${i}.cta" style="position:relative;margin-top:auto;width:100%;padding:12px 0;font-size:14px;${p.hot ? btnCta(t) : `background:${t.surface};color:${t.text};font-weight:600;border:1px solid ${t.surfaceBorder};border-radius:12px;cursor:pointer`}">${esc(p.cta || d.primaryCta || '시작하기')}</button>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 문의 폼 — 정적 데모(제출 비활성) (form{title,sub,fields[],submit})
+  form(d, t) {
+    const f = d.form || {};
+    const fields = (f.fields && f.fields.length ? f.fields : ['회사명', '담당자 이름', '이메일', '문의 내용']);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div class="rise" style="position:relative;max-width:560px;margin:0 auto;overflow:hidden;padding:40px;${card(t)}">
+        <div style="position:absolute;top:-70px;right:-70px;width:220px;height:220px;border-radius:999px;filter:blur(70px);background:${t.glow};opacity:.35;pointer-events:none"></div>
+        <h2 data-edit="form.title" style="position:relative;margin:0;font-size:28px;font-weight:700;letter-spacing:-.02em">${esc(f.title || '도입 문의')}</h2>
+        <p data-edit="form.sub" style="position:relative;margin:10px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.sub || '남겨주시면 1영업일 안에 연락드립니다.')}</p>
+        <form onsubmit="return false" style="position:relative;margin-top:28px;display:flex;flex-direction:column;gap:16px">
+          ${fields.map((lb, i) => {
+            const long = fields.length > 1 && i === fields.length - 1;
+            return `<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:${t.textMuted}"><span data-edit="form.fields.${i}">${esc(lb)}</span>${long ? `<textarea rows="4" style="${inputCss(t)};resize:vertical"></textarea>` : `<input type="text" style="${inputCss(t)}">`}</label>`;
+          }).join('')}
+          <button type="button" data-edit="form.submit" class="dg-arw" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;${btnCta(t)}">${esc(f.submit || '문의 보내기')}</button>
+        </form>
+      </div>
+    </section>`;
+  },
+
+  // 안내 카드 — 3열 (infoCards[{title,text}])
+  infocards(d, t) {
+    const items = (d.infoCards && d.infoCards.length ? d.infoCards : [
+      { title: '이메일', text: 'contact@example.com' },
+      { title: '전화', text: '02-000-0000' },
+      { title: '도입 절차', text: '문의 → 상담 → 견적 → 도입' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((c, i) => `<div class="rise" style="padding:24px;${card(t)}">
+          <div style="display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
+          <h3 data-edit="infoCards.${i}.title" style="margin:14px 0 0;font-size:16px;font-weight:600">${esc(c.title)}</h3>
+          <p data-edit="infoCards.${i}.text" style="margin:6px 0 0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(c.text)}</p>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 문서 목록 — 2열 링크 카드 (docs[{title,desc}])
+  doclist(d, t) {
+    const items = (d.docs && d.docs.length ? d.docs : [
+      { title: '시작하기', desc: '설치와 첫 설정' },
+      { title: '핵심 기능', desc: '주요 기능 사용법' },
+      { title: '관리자 가이드', desc: '권한·설정 관리' },
+      { title: '자주 묻는 질문', desc: '문제 해결 모음' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('docsTitle', esc(d.docsTitle || '가이드 문서'))}
+      <div style="max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
+        ${items.map((dc, i) => `<div class="rise" style="display:flex;align-items:flex-start;gap:14px;padding:20px 22px;${card(t)}">
+          <span style="display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:10px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</span>
+          <span style="flex:1;min-width:0">
+            <a data-edit="docs.${i}.title" style="display:block;font-weight:600;font-size:16px;color:inherit;text-decoration:none;cursor:pointer">${esc(dc.title)}</a>
+            <span data-edit="docs.${i}.desc" style="display:block;margin-top:4px;color:${t.textMuted};font-size:14px">${esc(dc.desc)}</span>
+          </span>
+          <span class="dg-arw" style="color:${t.accent};flex:none"></span>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 시작 절차 — 3열 번호 카드 (steps[{title,text}])
+  steps(d, t) {
+    const items = (d.steps && d.steps.length ? d.steps : [
+      { title: '가입', text: '계정을 만듭니다.' },
+      { title: '설정', text: '기본 정보를 입력합니다.' },
+      { title: '시작', text: '첫 결과물을 만듭니다.' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('stepsTitle', esc(d.stepsTitle || '이렇게 시작하세요'))}
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((s, i) => `<div class="rise" style="padding:24px;${card(t)}">
+          <div style="display:grid;place-items:center;width:32px;height:32px;border-radius:999px;background:${t.ctaGradient};color:${t.accentText};font-weight:700;font-size:14px">${i + 1}</div>
+          <h3 data-edit="steps.${i}.title" style="margin:14px 0 0;font-size:17px;font-weight:600">${esc(s.title)}</h3>
+          <p data-edit="steps.${i}.text" style="margin:6px 0 0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(s.text)}</p>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 블로그 목록 — 3열 카드 (posts[{title,desc,date,tag}], 이미지 키 postN)
+  bloglist(d, t) {
+    const items = (d.posts && d.posts.length ? d.posts : [
+      { title: '첫 번째 소식', desc: '요약을 입력하세요.', date: '2026.07', tag: 'NEWS' },
+      { title: '두 번째 소식', desc: '요약을 입력하세요.', date: '2026.06', tag: 'UPDATE' },
+      { title: '세 번째 소식', desc: '요약을 입력하세요.', date: '2026.05', tag: 'TIP' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((p, i) => {
+          const img = d.images && d.images['post' + i];
+          return `<div class="rise" style="display:flex;flex-direction:column;overflow:hidden;${card(t)}">
+            ${img
+              ? `<img data-img="post${i}" src="${esc(img)}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid ${t.surfaceBorder}">`
+              : `<div data-img="post${i}" style="aspect-ratio:16/9;display:grid;place-items:center;background:${t.accentSoft};border-bottom:1px solid ${t.surfaceBorder}">${spark(t.accent)}</div>`}
+            <div style="display:flex;flex-direction:column;gap:8px;padding:20px">
+              <div style="display:flex;align-items:center;gap:10px;font-size:12px"><span data-edit="posts.${i}.tag" style="padding:3px 10px;border-radius:999px;background:${t.accentSoft};color:${t.accent};letter-spacing:.04em">${esc(p.tag)}</span><span data-edit="posts.${i}.date" style="color:${t.textMuted}">${esc(p.date)}</span></div>
+              <h3 style="margin:0;font-size:17px;font-weight:600;line-height:1.4"><a data-edit="posts.${i}.title" style="color:inherit;text-decoration:none;cursor:pointer">${esc(p.title)}</a></h3>
+              <p data-edit="posts.${i}.desc" style="margin:0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(p.desc)}</p>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 아젠다 — 시간 축 타임라인 (agenda[{time,title,desc}])
+  agenda(d, t) {
+    const items = (d.agenda && d.agenda.length ? d.agenda : [
+      { time: '14:00', title: '오프닝', desc: '환영 인사' },
+      { time: '14:30', title: '세션 1', desc: '주제 발표' },
+      { time: '15:30', title: '세션 2', desc: '사례 공유' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('agendaTitle', esc(d.agendaTitle || '프로그램'))}
+      <div class="rise" style="max-width:720px;margin:0 auto;padding:8px 28px;${card(t)}">
+        ${items.map((a, i) => `<div style="display:grid;grid-template-columns:88px 1fr;gap:20px;padding:18px 0${i ? `;border-top:1px solid ${t.surfaceBorder}` : ''}">
+          <div data-edit="agenda.${i}.time" style="color:${t.accent};font-weight:700;font-size:15px">${esc(a.time)}</div>
+          <div>
+            <h3 data-edit="agenda.${i}.title" style="margin:0;font-size:17px;font-weight:600">${esc(a.title)}</h3>
+            <p data-edit="agenda.${i}.desc" style="margin:6px 0 0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(a.desc)}</p>
+          </div>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 스피커 — 3열 프로필 카드 (speakers[{name,role,desc}], 이미지 키 speakerN)
+  speakers(d, t) {
+    const items = (d.speakers && d.speakers.length ? d.speakers : [
+      { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+      { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+      { name: '연사 이름', role: '소속 · 직함', desc: '한 줄 소개' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('speakersTitle', esc(d.speakersTitle || '스피커'))}
+      <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        ${items.map((s, i) => {
+          const img = d.images && d.images['speaker' + i];
+          return `<div class="rise" style="padding:28px 24px;text-align:center;${card(t)}">
+            ${img
+              ? `<img data-img="speaker${i}" src="${esc(img)}" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:999px;border:1px solid ${t.surfaceBorder};margin:0 auto;display:block">`
+              : `<div data-img="speaker${i}" style="display:grid;place-items:center;width:72px;height:72px;margin:0 auto;border-radius:999px;background:${t.ctaGradient};color:${t.accentText};font-weight:700;font-size:22px">${spark(t.accentText)}</div>`}
+            <h3 data-edit="speakers.${i}.name" style="margin:16px 0 0;font-size:17px;font-weight:600">${esc(s.name)}</h3>
+            <div data-edit="speakers.${i}.role" style="margin-top:4px;color:${t.accent};font-size:13px">${esc(s.role)}</div>
+            <p data-edit="speakers.${i}.desc" style="margin:10px 0 0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(s.desc)}</p>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  },
+
+  // 안내 — 좌측 그라디언트 바 리스트 (notices[{title,text}])
+  notice(d, t) {
+    const items = (d.notices && d.notices.length ? d.notices : [
+      { title: '참가 안내', text: '사전 등록 필수, 선착순 마감.' },
+      { title: '주차 안내', text: '행사장 주차 지원 여부를 안내하세요.' },
+      { title: '문의', text: 'event@example.com' },
+    ]);
+    return `
+    <section style="position:relative;padding:64px 32px">
+      ${secHead('noticeTitle', esc(d.noticeTitle || '참가 전 확인하세요'))}
+      <div class="rise" style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px">
+        ${items.map((n, i) => `<div style="display:flex;gap:14px;padding:18px 22px;${card(t)}">
+          <span style="width:3px;flex:none;border-radius:999px;background:${t.ctaGradient}"></span>
+          <div>
+            <h3 data-edit="notices.${i}.title" style="margin:0;font-size:15px;font-weight:600">${esc(n.title)}</h3>
+            <p data-edit="notices.${i}.text" style="margin:4px 0 0;color:${t.textMuted};font-size:14px;line-height:1.6">${esc(n.text)}</p>
+          </div>
+        </div>`).join('')}
+      </div>
+    </section>`;
   },
 };

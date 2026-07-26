@@ -29,8 +29,36 @@ export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'm
   }
   const types = [...(hasGnb ? ['gnb'] : []), ...bodyTypes, ...(hasFooter ? ['footer'] : [])];
 
+  // 렌더러 없는 타입 가드 — pagetypes.js의 SECTION_FALLBACK 순서로 대체, 끝까지 없으면 생략.
+  // 정식 어휘 ↔ 팩 내부 이름 차이(feature↔features, stats↔metrics, cta↔banner)도 여기서 흡수.
+  const FB = (typeof window !== 'undefined' && window.SECTION_FALLBACK) || {};
+  const ALIAS = { feature: 'features', stats: 'metrics', cta: 'banner' };
+  const resolveSection = (type) => {
+    const seen = new Set();
+    const queue = [type];
+    while (queue.length) {
+      const c = queue.shift();
+      if (seen.has(c)) continue;
+      seen.add(c);
+      if (SECTIONS[c]) return c;
+      if (ALIAS[c] && SECTIONS[ALIAS[c]]) return ALIAS[c];
+      (FB[c] || []).forEach((n) => queue.push(n));
+    }
+    return null;
+  };
+
+  // lead 섹션(pagetypes.js 계약) — pagehero가 표제를 대신하므로 자체 표제 생략 플래그를 렌더러에 전달
+  const leadOf = {};
+  template.forEach((s) => { if (s.lead) leadOf[s.type] = 1; });
+
+  // 섹션 변형(SECTION_VARIANTS 계약) — data.variants는 정식 어휘 키(feature/stats/cta).
+  // 팩 내부 이름(features/metrics/banner)으로도 읽을 수 있게 양방향 매핑. 미구현 값은 렌더러가 기본형 폴백.
+  const vmap = data.variants || {};
+  const VKEY = { features: 'feature', metrics: 'stats', banner: 'cta', feature: 'features', stats: 'metrics', cta: 'banner' };
+  const variantFor = (type) => (vmap[type] !== undefined ? vmap[type] : vmap[VKEY[type]]);
+
   const body = types
-    .map((type) => (SECTIONS[type] ? `<div data-section="${type}">${SECTIONS[type](data, t, motion)}</div>` : ''))
+    .map((type) => { const r = resolveSection(type); return r ? `<div data-section="${type}">${SECTIONS[r](data, t, motion, { lead: !!leadOf[type], variant: variantFor(type) })}</div>` : ''; })
     .join('\n');
 
   const gridBg = `<div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(${t.grid} 1px,transparent 1px),linear-gradient(90deg,${t.grid} 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%)"></div>`;
@@ -52,6 +80,8 @@ export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'm
 <style>
   *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
   .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
+  /* 화살표 버튼 — 텍스트(data-edit 저장분) 밖에서 렌더: 편집 저장 시 '→'가 필드에 섞이지 않음 */
+  .dg-arw::after{content:"→"}
   img{max-width:100%;height:auto}
   /* 반응형 세이프티 넷 — 인라인 스타일(고정폭) 팩을 좁은 뷰포트서 정렬 */
   @media (max-width:900px){

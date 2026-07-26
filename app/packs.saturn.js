@@ -12,7 +12,13 @@
    compare·faq·testimonial(킷 Testimonial 5 — 블루 카드)·pricing(킷 Pricing — #F9F9F9 카드, 추천=버튼만 채움)·
    form(킷 Forms — 인풋 56 #F9F9F9, 제출 비활성)·infocards·doclist·steps·bloglist(킷 Blog 3 — 칩 라운드 32)·
    agenda·speakers·notice. 별칭: stats→stat, showcase→gallery, quote→testimonial, metrics→stat, banner→cta.
-   renderSaturnPage: data.pageType + window.PAGE_TYPES 있으면 유형 구성표(tier→volume)로, 없으면 기존 TEMPLATE(하위호환). */
+   renderSaturnPage: data.pageType + window.PAGE_TYPES 있으면 유형 구성표(tier→volume)로, 없으면 기존 TEMPLATE(하위호환).
+   v3 = 섹션 변형(SECTION_VARIANTS) + lead 표제 생략.
+   - data.variants={hero:'split',...} 있으면 해당 변형으로 분기, 없거나 미구현이면 기본형 그대로(마크업 불변, 하위호환).
+   - 변형 조형 근거 = 킷 정찰 스펙: Hero 2~6(스플릿/이미지그리드/스태거 타이포)→hero split·screenshot·stat,
+     CTA 2~4(3열/뉴스레터)→cta simple·cards, 테이블(셀 1.8px·행 96)→pricing table·agenda table,
+     테스티모니얼 5(블루 카드)→single·logos, 블로그 3→list·featured, 갤러리 4(갭 16 모자이크)→mosaic.
+   - PAGE_TYPES sections의 lead:1 섹션은 pagehero가 표제를 대신 — 아이브로·헤딩·서브 생략(band--lead)하고 바로 콘텐츠. */
 (function () {
   var includesTier = window.includesTier || function (v, t) { var V = { compact: 0, mid: 1, heavy: 2 }, T = { core: 0, mid: 1, rich: 2 }; return T[t] <= V[v]; };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -92,11 +98,17 @@
   };
   var FEAT_ICONS = [IC.bolt, IC.layers, IC.shield];
 
-  /* 섹션 공통 머리(아이브로 + 56px 헤딩) — 킷 Text 섹션 타이포 그대로. 키는 최상위 평면 경로 */
-  function shead(d, ebKey, ebDef, tKey, tDef) {
+  /* 섹션 공통 머리(아이브로 + 56px 헤딩) — 킷 Text 섹션 타이포 그대로. 키는 최상위 평면 경로.
+     lead 섹션(pagehero가 표제 대신)은 표제 생략 — 빈 문자열 */
+  function shead(ctx, d, ebKey, ebDef, tKey, tDef) {
+    if (ctx && ctx.lead) return '';
     return '<p class="eyebrow up"' + de(ebKey) + '>' + esc(d[ebKey] || ebDef) + '</p>' +
       '<h2 class="s-h2 up d1"' + de(tKey) + '>' + esc(d[tKey] || tDef) + '</h2>';
   }
+  /* 섹션 변형 선택 — data.variants={hero:'split',...}. 없거나 미구현이면 '' → 기본형(하위호환) */
+  function vr(ctx, key) { var v = ctx && ctx.data && ctx.data.variants; return (v && v[key]) || ''; }
+  /* band 클래스 — lead 섹션은 상단 패딩 제거(pagehero 하단 128이 간격을 대신) */
+  function bandCls(ctx, alt) { return 'band' + (alt ? ' band--alt' : '') + (ctx && ctx.lead ? ' band--lead' : ''); }
   /* 체크 불릿 리스트(장식문자 대신 스트로크 아이콘) — base='overview.points' 식 경로 */
   function points(list, base) {
     if (!list || !list.length) return '';
@@ -119,9 +131,43 @@
         '<button class="btn btn--pri"' + de('primaryCta') + '>' + esc(d.primaryCta || '시작하기') + '</button></span>' +
         '</div></header>';
     },
-    /* Hero 1 (38:1050): 중앙 타이포(64/72, 폭 842) → 부제(22/32, #777) → CTA 2 → 풀폭 이미지 1296×640 */
+    /* Hero 1 (38:1050): 중앙 타이포(64/72, 폭 842) → 부제(22/32, #777) → CTA 2 → 풀폭 이미지 1296×640.
+       변형(킷 Hero 2~6 정찰 근거): split=텍스트 좌/이미지 우, screenshot=하단 제품 화면 강조, stat=수치 강조 타이포 */
     hero: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'hero');
+      var ctas = '<button class="btn btn--pri"' + de('primaryCta') + '>' + esc(d.primaryCta || '무료로 시작하기') + '</button>' +
+        '<button class="btn btn--out"' + de('secondaryCta') + '>' + esc(d.secondaryCta || '더 알아보기') + '</button>';
+      function heroImg(cls) {
+        return (d.images && d.images.hero)
+          ? '<img class="' + cls + '" src="' + esc(d.images.hero) + '" alt="" data-img="hero">'
+          : '<div class="' + cls + ' ph" data-img="hero"><span>PRODUCT SCREENSHOT</span></div>';
+      }
+      var title = '<h1 class="s-hero-t up"' + de('tagline') + '>' + esc(d.tagline || '더 나은 제품의 시작') + '</h1>';
+      var sub = '<p class="s-hero-s up d1"' + de('subcopy') + '>' + esc(d.subcopy || '한 줄 설명이 들어갑니다.') + '</p>';
+      /* split — Hero 2(스플릿): 좌 타이포 스택(56/64 좌측 정렬) / 우 이미지 */
+      if (v === 'split') {
+        return '<section class="s-hero s-hero--split"><div class="wrap s-hero-sp">' +
+          '<div class="s-hero-sp-tx">' + title + sub +
+          '<div class="s-hero-cta up d2">' + ctas + '</div></div>' +
+          heroImg('s-hero-sp-img up d3') + '</div></section>';
+      }
+      /* screenshot — 타이포 절제(56/64 센터) + 하단 대형 제품 화면(보더 1.8) 강조 */
+      if (v === 'screenshot') {
+        return '<section class="s-hero s-hero--shot"><div class="wrap">' + title + sub +
+          '<div class="s-hero-cta up d2">' + ctas + '</div>' +
+          heroImg('s-hero-img up d3') + '</div></section>';
+      }
+      /* stat — 킷 Hero 6(스태거 타이포) 유도: 좌측 정렬 타이포 + 48px 블루 수치 행(지표 데이터 재사용) */
+      if (v === 'stat') {
+        var hst = (d.stats && d.stats.length ? d.stats : [{ value: '00', label: '지표' }, { value: '00', label: '지표' }, { value: '00', label: '지표' }]);
+        var hrow = hst.map(function (s, i) {
+          return '<div class="s-stat up d' + Math.min(i + 1, 3) + '"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b>' +
+            '<span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>';
+        }).join('');
+        return '<section class="s-hero s-hero--stat"><div class="wrap">' + title + sub +
+          '<div class="s-hero-cta up d2">' + ctas + '</div>' +
+          '<div class="s-hero-stats up d3">' + hrow + '</div></div></section>';
+      }
       var img = (d.images && d.images.hero)
         ? '<img class="s-hero-img up d3" src="' + esc(d.images.hero) + '" alt="" data-img="hero">'
         : '<div class="s-hero-img ph up d3" data-img="hero"><span>PRODUCT SCREENSHOT</span></div>';
@@ -133,33 +179,71 @@
         '<button class="btn btn--out"' + de('secondaryCta') + '>' + esc(d.secondaryCta || '더 알아보기') + '</button></div>' +
         img + '</div></section>';
     },
-    /* 기능 3열 — 킷 타입 램프(24/32 SB + 18/24 M)·아이콘 시트·Primary 20% 원형으로 구성. 카드 라운드 0 플랫 기조 */
+    /* 기능 3열 — 킷 타입 램프(24/32 SB + 18/24 M)·아이콘 시트·Primary 20% 원형으로 구성. 카드 라운드 0 플랫 기조.
+       변형: cards=플랫 보더 카드, bento=대표 1(2칸)+보조(#F9F9F9 카드), list=2열 밀도형 리스트 */
     feature: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'feature');
       var items = (d.features && d.features.length ? d.features : [{ title: '기능', desc: '설명' }, { title: '기능', desc: '설명' }, { title: '기능', desc: '설명' }]);
       var cells = items.map(function (f, i) {
         return '<div class="s-feat up d' + Math.min(i + 1, 3) + '"><span class="s-fic">' + icon(FEAT_ICONS[i % FEAT_ICONS.length]) + '</span>' +
           '<h3' + de('features.' + i + '.title') + '>' + esc(f.title || '') + '</h3>' +
           '<p' + de('features.' + i + '.desc') + '>' + esc(f.desc || '') + '</p></div>';
       }).join('');
-      return '<section class="band"><div class="wrap">' +
+      var head = ctx.lead ? '' :
         '<p class="eyebrow up"' + de('featureEyebrow') + '>' + esc(d.featureEyebrow || 'FEATURES') + '</p>' +
-        '<h2 class="s-h2 up d1"' + de('featureTitle') + '>' + esc(d.featureTitle || '핵심 기능') + '</h2>' +
-        '<div class="s-grid cols3">' + cells + '</div></div></section>';
+        '<h2 class="s-h2 up d1"' + de('featureTitle') + '>' + esc(d.featureTitle || '핵심 기능') + '</h2>';
+      var grid = v === 'cards' ? 's-grid cols3 s-feats--cards' : v === 'bento' ? 's-grid cols3 s-feats--bento'
+        : v === 'list' ? 's-grid cols2 s-feats--list' : 's-grid cols3';
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+        '<div class="' + grid + '">' + cells + '</div></div></section>';
     },
-    /* 지표 — 48/56 SB 블루 수치 + 18/24 라벨 (킷 프라이싱 가격 타이포에서 유도) */
+    /* 지표 — 48/56 SB 블루 수치 + 18/24 라벨 (킷 프라이싱 가격 타이포에서 유도).
+       변형(variants 키는 정식 어휘 'stats'): kpi=플랫 보더 KPI 카드, big=대형 숫자 하나(64/72) 강조 */
     stat: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'stats');
       var items = (d.stats && d.stats.length ? d.stats : [{ value: '00', label: '지표' }]);
+      /* big — 첫 지표를 64/72 블루로 크게, 나머지는 소형 행 */
+      if (v === 'big') {
+        var first = items[0] || {};
+        var rest = items.slice(1).map(function (s, i) {
+          var j = i + 1;
+          return '<div class="s-stat up d' + Math.min(j, 3) + '"><b' + de('stats.' + j + '.value') + '>' + esc(s.value || '') + '</b>' +
+            '<span' + de('stats.' + j + '.label') + '>' + esc(s.label || '') + '</span></div>';
+        }).join('');
+        return '<section class="band band--alt"><div class="wrap s-stats-big">' +
+          '<div class="s-stat-big up"><b' + de('stats.0.value') + '>' + esc(first.value || '') + '</b>' +
+          '<span' + de('stats.0.label') + '>' + esc(first.label || '') + '</span></div>' +
+          (rest ? '<div class="s-grid cols3 s-stats up d1">' + rest + '</div>' : '') + '</div></section>';
+      }
       var cells = items.map(function (s, i) {
         return '<div class="s-stat up d' + Math.min(i + 1, 3) + '"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b>' +
           '<span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>';
       }).join('');
-      return '<section class="band band--alt"><div class="wrap"><div class="s-grid cols3 s-stats">' + cells + '</div></div></section>';
+      var grid = v === 'kpi' ? 's-grid cols3 s-stats s-stats--kpi' : 's-grid cols3 s-stats';
+      return '<section class="band band--alt"><div class="wrap"><div class="' + grid + '">' + cells + '</div></div></section>';
     },
-    /* CTA 1 (38:1522): 센터 — ATTENTION 아이라인 + 56/64 헤딩 + 본문(842) + 버튼 1. 블록 갭 48/24 */
+    /* CTA 1 (38:1522): 센터 — ATTENTION 아이라인 + 56/64 헤딩 + 본문(842) + 버튼 1. 블록 갭 48/24.
+       변형(킷 CTA 2~4 정찰 근거): simple=제목+버튼 미니멀, cards=2단 카드 CTA(문의/자료 분리) */
     cta: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'cta');
+      if (v === 'simple') {
+        return '<section class="band"><div class="wrap s-cta s-cta--simple">' +
+          '<h2 class="s-h2 up"' + de('bannerText') + '>' + esc(d.bannerText || '지금 시작해보세요') + '</h2>' +
+          '<div class="up d1"><button class="btn btn--pri"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta || '시작하기') + '</button></div>' +
+          '</div></section>';
+      }
+      if (v === 'cards') {
+        var cds = (d.ctaCards && d.ctaCards.length ? d.ctaCards : [
+          { title: '도입 문의', text: '전문가와 상담하며 도입을 준비하세요.', cta: '문의하기' },
+          { title: '소개 자료', text: '제품 소개서를 받아보세요.', cta: '자료 받기' },
+        ]);
+        var cc = cds.map(function (t, i) {
+          return '<div class="s-ctacard up d' + Math.min(i + 1, 3) + '"><b' + de('ctaCards.' + i + '.title') + '>' + esc(t.title || '') + '</b>' +
+            '<p' + de('ctaCards.' + i + '.text') + '>' + esc(t.text || '') + '</p>' +
+            '<button class="btn ' + (i === 0 ? 'btn--pri' : 'btn--out') + '"' + de('ctaCards.' + i + '.cta') + '>' + esc(t.cta || '시작하기') + '</button></div>';
+        }).join('');
+        return '<section class="band"><div class="wrap"><div class="s-grid cols2 s-ctacards">' + cc + '</div></div></section>';
+      }
       return '<section class="band"><div class="wrap s-cta">' +
         '<p class="eyebrow up"' + de('bannerEyebrow') + '>' + esc(d.bannerEyebrow || 'GET STARTED') + '</p>' +
         '<h2 class="s-h2 up d1"' + de('bannerText') + '>' + esc(d.bannerText || '지금 시작해보세요') + '</h2>' +
@@ -196,49 +280,86 @@
         '<p class="s-lead up d2"' + de('intro.text') + '>' + esc(it.text || '목적과 기대효과를 소개하세요.') + '</p>' +
         '</div></section>';
     },
-    /* 상세 기능 교차 행 — 텍스트/이미지 2분할, 홀수 행 반전 */
+    /* 상세 기능 교차 행 — 텍스트/이미지 2분할, 홀수 행 반전.
+       변형: numbered=이미지 대신 대형 번호 패널(64/72 블루) 교차, checks=체크리스트 패널 교차 */
     featurerows: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'featurerows');
       var rows = (d.featureRows && d.featureRows.length ? d.featureRows : [
         { title: '대표 기능 하나', desc: '이 기능이 사용자의 어떤 문제를 어떻게 푸는지 설명하세요.', points: ['포인트 1', '포인트 2'] },
         { title: '대표 기능 둘', desc: '두 번째 상세 기능 설명.', points: ['포인트 1', '포인트 2'] },
       ]);
       var html = rows.map(function (r, i) {
-        var key = 'featureRow' + i;
-        var img = (d.images && d.images[key])
-          ? '<img class="s-frow-img" src="' + esc(d.images[key]) + '" alt="" data-img="' + key + '">'
-          : '<div class="s-frow-img ph" data-img="' + key + '"><span>FEATURE ' + (i + 1) + '</span></div>';
+        var key = 'featureRow' + i, side, inPts;
+        if (v === 'numbered') {
+          side = '<div class="s-frow-num"><b>' + (i + 1 < 10 ? '0' + (i + 1) : (i + 1)) + '</b></div>';
+          inPts = points(r.points, 'featureRows.' + i + '.points');
+        } else if (v === 'checks') {
+          side = '<div class="s-frow-ck">' + points((r.points && r.points.length ? r.points : ['포인트 1', '포인트 2']), 'featureRows.' + i + '.points') + '</div>';
+          inPts = '';
+        } else {
+          side = (d.images && d.images[key])
+            ? '<img class="s-frow-img" src="' + esc(d.images[key]) + '" alt="" data-img="' + key + '">'
+            : '<div class="s-frow-img ph" data-img="' + key + '"><span>FEATURE ' + (i + 1) + '</span></div>';
+          inPts = points(r.points, 'featureRows.' + i + '.points');
+        }
         return '<div class="s-frow up' + (i % 2 ? ' s-frow--rev' : '') + '">' +
           '<div class="s-frow-tx"><h3' + de('featureRows.' + i + '.title') + '>' + esc(r.title || '') + '</h3>' +
           '<p' + de('featureRows.' + i + '.desc') + '>' + esc(r.desc || '') + '</p>' +
-          points(r.points, 'featureRows.' + i + '.points') + '</div>' + img + '</div>';
+          inPts + '</div>' + side + '</div>';
       }).join('');
-      return '<section class="band"><div class="wrap s-frows">' + html + '</div></section>';
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap s-frows">' + html + '</div></section>';
     },
-    /* 갤러리 — 킷 Galleries: 갭 16 모자이크(첫 장 2칸), 이미지 라운드 0 */
+    /* 갤러리 — 킷 Galleries: 갭 16 모자이크(첫 장 2칸), 이미지 라운드 0.
+       변형(킷 갤러리 4 정찰 근거): grid=균등 그리드, mosaic=대표 1장 2×2 크게+보조 세로 */
     gallery: function (c, ctx) {
-      var d = ctx.data;
+      var d = ctx.data, v = vr(ctx, 'gallery');
       var items = (d.gallery && d.gallery.length ? d.gallery : [{ label: 'SCREEN 1' }, { label: 'SCREEN 2' }, { label: 'SCREEN 3' }]);
       var cells = items.map(function (g, i) {
         var key = 'gallery' + i;
         if (d.images && d.images[key]) return '<figure class="s-gal-it up d' + Math.min(i + 1, 3) + '"><img src="' + esc(d.images[key]) + '" alt="" data-img="' + key + '"></figure>';
         return '<figure class="s-gal-it ph up d' + Math.min(i + 1, 3) + '" data-img="' + key + '"><span' + de('gallery.' + i + '.label') + '>' + esc(g.label || 'SCREEN') + '</span></figure>';
       }).join('');
-      return '<section class="band band--alt"><div class="wrap">' +
-        shead(d, 'galleryEyebrow', 'GALLERY', 'galleryTitle', '화면 미리보기') +
-        '<div class="s-gal">' + cells + '</div></div></section>';
+      var cls = v === 'mosaic' ? 's-gal s-gal--mosaic' : v === 'grid' ? 's-gal s-gal--grid' : 's-gal';
+      return '<section class="' + bandCls(ctx, true) + '"><div class="wrap">' +
+        shead(ctx, d, 'galleryEyebrow', 'GALLERY', 'galleryTitle', '화면 미리보기') +
+        '<div class="' + cls + '">' + cells + '</div></div></section>';
     },
-    /* 비교 표 — 킷 Tables: 셀 그리드 1.8px, 행 96, 우리 열 블루 강조 */
+    /* 비교 표 — 킷 Tables: 셀 그리드 1.8px, 행 96, 우리 열 블루 강조.
+       변형: beforeafter=좌 기존(#F9F9F9) / 우 우리(블루 보더) 패널, cards=항목별 카드 비교 */
     compare: function (c, ctx) {
-      var d = ctx.data, cp = d.compare || {};
+      var d = ctx.data, cp = d.compare || {}, v = vr(ctx, 'compare');
       var rows = (cp.rows && cp.rows.length ? cp.rows : [{ k: '구축 시간', us: '몇 분', them: '몇 주' }, { k: '비용', us: '구독형', them: '고정 인건비' }, { k: '수정', us: '즉시 반영', them: '외주 왕복' }]);
+      var head = shead(ctx, d, 'compareEyebrow', 'COMPARE', 'compareTitle', '무엇이 다른가요');
+      if (v === 'beforeafter') {
+        var left = rows.map(function (r, i) {
+          return '<div class="s-ba-row"><span' + de('compare.rows.' + i + '.k') + '>' + esc(r.k || '') + '</span>' +
+            '<b' + de('compare.rows.' + i + '.them') + '>' + esc(r.them || '') + '</b></div>';
+        }).join('');
+        var right = rows.map(function (r, i) {
+          return '<div class="s-ba-row"><span>' + esc(r.k || '') + '</span>' +
+            '<b' + de('compare.rows.' + i + '.us') + '>' + esc(r.us || '') + '</b></div>';
+        }).join('');
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+          '<div class="s-grid cols2 s-ba up d2">' +
+          '<div class="s-ba-col"><b class="s-ba-h"' + de('compare.them') + '>' + esc(cp.them || '기존 방식') + '</b>' + left + '</div>' +
+          '<div class="s-ba-col s-ba-col--us"><b class="s-ba-h"' + de('productName') + '>' + esc(d.productName || '우리 제품') + '</b>' + right + '</div>' +
+          '</div></div></section>';
+      }
+      if (v === 'cards') {
+        var cc = rows.map(function (r, i) {
+          return '<div class="s-cmpc up d' + Math.min(i + 1, 3) + '"><b' + de('compare.rows.' + i + '.k') + '>' + esc(r.k || '') + '</b>' +
+            '<p class="s-cmpc-us"><span>' + esc(d.productName || '우리 제품') + '</span><b' + de('compare.rows.' + i + '.us') + '>' + esc(r.us || '') + '</b></p>' +
+            '<p class="s-cmpc-th"><span>' + esc(cp.them || '기존 방식') + '</span><b' + de('compare.rows.' + i + '.them') + '>' + esc(r.them || '') + '</b></p></div>';
+        }).join('');
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+          '<div class="s-grid cols3 s-cmpcs">' + cc + '</div></div></section>';
+      }
       var body = rows.map(function (r, i) {
         return '<tr><th' + de('compare.rows.' + i + '.k') + '>' + esc(r.k || '') + '</th>' +
           '<td class="us"' + de('compare.rows.' + i + '.us') + '>' + esc(r.us || '') + '</td>' +
           '<td' + de('compare.rows.' + i + '.them') + '>' + esc(r.them || '') + '</td></tr>';
       }).join('');
-      return '<section class="band"><div class="wrap">' +
-        shead(d, 'compareEyebrow', 'COMPARE', 'compareTitle', '무엇이 다른가요') +
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
         '<div class="s-tblw up d2"><table class="s-tbl"><thead><tr><th></th>' +
         '<th class="us"' + de('productName') + '>' + esc(d.productName || '우리 제품') + '</th>' +
         '<th' + de('compare.them') + '>' + esc(cp.them || '기존 방식') + '</th></tr></thead>' +
@@ -256,11 +377,13 @@
         return '<div class="s-qa up d' + Math.min(i + 1, 3) + '"><h3' + de('faq.' + i + '.q') + '>' + esc(f.q || '') + '</h3>' +
           '<p' + de('faq.' + i + '.a') + '>' + esc(f.a || '') + '</p></div>';
       }).join('');
-      return '<section class="band"><div class="wrap">' +
-        shead(d, 'faqEyebrow', 'FAQ', 'faqTitle', '자주 묻는 질문') +
-        '<div class="s-faq">' + list + '</div></div></section>';
+      var v = vr(ctx, 'faq'); /* twocol=2단 그리드 */
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' +
+        shead(ctx, d, 'faqEyebrow', 'FAQ', 'faqTitle', '자주 묻는 질문') +
+        '<div class="s-faq' + (v === 'twocol' ? ' s-faq--2col' : '') + '">' + list + '</div></div></section>';
     },
-    /* 고객 후기 — 킷 Testimonial 5: 블루(#0F62FE) 카드 3장, 별점 없음, 라운드 0 */
+    /* 고객 후기 — 킷 Testimonial 5: 블루(#0F62FE) 카드 3장, 별점 없음, 라운드 0.
+       변형: single=단일 대형 인용(32/40) 블루 카드, logos=고객사 로고 그리드+수치 행 */
     testimonial: function (c, ctx) {
       var d = ctx.data;
       var items = (d.testimonials && d.testimonials.length ? d.testimonials : [
@@ -268,13 +391,33 @@
         { text: '팀 전체가 같은 화면을 보며 일하게 됐습니다.', by: '고객 이름 · 회사' },
         { text: '지원이 빨라서 믿고 쓰고 있어요.', by: '고객 이름 · 회사' },
       ]);
+      var v = vr(ctx, 'testimonial');
+      var head = shead(ctx, d, 'testimonialEyebrow', 'TESTIMONIALS', 'testimonialTitle', '고객이 말합니다');
+      if (v === 'single') {
+        var t0 = items[0] || {};
+        return '<section class="' + bandCls(ctx, true) + '"><div class="wrap">' + head +
+          '<figure class="s-tst s-tst--single up d2"><i>' + icon(IC.quote, 32) + '</i>' +
+          '<blockquote' + de('testimonials.0.text') + '>' + esc(t0.text || '') + '</blockquote>' +
+          '<figcaption' + de('testimonials.0.by') + '>' + esc(t0.by || '') + '</figcaption></figure></div></section>';
+      }
+      if (v === 'logos') {
+        var logos = (d.logos && d.logos.length ? d.logos : ['고객사 A', '고객사 B', '고객사 C', '고객사 D', '고객사 E', '고객사 F']);
+        var tiles = logos.map(function (n, i) {
+          return '<div class="s-logo-it up d' + Math.min(i + 1, 3) + '"' + de('logos.' + i) + '>' + esc(n) + '</div>';
+        }).join('');
+        var srow = (d.stats && d.stats.length) ? '<div class="s-grid cols3 s-stats s-logos-st up d2">' + d.stats.map(function (s, i) {
+          return '<div class="s-stat"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b>' +
+            '<span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>';
+        }).join('') + '</div>' : '';
+        return '<section class="' + bandCls(ctx, true) + '"><div class="wrap">' + head +
+          '<div class="s-logos">' + tiles + '</div>' + srow + '</div></section>';
+      }
       var cards = items.map(function (t, i) {
         return '<figure class="s-tst up d' + Math.min(i + 1, 3) + '"><i>' + icon(IC.quote) + '</i>' +
           '<blockquote' + de('testimonials.' + i + '.text') + '>' + esc(t.text || '') + '</blockquote>' +
           '<figcaption' + de('testimonials.' + i + '.by') + '>' + esc(t.by || '') + '</figcaption></figure>';
       }).join('');
-      return '<section class="band band--alt"><div class="wrap">' +
-        shead(d, 'testimonialEyebrow', 'TESTIMONIALS', 'testimonialTitle', '고객이 말합니다') +
+      return '<section class="' + bandCls(ctx, true) + '"><div class="wrap">' + head +
         '<div class="s-grid cols3 s-tsts">' + cards + '</div></div></section>';
     },
     /* 요금제 — 킷 Pricing: 카드 bg #F9F9F9 보더 1.8 라운드 0, 추천 플랜은 버튼만 채움 */
@@ -285,6 +428,35 @@
         { name: 'Pro', price: '29,000원', per: '월', desc: '성장하는 팀', points: ['모든 기능', '무제한 프로젝트', '우선 지원'], cta: '시작하기', featured: true },
         { name: 'Enterprise', price: '문의', per: '', desc: '대규모 조직', points: ['전담 지원', '보안 옵션', '맞춤 계약'], cta: '문의하기' },
       ]);
+      var v = vr(ctx, 'pricing');
+      var head = shead(ctx, d, 'pricingEyebrow', 'PRICING', 'pricingTitle', '요금제');
+      /* table — 킷 Tables 조형(셀 1.8px·행 96) 요금 비교표: 플랜 열 × 요금/대상/포함 기능/CTA 행 */
+      if (v === 'table') {
+        var maxP = 0; plans.forEach(function (p) { maxP = Math.max(maxP, (p.points || []).length); });
+        var hrow = '<tr><th></th>' + plans.map(function (p, i) {
+          return '<th' + (p.featured ? ' class="us"' : '') + de('plans.' + i + '.name') + '>' + esc(p.name || '') + '</th>';
+        }).join('') + '</tr>';
+        var prow = '<tr><th>요금</th>' + plans.map(function (p, i) {
+          return '<td' + (p.featured ? ' class="us"' : '') + '><strong' + de('plans.' + i + '.price') + '>' + esc(p.price || '') + '</strong>' +
+            (p.per ? '<span class="s-per"' + de('plans.' + i + '.per') + '>' + esc(p.per) + '</span>' : '') + '</td>';
+        }).join('') + '</tr>';
+        var drow = '<tr><th>대상</th>' + plans.map(function (p, i) {
+          return '<td' + de('plans.' + i + '.desc') + '>' + esc(p.desc || '') + '</td>';
+        }).join('') + '</tr>';
+        var frows = '';
+        for (var r0 = 0; r0 < maxP; r0++) {
+          frows += '<tr><th>' + (r0 === 0 ? '포함 기능' : '') + '</th>' + plans.map(function (p, i) {
+            var pt = (p.points || [])[r0];
+            return '<td>' + (pt ? '<span class="s-tick">' + icon(IC.check, 18) + '</span><span' + de('plans.' + i + '.points.' + r0) + '>' + esc(pt) + '</span>' : '') + '</td>';
+          }).join('') + '</tr>';
+        }
+        var crow = '<tr><th></th>' + plans.map(function (p, i) {
+          return '<td><button class="btn ' + (p.featured ? 'btn--pri' : 'btn--out') + '"' + de('plans.' + i + '.cta') + '>' + esc(p.cta || '시작하기') + '</button></td>';
+        }).join('') + '</tr>';
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+          '<div class="s-tblw up d2"><table class="s-tbl s-prtbl"><thead>' + hrow + '</thead>' +
+          '<tbody>' + prow + drow + frows + crow + '</tbody></table></div></div></section>';
+      }
       var cards = plans.map(function (p, i) {
         return '<div class="s-plan up d' + Math.min(i + 1, 3) + '">' +
           '<b' + de('plans.' + i + '.name') + '>' + esc(p.name || '') + '</b>' +
@@ -294,8 +466,7 @@
           points(p.points, 'plans.' + i + '.points') +
           '<button class="btn ' + (p.featured ? 'btn--pri' : 'btn--out') + '"' + de('plans.' + i + '.cta') + '>' + esc(p.cta || '시작하기') + '</button></div>';
       }).join('');
-      return '<section class="band"><div class="wrap">' +
-        shead(d, 'pricingEyebrow', 'PRICING', 'pricingTitle', '요금제') +
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
         '<div class="s-grid cols3 s-plans">' + cards + '</div></div></section>';
     },
     /* 문의 폼 — 킷 Forms: 인풋 높이 56 bg #F9F9F9 라운드 8, 레이블 14/16. 정적 데모(제출 비활성) */
@@ -307,12 +478,18 @@
         return '<div class="s-field"><label' + de('form.fields.' + i) + '>' + esc(label) + '</label>' +
           (ta ? '<textarea rows="5"></textarea>' : '<input type="text">') + '</div>';
       }).join('');
-      return '<section class="band"><div class="wrap s-formw">' +
+      var formBody = '<div class="s-form up d3">' + rows +
+        '<button class="btn btn--pri" type="button" disabled' + de('form.submit') + '>' + esc(f.submit || '문의 보내기') + '</button></div>';
+      var head = ctx.lead ? '' :
         '<p class="eyebrow up"' + de('formEyebrow') + '>' + esc(d.formEyebrow || 'CONTACT') + '</p>' +
         '<h2 class="s-h2 up d1"' + de('form.title') + '>' + esc(f.title || '문의하기') + '</h2>' +
-        '<p class="s-lead up d2"' + de('form.sub') + '>' + esc(f.sub || '남겨주시면 1영업일 안에 연락드립니다.') + '</p>' +
-        '<div class="s-form up d3">' + rows +
-        '<button class="btn btn--pri" type="button" disabled' + de('form.submit') + '>' + esc(f.submit || '문의 보내기') + '</button></div>' +
+        '<p class="s-lead up d2"' + de('form.sub') + '>' + esc(f.sub || '남겨주시면 1영업일 안에 연락드립니다.') + '</p>';
+      /* split — 좌 설명 / 우 폼. lead(표제 생략)면 좌 컬럼이 비므로 기본형으로 렌더 */
+      if (vr(ctx, 'form') === 'split' && !ctx.lead) {
+        return '<section class="band"><div class="wrap s-grid cols2 s-form-sp">' +
+          '<div class="s-form-sp-tx">' + head + '</div>' + formBody + '</div></section>';
+      }
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap s-formw">' + head + formBody +
         '</div></section>';
     },
     /* 안내 카드 3열 — 플랫 보더 카드(연락처·절차 등) */
@@ -334,13 +511,25 @@
         { title: '시작하기', desc: '설치와 첫 설정' }, { title: '핵심 기능', desc: '주요 기능 사용법' },
         { title: '관리자 가이드', desc: '권한과 설정 관리' }, { title: '자주 묻는 질문', desc: '문제 해결 모음' },
       ]);
+      var v = vr(ctx, 'doclist');
+      /* list — 컴팩트 라인 리스트(아이콘 24 + 제목 + 우측 설명) */
+      if (v === 'list') {
+        var lrows = docs.map(function (t, i) {
+          return '<div class="s-docl up d' + Math.min(i + 1, 3) + '"><i class="s-docl-ic">' + icon(IC.doc, 24) + '</i>' +
+            '<a' + de('docs.' + i + '.title') + '>' + esc(t.title || '') + '</a>' +
+            '<p' + de('docs.' + i + '.desc') + '>' + esc(t.desc || '') + '</p></div>';
+        }).join('');
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' +
+          shead(ctx, d, 'docsEyebrow', 'DOCS', 'docsTitle', '가이드 문서') +
+          '<div class="s-docs--list">' + lrows + '</div></div></section>';
+      }
       var cells = docs.map(function (t, i) {
         return '<div class="s-doc up d' + Math.min(i + 1, 3) + '"><span class="s-fic">' + icon(IC.doc) + '</span>' +
           '<div><a' + de('docs.' + i + '.title') + '>' + esc(t.title || '') + '</a>' +
           '<p' + de('docs.' + i + '.desc') + '>' + esc(t.desc || '') + '</p></div></div>';
       }).join('');
-      return '<section class="band"><div class="wrap">' +
-        shead(d, 'docsEyebrow', 'DOCS', 'docsTitle', '가이드 문서') +
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' +
+        shead(ctx, d, 'docsEyebrow', 'DOCS', 'docsTitle', '가이드 문서') +
         '<div class="s-grid cols2 s-docs">' + cells + '</div></div></section>';
     },
     /* 시작 절차 — 번호(48px 블루) 3열 */
@@ -354,9 +543,12 @@
           '<h3' + de('steps.' + i + '.title') + '>' + esc(s.title || '') + '</h3>' +
           '<p' + de('steps.' + i + '.text') + '>' + esc(s.text || '') + '</p></div>';
       }).join('');
-      return '<section class="band band--alt"><div class="wrap">' +
-        shead(d, 'stepsEyebrow', 'STEPS', 'stepsTitle', '시작 절차') +
-        '<div class="s-grid cols3">' + cells + '</div></div></section>';
+      /* 변형: vertical=세로 타임라인(1.8px 라인 행), cards=플랫 보더 카드 */
+      var v = vr(ctx, 'steps');
+      var wrap = v === 'vertical' ? 's-steps--v' : v === 'cards' ? 's-grid cols3 s-steps--cards' : 's-grid cols3';
+      return '<section class="' + bandCls(ctx, true) + '"><div class="wrap">' +
+        shead(ctx, d, 'stepsEyebrow', 'STEPS', 'stepsTitle', '시작 절차') +
+        '<div class="' + wrap + '">' + cells + '</div></div></section>';
     },
     /* 블로그 카드 — 킷 Blog 3: 썸네일 + 칩(라운드 32) + 날짜 + 제목 링크 */
     bloglist: function (c, ctx) {
@@ -366,7 +558,7 @@
         { title: '두 번째 소식', desc: '요약을 입력하세요.', date: '2026.06', tag: 'UPDATE' },
         { title: '세 번째 소식', desc: '요약을 입력하세요.', date: '2026.05', tag: 'TIP' },
       ]);
-      var cells = items.map(function (p, i) {
+      function post(p, i) {
         var key = 'post' + i;
         var img = (d.images && d.images[key])
           ? '<img class="s-post-img" src="' + esc(d.images[key]) + '" alt="" data-img="' + key + '">'
@@ -376,9 +568,42 @@
           '<time' + de('posts.' + i + '.date') + '>' + esc(p.date || '') + '</time></div>' +
           '<a class="s-post-t"' + de('posts.' + i + '.title') + '>' + esc(p.title || '') + '</a>' +
           '<p' + de('posts.' + i + '.desc') + '>' + esc(p.desc || '') + '</p></article>';
-      }).join('');
-      return '<section class="band"><div class="wrap">' +
-        shead(d, 'blogEyebrow', 'BLOG', 'blogTitle', '소식') +
+      }
+      function meta(p, i) {
+        return '<div class="s-post-m"><span class="s-chip"' + de('posts.' + i + '.tag') + '>' + esc(p.tag || 'NEWS') + '</span>' +
+          '<time' + de('posts.' + i + '.date') + '>' + esc(p.date || '') + '</time></div>';
+      }
+      var v = vr(ctx, 'bloglist');
+      var head = shead(ctx, d, 'blogEyebrow', 'BLOG', 'blogTitle', '소식');
+      /* list — 썸네일 좌 320 + 본문 우, 1.8px 라인 행 */
+      if (v === 'list') {
+        var lrows = items.map(function (p, i) {
+          var key = 'post' + i;
+          var img = (d.images && d.images[key])
+            ? '<img class="s-postl-img" src="' + esc(d.images[key]) + '" alt="" data-img="' + key + '">'
+            : '<div class="s-postl-img ph" data-img="' + key + '"><span>THUMBNAIL</span></div>';
+          return '<article class="s-postl up d' + Math.min(i + 1, 3) + '">' + img + '<div>' + meta(p, i) +
+            '<a class="s-post-t"' + de('posts.' + i + '.title') + '>' + esc(p.title || '') + '</a>' +
+            '<p' + de('posts.' + i + '.desc') + '>' + esc(p.desc || '') + '</p></div></article>';
+        }).join('');
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+          '<div class="s-posts--list">' + lrows + '</div></div></section>';
+      }
+      /* featured — 대표 1건 2분할 크게 + 나머지 3열 그리드 */
+      if (v === 'featured') {
+        var f0 = items[0] || {};
+        var fimg = (d.images && d.images.post0)
+          ? '<img class="s-post-ft-img" src="' + esc(d.images.post0) + '" alt="" data-img="post0">'
+          : '<div class="s-post-ft-img ph" data-img="post0"><span>THUMBNAIL</span></div>';
+        var rest = items.slice(1).map(function (p, j) { return post(p, j + 1); }).join('');
+        return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
+          '<article class="s-post-ft up d2">' + fimg + '<div class="s-post-ft-tx">' + meta(f0, 0) +
+          '<a class="s-post-t"' + de('posts.0.title') + '>' + esc(f0.title || '') + '</a>' +
+          '<p' + de('posts.0.desc') + '>' + esc(f0.desc || '') + '</p></div></article>' +
+          (rest ? '<div class="s-grid cols3">' + rest + '</div>' : '') + '</div></section>';
+      }
+      var cells = items.map(post).join('');
+      return '<section class="' + bandCls(ctx) + '"><div class="wrap">' + head +
         '<div class="s-grid cols3">' + cells + '</div></div></section>';
     },
     /* 아젠다 — 시간(블루) + 제목/설명, 1.8px 라인 행 */

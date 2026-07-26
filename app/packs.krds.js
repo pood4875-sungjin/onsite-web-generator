@@ -418,13 +418,13 @@ const sections = {
       { icon: 'sync', title: '실시간 연동', desc: H },
     ]);
     return `
-    <section class="band band--alt">
+    <section class="band band--alt${c._lead ? ' band--lead' : ''}">
       <div class="container">
-        <div class="sec-head rise">
+        ${c._lead ? '' : `<div class="sec-head rise">
           ${C.eyebrow(ctx.esc(ctx.data.featureEyebrow || c.eyebrow || 'FEATURES'), { edit: 'featureEyebrow' })}
           <h2 class="sec-title" data-edit="featureTitle">${ctx.esc(ctx.data.featureTitle || c.title || '핵심 기능')}</h2>
-        </div>
-        <div class="grid cols-3" style="margin-top:32px">
+        </div>`}
+        <div class="grid cols-3" style="margin-top:${c._lead ? 0 : 32}px">
           ${items.map((it, i) => C.card(
             `${C.icon(ICONS[it.icon] || ICONS.check)}
              <h3 class="feat__t" data-edit="features.${i}.title">${ctx.esc(it.title)}</h3>
@@ -642,10 +642,10 @@ Object.assign(sections, {
         { q: '비용은 어떻게 되나요?', a: '과금 방식을 안내하세요.' },
       ]));
     return `
-    <section class="band">
+    <section class="band${c._lead ? ' band--lead' : ''}">
       <div class="container">
-        ${secHead(ctx, 'faqTitle', '자주 묻는 질문')}
-        <div class="faq krise" style="margin-top:24px">
+        ${c._lead ? '' : secHead(ctx, 'faqTitle', '자주 묻는 질문')}
+        <div class="faq krise" style="margin-top:${c._lead ? 0 : 24}px">
           ${items.map((f, i) => `
           <details class="faq__it"${i === 0 ? ' open' : ''}>
             <summary class="faq__q"><span data-edit="faq.${i}.q">${esc(f.q)}</span></summary>
@@ -684,11 +684,11 @@ Object.assign(sections, {
     const fm = ctx.data.form || c || {};
     const fields = (fm.fields && fm.fields.length ? fm.fields : ['회사명', '담당자 이름', '이메일', '문의 내용']);
     return `
-    <section class="band band--alt">
+    <section class="band band--alt${c._lead ? ' band--lead' : ''}">
       <div class="container kform">
         <div class="card kform__card krise">
-          <h2 class="kform__t" data-edit="form.title">${esc(fm.title || '신청하기')}</h2>
-          <p class="kform__s" data-edit="form.sub">${esc(fm.sub || '남겨주시면 순서대로 안내해 드립니다.')}</p>
+          ${c._lead ? '' : `<h2 class="kform__t" data-edit="form.title">${esc(fm.title || '신청하기')}</h2>
+          <p class="kform__s" data-edit="form.sub">${esc(fm.sub || '남겨주시면 순서대로 안내해 드립니다.')}</p>`}
           ${fields.map((f, i) => {
             const long = /내용|사유|메시지|요청/.test(String(f));
             const ctrl = long
@@ -736,10 +736,10 @@ Object.assign(sections, {
         { title: '자주 묻는 질문', desc: '문제 해결 모음' },
       ]));
     return `
-    <section class="band">
+    <section class="band${c._lead ? ' band--lead' : ''}">
       <div class="container">
-        ${secHead(ctx, 'doclistTitle', '안내 자료')}
-        <div class="doclist krise" style="margin-top:24px">
+        ${c._lead ? '' : secHead(ctx, 'doclistTitle', '안내 자료')}
+        <div class="doclist krise" style="margin-top:${c._lead ? 0 : 24}px">
           ${docs.map((dc, i) => `
           <div class="doc">
             <div>
@@ -786,10 +786,10 @@ Object.assign(sections, {
         { title: '세 번째 소식', desc: '요약을 입력하세요.', date: '2026.05', tag: 'TIP' },
       ]));
     return `
-    <section class="band">
+    <section class="band${c._lead ? ' band--lead' : ''}">
       <div class="container">
-        ${secHead(ctx, 'bloglistTitle', '소식')}
-        <div class="postlist krise" style="margin-top:24px">
+        ${c._lead ? '' : secHead(ctx, 'bloglistTitle', '소식')}
+        <div class="postlist krise" style="margin-top:${c._lead ? 0 : 24}px">
           ${posts.map((p, i) => `
           <article class="post">
             <div class="post__hd">
@@ -888,10 +888,10 @@ Object.assign(sections, {
         { name: '기관', price: '별도 협의', desc: '대규모·맞춤 도입', points: ['전용 지원', '보안 검토', '맞춤 계약'] },
       ]));
     return `
-    <section class="band">
+    <section class="band${c._lead ? ' band--lead' : ''}">
       <div class="container">
-        ${secHead(ctx, 'pricingTitle', '이용 요금 안내')}
-        <div class="grid cols-3 prc" style="margin-top:32px">
+        ${c._lead ? '' : secHead(ctx, 'pricingTitle', '이용 요금 안내')}
+        <div class="grid cols-3 prc" style="margin-top:${c._lead ? 0 : 32}px">
           ${plans.map((p, i) => `
           <div class="card card--pad prc__it${p.featured ? ' prc__it--hot' : ''} krise">
             <div class="prc__hd">
@@ -903,6 +903,547 @@ Object.assign(sections, {
             ${p.points && p.points.length ? `<div class="prc__pts">${klist(p.points, `plans.${i}.points`)}</div>` : ''}
             ${C.button(p.cta || '신청하기', { variant: p.featured ? 'primary' : 'secondary', size: 'md', edit: `plans.${i}.cta` })}
           </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* ============================================================
+   섹션 표현 변형(variant) — pagetypes.js SECTION_VARIANTS 계약.
+   data.variants={hero:'stat',...} 지정 시에만 분기. 미지정·미구현 값은 기본형 그대로(하위호환).
+   원칙: 기본형 렌더러 불변(아래에서 래핑만) · 기존 텍스트 data-edit 경로 동일 유지 ·
+   장식문자(따옴표·Q·번호·불릿)는 CSS ::before/counter · 모션은 CSS-only .krise.
+   마커: 변형 루트 <section>에 v-<타입>-<변형> 클래스.
+   ============================================================ */
+const vOf = (ctx, key) => (ctx.data && ctx.data.variants && ctx.data.variants[key]) || '';
+/** 기본형을 base로 캡처하고, 지정 변형만 분기하는 래퍼(variants 키 = pagetypes 어휘) */
+const wrapVariants = (type, key, table) => {
+  const base = sections[type];
+  sections[type] = (c, ctx) => {
+    const fn = table[vOf(ctx, key)];
+    return fn ? fn(c, ctx, base) : base(c, ctx);
+  };
+};
+/* lead 지원 공통(변형에서도 pagehero 표제 대체 규칙 준수) */
+const bandC = (c, alt, mark) => `band${alt ? ' band--alt' : ''}${c._lead ? ' band--lead' : ''} ${mark}`;
+const headOr = (c, ctx, field, fallback) => (c._lead ? '' : secHead(ctx, field, fallback));
+const topGap = (c, px) => `style="margin-top:${c._lead ? 0 : px}px"`;
+
+/* 기본형과 동일한 기본 콘텐츠(변형에서 재사용 — 기본형 코드는 손대지 않음) */
+const featItems = (c) => (c.items && c.items.length ? c.items : [
+  { icon: 'bolt', title: '빠른 처리', desc: H },
+  { icon: 'shield', title: '안전한 인증', desc: H },
+  { icon: 'sync', title: '실시간 연동', desc: H },
+]);
+const featHead = (c, ctx) => (c._lead ? '' : `<div class="sec-head krise">
+          ${C.eyebrow(ctx.esc(ctx.data.featureEyebrow || c.eyebrow || 'FEATURES'), { edit: 'featureEyebrow' })}
+          <h2 class="sec-title" data-edit="featureTitle">${ctx.esc(ctx.data.featureTitle || c.title || '핵심 기능')}</h2>
+        </div>`);
+const statItems = (c) => (c.items && c.items.length ? c.items : [
+  { value: '2.4초', label: '평균 처리 시간' },
+  { value: '99.9%', label: '서비스 가용성' },
+  { value: '120만', label: '누적 이용자' },
+]);
+const cmpData = (c, ctx) => {
+  const cp = ctx.data.compare || c || {};
+  return {
+    them: cp.them || '기존 방식',
+    rows: (cp.rows && cp.rows.length ? cp.rows : [
+      { k: '구축 시간', us: '몇 분', them: '몇 주' },
+      { k: '비용', us: '구독형', them: '고정 인건비' },
+      { k: '수정', us: '즉시 반영', them: '외주 왕복' },
+    ]),
+  };
+};
+const tsmItems = (c, ctx) => (ctx.data.testimonials && ctx.data.testimonials.length ? ctx.data.testimonials :
+  (c.items && c.items.length ? c.items : [
+    { text: '도입 후 처리 시간이 절반으로 줄었습니다.', by: '이용 기관 담당자' },
+    { text: '안내가 명확해서 처음 이용에도 어렵지 않았습니다.', by: '서비스 이용자' },
+    { text: '운영 부담이 줄어 본연의 업무에 집중하게 됐습니다.', by: '운영 부서 담당자' },
+  ]));
+const stepItems = (c, ctx) => (ctx.data.steps && ctx.data.steps.length ? ctx.data.steps :
+  (c.items && c.items.length ? c.items : [
+    { title: '가입', text: '계정을 만듭니다.' },
+    { title: '설정', text: '기본 정보를 입력합니다.' },
+    { title: '시작', text: '첫 결과물을 만듭니다.' },
+  ]));
+const faqItems = (c, ctx) => (ctx.data.faq && ctx.data.faq.length ? ctx.data.faq :
+  (c.items && c.items.length ? c.items : [
+    { q: '어떤 서비스인가요?', a: '서비스를 한 문장으로 설명해주세요.' },
+    { q: '이용까지 얼마나 걸리나요?', a: '보통 걸리는 기간과 절차를 안내하세요.' },
+    { q: '비용은 어떻게 되나요?', a: '과금 방식을 안내하세요.' },
+  ]));
+const postItems = (c, ctx) => (ctx.data.posts && ctx.data.posts.length ? ctx.data.posts :
+  (c.items && c.items.length ? c.items : [
+    { title: '첫 번째 소식', desc: '요약을 입력하세요.', date: '2026.07', tag: 'NEWS' },
+    { title: '두 번째 소식', desc: '요약을 입력하세요.', date: '2026.06', tag: 'UPDATE' },
+    { title: '세 번째 소식', desc: '요약을 입력하세요.', date: '2026.05', tag: 'TIP' },
+  ]));
+const frowRows = (c, ctx) => (ctx.data.featureRows && ctx.data.featureRows.length ? ctx.data.featureRows :
+  (c.rows && c.rows.length ? c.rows : [
+    { title: '대표 기능 하나', desc: H, points: ['포인트 1', '포인트 2'] },
+    { title: '대표 기능 둘', desc: H, points: ['포인트 1', '포인트 2'] },
+  ]));
+const planItems = (c, ctx) => (ctx.data.plans && ctx.data.plans.length ? ctx.data.plans :
+  (c.plans && c.plans.length ? c.plans : [
+    { name: '기본', price: '무료', desc: '개인·소규모 이용', points: ['핵심 기능', '기본 지원'] },
+    { name: '표준', price: '월 9,900원', desc: '팀·기관 표준', points: ['모든 기본 기능', '우선 지원', '사용량 확장'], featured: true },
+    { name: '기관', price: '별도 협의', desc: '대규모·맞춤 도입', points: ['전용 지원', '보안 검토', '맞춤 계약'] },
+  ]));
+/* 폼 필드 1행(기본형과 동일 규칙 — 내용류는 textarea) */
+const formFieldHtml = (f, i) => {
+  const long = /내용|사유|메시지|요청/.test(String(f));
+  const ctrl = long
+    ? `<textarea class="kform__in" id="kf${i}" rows="4" placeholder="내용을 입력해 주세요"></textarea>`
+    : `<input class="kform__in" id="kf${i}" type="text" placeholder="입력해 주세요">`;
+  return `<div class="kform__row"><label class="kform__l" for="kf${i}" data-edit="form.fields.${i}">${esc(f)}</label>${ctrl}</div>`;
+};
+
+/* hero — split(기본형과 동일 구조·마커만) / stat(숫자·성과 강조 타이포) */
+wrapVariants('hero', 'hero', {
+  split: (c, ctx, base) => base(c, ctx).replace('class="band hero"', 'class="band hero v-hero-split"'),
+  stat: (c, ctx) => {
+    const title = ctx.esc(c.title || ctx.data.tagline || '필요한 서비스를\n한 곳에서 간편하게');
+    const secondary = String(ctx.data.secondaryCta || c.secondaryCta || '이용안내 보기').replace(/\s*→\s*$/, '');
+    const sts = (ctx.data.stats && ctx.data.stats.length ? ctx.data.stats : statItems({}));
+    return `
+    <section class="band hero v-hero-stat">
+      <div class="container heroS krise">
+        ${C.eyebrow(ctx.esc(ctx.data.heroEyebrow || c.eyebrow || '서비스 플랫폼'), { edit: 'heroEyebrow' })}
+        <h1 class="hero__title" data-edit="tagline">${title.replace(/\n/g, '<br>')}</h1>
+        <p class="hero__sub heroS__sub" data-edit="subcopy">${ctx.esc(c.subcopy || ctx.data.subcopy || H)}</p>
+        <div class="hero__cta heroS__cta">
+          ${C.button(ctx.esc(ctx.data.primaryCta || c.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg', edit: 'primaryCta' })}
+          ${C.link(ctx.esc(secondary), { arrow: true, edit: 'secondaryCta' })}
+        </div>
+        <div class="heroS__stats">
+          ${sts.map((s, i) => `<div class="heroS__it"><div class="heroS__v" data-edit="stats.${i}.value">${esc(s.value)}</div><div class="heroS__l" data-edit="stats.${i}.label">${esc(s.label)}</div></div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* feature — cards(아이콘 칩 카드) / list(밀도형 2단 리스트) */
+wrapVariants('feature', 'feature', {
+  cards: (c, ctx) => `
+    <section class="${bandC(c, true, 'v-feature-cards')}">
+      <div class="container">
+        ${featHead(c, ctx)}
+        <div class="grid cols-3" ${topGap(c, 32)}>
+          ${featItems(c).map((it, i) => `
+          <div class="card card--pad fcard krise">
+            <span class="fcard__ic">${C.icon(ICONS[it.icon] || ICONS.check)}</span>
+            <h3 class="feat__t" data-edit="features.${i}.title">${esc(it.title)}</h3>
+            <p class="feat__d" data-edit="features.${i}.desc">${esc(it.desc || H)}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`,
+  list: (c, ctx) => `
+    <section class="${bandC(c, true, 'v-feature-list')}">
+      <div class="container">
+        ${featHead(c, ctx)}
+        <div class="grid cols-2 flist" ${topGap(c, 24)}>
+          ${featItems(c).map((it, i) => `
+          <div class="flist__it krise">
+            ${C.icon(ICONS[it.icon] || ICONS.check)}
+            <div>
+              <h3 class="flist__t" data-edit="features.${i}.title">${esc(it.title)}</h3>
+              <p class="flist__d" data-edit="features.${i}.desc">${esc(it.desc || H)}</p>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`,
+});
+
+/* stats — kpi(카드) / big(대형 숫자 하나 강조). variants 키는 pagetypes 어휘 'stats' */
+wrapVariants('stat', 'stats', {
+  kpi: (c, ctx) => `
+    <section class="band v-stats-kpi">
+      <div class="container grid cols-3">
+        ${statItems(c).map((s, i) => `<div class="card card--pad kpi krise"><div class="kpi__v" data-edit="stats.${i}.value">${esc(s.value)}</div><div class="kpi__l" data-edit="stats.${i}.label">${esc(s.label)}</div></div>`).join('')}
+      </div>
+    </section>`,
+  big: (c, ctx) => {
+    const items = statItems(c);
+    const rest = items.slice(1);
+    return `
+    <section class="band v-stats-big">
+      <div class="container bigstat krise">
+        <div class="bigstat__v" data-edit="stats.0.value">${esc(items[0].value)}</div>
+        <div class="bigstat__l" data-edit="stats.0.label">${esc(items[0].label)}</div>
+        ${rest.length ? `<div class="bigstat__rest">${rest.map((s, j) => `<div class="stat__it"><div class="bigstat__rv" data-edit="stats.${j + 1}.value">${esc(s.value)}</div><div class="stat__l" data-edit="stats.${j + 1}.label">${esc(s.label)}</div></div>`).join('')}</div>` : ''}
+      </div>
+    </section>`;
+  },
+});
+
+/* compare — beforeafter(좌우 패널) / cards(카드 비교). k 라벨 편집은 좌측(기존) 패널에서만 */
+wrapVariants('compare', 'compare', {
+  beforeafter: (c, ctx) => {
+    const d = cmpData(c, ctx);
+    return `
+    <section class="band v-compare-beforeafter">
+      <div class="container">
+        ${secHead(ctx, 'compareTitle', '무엇이 다른가요')}
+        <div class="grid cols-2 ba" style="margin-top:32px">
+          <div class="ba__col krise">
+            <div class="ba__hd" data-edit="compare.them">${esc(d.them)}</div>
+            ${d.rows.map((r, i) => `<div class="ba__row"><span class="ba__k" data-edit="compare.rows.${i}.k">${esc(r.k)}</span><span class="ba__x" data-edit="compare.rows.${i}.them">${esc(r.them)}</span></div>`).join('')}
+          </div>
+          <div class="ba__col ba__col--us krise">
+            <div class="ba__hd" data-edit="productName">${name(ctx)}</div>
+            ${d.rows.map((r, i) => `<div class="ba__row"><span class="ba__k">${esc(r.k)}</span><span class="ba__x" data-edit="compare.rows.${i}.us">${esc(r.us)}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </section>`;
+  },
+  cards: (c, ctx) => {
+    const d = cmpData(c, ctx);
+    return `
+    <section class="band v-compare-cards">
+      <div class="container">
+        ${secHead(ctx, 'compareTitle', '무엇이 다른가요')}
+        <div class="grid cols-2" style="margin-top:32px">
+          <div class="card card--pad krise">
+            <div class="ba__hd" data-edit="compare.them">${esc(d.them)}</div>
+            ${d.rows.map((r, i) => `<div class="ba__row"><span class="ba__k" data-edit="compare.rows.${i}.k">${esc(r.k)}</span><span class="ba__x" data-edit="compare.rows.${i}.them">${esc(r.them)}</span></div>`).join('')}
+          </div>
+          <div class="card card--pad bac--us krise">
+            <div class="ba__hd" data-edit="productName">${name(ctx)}</div>
+            ${d.rows.map((r, i) => `<div class="ba__row"><span class="ba__k">${esc(r.k)}</span><span class="ba__x" data-edit="compare.rows.${i}.us">${esc(r.us)}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* testimonial — single(단일 대형 인용) / logos(기관명 그리드 — 따옴표·로고는 CSS/텍스트 타일) */
+wrapVariants('testimonial', 'testimonial', {
+  single: (c, ctx) => {
+    const t = tsmItems(c, ctx)[0];
+    return `
+    <section class="band v-tsm-single">
+      <div class="container">
+        ${secHead(ctx, 'testimonialTitle', '이용자 후기')}
+        <figure class="tsm1 krise" style="margin-top:32px">
+          <blockquote class="tsm1__x" data-edit="testimonials.0.text">${esc(t.text)}</blockquote>
+          <figcaption class="tsm1__by" data-edit="testimonials.0.by">${esc(t.by || '')}</figcaption>
+        </figure>
+      </div>
+    </section>`;
+  },
+  logos: (c, ctx) => {
+    const items = tsmItems(c, ctx);
+    return `
+    <section class="band v-tsm-logos">
+      <div class="container">
+        ${secHead(ctx, 'testimonialTitle', '함께하는 기관')}
+        <div class="logowall krise" style="margin-top:32px">
+          ${items.map((t, i) => `<div class="logowall__it" data-edit="testimonials.${i}.by">${esc(t.by || '기관명')}</div>`).join('')}
+        </div>
+        <p class="logowall__cap krise" data-edit="testimonials.0.text">${esc(items[0].text || '')}</p>
+      </div>
+    </section>`;
+  },
+});
+
+/* steps — vertical(세로 타임라인) / cards(기본형이 이미 카드 스텝 — 마커만) */
+wrapVariants('steps', 'steps', {
+  cards: (c, ctx, base) => base(c, ctx).replace('<section class="band">', '<section class="band v-steps-cards">'),
+  vertical: (c, ctx) => `
+    <section class="band v-steps-vertical">
+      <div class="container">
+        ${secHead(ctx, 'stepsTitle', '이용 절차')}
+        <div class="stpv krise" style="margin-top:32px">
+          ${stepItems(c, ctx).map((s, i) => `
+          <div class="stpv__it">
+            <span class="stp__n" aria-hidden="true">${i + 1}</span>
+            <div class="stpv__bd">
+              <h3 class="stp__t stpv__t" data-edit="steps.${i}.title">${esc(s.title)}</h3>
+              <p class="stp__x" data-edit="steps.${i}.text">${esc(s.text || '')}</p>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`,
+});
+
+/* faq — twocol(2단 Q/A 그리드, Q는 CSS ::before) / category(cat 필드로 묶음, 없으면 '일반') */
+wrapVariants('faq', 'faq', {
+  twocol: (c, ctx) => `
+    <section class="${bandC(c, false, 'v-faq-twocol')}">
+      <div class="container">
+        ${headOr(c, ctx, 'faqTitle', '자주 묻는 질문')}
+        <div class="grid cols-2 faq2" ${topGap(c, 24)}>
+          ${faqItems(c, ctx).map((f, i) => `
+          <div class="faq2__it krise">
+            <h3 class="faq2__q" data-edit="faq.${i}.q">${esc(f.q)}</h3>
+            <p class="faq2__a" data-edit="faq.${i}.a">${esc(f.a)}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`,
+  category: (c, ctx) => {
+    const items = faqItems(c, ctx);
+    const groups = []; const byCat = {};
+    items.forEach((f, i) => {
+      const k = f.cat || '일반';
+      if (!byCat[k]) { byCat[k] = { cat: k, first: i, its: [] }; groups.push(byCat[k]); }
+      byCat[k].its.push({ f, i });
+    });
+    return `
+    <section class="${bandC(c, false, 'v-faq-category')}">
+      <div class="container">
+        ${headOr(c, ctx, 'faqTitle', '자주 묻는 질문')}
+        ${groups.map((g, gi) => `
+        <div class="faqcat krise"${c._lead && gi === 0 ? ' style="margin-top:0"' : ''}>
+          <h3 class="faqcat__h" data-edit="faq.${g.first}.cat">${esc(g.cat)}</h3>
+          <div class="faq">
+            ${g.its.map((it, j) => `
+            <details class="faq__it"${gi === 0 && j === 0 ? ' open' : ''}>
+              <summary class="faq__q"><span data-edit="faq.${it.i}.q">${esc(it.f.q)}</span></summary>
+              <p class="faq__a" data-edit="faq.${it.i}.a">${esc(it.f.a)}</p>
+            </details>`).join('')}
+          </div>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  },
+});
+
+/* form — split(좌 설명 / 우 폼 카드). lead면 좌측 표제 생략(서브만) */
+wrapVariants('form', 'form', {
+  split: (c, ctx) => {
+    const fm = ctx.data.form || c || {};
+    const fields = (fm.fields && fm.fields.length ? fm.fields : ['회사명', '담당자 이름', '이메일', '문의 내용']);
+    return `
+    <section class="${bandC(c, true, 'v-form-split')}">
+      <div class="container form2">
+        <div class="form2__info krise">
+          ${c._lead ? '' : `<h2 class="kform__t" data-edit="form.title">${esc(fm.title || '신청하기')}</h2>`}
+          <p class="kform__s form2__s" data-edit="form.sub">${esc(fm.sub || '남겨주시면 순서대로 안내해 드립니다.')}</p>
+        </div>
+        <div class="card kform__card krise">
+          ${fields.map(formFieldHtml).join('')}
+          <button type="button" class="btn btn--primary btn--lg kform__btn" aria-disabled="true" data-edit="form.submit">${esc(fm.submit || '신청하기')}</button>
+          <p class="kform__note" data-edit="formNote">${esc(ctx.data.formNote || '데모 화면으로, 실제 제출은 동작하지 않습니다.')}</p>
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* cta — simple(제목+버튼 미니멀) / cards(문의·안내 2단 분리) */
+wrapVariants('cta', 'cta', {
+  simple: (c, ctx) => `
+    <section class="band v-cta-simple">
+      <div class="container cta__in krise">
+        <h2 class="cta__t" data-edit="bannerText">${esc(c.title || '지금 바로 이용해 보세요')}</h2>
+        <div class="cta__act">
+          ${C.button(ctx.esc(ctx.data.bannerCta || c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'lg', edit: 'bannerCta' })}
+        </div>
+      </div>
+    </section>`,
+  cards: (c, ctx) => `
+    <section class="band band--alt v-cta-cards">
+      <div class="container grid cols-2">
+        <div class="card card--pad cta2__it krise">
+          <h3 class="cta2__t" data-edit="bannerText">${esc(c.title || '지금 바로 이용해 보세요')}</h3>
+          <p class="cta2__s" data-edit="subcopy">${esc(c.subcopy || ctx.data.subcopy || H)}</p>
+          ${C.button(ctx.esc(ctx.data.bannerCta || c.primaryCta || ctx.data.primaryCta || '서비스 신청'), { variant: 'primary', size: 'md', edit: 'bannerCta' })}
+        </div>
+        <div class="card card--pad cta2__it krise">
+          <h3 class="cta2__t" data-edit="ctaCardTitle2">${esc(ctx.data.ctaCardTitle2 || '궁금한 점이 있으신가요')}</h3>
+          <p class="cta2__s" data-edit="ctaCardText2">${esc(ctx.data.ctaCardText2 || '담당자가 이용 방법과 절차를 안내해 드립니다.')}</p>
+          ${C.button(ctx.esc(ctx.data.bannerSecondaryCta || c.secondaryCta || '문의하기'), { variant: 'secondary', size: 'md', edit: 'bannerSecondaryCta' })}
+        </div>
+      </div>
+    </section>`,
+});
+
+/* bloglist — list(썸네일 리스트) / featured(대표 1 + 일반 행) */
+wrapVariants('bloglist', 'bloglist', {
+  list: (c, ctx) => {
+    const imgs = ctx.data.images || {};
+    return `
+    <section class="${bandC(c, false, 'v-blog-list')}">
+      <div class="container">
+        ${headOr(c, ctx, 'bloglistTitle', '소식')}
+        <div class="postlist krise" ${topGap(c, 24)}>
+          ${postItems(c, ctx).map((p, i) => `
+          <article class="post post--thumb">
+            <div class="kph post__ph" data-img="post${i}">${imgs['post' + i] ? `<img src="${esc(imgs['post' + i])}" alt="">` : ''}</div>
+            <div>
+              <div class="post__hd">
+                <span class="badge badge--brand" data-edit="posts.${i}.tag">${esc(p.tag || 'NEWS')}</span>
+                <h3 class="post__t" data-edit="posts.${i}.title">${esc(p.title)}</h3>
+                <span class="post__dt" data-edit="posts.${i}.date">${esc(p.date || '')}</span>
+              </div>
+              <p class="post__d" data-edit="posts.${i}.desc">${esc(p.desc || '')}</p>
+            </div>
+          </article>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+  featured: (c, ctx) => {
+    const posts = postItems(c, ctx);
+    const imgs = ctx.data.images || {};
+    const f = posts[0];
+    const rest = posts.slice(1);
+    return `
+    <section class="${bandC(c, false, 'v-blog-featured')}">
+      <div class="container">
+        ${headOr(c, ctx, 'bloglistTitle', '소식')}
+        <article class="postF krise" ${topGap(c, 24)}>
+          <div class="kph" data-img="post0">${imgs.post0 ? `<img src="${esc(imgs.post0)}" alt="">` : ''}</div>
+          <div class="postF__bd">
+            <span class="badge badge--brand" data-edit="posts.0.tag">${esc(f.tag || 'NEWS')}</span>
+            <h3 class="postF__t" data-edit="posts.0.title">${esc(f.title)}</h3>
+            <p class="post__d" data-edit="posts.0.desc">${esc(f.desc || '')}</p>
+            <span class="post__dt" data-edit="posts.0.date">${esc(f.date || '')}</span>
+          </div>
+        </article>
+        ${rest.length ? `<div class="postlist krise" style="margin-top:8px">
+          ${rest.map((p, j) => `
+          <article class="post">
+            <div class="post__hd">
+              <span class="badge badge--brand" data-edit="posts.${j + 1}.tag">${esc(p.tag || 'NEWS')}</span>
+              <h3 class="post__t" data-edit="posts.${j + 1}.title">${esc(p.title)}</h3>
+              <span class="post__dt" data-edit="posts.${j + 1}.date">${esc(p.date || '')}</span>
+            </div>
+            <p class="post__d" data-edit="posts.${j + 1}.desc">${esc(p.desc || '')}</p>
+          </article>`).join('')}
+        </div>` : ''}
+      </div>
+    </section>`;
+  },
+});
+
+/* gallery — mosaic(대표 1장 크게 + 보조) */
+wrapVariants('gallery', 'gallery', {
+  mosaic: (c, ctx) => {
+    const items = (ctx.data.gallery && ctx.data.gallery.length ? ctx.data.gallery :
+      (c.items && c.items.length ? c.items : [{ label: 'SCREEN 1' }, { label: 'SCREEN 2' }, { label: 'SCREEN 3' }]));
+    const imgs = ctx.data.images || {};
+    return `
+    <section class="band band--alt v-gallery-mosaic">
+      <div class="container">
+        ${secHead(ctx, 'galleryTitle', '주요 화면')}
+        <div class="galmz" style="margin-top:32px">
+          ${items.map((g, i) => `
+          <figure class="gal krise${i === 0 ? ' gal--big' : ''}">
+            <div class="kph" data-img="gallery${i}">${imgs['gallery' + i] ? `<img src="${esc(imgs['gallery' + i])}" alt="">` : ''}</div>
+            <figcaption class="gal__c" data-edit="gallery.${i}.label">${esc(g.label || '화면')}</figcaption>
+          </figure>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* featurerows — numbered(번호+제목 교차 — 번호는 CSS counter) / checks(체크리스트 카드 교차) */
+wrapVariants('featurerows', 'featurerows', {
+  numbered: (c, ctx) => `
+    <section class="band v-frow-numbered">
+      <div class="container frows--num">
+        ${frowRows(c, ctx).map((r, i) => `
+        <div class="frow frow--num krise">
+          <div class="frow__tx">
+            <h3 class="frow__t" data-edit="featureRows.${i}.title">${esc(r.title)}</h3>
+            <p class="frow__d" data-edit="featureRows.${i}.desc">${esc(r.desc || H)}</p>
+            ${r.points && r.points.length ? `<div class="frow__pts">${klist(r.points, `featureRows.${i}.points`)}</div>` : ''}
+          </div>
+          <div class="frow__vis frow__no" aria-hidden="true"></div>
+        </div>`).join('')}
+      </div>
+    </section>`,
+  checks: (c, ctx) => `
+    <section class="band v-frow-checks">
+      <div class="container">
+        ${frowRows(c, ctx).map((r, i) => `
+        <div class="frow krise">
+          <div class="frow__tx">
+            <h3 class="frow__t" data-edit="featureRows.${i}.title">${esc(r.title)}</h3>
+            <p class="frow__d" data-edit="featureRows.${i}.desc">${esc(r.desc || H)}</p>
+          </div>
+          <div class="frow__vis">
+            <div class="card card--pad">${klist((r.points && r.points.length ? r.points : ['포인트 1', '포인트 2']), `featureRows.${i}.points`)}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </section>`,
+});
+
+/* agenda — table(시간표 행, 기존 .cmp 표 문법 재사용) */
+wrapVariants('agenda', 'agenda', {
+  table: (c, ctx) => {
+    const ag = (ctx.data.agenda && ctx.data.agenda.length ? ctx.data.agenda :
+      (c.items && c.items.length ? c.items : [
+        { time: '14:00', title: '오프닝', desc: '환영 인사' },
+        { time: '14:30', title: '세션 1', desc: '주제 발표' },
+        { time: '15:30', title: '세션 2', desc: '사례 공유' },
+      ]));
+    return `
+    <section class="band v-agenda-table">
+      <div class="container">
+        ${secHead(ctx, 'agendaTitle', '프로그램')}
+        <div class="cmpwrap krise" style="margin-top:32px">
+          <table class="cmp agdt">
+            <thead><tr>
+              <th scope="col" data-edit="agendaColTime">${esc(ctx.data.agendaColTime || '시간')}</th>
+              <th scope="col" data-edit="agendaColTitle">${esc(ctx.data.agendaColTitle || '프로그램')}</th>
+              <th scope="col" data-edit="agendaColDesc">${esc(ctx.data.agendaColDesc || '내용')}</th>
+            </tr></thead>
+            <tbody>
+              ${ag.map((a, i) => `<tr>
+                <th scope="row" class="agdt__tm" data-edit="agenda.${i}.time">${esc(a.time)}</th>
+                <td data-edit="agenda.${i}.title">${esc(a.title)}</td>
+                <td data-edit="agenda.${i}.desc">${esc(a.desc || '')}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>`;
+  },
+});
+
+/* doclist — list(컴팩트 리스트 — 기본형 마크업에 컴팩트 모디파이어) */
+wrapVariants('doclist', 'doclist', {
+  list: (c, ctx, base) => base(c, ctx)
+    .replace('<section class="band', '<section class="v-doclist-list band')
+    .replace('class="doclist krise"', 'class="doclist doclist--compact krise"'),
+});
+
+/* pricing — table(요금 비교표, featured 열은 .cmp__us 강조) */
+wrapVariants('pricing', 'pricing', {
+  table: (c, ctx) => {
+    const plans = planItems(c, ctx);
+    const usCls = (p) => (p.featured ? ' class="cmp__us"' : '');
+    return `
+    <section class="${bandC(c, false, 'v-pricing-table')}">
+      <div class="container">
+        ${headOr(c, ctx, 'pricingTitle', '이용 요금 안내')}
+        <div class="cmpwrap krise" ${topGap(c, 32)}>
+          <table class="cmp prct">
+            <thead><tr>
+              <th scope="col" data-edit="pricingColLabel">${esc(ctx.data.pricingColLabel || '구분')}</th>
+              ${plans.map((p, i) => `<th scope="col"${usCls(p)} data-edit="plans.${i}.name">${esc(p.name)}</th>`).join('')}
+            </tr></thead>
+            <tbody>
+              <tr><th scope="row" data-edit="pricingRowPrice">${esc(ctx.data.pricingRowPrice || '요금')}</th>${plans.map((p, i) => `<td${usCls(p)} data-edit="plans.${i}.price">${esc(p.price)}</td>`).join('')}</tr>
+              <tr><th scope="row" data-edit="pricingRowDesc">${esc(ctx.data.pricingRowDesc || '대상')}</th>${plans.map((p, i) => `<td${usCls(p)} data-edit="plans.${i}.desc">${esc(p.desc || '')}</td>`).join('')}</tr>
+              <tr><th scope="row" data-edit="pricingRowPoints">${esc(ctx.data.pricingRowPoints || '제공 기능')}</th>${plans.map((p, i) => `<td${usCls(p)}>${p.points && p.points.length ? `<ul class="prct__pts">${p.points.map((pt, j) => `<li data-edit="plans.${i}.points.${j}">${esc(pt)}</li>`).join('')}</ul>` : ''}</td>`).join('')}</tr>
+              <tr><th scope="row"></th>${plans.map((p, i) => `<td${usCls(p)}>${C.button(p.cta || '신청하기', { variant: p.featured ? 'primary' : 'secondary', size: 'sm', edit: `plans.${i}.cta` })}</td>`).join('')}</tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>`;
@@ -1048,6 +1589,116 @@ function pageSectionsCss() {
     .krds .agd__it{grid-template-columns:64px 1fr;gap:12px}
     .krds .post__dt{margin-left:0;width:100%}
     .krds .kform__card{padding:24px 20px}
+  }
+  /* ---- lead 섹션: pagehero가 표제 대체 → 상단 여백 축소(간격 어색함 방지) ---- */
+  .krds .band--lead{padding-top:40px}
+  /* ---- 섹션 변형(variant) 전용 ---- */
+  /* hero:stat — 중앙 타이포 + 지표 스트립 */
+  .krds .heroS{text-align:center;max-width:800px;margin-inline:auto}
+  .krds .heroS__sub{margin-inline:auto}
+  .krds .heroS__cta{justify-content:center}
+  .krds .heroS__stats{margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;border-top:var(--bw) solid var(--line);padding-top:32px}
+  .krds .heroS__v{font-size:var(--fs-h1);font-weight:800;color:var(--brand);letter-spacing:-.02em}
+  .krds .heroS__l{margin-top:4px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* feature:cards / list */
+  .krds .fcard__ic{display:inline-flex;width:48px;height:48px;border-radius:var(--radius);background:var(--brand-weak);align-items:center;justify-content:center;margin-bottom:4px}
+  .krds .flist{gap:8px 48px}
+  .krds .flist__it{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:var(--bw) solid var(--line)}
+  .krds .flist__it .ico{margin-top:2px}
+  .krds .flist__t{font-size:var(--fs-body);font-weight:700}
+  .krds .flist__d{margin-top:4px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* stats:kpi / big */
+  .krds .kpi{text-align:center}
+  .krds .kpi__v{font-size:var(--fs-h1);font-weight:800;color:var(--brand);letter-spacing:-.02em}
+  .krds .kpi__l{margin-top:6px;color:var(--muted);font-size:var(--fs-body-sm)}
+  .krds .bigstat{text-align:center}
+  .krds .bigstat__v{font-size:72px;font-weight:800;color:var(--brand);letter-spacing:-.04em;line-height:1.1}
+  .krds .bigstat__l{margin-top:8px;color:var(--muted)}
+  .krds .bigstat__rest{margin-top:40px;display:flex;justify-content:center;gap:64px;flex-wrap:wrap}
+  .krds .bigstat__rv{font-size:var(--fs-h2);font-weight:800;color:var(--ink)}
+  /* compare:beforeafter / cards */
+  .krds .ba__col{border:var(--bw) solid var(--line);border-radius:var(--radius-lg);padding:24px;background:var(--bg)}
+  .krds .ba__col--us{border-color:var(--brand);background:var(--brand-weak)}
+  .krds .ba__hd{font-size:var(--fs-h3);font-weight:800;padding-bottom:14px;border-bottom:var(--bw) solid var(--line)}
+  .krds .ba__col--us .ba__hd{color:var(--brand-hover)}
+  .krds .ba__row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:var(--bw) solid var(--line);font-size:var(--fs-body-sm)}
+  .krds .ba__row:last-child{border-bottom:0;padding-bottom:0}
+  .krds .ba__k{color:var(--muted);font-weight:600}
+  .krds .ba__col--us .ba__x,.krds .bac--us .ba__x{color:var(--brand-hover);font-weight:700}
+  .krds .bac--us{border-color:var(--brand);box-shadow:var(--shadow-2)}
+  /* testimonial:single / logos — 따옴표는 CSS ::before */
+  .krds .tsm1{margin:32px auto 0;max-width:680px;text-align:center}
+  .krds .tsm1__x{margin:0;font-size:var(--fs-h2);font-weight:700;line-height:1.45;color:var(--ink)}
+  .krds .tsm1__x::before{content:"\\201C";display:block;font-size:44px;line-height:1;color:var(--brand);font-weight:700;margin-bottom:12px}
+  .krds .tsm1__by{margin-top:18px;color:var(--soft);font-size:var(--fs-label);font-weight:600}
+  .krds .logowall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .krds .logowall__it{display:flex;align-items:center;justify-content:center;min-height:76px;border:var(--bw) solid var(--line);border-radius:var(--radius-lg);background:var(--bg);color:var(--muted);font-weight:700;text-align:center;padding:12px}
+  .krds .logowall__cap{margin-top:20px;text-align:center;color:var(--soft);font-size:var(--fs-body-sm)}
+  /* steps:vertical — 세로 타임라인 */
+  .krds .stpv{max-width:640px;margin-inline:auto}
+  .krds .stpv__it{position:relative;display:grid;grid-template-columns:36px 1fr;gap:18px}
+  .krds .stpv__it::before{content:"";position:absolute;left:17px;top:42px;bottom:-2px;width:2px;background:var(--line)}
+  .krds .stpv__it:last-child::before{display:none}
+  .krds .stpv__bd{padding:0 0 32px}
+  .krds .stpv__it:last-child .stpv__bd{padding-bottom:0}
+  .krds .stpv__t{margin-top:6px}
+  /* faq:twocol / category — Q 마크는 CSS ::before */
+  .krds .faq2{gap:8px 48px}
+  .krds .faq2__it{padding:18px 0;border-bottom:var(--bw) solid var(--line)}
+  .krds .faq2__q{font-size:var(--fs-body);font-weight:700;position:relative;padding-left:28px}
+  .krds .faq2__q::before{content:"Q";position:absolute;left:0;top:0;color:var(--brand);font-weight:800}
+  .krds .faq2__a{margin-top:8px;color:var(--muted);font-size:var(--fs-body-sm);padding-left:28px}
+  .krds .faqcat{max-width:760px;margin-inline:auto;margin-top:32px}
+  .krds .faqcat__h{font-size:var(--fs-h3);font-weight:800;color:var(--brand);margin-bottom:8px}
+  /* form:split */
+  .krds .form2{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:start;max-width:1000px;margin-inline:auto}
+  .krds .form2__s{max-width:26em}
+  /* cta:cards */
+  .krds .cta2__t{font-size:var(--fs-h3);font-weight:800}
+  .krds .cta2__s{margin:10px 0 20px;color:var(--muted);font-size:var(--fs-body-sm)}
+  /* bloglist:list(썸네일) / featured */
+  .krds .post--thumb{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center}
+  .krds .post__ph{aspect-ratio:16/10}
+  .krds .postF{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;border:var(--bw) solid var(--line);border-radius:var(--radius-lg);padding:24px;background:var(--bg)}
+  .krds .postF__t{margin-top:12px;font-size:var(--fs-h2);font-weight:800}
+  .krds .postF__bd .post__d{margin-top:10px}
+  .krds .postF__bd .post__dt{display:block;margin-top:14px}
+  /* gallery:mosaic */
+  .krds .galmz{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .krds .galmz .gal--big{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column}
+  .krds .galmz .gal--big .kph{flex:1;aspect-ratio:auto;min-height:280px}
+  /* featurerows:numbered — 번호는 CSS counter(장식문자 텍스트 금지) */
+  .krds .frows--num{counter-reset:frow}
+  .krds .frow--num{counter-increment:frow}
+  .krds .frow__no{display:flex;align-items:center;justify-content:center;min-height:160px}
+  .krds .frow__no::before{content:counter(frow,decimal-leading-zero);font-size:120px;font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--brand);opacity:.16}
+  /* agenda:table */
+  .krds .agdt__tm{color:var(--brand);font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* doclist:list(컴팩트) */
+  .krds .doclist--compact .doc{padding:14px 4px}
+  .krds .doclist--compact .doc__t{font-size:var(--fs-body)}
+  .krds .doclist--compact .doc__d{font-size:var(--fs-cap)}
+  /* pricing:table — 불릿은 CSS ::before */
+  .krds .prct td{vertical-align:top}
+  .krds .prct__pts{list-style:none;margin:0;padding:0}
+  .krds .prct__pts li{position:relative;padding-left:18px;margin:4px 0}
+  .krds .prct__pts li::before{content:"";position:absolute;left:0;top:.45em;width:8px;height:8px;border-radius:2px;background:var(--brand-weak);border:var(--bw) solid var(--brand)}
+  /* 변형 반응형 */
+  @media (max-width:1023px){
+    .krds .form2{grid-template-columns:1fr;gap:28px}
+    .krds .postF{grid-template-columns:1fr;gap:20px}
+  }
+  @media (max-width:767px){
+    .krds .band--lead{padding-top:28px}
+    .krds .heroS__stats{grid-template-columns:1fr;gap:16px}
+    .krds .bigstat__v{font-size:48px}
+    .krds .bigstat__rest{gap:32px}
+    .krds .logowall{grid-template-columns:repeat(2,1fr)}
+    .krds .post--thumb{grid-template-columns:1fr;gap:12px}
+    .krds .galmz{grid-template-columns:1fr}
+    .krds .galmz .gal--big{grid-column:auto;grid-row:auto}
+    .krds .frow__no{min-height:100px}
+    .krds .frow__no::before{font-size:72px}
   }`;
 }
 
@@ -1169,7 +1820,7 @@ const krdsPack = {
     if(ptDef){
       var FB=(typeof window!=="undefined"&&window.SECTION_FALLBACK)||{};
       var ALIAS={stats:"stat",metrics:"stat",quote:"testimonial",banner:"cta",showcase:"gallery"};
-      var body2=[];
+      var body2=[],leadTs=[];
       (ptDef.sections||[]).forEach(function(s){
         var t=ALIAS[s.type]||s.type;
         if(!krdsPack.sections[t]){
@@ -1180,11 +1831,14 @@ const krdsPack = {
           if(!t) return;
         }
         body2.push({type:t,tier:s.tier||"core"});
+        if(s.lead)leadTs.push(t);   // lead:1 — pagehero가 표제 대신(렌더러에 _lead 플래그 전달)
       });
       var hid2=shared.hiddenSections||[], shw2=shared.shownSections||[];
       var vis2=body2.filter(function(s){var def=includesTier(vol,s.tier);return def?hid2.indexOf(s.type)<0:shw2.indexOf(s.type)>=0;});
       var ord2=shared.sectionOrder||[];
       if(ord2.length){ var by2={}; vis2.forEach(function(s){if(!by2[s.type])by2[s.type]=s}); var o2=[]; ord2.forEach(function(t2){if(by2[t2]){o2.push(by2[t2]);delete by2[t2]}}); vis2.forEach(function(s){if(o2.indexOf(s)<0)o2.push(s)}); vis2=o2; }
+      // lead 섹션: 자체 표제(아이브로·헤딩·서브) 생략 — slotValues에 _lead 주입해 렌더러로 전달
+      vis2.forEach(function(s){ if(leadTs.indexOf(s.type)>=0)content[s.type]=Object.assign({},content[s.type],{_lead:1}); });
       var effTpl2={sections:[{type:"nav",tier:"core"}].concat(vis2,[{type:"footer",tier:"core"}])};
       return renderPage(buildPageDoc({template:effTpl2,volume:"heavy",content:content,sharedFacts:shared}),krdsPack,{motion:opts.motion||"subtle"});
     }

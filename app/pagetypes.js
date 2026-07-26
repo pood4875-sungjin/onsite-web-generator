@@ -4,7 +4,8 @@
    폼은 정적 데모(제출 비활성), 모든 섹션은 스캐폴드 기본값으로 "빈 화면 없이" 완성 렌더.
 
    계약:
-   - PAGE_TYPES[id] = { label, use, sections:[{type,tier}] } — tier: core(항상)/mid(중간+)/rich(헤비만)
+   - PAGE_TYPES[id] = { label, use, sections:[{type,tier,lead?}] } — tier: core(항상)/mid(중간+)/rich(헤비만).
+     lead=1: 페이지의 대표 콘텐츠 섹션 — pagehero(타이틀+서브)가 표제를 대신하므로 **섹션 자체 표제(아이브로·헤딩·서브) 생략**하고 바로 콘텐츠부터 렌더(중복 방지, 사용자 규칙)
    - 섹션 타입은 아래 "정식 어휘". 각 팩은 자기 DS로 이 어휘의 렌더러를 구비한다.
      팩에 아직 없는 타입은 SECTION_FALLBACK 순서로 대체(끝까지 없으면 생략) — 깨지지 않는 게 우선.
    - window.pageScaffold(pageTypeId, shared) → 그 유형의 기본 콘텐츠(data 패치). 페이지 생성 시 채워
@@ -18,17 +19,17 @@
     product:  { label: '제품소개',  use: '제품 하나를 깊게 — 개요, 상세 기능 교차, 화면, 비교',
       sections: [{ type: 'pagehero', tier: 'core' }, { type: 'overview', tier: 'core' }, { type: 'featurerows', tier: 'core' }, { type: 'gallery', tier: 'mid' }, { type: 'compare', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
     features: { label: '기능소개',  use: '기능 카탈로그 — 그리드 + 핵심 2~3개 상세',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'feature', tier: 'core' }, { type: 'featurerows', tier: 'mid' }, { type: 'faq', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'feature', tier: 'core', lead: 1 }, { type: 'featurerows', tier: 'mid' }, { type: 'faq', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
     pricing:  { label: '요금',      use: '플랜 비교와 결제 전 궁금증 해소',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'pricing', tier: 'core' }, { type: 'faq', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'pricing', tier: 'core', lead: 1 }, { type: 'faq', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
     faq:      { label: 'FAQ',       use: '자주 묻는 질문 + 추가 문의 유도',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'faq', tier: 'core' }, { type: 'infocards', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'faq', tier: 'core', lead: 1 }, { type: 'infocards', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
     contact:  { label: '도입문의',  use: '문의 폼(정적) + 연락처/절차 안내',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'form', tier: 'core' }, { type: 'infocards', tier: 'mid' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'form', tier: 'core', lead: 1 }, { type: 'infocards', tier: 'mid' }] },
     manual:   { label: '메뉴얼',    use: '가이드 문서 입구 — 카테고리 + 시작 절차',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'doclist', tier: 'core' }, { type: 'steps', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'doclist', tier: 'core', lead: 1 }, { type: 'steps', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
     blog:     { label: '블로그',    use: '소식/아티클 카드 목록',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'bloglist', tier: 'core' }, { type: 'cta', tier: 'rich' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'bloglist', tier: 'core', lead: 1 }, { type: 'cta', tier: 'rich' }] },
     /* ---- 랜딩(단장) ---- */
     landing:  { label: '제품 랜딩', use: '전환 하나에 집중한 한 장짜리',
       sections: [{ type: 'hero', tier: 'core' }, { type: 'feature', tier: 'mid' }, { type: 'stats', tier: 'mid' }, { type: 'testimonial', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
@@ -98,6 +99,33 @@
     return Object.assign(base, S[pt] || {});
   }
 
+  /* ---- 섹션 표현 변형(variant) — section_library.xlsx 598종에서 큐레이션(정적 렌더 가능 + AI 선택 가치 기준).
+     데이터 계약: data.variants = { hero:'split', feature:'bento', ... } (없으면 팩 기본형).
+     각 팩은 자기 DS로 변형을 해석해 구현 — 미구현 변형은 기본형으로 렌더(깨짐 금지). ---- */
+  var SECTION_VARIANTS = {
+    hero:        { center: '중앙 정렬 타이포', split: '텍스트 좌 / 이미지 우 분할', screenshot: '하단 대형 제품 화면 강조', stat: '숫자·성과 강조 타이포' },
+    pagehero:    { banner: '제목+설명 배너(기본)', breadcrumb: '제목+Breadcrumb 경로' },
+    overview:    { split: '좌 제목 / 우 설명(기본)', center: '중앙 대형 문장', problem: 'Problem/Solution 대비' },
+    intro:       { center: '중앙(기본)', quote: '인용문형' },
+    featurerows: { zigzag: '이미지 좌우 교차(기본)', numbered: '번호+제목 교차', checks: '체크리스트 교차' },
+    feature:     { icons: '아이콘 그리드(기본)', cards: '카드형', bento: '벤토 그리드(대표 1+보조)', list: '아이콘 리스트(밀도형)' },
+    gallery:     { grid: '균등 그리드(기본)', mosaic: '대표 1장 크게+보조' },
+    stats:       { numbers: '숫자 나열(기본)', kpi: 'KPI 카드', big: '대형 숫자 하나 강조' },
+    compare:     { table: '비교표(기본)', beforeafter: '좌우 Before/After 패널', cards: '카드 비교' },
+    testimonial: { cards: '후기 카드(기본)', single: '단일 대형 인용', logos: '고객사 로고 그리드+수치' },
+    steps:       { horizontal: '가로 번호 스텝(기본)', vertical: '세로 타임라인', cards: '카드 스텝' },
+    agenda:      { timeline: '타임라인(기본)', table: '시간표 행' },
+    faq:         { accordion: '아코디언(기본)', twocol: '2단 그리드', category: '카테고리 묶음' },
+    form:        { center: '중앙 단일 폼(기본)', split: '좌 설명 / 우 폼' },
+    cta:         { banner: '풀 배너(기본)', simple: '제목+버튼 미니멀', cards: '2단 카드 CTA(문의/자료 분리)' },
+    bloglist:    { cards: '카드 그리드(기본)', list: '썸네일 리스트', featured: '대표 1+일반' },
+    doclist:     { cards: '카드(기본)', list: '컴팩트 리스트' },
+    pricing:     { cards: '플랜 카드(기본)', table: '요금 비교표' },
+  };
+  var VARIANT_DOC = 'variants(섹션 표현 변형, 선택): {' + Object.keys(SECTION_VARIANTS).map(function (k) {
+    return k + ':"' + Object.keys(SECTION_VARIANTS[k]).join('|') + '"';
+  }).join(', ') + '} — 콘텐츠 성격에 맞게 골라라(예: 수치 강조 브리프면 hero:stat, 기능 많으면 feature:bento).';
+
   /* AI(compose-web) 프롬프트용 — 페이지 유형과 신규 섹션 필드 스키마 */
   var PAGE_SECTION_DOC =
     '페이지 유형: ' + Object.keys(PAGE_TYPES).map(function (k) { return k + '(' + PAGE_TYPES[k].label + ')'; }).join(', ') + '\n' +
@@ -112,6 +140,8 @@
 
   window.PAGE_TYPES = PAGE_TYPES;
   window.SECTION_FALLBACK = SECTION_FALLBACK;
+  window.SECTION_VARIANTS = SECTION_VARIANTS;
+  window.VARIANT_DOC = VARIANT_DOC;
   window.pageScaffold = pageScaffold;
   window.PAGE_SECTION_DOC = PAGE_SECTION_DOC;
 })();

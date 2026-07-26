@@ -307,7 +307,7 @@
       if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
       txt = j.text;
     } else {
-      txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000 });
+      txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000 });
     }
     return _parseSite(txt);
   }
@@ -342,12 +342,13 @@
       if (!x || !str(x.name)) return null;
       var pf = (Array.isArray(x.features) ? x.features : []).map(function (c) { return c && { title: str(c.title), desc: str(c.desc) }; }).filter(function (c) { return c && c.title; }).slice(0, 4);
       var pg = { name: str(x.name).slice(0, 20), type: PT[x.type] ? x.type : 'features', tagline: str(x.tagline), subcopy: str(x.subcopy), features: pf };
-      ['overview', 'intro', 'featureRows', 'gallery', 'compare', 'faq', 'form', 'infoCards', 'docs', 'steps', 'posts', 'agenda', 'speakers', 'notices', 'testimonials'].forEach(function (k) { if (x[k] != null && typeof x[k] === 'object') pg[k] = x[k]; });
+      ['overview', 'intro', 'featureRows', 'gallery', 'compare', 'faq', 'form', 'infoCards', 'docs', 'steps', 'posts', 'agenda', 'speakers', 'notices', 'testimonials', 'variants'].forEach(function (k) { if (x[k] != null && typeof x[k] === 'object') pg[k] = x[k]; });
       return pg;
     }).filter(Boolean).slice(0, 6);
     // 페이지 유형별 섹션 필드(pagetypes.js 계약) — 있으면 그대로 통과(렌더러가 방어적으로 읽음)
     var SEC_KEYS = ['overview', 'intro', 'featureRows', 'gallery', 'compare', 'faq', 'form', 'infoCards', 'docs', 'steps', 'posts', 'agenda', 'speakers', 'notices', 'testimonials'];
     SEC_KEYS.forEach(function (k) { if (o[k] != null && typeof o[k] === 'object') out[k] = o[k]; });
+    if (o.variants && typeof o.variants === 'object') out.variants = o.variants;   // 섹션 표현 변형 선택(pagetypes.js SECTION_VARIANTS)
     // 임의로 채운(브리프 근거 없는) 필드명 — 스튜디오 안내용
     out.assumed = (Array.isArray(o.assumed) ? o.assumed : []).map(function (x) { return str(x); }).filter(Boolean);
     if (!out.productName && !out.tagline && !out.features) throw new Error('EMPTY_DRAFT');

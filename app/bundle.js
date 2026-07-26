@@ -63,7 +63,9 @@ const DG_TEMPLATES = {
   ],
   /* ---- 신규 6유형 — pagetypes.js PAGE_TYPES의 sections(정식 어휘)를 이 팩 내부 이름으로
      매핑(cta→banner · feature→features · stats→metrics)하고 gnb/footer core로 감쌈.
-     기존 4유형(main/features/pricing/landing)은 하위호환을 위해 그대로 둔다. ---- */
+     기존 4유형(main/features/pricing/landing)은 하위호환을 위해 그대로 둔다.
+     lead:1 = 페이지 대표 콘텐츠 섹션(pagetypes.js 계약) — pagehero가 표제를 대신하므로
+     섹션 자체 표제(아이브로·헤딩·서브) 생략하고 바로 콘텐츠 렌더(중복 방지). ---- */
   product: [ // 제품소개 — 개요→상세 교차→화면→비교
     { type: 'gnb', tier: 'core' },
     { type: 'pagehero', tier: 'core' },
@@ -77,7 +79,7 @@ const DG_TEMPLATES = {
   faq: [ // FAQ — 질문 + 추가 문의 유도
     { type: 'gnb', tier: 'core' },
     { type: 'pagehero', tier: 'core' },
-    { type: 'faq', tier: 'core' },
+    { type: 'faq', tier: 'core', lead: 1 },
     { type: 'infocards', tier: 'mid' },
     { type: 'banner', tier: 'core' },
     { type: 'footer', tier: 'core' },
@@ -85,14 +87,14 @@ const DG_TEMPLATES = {
   contact: [ // 도입문의 — 정적 폼 + 연락처/절차
     { type: 'gnb', tier: 'core' },
     { type: 'pagehero', tier: 'core' },
-    { type: 'form', tier: 'core' },
+    { type: 'form', tier: 'core', lead: 1 },
     { type: 'infocards', tier: 'mid' },
     { type: 'footer', tier: 'core' },
   ],
   manual: [ // 메뉴얼 — 문서 카테고리 + 시작 절차
     { type: 'gnb', tier: 'core' },
     { type: 'pagehero', tier: 'core' },
-    { type: 'doclist', tier: 'core' },
+    { type: 'doclist', tier: 'core', lead: 1 },
     { type: 'steps', tier: 'mid' },
     { type: 'banner', tier: 'core' },
     { type: 'footer', tier: 'core' },
@@ -100,7 +102,7 @@ const DG_TEMPLATES = {
   blog: [ // 블로그 — 소식 카드 목록
     { type: 'gnb', tier: 'core' },
     { type: 'pagehero', tier: 'core' },
-    { type: 'bloglist', tier: 'core' },
+    { type: 'bloglist', tier: 'core', lead: 1 },
     { type: 'banner', tier: 'rich' },
     { type: 'footer', tier: 'core' },
   ],
@@ -703,8 +705,18 @@ function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'main', v
     return null;
   };
 
+  // lead 섹션(pagetypes.js 계약) — pagehero가 표제를 대신하므로 자체 표제 생략 플래그를 렌더러에 전달
+  const leadOf = {};
+  template.forEach((s) => { if (s.lead) leadOf[s.type] = 1; });
+
+  // 섹션 변형(SECTION_VARIANTS 계약) — data.variants는 정식 어휘 키(feature/stats/cta).
+  // 팩 내부 이름(features/metrics/banner)으로도 읽을 수 있게 양방향 매핑. 미구현 값은 렌더러가 기본형 폴백.
+  const vmap = data.variants || {};
+  const VKEY = { features: 'feature', metrics: 'stats', banner: 'cta', feature: 'features', stats: 'metrics', cta: 'banner' };
+  const variantFor = (type) => (vmap[type] !== undefined ? vmap[type] : vmap[VKEY[type]]);
+
   const body = types
-    .map((type) => { const r = resolveSection(type); return r ? `<div data-section="${type}">${SECTIONS[r](data, t, motion)}</div>` : ''; })
+    .map((type) => { const r = resolveSection(type); return r ? `<div data-section="${type}">${SECTIONS[r](data, t, motion, { lead: !!leadOf[type], variant: variantFor(type) })}</div>` : ''; })
     .join('\n');
 
   const gridBg = `<div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(${t.grid} 1px,transparent 1px),linear-gradient(90deg,${t.grid} 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%);mask-image:radial-gradient(120% 60% at 50% 0%,#000 30%,transparent 80%)"></div>`;
