@@ -17,7 +17,7 @@
     main:     { label: '메인홈',    use: '첫 화면 — 핵심 가치 한 방 + 전체 요약',
       sections: [{ type: 'hero', tier: 'core' }, { type: 'feature', tier: 'core' }, { type: 'stats', tier: 'mid' }, { type: 'showcase', tier: 'rich' }, { type: 'testimonial', tier: 'mid' }, { type: 'cta', tier: 'core' }] },
     product:  { label: '제품소개',  use: '제품 하나를 깊게 — 개요, 상세 기능 교차, 화면, 비교',
-      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'overview', tier: 'core' }, { type: 'featurerows', tier: 'core' }, { type: 'gallery', tier: 'mid' }, { type: 'compare', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
+      sections: [{ type: 'pagehero', tier: 'core' }, { type: 'featurerows', tier: 'core' }, { type: 'gallery', tier: 'mid' }, { type: 'compare', tier: 'rich' }, { type: 'cta', tier: 'core' }] },   // overview는 pagehero와 중복이라 제외(사용자 지시)
     features: { label: '기능소개',  use: '기능 카탈로그 — 그리드 + 핵심 2~3개 상세',
       sections: [{ type: 'pagehero', tier: 'core' }, { type: 'feature', tier: 'core', lead: 1 }, { type: 'featurerows', tier: 'mid' }, { type: 'faq', tier: 'rich' }, { type: 'cta', tier: 'core' }] },
     pricing:  { label: '요금',      use: '플랜 비교와 결제 전 궁금증 해소',

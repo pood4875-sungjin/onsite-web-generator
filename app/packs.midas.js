@@ -627,7 +627,7 @@ const sectionsCss = () => `
   .midas .quote__t{font-size:17px;line-height:1.55;color:var(--ink)} .midas .quote__w{color:var(--muted);font-size:14px;font-weight:500}
   /* blog */
   .midas .p-card.post{text-decoration:none;overflow:hidden}
-  .midas .post__thumb{height:150px;background:linear-gradient(135deg,var(--bg-2),var(--line-2));border-radius:var(--radius-md);margin-bottom:16px}
+  .midas .post__thumb{height:150px;background:linear-gradient(135deg,var(--bg-2),var(--line-2));border-radius:var(--radius);margin-bottom:16px}
   .midas .post__tag{display:inline-block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
   /* faq */
   .midas .section > .faq.rise{text-align:left}   /* .section>.rise 센터 규칙보다 우선 — FAQ 질문·답변은 좌정렬 */
