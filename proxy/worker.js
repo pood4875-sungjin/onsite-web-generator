@@ -85,6 +85,26 @@ const PITCH_SYSTEM =
   'plan의 구체 정보(수치·기능·일정)는 반드시 반영. 실제 내용으로 채운다(플레이스홀더 금지). ' +
   'bg는 white/grey를 번갈아 리듬을 만들고 green은 전환점 1~3장에만. ' +
   '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
+/* honors 팩(MIDAS Honors) — pitch 레이아웃 + toc(목차)·divider(간지) */
+const HONORS_USE_DOC = PITCH_USE_DOC + ' | ' +
+  'toc(목차): 표지 바로 다음 장, 발표 전체 목차 | ' +
+  'divider(간지): 각 섹션 시작 전 전환 장 — 목차 항목과 1:1';
+const HONORS_FIELD_DOC = PITCH_FIELD_DOC + ' | ' +
+  'toc:{eyebrow?,title?,items:[문자열]} | ' +
+  'divider:{no:"01",title,sub?,v?:1~3(배경 변형),caption?} | ' +
+  'statement 추가필드: caption?(행사명 영문 세리프 캡션),v?:3~5(전면 블루 배경) | closing 추가필드: caption?,v?:3~5';
+const HONORS_SYSTEM =
+  '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ]}\n' +
+  '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + HONORS_USE_DOC + '\n' +
+  '각 타입의 필드: ' + HONORS_FIELD_DOC + '\n' +
+  '규칙: 1장은 statement(pos bottom, v는 3~5 중 하나·기본 3, caption은 행사·연도 느낌의 영문 세리프 문구 예 "2026 MIDAS HONORS DAY"). ' +
+  '2장은 toc(items=섹션 제목들). 각 섹션이 시작될 때마다 divider(no "01"…, title은 toc 항목과 동일, v는 1→2→3 순환, caption은 표지와 동일). ' +
+  'Q&A 장(statement, title "Q&A")을 넣는다면 반드시 덱 맨 끝(closing 바로 앞)에만 둔다. ' +
+  '수치가 있으면 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). ' +
+  '본문 bg는 white/grey 교대. 마지막은 closing. ' +
+  '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 const PITCH_EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +
@@ -190,7 +210,7 @@ export default {
         outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
       };
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch는 카탈로그 기반 타입 선택
+      system = clip(body.pack, 10) === 'honors' ? HONORS_SYSTEM : clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors는 카탈로그 기반 타입 선택
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
       const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
@@ -213,7 +233,7 @@ export default {
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
       if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
-      system = (clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
+      system = (clip(body.pack, 10) === 'honors' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HONORS_FIELD_DOC) : clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
     }
 

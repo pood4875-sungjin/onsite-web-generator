@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -78,7 +78,7 @@
 
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
-  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function renderForStyle(sp, pg){ const d=pg.data||{};
     if(sp==='saturn'&&window.renderSaturnPage) return renderSaturnPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
@@ -86,6 +86,7 @@
     if(sp==='edm'&&window.renderEdmPage) return renderEdmPage(d);
     if(sp==='aglass'&&window.renderAetherPage) return renderAetherPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='ppt'&&window.renderPptDeck) return renderPptDeck(d);
+    if(sp==='honors'&&window.renderHonorsDeck) return renderHonorsDeck(d);
     if(sp==='pitch'&&window.renderPitchDeck) return renderPitchDeck(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
   function thumb(p){ const wrap=document.createElement('div'); wrap.className='thumb'; const pg=p.pages[0];

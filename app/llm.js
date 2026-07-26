@@ -116,6 +116,9 @@
   // 응답 텍스트에서 JSON 덱 추출+검증. 실패 시 throw → 호출측 결정론 폴백.
   // pitch 팩 허용 타입 — packs.pitch.js CATALOG와 동일 목록
   var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, table: 1, pricing: 1, timeline: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
+  // honors 팩 = pitch 타입 + toc(목차)·divider(간지)
+  var HONORS_ALLOWED = Object.assign({ toc: 1, divider: 1 }, PITCH_ALLOWED);
+  function allowedFor(pack) { return pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
     var s = String(txt || '').trim();
     s = s.replace(/^```(?:json)?/i, '').replace(/```$/,'').trim();  // 코드펜스 제거
@@ -126,7 +129,7 @@
     if (!obj) throw new Error('BAD_JSON');
     var slides = obj.slides || obj.deck || [];
     if (!Array.isArray(slides) || !slides.length) throw new Error('NO_SLIDES');
-    var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;
+    var ok = allowedFor(pack);
     slides = _endOrder(slides.filter(function (sl) { return sl && ok[sl.type]; }));
     if (!slides.length) throw new Error('NO_VALID_SLIDES');
     return { slides: slides, style: obj.style, accent: obj.accent };
@@ -155,6 +158,20 @@
       pdeck.style = brief.style || pdeck.style || 'ax';
       pdeck.accent = pdeck.accent || 'blue';
       return pdeck;
+    }
+    // BYOK 직접 호출 — honors 팩: pitch 레이아웃 + 목차/간지 규칙
+    if (brief.pack === 'honors' && window.HONORS_SCHEMA_DOC) {
+      var hsys =
+        '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
+        '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지. 형식: {"slides":[...]}\n' +
+        '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.HONORS_SCHEMA_DOC + '\n' +
+        '각 타입의 필드: ' + window.HONORS_FIELD_DOC + '\n' +
+        '규칙: 1장 statement(pos bottom, caption은 행사·연도 느낌의 영문 세리프 문구). 2장 toc(items=섹션 제목들). ' +
+        '각 섹션 시작마다 divider(no "01"…, title=toc 항목과 동일, v는 1→2→3 순환). ' +
+        '수치는 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). 마지막 closing. ' +
+        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';
+      var htxt = await messages({ system: hsys, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
+      var hd = parseDeck(htxt, 'honors'); hd.style = 'honors'; return hd;
     }
     // BYOK 직접 호출 — pitch 팩이면 카탈로그 기반 프롬프트(팩이 노출한 문서 사용)
     if (brief.pack === 'pitch' && window.PITCH_SCHEMA_DOC) {
@@ -209,7 +226,7 @@
     var sys =
       '너는 프레젠테이션 편집자다. 현재 덱과 사용자 지시를 받아 덱을 수정한다.\n' +
       '반드시 유효한 JSON 하나만 출력: {"slides":[...수정 후 전체 배열...],"message":"<한 줄 요약>"}\n' +
-      '슬라이드 스키마: ' + (pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
+      '슬라이드 스키마: ' + (pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
       '문구·수치·톤 수정, 추가·분할·삭제·순서 변경 전부 가능. 무관한 슬라이드는 원본 그대로 복사. ' +
       '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +
       '디자인(색·폰트·배치) 요청만 slides null + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. 무관한 요청은 정중히 유도.';
@@ -319,7 +336,7 @@
     var obj = _repairParse(s.slice(i, j + 1));
     if (!obj) { var sv = _salvageSlides(s); if (sv) obj = { slides: sv, message: '' }; }
     if (!obj) throw new Error('BAD_JSON');
-    var ok = pack === 'pitch' ? PITCH_ALLOWED : ALLOWED;   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
+    var ok = allowedFor(pack);   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
     var slides = Array.isArray(obj.slides) ? _endOrder(obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24)) : null;
     if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
     return { slides: slides, message: String(obj.message || '') };

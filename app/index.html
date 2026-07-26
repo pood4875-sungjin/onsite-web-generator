@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -367,14 +367,15 @@
           c.onclick=()=>{ c.classList.add('sel'); pick(s.id, s.name); };
           sz.append(c);
         });
-        // Creatable Pitch — 별도 디자인 시스템 팩. 같은 줄에서 나란히 고른다.
-        if(window.PITCH_STYLE){
-          const ps=window.PITCH_STYLE;
+        // Creatable Pitch·MIDAS Honors — 별도 디자인 시스템 팩. 같은 줄에서 나란히 고른다.
+        [['pitch', window.PITCH_STYLE, window.renderPitchDeck, window.PITCH_DEFAULT_DECK],
+         ['honors', window.HONORS_STYLE, window.renderHonorsDeck, window.HONORS_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
+          if(!ps) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPitchDeck?renderPitchDeck(window.PITCH_DEFAULT_DECK):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
-          c.onclick=()=>{ c.classList.add('sel'); pick('pitch', ps.name); };
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); pick(pid, ps.name); };
           sz.append(c);
-        }
+        });
       } else if(kind==='edm'){
         (window.APP_TEMPLATES||[]).filter(t=>t.tag==='edm').forEach(tpl=>{
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:linear-gradient(135deg,#0B1220,#03C75A)"></div></div><div class="cap">${tpl.name}</div>`);
@@ -490,8 +491,10 @@
 
     if(S.kind==='ppt'){
       const outlineFromPlan = plan.split('\n').map(s=>s.replace(/^[\s•\-*·]*\d*[.)]?\s*/,'').trim()).filter(s=>s && s.length<=40).slice(0,8);
-      const isPitch = S.pptStyle==='pitch';   // Creatable Pitch = 별도 팩(레이아웃 체계가 다름)
-      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:isPitch?'pitch':'' };
+      // pitch·honors = 별도 팩(레이아웃 체계가 다름). packKind가 있으면 그 팩의 compose/template 경로
+      const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : '';
+      const isPitch = !!packKind;
+      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind };
       const hasBrief=!!plan;
       let deck=null;
       if(hasBrief && window.LLM && LLM.aiAvailable()){
@@ -500,13 +503,16 @@
         catch(e){ stop(false); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       }
       // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
-      if(!deck) deck = isPitch
-                 ? ((hasBrief && window.pitchComposeDeck) ? pitchComposeDeck(brief)
-                 : (window.pitchTemplateDeck ? pitchTemplateDeck() : JSON.parse(JSON.stringify(window.PITCH_DEFAULT_DECK||{slides:[]}))))
-                 : ((hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
+      if(!deck){
+        if(packKind==='honors') deck = (hasBrief && window.honorsComposeDeck) ? honorsComposeDeck(brief)
+                 : (window.honorsTemplateDeck ? honorsTemplateDeck() : JSON.parse(JSON.stringify(window.HONORS_DEFAULT_DECK||{slides:[]})));
+        else if(packKind==='pitch') deck = (hasBrief && window.pitchComposeDeck) ? pitchComposeDeck(brief)
+                 : (window.pitchTemplateDeck ? pitchTemplateDeck() : JSON.parse(JSON.stringify(window.PITCH_DEFAULT_DECK||{slides:[]})));
+        else deck = (hasBrief && window.pptComposeDeck) ? pptComposeDeck(brief)
                  : (window.pptTemplateDeck ? pptTemplateDeck(S.pptStyle)
-                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle})));
-      const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:isPitch?'pitch':'ppt' });
+                 : Object.assign(JSON.parse(JSON.stringify(window.PPT_DEFAULT_DECK||{slides:[]})), {style:S.pptStyle}));
+      }
+      const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:packKind||'ppt' });
       const full=getProject(p.id); const pg0=full.pages[0];
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
       pg0.chat={ log:[{r:'bot',t:'📊 '+_L(hasBrief?'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.':'전체 템플릿을 한 장씩 담았어요. 필요 없는 장은 지우고, 채팅으로 내용을 채워보세요.')}], idx:8, generated:true };
