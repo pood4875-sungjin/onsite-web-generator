@@ -464,8 +464,8 @@
   }
 
   /* ---- 발표 뷰어 — 한 장씩 ←→/클릭 넘김, F 전체화면. ppt 팩 뷰어와 동일 UX(팩 자기완결 원칙상 사본) ---- */
-  function renderPitchViewer(data) {
-    data = data || {};
+  function renderPitchViewer(data, opts) {
+    data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
@@ -518,7 +518,7 @@
       'c.textContent=(n+1)+" / "+s.length;pb.disabled=n===0;nb.disabled=n===s.length-1;}' +
       'document.addEventListener("fullscreenchange",fit);' +
       'addEventListener("message",function(e){if(!e.data)return;if(e.data.pptFsKey)toggleFs();else if(e.data.pptFsUi!=null)setPseudo(!!e.data.pptFsUi);});' +
-      'addEventListener("resize",fit);fit();show(0);' +
+      'addEventListener("resize",fit);fit();show(' + (Math.max(0, Math.min(+opts.start || 0, slides.length - 1))) + ');' +   // 스튜디오에서 보고 있던 장부터 시작(사용자 지시)
       'pb.onclick=function(e){e.stopPropagation();show(n-1)};nb.onclick=function(e){e.stopPropagation();show(n+1)};' +
       'var fbn=document.querySelector(".vfs");if(fbn)fbn.onclick=function(e){e.stopPropagation();toggleFs();};' +   // 버튼 클릭=확실한 사용자 제스처 → 네이티브 전체화면 보장
 

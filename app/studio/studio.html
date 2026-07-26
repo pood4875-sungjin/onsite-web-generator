@@ -1636,7 +1636,7 @@
     const viewerFn = pack && (pack.id==='honors' ? window.renderHonorsViewer : pack.id==='pitch' ? window.renderPitchViewer : pack.id==='ppt' ? window.renderPptViewer : null);
     const isPptPack = typeof viewerFn==='function';
     document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기') : tL('미리보기');   // 조작 힌트 문구 제거(사용자 요청)
-    pvfFrame.srcdoc = isPptPack ? viewerFn(data) : previewHtml();
+    pvfFrame.srcdoc = isPptPack ? viewerFn(data, {start:_curThumb||0}) : previewHtml();   // 보고 있던 장부터 발표 시작
     pvFull.hidden=false;
     if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
   }
