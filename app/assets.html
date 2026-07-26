@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>자산 · MIDAS DRS</title>
+<title>리소스 · MIDAS DRS</title>
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시 방지
-['bundle.js','charts.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','charts.js','graphics.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
-  /* 자산 라이브러리 — 아이콘·그래픽·마이다스(브랜드)·기타. 업로드는 IDB('onsite-assets') */
+  /* 리소스(자산) 라이브러리 — 아이콘·그래픽·마이다스(브랜드)·기타. 적재는 파일로(업로드 UI 없음 — 사용자 요청) */
   .tabs{display:flex;gap:8px;margin:18px 0 22px}
   .tab{padding:9px 18px;border-radius:var(--r-pill,999px);border:1px solid var(--hairline,#e4e4e7);background:var(--surface,#fff);color:var(--body,#555);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
   .tab.on{background:var(--ink,#111);color:var(--canvas,#fff);border-color:var(--ink,#111)}
@@ -21,22 +21,18 @@
   .cell .pv{width:44px;height:44px;display:grid;place-items:center;color:var(--ink,#111)}
   .cell .pv svg{width:26px;height:26px}
   .cell .pv img{max-width:44px;max-height:44px;object-fit:contain}
+  .cell.big .pv{width:64px;height:64px}
+  .cell.big .pv img{max-width:64px;max-height:64px}
   .cell .nm{font-size:11.5px;color:var(--body-mid,#777);text-align:center;word-break:break-all;line-height:1.3}
-  .cell .del{position:absolute;right:6px;top:6px;width:20px;height:20px;border:none;border-radius:6px;background:rgba(0,0,0,.06);color:var(--body,#555);font-size:11px;cursor:pointer;display:none}
-  .cell:hover .del{display:block}
-  .cell.add{border-style:dashed;color:var(--mute,#999);min-height:104px;justify-content:center}
-  .cell.wide{grid-column:span 2}
   .empty{color:var(--mute,#999);font-size:13.5px;padding:28px 4px}
   .hint{font-size:12.5px;color:var(--mute,#999);margin:-10px 0 16px}
   .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink,#111);color:var(--canvas,#fff);font-size:13px;border-radius:999px;padding:9px 18px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
   .toast.on{opacity:1}
-  .chlink{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--body,#555);text-decoration:none;border:1px solid var(--hairline,#e4e4e7);border-radius:10px;padding:8px 14px;margin-bottom:16px}
+  .seg{display:inline-flex;gap:6px;margin:0 0 14px}
+  .seg button{padding:6px 14px;border-radius:999px;border:1px solid var(--hairline,#e4e4e7);background:none;color:var(--body,#555);font-size:12.5px;cursor:pointer;font-family:inherit}
+  .seg button.on{background:var(--brand-weak,#eee);color:var(--ink,#111);border-color:var(--hairline-strong,#c9c9cf)}
+  .chlink{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--body,#555);text-decoration:none;border:1px solid var(--hairline,#e4e4e7);border-radius:10px;padding:8px 14px;margin:0 0 16px 10px}
   .chlink:hover{color:var(--ink,#111)}
-  .chwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-  .chcard{background:var(--surface,#fff);border:1px solid var(--hairline,#e4e4e7);border-radius:12px;padding:14px}
-  .chcard h4{margin:0 0 8px;font-size:13px}
-  .chbox{height:130px;display:grid;place-items:center}
-  .chbox svg{max-width:100%;max-height:100%}
 </style>
 </head>
 <body class="ds-body app-grid">
@@ -44,7 +40,7 @@
 <div class="content">
   <div data-gnb></div>
   <div class="page">
-    <h1 data-i18n="자산 라이브러리">자산 라이브러리</h1>
+    <h1 data-i18n="리소스">리소스</h1>
     <p class="lead" data-i18n="아이콘·그래픽·브랜드 자산을 모아두고 어디서든 갖다 씁니다. 클릭하면 복사돼요.">아이콘·그래픽·브랜드 자산을 모아두고 어디서든 갖다 씁니다. 클릭하면 복사돼요.</p>
     <div class="tabs" id="tabs"></div>
     <div id="body"></div>
@@ -59,80 +55,46 @@
   var tabs=document.getElementById('tabs'), body=document.getElementById('body'), toastEl=document.getElementById('toast');
   var L=window.L||function(s){return s};
   function toast(m){ toastEl.textContent=m; toastEl.classList.add('on'); setTimeout(function(){toastEl.classList.remove('on')},1400); }
-
-  /* ---- 업로드 저장소: IDB 'onsite-assets' (파일이 커질 수 있어 localStorage 대신) ---- */
-  var dbP=new Promise(function(res,rej){ var r=indexedDB.open('onsite-assets',1);
-    r.onupgradeneeded=function(){ r.result.createObjectStore('files',{keyPath:'id'}); };
-    r.onsuccess=function(){res(r.result)}; r.onerror=function(){rej(r.error)}; });
-  function listFiles(cat){ return dbP.then(function(db){ return new Promise(function(res){ var out=[];
-    var c=db.transaction('files').objectStore('files').openCursor();
-    c.onsuccess=function(){ var cu=c.result; if(!cu){res(out);return;} if(cu.value.cat===cat)out.push(cu.value); cu.continue(); }; }); }); }
-  function putFile(f){ return dbP.then(function(db){ return new Promise(function(res){ var t=db.transaction('files','readwrite'); t.objectStore('files').put(f); t.oncomplete=res; }); }); }
-  function delFile(id){ return dbP.then(function(db){ return new Promise(function(res){ var t=db.transaction('files','readwrite'); t.objectStore('files').delete(id); t.oncomplete=res; }); }); }
-
   function copyText(t){ (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast(L('복사됨'))},function(){toast(L('복사 실패'))}); }
 
-  /* ---- 탭별 렌더 ---- */
   function renderIcons(){
-    // 내장 UI 아이콘(assets/icons → icons.js 레지스트리). 클릭=SVG 복사
     var names=Object.keys(window.ICON||{});
-    var h='<p class="hint">'+L('앱 공용 아이콘')+' '+names.length+L('종 — 클릭하면 SVG 코드가 복사돼요. 새 아이콘은 assets/icons/*.svg에 넣고 빌드하면 자동 등록.')+'</p><div class="grid">';
+    var h='<p class="hint">'+L('앱 공용 아이콘')+' '+names.length+L('종 — 클릭하면 SVG 코드가 복사돼요.')+'</p><div class="grid">';
     h+=names.map(function(n){ return '<div class="cell" data-ic="'+n+'"><span class="pv">'+window.ICON[n]+'</span><span class="nm">'+n+'</span></div>'; }).join('');
-    h+='</div>';
-    body.innerHTML=h;
+    body.innerHTML=h+'</div>';
     body.querySelectorAll('[data-ic]').forEach(function(c){ c.onclick=function(){ copyText(window.ICON[c.getAttribute('data-ic')]); }; });
   }
+  /* 그래픽 — Figma 39:53715 컬러 그래픽 셋(graphics.js 레지스트리). 그린/블루 토글 */
+  var gColor='green';
   function renderGraphics(){
-    // 공용 차트(그래픽) 자산 — charts.js CATALOG 미니 렌더. 상세 열람은 인스펙터
-    var h='<a class="chlink" href="chart-inspector.html">📊 '+L('차트 라이브러리 전체 열람')+' →</a>';
-    var SAMPLE={categories:['A','B','C'],series:[{name:'v',values:[24,42,66]}],emphasis:2,max:100};
-    h+='<div class="chwrap">'+ (window.Charts?Charts.CATALOG.map(function(c){
-      return '<div class="chcard"><h4>'+c.label+' <code style="font-size:10.5px;color:#999">'+c.type+'</code></h4><div class="chbox">'+Charts.render(Object.assign({type:c.type},SAMPLE))+'</div></div>';
-    }).join(''):'')+'</div>';
+    var G=window.GRAPHICS||[];
+    if(!G.length){ body.innerHTML='<p class="empty">'+L('그래픽 자산 적재 중이에요. 잠시 후 새로고침 해주세요.')+'</p>'; return; }
+    var h='<div class="seg">'+['green','blue'].map(function(c){ return '<button data-c="'+c+'"'+(c===gColor?' class="on"':'')+'>'+(c==='green'?L('그린'):L('블루'))+'</button>'; }).join('')+'</div>'
+      +'<a class="chlink" href="chart-inspector.html">📊 '+L('차트 라이브러리')+' →</a>';
+    h+='<div class="grid">'+G.filter(function(g){return g.color===gColor}).map(function(g){
+      return '<div class="cell big" data-src="'+g.src+'"><span class="pv"><img src="'+g.src+'" alt="'+g.name+'" loading="lazy"></span><span class="nm">'+g.name+'</span></div>';
+    }).join('')+'</div>';
     body.innerHTML=h;
-    var st=document.createElement('style'); st.textContent=window.Charts?Charts.css():''; body.appendChild(st);
+    body.querySelectorAll('.seg button').forEach(function(b){ b.onclick=function(){ gColor=b.getAttribute('data-c'); renderGraphics(); }; });
+    body.querySelectorAll('[data-src]').forEach(function(c){ c.onclick=function(){ copyText(location.origin+location.pathname.replace(/[^\/]*$/,'')+c.getAttribute('data-src')); }; });
   }
-  function renderUploads(cat, emptyMsg){
-    listFiles(cat).then(function(files){
-      var h='<p class="hint">'+L('SVG·PNG·JPG 업로드 — 클릭하면 복사(SVG는 코드, 이미지는 파일명), ✕로 삭제.')+'</p><div class="grid">';
-      h+='<div class="cell add" id="addBtn">+ '+L('업로드')+'</div>';
-      h+=files.map(function(f){
-        var pv=f.type==='image/svg+xml' ? '<span class="pv">'+f.text+'</span>' : '<span class="pv"><img src="'+f.data+'" alt=""></span>';
-        return '<div class="cell" data-id="'+f.id+'"><button class="del" data-del="'+f.id+'">✕</button>'+pv+'<span class="nm">'+f.name+'</span></div>';
-      }).join('');
-      h+='</div>'+(files.length?'':'<p class="empty">'+emptyMsg+'</p>');
-      body.innerHTML=h;
-      document.getElementById('addBtn').onclick=function(){
-        var inp=document.createElement('input'); inp.type='file'; inp.accept='.svg,.png,.jpg,.jpeg,.webp'; inp.multiple=true;
-        inp.onchange=function(){ var fs=[].slice.call(inp.files); var left=fs.length; if(!left)return;
-          fs.forEach(function(file){ var rd=new FileReader();
-            rd.onload=function(){
-              var rec={id:cat+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),cat:cat,name:file.name,type:file.type,ts:Date.now()};
-              if(file.type==='image/svg+xml'){ rec.text=rd.result; rec.data=''; }
-              else rec.data=rd.result;
-              putFile(rec).then(function(){ if(--left===0) renderUploads(cat,emptyMsg); });
-            };
-            if(file.type==='image/svg+xml') rd.readAsText(file); else rd.readAsDataURL(file);
-          }); };
-        inp.click();
-      };
-      body.querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(e){ e.stopPropagation();
-        uiConfirm(L('이 자산을 삭제할까요?'),{title:L('자산 삭제'),okText:L('삭제'),danger:true}).then(function(ok){ if(ok) delFile(b.getAttribute('data-del')).then(function(){renderUploads(cat,emptyMsg)}); }); }; });
-      body.querySelectorAll('.cell[data-id]').forEach(function(c){ c.onclick=function(){
-        var id=c.getAttribute('data-id');
-        listFiles(cat).then(function(fs){ var f=fs.find(function(x){return x.id===id}); if(!f)return;
-          copyText(f.type==='image/svg+xml'?f.text:f.name); }); }; });
-    });
+  /* 마이다스(브랜드 로고)·기타 — 파일 적재식(window.BRAND_ASSETS / ETC_ASSETS 레지스트리가 생기면 자동 표시) */
+  function renderStatic(listName, emptyMsg){
+    var list=window[listName]||[];
+    if(!list.length){ body.innerHTML='<p class="empty">'+emptyMsg+'</p>'; return; }
+    body.innerHTML='<div class="grid">'+list.map(function(a){
+      return '<div class="cell big" data-src="'+a.src+'"><span class="pv"><img src="'+a.src+'" alt="'+a.name+'"></span><span class="nm">'+a.name+'</span></div>';
+    }).join('')+'</div>';
+    body.querySelectorAll('[data-src]').forEach(function(c){ c.onclick=function(){ copyText(c.getAttribute('data-src')); }; });
   }
-
   function show(cat){
     cur=cat;
     tabs.innerHTML=CATS.map(function(c){ return '<button class="tab'+(c[0]===cur?' on':'')+'" data-t="'+c[0]+'">'+L(c[1])+'</button>'; }).join('');
     tabs.querySelectorAll('.tab').forEach(function(b){ b.onclick=function(){show(b.getAttribute('data-t'))}; });
     if(cat==='icons') renderIcons();
     else if(cat==='graphics') renderGraphics();
-    else if(cat==='midas') renderUploads('midas', L('브랜드 로고·심볼을 올려두면 시안에서 바로 씁니다.'));
-    else renderUploads('etc', L('기타 이미지·그래픽 자산을 보관하세요.'));
+    else if(cat==='midas') renderStatic('BRAND_ASSETS', L('브랜드 로고·심볼 자리예요. 파일을 주시면 여기에 적재됩니다.'));
+    else renderStatic('ETC_ASSETS', L('기타 그래픽 자산 자리예요. 파일을 주시면 여기에 적재됩니다.'));
   }
   show('icons');
 })();
