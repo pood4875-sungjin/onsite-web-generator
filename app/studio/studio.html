@@ -1315,7 +1315,20 @@
   let _lastPick=0;
   function setMediaImg(pm){ const path=pm.getAttribute('data-img'); if(!path) return;
     const now=Date.now(); if(now-_lastPick<900) return; _lastPick=now;
-    pickPptImage((src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); }
+    const apply=(src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); };
+    const act=w=>{ try{ return !!(w.navigator.userActivation&&w.navigator.userActivation.isActive); }catch(e){ return false; } };
+    const fw=(frame&&frame.contentWindow)?frame.contentWindow:null;
+    if((fw&&act(fw))||act(window)){ pickPptImage(apply); return; }
+    // 크롬이 srcdoc 프리뷰 안 클릭에 활성(user activation)을 안 실어주는 환경 —
+    // 상위 문서 버튼을 한 번 더 클릭시켜 확실한 활성으로 파일창을 연다 (실측: 프리뷰=0·상위=0이면 모든 파일창 차단)
+    let chip=document.getElementById('imgPickChip'); if(chip) chip.remove();
+    chip=document.createElement('button'); chip.id='imgPickChip';
+    chip.textContent='📁 '+tL('여기를 누르면 파일 선택 창이 열려요');
+    chip.style.cssText='position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:99999;background:#6c2bff;color:#fff;border:none;border-radius:999px;padding:13px 24px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35)';
+    chip.onclick=()=>{ chip.remove(); pickPptImage(apply); };
+    document.body.appendChild(chip);
+    setTimeout(()=>{ try{ chip.remove(); }catch(e){} }, 10000);
+  }
   function decoratePpt(doc){
     if(!curMode().slides || !doc || !doc.body) return;
     if(!doc.getElementById('pptedcss')){ const st=doc.createElement('style'); st.id='pptedcss'; st.textContent=
