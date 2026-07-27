@@ -1257,11 +1257,11 @@
   function slideIndexOf(node){ const sl=node.closest('.ppt-stack > .slide'); return sl? [...sl.parentElement.children].indexOf(sl) : -1; }
   // 이미지 선택 → 최대 1280px·JPEG 0.85 압축 dataURL (저장 용량·PPTX 용량 관리)
   function pickPptImage(cb){
-    // 파일창은 클릭 제스처가 일어난 문서(PPT는 프리뷰 iframe)에서 열어야 user-activation 유효
-    const idoc = (curMode().slides && frame.contentDocument) ? frame.contentDocument : document;
-    const inp=idoc.createElement('input'); inp.type='file'; inp.accept='image/*';
+    // 입력은 항상 상위 문서에 생성 — 프리뷰 iframe은 리렌더로 문서가 교체돼 change 이벤트가 유실된다
+    // (실사고: 파일창은 뜨는데 선택해도 화면 무변화). 클릭의 user activation은 상위 프레임에 전파되므로 파일창은 정상.
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
     inp.style.position='fixed'; inp.style.left='-9999px';   // DOM에 붙여야 일부 브라우저서 change 발생
-    idoc.body.appendChild(inp);
+    document.body.appendChild(inp);
     const done=()=>{ try{ inp.remove(); }catch(e){} };
     inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ done(); return; }
       const rd=new FileReader();
@@ -1273,7 +1273,7 @@
           cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
           // PNG는 PNG로 유지 — JPEG 변환 시 투명 배경이 검게 변함
           cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
-        }catch(e){ console.error('[img]',e); } done(); };
+        }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done(); };
         im.src=rd.result; };
       rd.readAsDataURL(f); };
     inp.click();
