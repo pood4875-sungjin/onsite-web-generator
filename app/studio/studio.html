@@ -1263,24 +1263,27 @@
       document.body.appendChild(t); }
     t.textContent+=(t.textContent?'\n':'')+msg;
     clearTimeout(t.__h); t.__h=setTimeout(()=>{ t.remove(); },6000); }
+  // 파일 → 축소 → dataURL (파일창·드롭·붙여넣기 공용)
+  function readImgFile(f, cb, done){
+    imgTrace('2/4 파일 받음: '+f.name);
+    const rd=new FileReader();
+    rd.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 읽지 못했어요.')); };
+    rd.onload=()=>{ imgTrace('3/4 읽기 완료'); const im=new Image(); im.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
+      im.onload=()=>{ try{
+        const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
+        const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc)||1; cv.height=Math.round(im.height*sc)||1;
+        cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+        cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
+        imgTrace('4/4 적용 완료');
+      }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done&&done(); };
+      im.src=rd.result; };
+    rd.readAsDataURL(f); }
   function pickPptImage(cb){
-    // 파일 읽기 → 축소 → dataURL 적용 (선택 경로 공용)
-    const processFile=(f, done)=>{
-      imgTrace('2/4 파일 받음: '+f.name);
-      const rd=new FileReader();
-      rd.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 읽지 못했어요.')); };
-      rd.onload=()=>{ imgTrace('3/4 읽기 완료'); const im=new Image(); im.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
-        im.onload=()=>{ try{
-          const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
-          const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc)||1; cv.height=Math.round(im.height*sc)||1;
-          cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-          // PNG는 PNG로 유지 — JPEG 변환 시 투명 배경이 검게 변함
-          cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
-          imgTrace('4/4 적용 완료');
-        }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done&&done(); };
-        im.src=rd.result; };
-      rd.readAsDataURL(f); };
+    const processFile=(f, done)=>readImgFile(f, cb, done);
     imgTrace('1/4 파일창 여는 중…');
+    // 진단 — 클릭 권한(user activation)이 어느 창에 있는지 표시
+    try{ const ua=w=>{ try{ return (w.navigator.userActivation&&w.navigator.userActivation.isActive)?1:0; }catch(e){ return '?'; } };
+      imgTrace('활성: 프리뷰='+ua(frame&&frame.contentWindow?frame.contentWindow:window)+' · 상위='+ua(window)); }catch(e){}
     // 폴백: 클릭 제스처가 있는 문서(프리뷰 iframe)에 숨은 input — change 유실 가능성이 있어 2순위
     const fallbackInput=()=>{
       const idoc=(curMode().slides && frame && frame.contentDocument) ? frame.contentDocument : document;
@@ -1322,7 +1325,7 @@
       +'[data-editing] [data-mvkey]:hover{outline:1px dashed rgba(108,43,255,.5);outline-offset:3px}'
       // 빈 이미지 자리 안내 — 편집모드 무관 클릭 유도(스튜디오 프리뷰 전용, 발표·내보내기엔 안 나옴)
       +'.p-media.ph[data-img]{cursor:pointer;position:relative}'
-      +'.p-media.ph[data-img]::after{content:"🖼 클릭해서 이미지 넣기";position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;font-weight:700;color:#6c2bff;background:rgba(255,255,255,.92);border:1px dashed rgba(108,43,255,.55);border-radius:8px;padding:4px 12px;white-space:nowrap;pointer-events:none}'
+      +'.p-media.ph[data-img]::after{content:"🖼 클릭 또는 이미지 파일 드래그";position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;font-weight:700;color:#6c2bff;background:rgba(255,255,255,.92);border:1px dashed rgba(108,43,255,.55);border-radius:8px;padding:4px 12px;white-space:nowrap;pointer-events:none}'
       +'[data-editing] [data-mvkey].u-sel{outline:2px solid #6c2bff;outline-offset:3px;border-radius:3px}'
       +'[data-editing] [data-mvkey].u-mq{outline:2px solid rgba(108,43,255,.7);outline-offset:2px;background:rgba(108,43,255,.08);border-radius:3px}'
       +'[data-editing] [data-mvkey][contenteditable="true"]{cursor:text}'
@@ -1384,6 +1387,15 @@
       doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
       doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
         if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm); }); }
+    // 드래그&드롭 첨부 — 파일창 없이 이미지 파일을 회색 자리에 바로 놓기 (파일창 문제 우회로 겸용)
+    if(!doc.__pmDrop){ doc.__pmDrop=1;
+      doc.addEventListener('dragover',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm){ e.preventDefault(); pm.style.outline='3px dashed #6c2bff'; } });
+      doc.addEventListener('dragleave',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) pm.style.outline=''; });
+      doc.addEventListener('drop',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(!pm) return; e.preventDefault(); pm.style.outline='';
+        const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+        if(!f||!/^image\//.test(f.type)){ imgTrace(tL('이미지 파일을 놓아주세요.')); return; }
+        const path=pm.getAttribute('data-img');
+        readImgFile(f, src=>{ pptMutate(()=>{ setField(path+'.src', src); }); }, null); }); }
     if(!editMode) return;
     pptEditor(doc);
   }
