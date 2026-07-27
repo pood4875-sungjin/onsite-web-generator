@@ -913,7 +913,7 @@ const midasPack = {
       '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");',
       '@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap");',
       foundationCss(':root'),
-      'body{margin:0;background:var(--bg)}',
+      '[data-edit]{white-space:pre-wrap}body{margin:0;background:var(--bg)}',
       layoutCss(), componentsCss(), sectionsCss(),
     ].join('\n');
   },

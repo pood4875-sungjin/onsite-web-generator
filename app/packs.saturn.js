@@ -831,7 +831,7 @@
       return [
         '@import url("https://api.fontshare.com/v2/css?f[]=general-sans@500,600&display=swap");',
         '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");',
-        foundationCss(), 'body{margin:0;background:var(--bg)}', layoutCss(), sectionsCss(),
+        foundationCss(), '[data-edit]{white-space:pre-wrap}body{margin:0;background:var(--bg)}', layoutCss(), sectionsCss(),
       ].join('\n');
     },
   };

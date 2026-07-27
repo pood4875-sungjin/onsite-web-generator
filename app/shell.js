@@ -14,7 +14,8 @@
   function ic(name, fb) { return (window.icon && window.ICON && window.ICON[name]) ? window.icon(name, {}) : fb; }
   // 아이콘은 SNB 메뉴로 노출하지 않음 — 레지스트리(icons.js)는 백그라운드에서 플랫폼 아이콘 소스로만 사용.
   var GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>';
-  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['assets', 'assets.html', '리소스', SHAPES], ['settings', 'settings.html', '설정', GEAR]];
+  // '리소스(assets.html)' 탭은 우선 숨김(사용자 지시) — 복구 시 아래 배열에 ['assets','assets.html','리소스',SHAPES] 재삽입
+  var ITEMS = [['home', 'dashboard.html', '홈', ic('home', HOME)], ['projects', 'projects.html', '프로젝트', ic('folder', FOLDER)], ['resources', 'resources.html', '템플릿', ic('grid', GRID)], ['settings', 'settings.html', '설정', GEAR]];
 
   function tt(ko) { return (window.L ? window.L(ko) : ko); }
   function curCode() { var l = (window.I18N ? I18N.getLang() : 'ko'); var m = { ko: 'KO', en: 'EN', ja: 'JA', zh: 'ZH' }; return m[l] || l.toUpperCase(); }

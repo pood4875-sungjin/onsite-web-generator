@@ -37,7 +37,7 @@ export const darkglowPack = {
   components: {},
   sections,
   globalCss() {
-    return `*{box-sizing:border-box}body{margin:0;background:${T.bg};color:${T.text};font-family:${T.font};-webkit-font-smoothing:antialiased}`;
+    return `*{box-sizing:border-box}[data-edit]{white-space:pre-wrap}body{margin:0;background:${T.bg};color:${T.text};font-family:${T.font};-webkit-font-smoothing:antialiased}`;
   },
   docs: {
     swatchGroups: [{ label: 'Tokens', keys: ['bg', 'surface', 'text', 'textMuted', 'accent'] }],

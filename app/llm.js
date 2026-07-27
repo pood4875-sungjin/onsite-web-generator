@@ -250,6 +250,7 @@
       '반드시 유효한 JSON 하나만 출력: {"slides":[...수정 후 전체 배열...],"message":"<한 줄 요약>"}\n' +
       '슬라이드 스키마: ' + (pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
       '문구·수치·톤 수정, 추가·분할·삭제·순서 변경 전부 가능. 무관한 슬라이드는 원본 그대로 복사. ' +
+      '일부 장만 바뀌는 요청(장 추가·삭제·한두 장 수정)은 전체 배열 대신 {"ops":[{"op":"insert","at":인덱스,"slide":{...}}|{"op":"replace","at":인덱스,"slide":{...}}|{"op":"remove","at":인덱스}],"message":"..."}로 바뀐 부분만 출력(at은 0부터, 두 번째 장 앞 삽입=at 1). ' +
       '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +
       '디자인(색·폰트·배치) 요청만 slides null + "디자인은 스타일 팩에서 일괄 관리돼요" 안내. 무관한 요청은 정중히 유도.';
     var txt = await messages({ system: sys, user: '현재 덱:\n' + JSON.stringify(slides) + '\n\n사용자 지시:\n' + instruction, maxTokens: 6000 });
@@ -365,6 +366,24 @@
     if (!obj) { var sv = _salvageSlides(s); if (sv) obj = { slides: sv, message: '' }; }
     if (!obj) throw new Error('BAD_JSON');
     var ok = allowedFor(pack);   // 팩별 허용 타입 — 안 갈리면 pitch 장이 전부 걸러져 덱이 쪼그라든다
+    // 부분 수정(ops) — 바뀐 장만 받아 로컬 적용. 긴 덱 전체 재전송으로 인한 응답 잘림(→축소 가드 차단)을 구조적으로 회피
+    if (Array.isArray(obj.ops) && obj.ops.length && Array.isArray(orig)) {
+      var out = orig.slice();
+      var stripU = function (sl) { Object.keys(sl).forEach(function (k) { if (k.charAt(0) === '_') delete sl[k]; }); };
+      try {
+        obj.ops.forEach(function (o) {
+          if (!o || typeof o.at !== 'number') throw new Error('BAD_OP');
+          var at = Math.max(0, Math.min(Math.round(o.at), out.length));
+          if (o.op === 'insert') { if (!o.slide || !ok[o.slide.type]) throw new Error('BAD_OP'); stripU(o.slide); out.splice(at, 0, o.slide); }
+          else if (o.op === 'replace') { if (at >= out.length || !o.slide || !ok[o.slide.type]) throw new Error('BAD_OP'); stripU(o.slide);
+            var prev = out[at]; if (prev && prev.type === o.slide.type) Object.keys(prev).forEach(function (k) { if (k.charAt(0) === '_') o.slide[k] = prev[k]; });
+            out[at] = o.slide; }
+          else if (o.op === 'remove') { if (at >= out.length) throw new Error('BAD_OP'); out.splice(at, 1); }
+          else throw new Error('BAD_OP');
+        });
+        if (out.length) return { slides: _endOrder(out), message: String(obj.message || '') };
+      } catch (e2) { /* ops 불량 → 전체 배열/무변경 경로로 폴백 */ }
+    }
     var slides = Array.isArray(obj.slides) ? _endOrder(obj.slides.filter(function (sl) { return sl && ok[sl.type]; }).slice(0, 24)) : null;
     if (slides && !slides.length) slides = null;   // 전부 무효 타입이면 무변경 취급
     /* 편집 상태키(_pos/_hide/_fmt/_ta/_z/_grp)는 AI 출력본을 신뢰하지 않는다(지어내거나 엉뚱한 장에 복사함).

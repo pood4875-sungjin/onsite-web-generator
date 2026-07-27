@@ -78,7 +78,7 @@ export function renderComposed(data = {}, pack, motion = 'subtle', pageType = 'm
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(data.productName || '제품명')}</title>
 <style>
-  *{box-sizing:border-box} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box} [data-edit]{white-space:pre-wrap} body{margin:0;background:${t.bg};color:${t.text};font-family:${t.font};-webkit-font-smoothing:antialiased}
   .nvi:hover{color:${t.text}} .nsub{display:none} .nvi:hover .nsub{display:block}
   /* 화살표 버튼 — 텍스트(data-edit 저장분) 밖에서 렌더: 편집 저장 시 '→'가 필드에 섞이지 않음 */
   .dg-arw::after{content:"→"}

@@ -529,7 +529,7 @@
   function css(motion) {
     var anim = motion !== 'static';
     return '@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap");' +
-      'body{margin:0}' +
+      '[data-edit]{white-space:pre-wrap}body{margin:0}' +
       '.aglass{background:' + T.ink + ';color:' + T.text + ';font-family:' + T.fontB + ';-webkit-font-smoothing:antialiased;overflow-x:hidden}' +
       '.aglass *{box-sizing:border-box}' +
       '.aglass h1,.aglass h2,.aglass h3{margin:0;font-family:' + T.fontD + ';color:#fff;line-height:1.15}' +

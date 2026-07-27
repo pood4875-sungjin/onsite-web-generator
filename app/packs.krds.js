@@ -1789,7 +1789,7 @@ const krdsPack = {
       // 폰트 (Pretendard GOV 미보유 시 Pretendard 폴백)
       '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");',
       foundationCss(':root'),
-      'body{margin:0;background:var(--bg)}',
+      '[data-edit]{white-space:pre-wrap}body{margin:0;background:var(--bg)}',
       layoutCss(),
       componentsCss(),
       sectionsCss(),

@@ -114,6 +114,7 @@ const PITCH_EDIT_SYSTEM =
   '규칙:\n' +
   '- 지시와 무관한 슬라이드는 원본 그대로 복사해 유지(임의 수정 금지). _pos/_hide/_fmt/_z/_grp 같은 밑줄 키도 그대로 보존.\n' +
   '- 새로 만드는 슬라이드는 실제 내용으로 채운다(플레이스홀더 금지). 기존 덱의 맥락·톤을 따른다.\n' +
+  '- 일부 장만 바뀌는 요청(장 추가·삭제·한두 장 수정)은 전체 배열 대신 바뀐 부분만 출력: {"ops":[{"op":"insert","at":인덱스,"slide":{...}}|{"op":"replace","at":인덱스,"slide":{...}}|{"op":"remove","at":인덱스}],"message":"..."} — at은 0부터(두 번째 장 앞에 삽입=at 1). 긴 덱을 전부 다시 쓰다 응답이 잘리는 사고를 막는다. 여러 장이 광범위하게 바뀔 때만 slides 전체 배열 사용.\n' +
   '- 덱은 1~24장.\n' +
   '- 디자인(색·폰트·크기·배치·테마) 요청만 예외: slides를 null로 하고 message에 "디자인은 스타일 팩에서 일괄 관리돼요. 내용·구성 수정을 말씀해주세요." 취지로 안내.\n' +
   '- 발표와 무관한 요청이면 slides null + 정중히 수정 요청을 유도.\n' +
@@ -178,6 +179,7 @@ const EDIT_SYSTEM =
   '규칙:\n' +
   '- 지시와 무관한 슬라이드는 원본 그대로 복사해 유지(임의 수정 금지).\n' +
   '- 새로 만드는 슬라이드는 실제 내용으로 채운다(플레이스홀더 금지). 기존 덱의 맥락·톤을 따른다.\n' +
+  '- 일부 장만 바뀌는 요청(장 추가·삭제·한두 장 수정)은 전체 배열 대신 바뀐 부분만 출력: {"ops":[{"op":"insert","at":인덱스,"slide":{...}}|{"op":"replace","at":인덱스,"slide":{...}}|{"op":"remove","at":인덱스}],"message":"..."} — at은 0부터(두 번째 장 앞에 삽입=at 1). 긴 덱을 전부 다시 쓰다 응답이 잘리는 사고를 막는다. 여러 장이 광범위하게 바뀔 때만 slides 전체 배열 사용.\n' +
   '- 덱은 1~24장.\n' +
   '- 디자인(색·폰트·크기·배치·테마) 요청만 예외: slides를 null로 하고 message에 "디자인은 스타일 팩에서 일괄 관리돼요. 내용·구성 수정을 말씀해주세요." 취지로 안내.\n' +
   '- 발표와 무관한 요청이면 slides null + 정중히 수정 요청을 유도.\n' +
@@ -259,7 +261,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 6000 : route === '/compose-web' ? 8000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
+        model: MODEL, max_tokens: route === '/edit' ? 8000 : route === '/compose-web' ? 8000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
         system: system,
         messages: [{ role: 'user', content: userMsg }],
       }),
