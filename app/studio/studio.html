@@ -1391,6 +1391,12 @@
     const unitsOf=(si)=> (slidesEls()[si]? [...slidesEls()[si].querySelectorAll('[data-mvkey]')] : []);
     const grpMap=(si)=> (data.slides[si]||{})._grp||{};
     function expandGroup(si,keys){ const g=grpMap(si); const gids=new Set(); keys.forEach(k=>{ if(g[k]!=null) gids.add(g[k]); }); const out=new Set(keys); Object.keys(g).forEach(k=>{ if(gids.has(g[k])) out.add(k); }); return out; }
+    // 부모(카드)와 자식이 같이 잡히면 자식 제외 — 카드가 움직이면 내용은 따라오므로, 중복 선택 시 2배 이동·벌어짐 방지
+    function dropNestedKeys(si,keys){ const set=new Set(keys); const el={};
+      unitsOf(si).forEach(u=>{ el[u.getAttribute('data-mvkey')]=u; });
+      return [...set].filter(k=>{ let p=el[k]&&el[k].parentElement;
+        while(p&&p!==doc.body){ const pk=p.getAttribute&&p.getAttribute('data-mvkey'); if(pk&&set.has(pk)) return false; p=p.parentElement; }
+        return true; }); }
     function applyCss(){ if(_selSi<0) return; unitsOf(_selSi).forEach(u=>u.classList.toggle('u-sel',_sel.has(u.getAttribute('data-mvkey')))); }
     function selEls(){ return _selSi<0?[]:unitsOf(_selSi).filter(u=>_sel.has(u.getAttribute('data-mvkey'))); }
     function hideTb(){ utb.style.display='none'; }
@@ -1545,9 +1551,13 @@
           if(!moved){ deselectAll(); return; }
           const l=Math.min(sx,ev.clientX), t=Math.min(sy,ev.clientY), rr=Math.max(sx,ev.clientX), bb=Math.max(sy,ev.clientY);
           box.remove();
-          const hit=[]; unitsOf(si).forEach(u=>{ const q=u.getBoundingClientRect(); if(q.left<rr&&q.right>l&&q.top<bb&&q.bottom>t) hit.push(u.getAttribute('data-mvkey')); });
+          // 카드(c키)는 마퀴가 카드를 통째로 감쌌을 때만 — 카드 안쪽만 긁으면 내부 텍스트만 잡히게
+          const hit=[]; unitsOf(si).forEach(u=>{ const q=u.getBoundingClientRect(); const k=u.getAttribute('data-mvkey');
+            const inter=q.left<rr&&q.right>l&&q.top<bb&&q.bottom>t;
+            const contained=q.left>=l-4&&q.right<=rr+4&&q.top>=t-4&&q.bottom<=bb+4;
+            if(k&&k.charAt(0)==='c' ? contained : inter) hit.push(k); });
           if(!hit.length){ deselectAll(); return; }
-          _sel.clear(); _selSi=si; _sel=expandGroup(si,hit); applyCss(); showTb();
+          _sel.clear(); _selSi=si; _sel=new Set(dropNestedKeys(si,[...expandGroup(si,hit)])); applyCss(); showTb();
         };
         doc.addEventListener('pointermove',mv); doc.addEventListener('pointerup',up);
       }); });
@@ -1564,12 +1574,14 @@
         if(!(_selSi===si && _sel.has(key))) selectUnit(si,key,e.shiftKey||e.metaKey);
         // 드래그 준비 — 선택된 모든 유닛 함께 이동
         const before=JSON.stringify(data.slides||[]); const s=data.slides[si]; const start={};
-        [..._sel].forEach(k=>{ start[k]=((s._pos||{})[k]||[0,0]).slice(); });
+        // 이동 대상에서 "선택된 카드 안의 자식"은 제외 — 카드가 움직이면 같이 오므로 2배 이동 방지
+        const moveKeys=new Set(dropNestedKeys(si,[..._sel]));
+        [...moveKeys].forEach(k=>{ start[k]=((s._pos||{})[k]||[0,0]).slice(); });
         const units=unitsOf(si), sx=e.clientX, sy=e.clientY; let dx=0,dy=0,moved=false;
         const mv=(ev)=>{ dx=ev.clientX-sx; dy=ev.clientY-sy; if(!moved&&Math.abs(dx)<3&&Math.abs(dy)<3) return; moved=true; hideTb();
-          units.forEach(u=>{ const k=u.getAttribute('data-mvkey'); if(_sel.has(k)){ const b=start[k]||[0,0]; u.style.transform='translate('+(b[0]+dx)+'px,'+(b[1]+dy)+'px)'; } }); };
+          units.forEach(u=>{ const k=u.getAttribute('data-mvkey'); if(moveKeys.has(k)){ const b=start[k]||[0,0]; u.style.transform='translate('+(b[0]+dx)+'px,'+(b[1]+dy)+'px)'; } }); };
         const up=()=>{ doc.removeEventListener('pointermove',mv); doc.removeEventListener('pointerup',up);
-          if(moved){ pushUndo(before); s._pos=s._pos||{}; [..._sel].forEach(k=>{ const b=start[k]||[0,0]; s._pos[k]=[Math.round(b[0]+dx),Math.round(b[1]+dy)]; }); persist(); }
+          if(moved){ pushUndo(before); s._pos=s._pos||{}; [...moveKeys].forEach(k=>{ const b=start[k]||[0,0]; s._pos[k]=[Math.round(b[0]+dx),Math.round(b[1]+dy)]; }); persist(); }
           showTb(); };
         doc.addEventListener('pointermove',mv); doc.addEventListener('pointerup',up);
       });

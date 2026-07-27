@@ -291,7 +291,7 @@
      주의: 셀렉터 추가/순서 변경은 기존 덱의 _pos 키(m0…)를 밀 수 있다. */
   var MV_SEL = '[data-edit], .s-imgwrap, .p-media, ' +
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
-    '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num';
+    '.qt-stars, .l-num, .g-arrow, .ps-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {}, fs: s._fs || {}, w: s._tw || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
