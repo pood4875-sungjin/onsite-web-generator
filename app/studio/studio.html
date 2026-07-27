@@ -1286,6 +1286,9 @@
       +'[data-editing] [data-mvkey]:not([contenteditable="true"]){-webkit-user-select:none;user-select:none}'   // 드래그 시 텍스트 긁힘 방지(편집 중엔 허용)
       +'.marquee{position:absolute;border:1px solid #6c2bff;background:rgba(108,43,255,.12);z-index:84;pointer-events:none}'
       +'[data-editing] [data-mvkey]:hover{outline:1px dashed rgba(108,43,255,.5);outline-offset:3px}'
+      // 빈 이미지 자리 안내 — 편집모드에서 클릭 유도
+      +'[data-editing] .p-media.ph[data-img]{cursor:pointer;position:relative}'
+      +'[data-editing] .p-media.ph[data-img]::after{content:"🖼 클릭해서 이미지 넣기";position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;font-weight:700;color:#6c2bff;background:rgba(255,255,255,.92);border:1px dashed rgba(108,43,255,.55);border-radius:8px;padding:4px 12px;white-space:nowrap;pointer-events:none}'
       +'[data-editing] [data-mvkey].u-sel{outline:2px solid #6c2bff;outline-offset:3px;border-radius:3px}'
       +'[data-editing] [data-mvkey].u-mq{outline:2px solid rgba(108,43,255,.7);outline-offset:2px;background:rgba(108,43,255,.08);border-radius:3px}'
       +'[data-editing] [data-mvkey][contenteditable="true"]{cursor:text}'
@@ -1366,6 +1369,11 @@
       if(utb.parentElement) utb.remove(); doc.body.appendChild(utb); }
     // 미디어 자리 더블클릭 = 이미지 채우기
     if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) setMediaImg(pm); }); }
+    // 빈 미디어 자리(.ph)는 한 번 클릭으로 바로 파일창 — 드래그(이동)와 구분하려고 6px 이내 클릭만
+    if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
+      doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
+      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
+        if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm); }); }
     const slidesEls=()=>[...doc.querySelectorAll('.ppt-stack > .slide')];
     const unitsOf=(si)=> (slidesEls()[si]? [...slidesEls()[si].querySelectorAll('[data-mvkey]')] : []);
     const grpMap=(si)=> (data.slides[si]||{})._grp||{};
