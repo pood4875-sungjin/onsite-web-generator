@@ -1264,19 +1264,12 @@
     t.textContent+=(t.textContent?'\n':'')+msg;
     clearTimeout(t.__h); t.__h=setTimeout(()=>{ t.remove(); },6000); }
   function pickPptImage(cb){
-    // 입력은 항상 상위 문서에 생성 — 프리뷰 iframe은 리렌더로 문서가 교체돼 change 이벤트가 유실된다
-    // (실사고: 파일창은 뜨는데 선택해도 화면 무변화). 클릭의 user activation은 상위 프레임에 전파되므로 파일창은 정상.
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
-    inp.style.position='fixed'; inp.style.left='-9999px';   // DOM에 붙여야 일부 브라우저서 change 발생
-    document.body.appendChild(inp);
-    imgTrace('1/4 파일창 여는 중…');
-    const done=()=>{ try{ inp.remove(); }catch(e){} };
-    inp.addEventListener('cancel',()=>{ imgTrace(tL('선택이 취소됐어요.')); done(); });
-    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ imgTrace(tL('선택이 취소됐어요.')); done(); return; }
+    // 파일 읽기 → 축소 → dataURL 적용 (선택 경로 공용)
+    const processFile=(f, done)=>{
       imgTrace('2/4 파일 받음: '+f.name);
       const rd=new FileReader();
-      rd.onerror=()=>{ done(); uiAlert&&uiAlert(tL('이미지를 읽지 못했어요.')); };
-      rd.onload=()=>{ imgTrace('3/4 읽기 완료'); const im=new Image(); im.onerror=()=>{ done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
+      rd.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 읽지 못했어요.')); };
+      rd.onload=()=>{ imgTrace('3/4 읽기 완료'); const im=new Image(); im.onerror=()=>{ done&&done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
         im.onload=()=>{ try{
           const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
           const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc)||1; cv.height=Math.round(im.height*sc)||1;
@@ -1284,10 +1277,34 @@
           // PNG는 PNG로 유지 — JPEG 변환 시 투명 배경이 검게 변함
           cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
           imgTrace('4/4 적용 완료');
-        }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done(); };
+        }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done&&done(); };
         im.src=rd.result; };
       rd.readAsDataURL(f); };
-    inp.click();
+    imgTrace('1/4 파일창 여는 중…');
+    // 폴백: 클릭 제스처가 있는 문서(프리뷰 iframe)에 숨은 input — change 유실 가능성이 있어 2순위
+    const fallbackInput=()=>{
+      const idoc=(curMode().slides && frame && frame.contentDocument) ? frame.contentDocument : document;
+      const inp=idoc.createElement('input'); inp.type='file'; inp.accept='image/*';
+      inp.style.position='fixed'; inp.style.left='-9999px';
+      idoc.body.appendChild(inp);
+      const done=()=>{ try{ inp.remove(); }catch(e){} };
+      inp.addEventListener('cancel',()=>{ imgTrace(tL('선택이 취소됐어요.')); done(); });
+      inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ imgTrace(tL('선택이 취소됐어요.')); done(); return; } processFile(f,done); };
+      inp.click();
+    };
+    // 1순위: 정식 파일 선택 API. 단 클릭 제스처(user activation)는 프리뷰 iframe 창에 있고
+    // 상위 창으로는 전파되지 않음(실측: "Must be handling a user gesture") — iframe 창의 API로 연다.
+    const pw=(curMode().slides && frame && frame.contentWindow && frame.contentWindow.showOpenFilePicker) ? frame.contentWindow
+           : (window.showOpenFilePicker ? window : null);
+    if (pw) {
+      pw.showOpenFilePicker({ types:[{ description:'이미지', accept:{ 'image/*':['.png','.jpg','.jpeg','.webp','.gif'] } }], multiple:false })
+        .then(hs=>hs[0].getFile()).then(f=>processFile(f,null))
+        .catch(err=>{ if(err && err.name==='AbortError'){ imgTrace(tL('선택이 취소됐어요.')); return; }
+          imgTrace(tL('파일창 오류')+': '+(err&&err.message||err)+' — '+tL('예비 방식으로 재시도'));
+          fallbackInput(); });
+      return;
+    }
+    fallbackInput();
   }
   function relPathOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
   // 미디어 자리 이미지 채우기 — data-img(이미지 객체 경로)에 dataURL 저장 후 전체 리렌더. 편집모드 무관 동작

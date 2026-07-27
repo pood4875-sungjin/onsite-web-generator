@@ -591,7 +591,7 @@
     { type: 'grid', label: 'N열 반복', use: '동급 항목 3~4개를 나열 — 기능, 강점, 팀원, 경쟁사 카드. variant num=큰 번호 카드(비전·기회·차별점, 첫 카드 강조+화살표), 항목에 image를 주면 그 셀은 이미지 타일', needs: ['title', 'items'], opt: ['variant(text|icon|card|person|num)', 'cols', 'accent'], cap: { items: '2~4개', text: '~170자' } },
     { type: 'stats', label: '수치 그리드', use: '트랙션·성과 지표를 2~6개 한 화면에 모아 보여줄 때', needs: ['items'], opt: ['title', 'cols'], cap: { items: '2~6개' } },
     { type: 'bigstat', label: '단일 대형 수치', use: '숫자 하나로 임팩트를 줄 때 — 시장 규모, 점유율, 성장률', needs: ['value'], opt: ['title', 'caption'], cap: { value: '~6자' } },
-    { type: 'list', label: '넘버드 카드 리스트', use: '해결책·핵심 기능·문제점을 번호 카드 행으로 나열(첫 행 강조). image를 주면 좌측 이미지+우측 카드 리스트', needs: ['rows'], opt: ['title', 'image', 'accent'], cap: { rows: '2~5줄, 각 label ~20자 + sub ~60자' } },
+    { type: 'list', label: '넘버드 카드 리스트', use: '해결책·핵심 기능·문제점을 번호 카드 행으로 나열(첫 행 강조). image를 주면 좌측 이미지+우측 카드 리스트. 항목이 2~3개인데 설명이 길면 이 타입 대신 grid variant num(세로 번호 카드)이 낫다', needs: ['rows'], opt: ['title', 'image', 'accent'], cap: { rows: '2~5줄, 각 label ~20자 + sub ~60자' } },
     { type: 'process', label: '프로세스', use: '입력→처리→출력처럼 단계 흐름을 가로 화살표로 보여줄 때 — 동작 방식, 절차, 파이프라인. accent=강조 스텝 인덱스, 스텝 tag=배지(무료/유료 등)', needs: ['steps'], opt: ['title', 'accent'], cap: { steps: '3~5개, head ~14자 · text ~40자' } },
     { type: 'table', label: '표', use: '거래처·계약처럼 열이 정해진 데이터를 나열할 때', needs: ['columns', 'rows'], opt: ['title', 'text'], cap: { rows: '~5행', columns: '3열' } },
     { type: 'pricing', label: '요금 티어', use: '플랜·가격을 2~3개 비교할 때', needs: ['tiers'], opt: ['title'], cap: { tiers: '2~3개', features: '4개' } },
