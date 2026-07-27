@@ -176,8 +176,9 @@
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +   // 세로 배치는 fit()이 translateY로 결정(그리드 센터링 오차 회피)
       '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;flex:none;transform-origin:top center}' +
-      '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
-      '.vscale .slide.cur{display:flex}.vscale .slide.cur:not(.cover):not(.contact):not(.bs){display:block}' +
+      /* display 강제 금지 — 타입별 display(flex cover 등) 보존, visibility로만 장 전환 (발표=미리보기 동일 레이아웃) */
+      '.vscale .slide{position:absolute;inset:0;visibility:hidden;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
+      '.vscale .slide.cur{visibility:visible}' +
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +

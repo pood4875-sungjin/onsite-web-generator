@@ -357,6 +357,8 @@
       '.p-media img{width:100%;height:100%;object-fit:cover;display:block}' +
       '.p-media.ph span{font-size:var(--fs-over);letter-spacing:.02em;text-transform:uppercase;color:#7a7a7a}' +
       '.p-media.full{width:100%;height:100%}.p-media.card{width:100%;aspect-ratio:4/3;margin-bottom:20px}' +
+      /* 2열 그리드는 셀이 넓어 4:3 비율이 장 높이를 넘김 — 높이 고정으로 카드 하단 잘림 방지 */
+      '.g-grid.c2 .p-media.card,.g-grid.c2 .p-media.shot,.g-grid.c2 .p-media.sq{aspect-ratio:auto;height:260px}' +
       '.p-media.sq{width:100%;aspect-ratio:1/1;margin-bottom:20px}.p-media.shot{width:100%;aspect-ratio:5/4;margin-bottom:20px}' +
       '.p-callout .p-c-head{font-size:var(--fs-head);font-weight:700;margin:0}' +
       '.p-c-text{font-size:var(--fs-body);line-height:1.4;margin:13px 0 0}' +
@@ -534,10 +536,9 @@
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +
       '.vscale{width:var(--slide-w);height:var(--slide-h);position:relative;flex:none;transform-origin:top center}' +
-      '.vscale .slide{position:absolute;inset:0;display:none;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
-      /* 기본 block, 슬라이드 자체가 flex인 타입(statement/quote/closing)만 flex 복원 */
-      '.vscale .slide.cur{display:block}' +
-      '.vscale .slide.cur.st,.vscale .slide.cur.qt,.vscale .slide.cur.cl,.vscale .slide.cur.bs,.vscale .slide.cur.sg{display:flex}' +
+      /* display 강제 금지 — 타입별 display(grid .tb, flex .st 등)를 보존해야 발표=미리보기 레이아웃 동일. visibility로만 장 전환 */
+      '.vscale .slide{position:absolute;inset:0;visibility:hidden;box-shadow:0 24px 80px rgba(0,0,0,.55)}' +
+      '.vscale .slide.cur{visibility:visible}' +
       '.vbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(10,10,14,.72);backdrop-filter:blur(10px);color:#fff;font-family:Pretendard,system-ui,sans-serif;font-size:13px;z-index:9;user-select:none}' +
       '.vbtn{border:none;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:999px;font-size:15px;cursor:pointer;line-height:1}' +
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
