@@ -1256,23 +1256,33 @@
      오프셋/숨김/굵기는 슬라이드 데이터(_pos/_hide/_fmt)에 저장 → 렌더·뷰어·PPTX 전부 반영 */
   function slideIndexOf(node){ const sl=node.closest('.ppt-stack > .slide'); return sl? [...sl.parentElement.children].indexOf(sl) : -1; }
   // 이미지 선택 → 최대 1280px·JPEG 0.85 압축 dataURL (저장 용량·PPTX 용량 관리)
+  // 첨부 단계 추적 토스트 — "선택해도 안 바뀜" 계열 문제를 사용자 화면에서 바로 진단
+  function imgTrace(msg){ let t=document.getElementById('imgTrace');
+    if(!t){ t=document.createElement('div'); t.id='imgTrace';
+      t.style.cssText='position:fixed;right:16px;bottom:16px;z-index:99999;background:rgba(10,10,16,.92);color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;max-width:320px;line-height:1.5;pointer-events:none;white-space:pre-line';
+      document.body.appendChild(t); }
+    t.textContent+=(t.textContent?'\n':'')+msg;
+    clearTimeout(t.__h); t.__h=setTimeout(()=>{ t.remove(); },6000); }
   function pickPptImage(cb){
     // 입력은 항상 상위 문서에 생성 — 프리뷰 iframe은 리렌더로 문서가 교체돼 change 이벤트가 유실된다
     // (실사고: 파일창은 뜨는데 선택해도 화면 무변화). 클릭의 user activation은 상위 프레임에 전파되므로 파일창은 정상.
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
     inp.style.position='fixed'; inp.style.left='-9999px';   // DOM에 붙여야 일부 브라우저서 change 발생
     document.body.appendChild(inp);
+    imgTrace('1/4 파일창 여는 중…');
     const done=()=>{ try{ inp.remove(); }catch(e){} };
-    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ done(); return; }
+    inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ imgTrace(tL('선택이 취소됐어요.')); done(); return; }
+      imgTrace('2/4 파일 받음: '+f.name);
       const rd=new FileReader();
       rd.onerror=()=>{ done(); uiAlert&&uiAlert(tL('이미지를 읽지 못했어요.')); };
-      rd.onload=()=>{ const im=new Image(); im.onerror=()=>{ done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
+      rd.onload=()=>{ imgTrace('3/4 읽기 완료'); const im=new Image(); im.onerror=()=>{ done(); uiAlert&&uiAlert(tL('이미지를 불러오지 못했어요.')); };
         im.onload=()=>{ try{
           const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
           const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc)||1; cv.height=Math.round(im.height*sc)||1;
           cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
           // PNG는 PNG로 유지 — JPEG 변환 시 투명 배경이 검게 변함
           cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
+          imgTrace('4/4 적용 완료');
         }catch(e){ console.error('[img]',e); uiAlert&&uiAlert(tL('이미지 적용 중 오류가 났어요.')+' ('+(e&&e.message||e)+')'); } done(); };
         im.src=rd.result; };
       rd.readAsDataURL(f); };
