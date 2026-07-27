@@ -1256,8 +1256,10 @@
      오프셋/숨김/굵기는 슬라이드 데이터(_pos/_hide/_fmt)에 저장 → 렌더·뷰어·PPTX 전부 반영 */
   function slideIndexOf(node){ const sl=node.closest('.ppt-stack > .slide'); return sl? [...sl.parentElement.children].indexOf(sl) : -1; }
   // 이미지 선택 → 최대 1280px·JPEG 0.85 압축 dataURL (저장 용량·PPTX 용량 관리)
-  // 첨부 단계 추적 토스트 — "선택해도 안 바뀜" 계열 문제를 사용자 화면에서 바로 진단
-  function imgTrace(msg){ let t=document.getElementById('imgTrace');
+  // 첨부 안내 토스트 — 평상시 침묵, 문제 상황(오류·취소·읽기 실패)만 표시. 상세 추적은 ?imgdebug=1
+  function imgTrace(msg){
+    if(!/[?&]imgdebug/.test(location.search) && !/오류|취소|못|실패|놓아주세요/.test(msg)) return;
+    let t=document.getElementById('imgTrace');
     if(!t){ t=document.createElement('div'); t.id='imgTrace';
       t.style.cssText='position:fixed;right:16px;bottom:16px;z-index:99999;background:rgba(10,10,16,.92);color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;max-width:320px;line-height:1.5;pointer-events:none;white-space:pre-line';
       document.body.appendChild(t); }
@@ -1435,10 +1437,22 @@
       if(cs.textAlign==='center'){ el.style.marginLeft='auto'; el.style.marginRight='auto'; }
       else if(cs.textAlign==='right'||cs.textAlign==='end'){ el.style.marginLeft='auto'; }
     });
-    let utb=doc.getElementById('utb');
-    if(!utb){ utb=doc.createElement('div'); utb.id='utb'; utb.className='utb'; utb.style.display='none';
+    // 선택 툴바는 상위 문서에 — 툴바 클릭이 확실한 사용자 활성(user activation)을 가져 파일창이 버튼에서 바로 열림
+    if(!document.getElementById('utbTopCss')){ const st=document.createElement('style'); st.id='utbTopCss'; st.textContent=
+      '#utb{position:fixed;z-index:99998;display:flex;gap:3px;padding:4px;border-radius:10px;background:rgba(10,10,16,.94);box-shadow:0 8px 24px rgba(0,0,0,.45)}'
+      +'#utb button{border:none;min-width:27px;height:26px;border-radius:7px;background:rgba(255,255,255,.14);color:#fff;font-size:11.5px;cursor:pointer;padding:0 8px;display:grid;place-items:center;white-space:nowrap;font-family:inherit}'
+      +'#utb button svg{display:block}'
+      +'#utb button:hover{background:rgba(255,255,255,.28)}#utb button.on{background:#6c2bff}#utb .del:hover{background:rgba(230,60,60,.9)}'
+      +'#utb button.pick{background:#6c2bff;font-weight:700}#utb button.pick:hover{background:#7d43ff}';
+      document.head.appendChild(st); }
+    window.__pptDeselect=()=>deselectAll();
+    let utb=document.getElementById('utb');
+    if(!utb){ utb=document.createElement('div'); utb.id='utb'; utb.style.display='none';
       utb.addEventListener('pointerdown',e=>{ e.stopPropagation(); });
-      if(utb.parentElement) utb.remove(); doc.body.appendChild(utb); }
+      // 호버 선택 유지 — 이미지에서 툴바로 마우스 이동해도 안 사라지게
+      utb.addEventListener('pointerenter',()=>{ clearTimeout(window.__pmHovT); });
+      utb.addEventListener('pointerleave',()=>{ if(window.__pmHovSel){ window.__pmHovT=setTimeout(()=>{ window.__pmHovSel=0; window.__pptDeselect&&window.__pptDeselect(); },350); } });
+      document.body.appendChild(utb); }
     // (미디어 자리 클릭/더블클릭 첨부는 decoratePpt에서 편집모드 무관 등록)
     const slidesEls=()=>[...doc.querySelectorAll('.ppt-stack > .slide')];
     const unitsOf=(si)=> (slidesEls()[si]? [...slidesEls()[si].querySelectorAll('[data-mvkey]')] : []);
@@ -1454,12 +1468,16 @@
     function selEls(){ return _selSi<0?[]:unitsOf(_selSi).filter(u=>_sel.has(u.getAttribute('data-mvkey'))); }
     function hideTb(){ utb.style.display='none'; const b=document.getElementById('imgPickBtn'); if(b) b.remove(); }
     function relOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
-    function tbBtn(html,on,style,fn,cls){ const b=doc.createElement('button'); b.innerHTML=html; b.className=((on?'on ':'')+(cls||'')).trim(); if(style)b.setAttribute('style',style); b.onclick=(e)=>{ e.stopPropagation(); fn(e); }; return b; }
+    function tbBtn(html,on,style,fn,cls){ const b=document.createElement('button'); b.innerHTML=html; b.className=((on?'on ':'')+(cls||'')).trim(); if(style)b.setAttribute('style',style); b.onclick=(e)=>{ e.stopPropagation(); fn(e); }; return b; }
     function showTb(){
       const els=selEls(); if(!els.length){ hideTb(); return; }
       // 선택 요소(다중이면 합집합)의 우상단 모서리에 살짝 겹쳐 배치
       let r=-1e9,t=1e9; els.forEach(e=>{ const q=e.getBoundingClientRect(); r=Math.max(r,q.right); t=Math.min(t,q.top); });
       utb.innerHTML=''; const only=els.length===1?els[0]:null;
+      // 이미지 자리 — 파일 선택을 툴바의 첫 버튼으로 (상위 문서 툴바라 클릭 즉시 파일창)
+      if(only && only.classList.contains('p-media') && only.getAttribute('data-img')){
+        const path=only.getAttribute('data-img');
+        utb.append(tbBtn('📁 '+tL('파일 선택'),false,'',()=>{ pickPptImage(src=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); },'pick')); }
       if(only && only.hasAttribute('data-edit')){ const rel=relOf(only), cur=(data.slides[_selSi]._fmt||{})[rel]||'';
         utb.append(tbBtn('B',cur==='b','font-weight:800',()=>setFmt(only,'b')));
         utb.append(tbBtn('L',cur==='l','font-weight:300',()=>setFmt(only,'l')));
@@ -1509,23 +1527,10 @@
       utb.append(tbBtn('✕',false,'',hideSel,'del'));
       // 선택 영역 우측 라인에 우측 정렬, 그 위에(겹치지 않게) 배치
       utb.style.display='flex'; const uw=utb.offsetWidth||90, uh=utb.offsetHeight||34;
-      utb.style.left=Math.max(4,r+W.scrollX-uw)+'px'; utb.style.top=Math.max(4,t+W.scrollY-uh-6)+'px';
-      // 이미지 자리 선택 시 — 상위 문서 '파일 선택' 버튼을 툴바 오른쪽에 표시(상위 클릭=확실한 활성 → 파일창 바로 열림)
-      syncPickBtn(only && only.classList.contains('p-media') && only.getAttribute('data-img') ? only : null);
-    }
-    function syncPickBtn(pm){ let b=document.getElementById('imgPickBtn');
-      if(!pm){ if(b) b.remove(); return; }
-      if(!b){ b=document.createElement('button'); b.id='imgPickBtn';
-        b.textContent='📁 '+tL('파일 선택');
-        b.style.cssText='position:fixed;z-index:99999;background:#6c2bff;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)';
-        document.body.appendChild(b); }
-      const path=pm.getAttribute('data-img');
-      b.onclick=()=>{ b.remove(); pickPptImage(src=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); };
-      try{ const fb=frame.getBoundingClientRect(); const k=fb.width/(frame.contentWindow.innerWidth||fb.width);
-        const ur=utb.getBoundingClientRect();
-        b.style.left=Math.round(fb.left+ur.right*k+8)+'px';
-        b.style.top=Math.round(fb.top+ur.top*k)+'px';
-      }catch(e){ b.style.left='50%'; b.style.top='12px'; }
+      // 상위 문서 fixed 좌표로 변환 (프리뷰 스케일 반영)
+      const fb2=frame.getBoundingClientRect(), kf=fb2.width/(W.innerWidth||fb2.width);
+      utb.style.left=Math.max(4, Math.round(fb2.left + r*kf - uw))+'px';
+      utb.style.top=Math.max(4, Math.round(fb2.top + t*kf - uh - 6))+'px';
     }
     function setFmt(el,f){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fmt=s._fmt||{}; if(f)s._fmt[rel]=f; else delete s._fmt[rel]; el.style.fontWeight=f==='b'?700:f==='l'?300:''; persist(); refreshThumbAt(_selSi); showTb(); }
     // 글자 크기(_fs) — 사다리 14·16·20·24·28·32·40, 범위 밖은 ±4
@@ -1653,6 +1658,16 @@
           showTb(); };
         doc.addEventListener('pointermove',mv); doc.addEventListener('pointerup',up);
       });
+      // 이미지 자리는 호버만 해도 선택+툴바 표시 (다른 선택이 없을 때만) — 마우스가 떠나면 잠시 후 해제
+      if(blk.classList.contains('p-media') && blk.getAttribute('data-img')){
+        blk.addEventListener('pointerenter',()=>{ if(!editMode) return; const key=blk.getAttribute('data-mvkey');
+          if(_sel.size && !(_sel.size===1 && _sel.has(key) && window.__pmHovSel)) return;
+          clearTimeout(window.__pmHovT); const si=slideIndexOf(blk); if(si<0) return;
+          window.__pmHovSel=1; selectUnit(si,key,false); });
+        blk.addEventListener('pointerleave',()=>{ if(!window.__pmHovSel) return;
+          window.__pmHovT=setTimeout(()=>{ if(window.__pmHovSel){ window.__pmHovSel=0; window.__pptDeselect&&window.__pptDeselect(); } },350); });
+        blk.addEventListener('pointerdown',()=>{ window.__pmHovSel=0; });   // 직접 클릭하면 일반 선택으로 승격
+      }
       if(blk.hasAttribute('data-edit')){
         blk.addEventListener('dblclick',(e)=>{ if(!editMode) return; e.stopPropagation(); hideTb();
           blk.setAttribute('contenteditable','true'); blk.focus();
