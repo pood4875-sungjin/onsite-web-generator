@@ -20,7 +20,7 @@
     /* honors 팩(목차·간지·세리프 캡션) */ '.tc-num', '.tc-label', '.dv-no'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
-    /* pitch 팩 — 카드·패널·플레이스홀더는 사각형으로 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick';
+    /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 
@@ -54,7 +54,7 @@
     s.addText(txt, opts);
   }
   function addShapeBox(win, pptx, s, el, origin, slideBg) {
-    var cs = win.getComputedStyle(el); var r = rel(el, origin); if (r.w < 3 || r.h < 3) return;
+    var cs = win.getComputedStyle(el); var r = rel(el, origin); if (r.w < 3 && r.h < 3) return;   // 한 축만 얇은 것(라인)은 허용
     var fill = parseColor(cs.backgroundColor), bw = parseFloat(cs.borderTopWidth) || 0, bcol = parseColor(cs.borderTopColor), rad = parseFloat(cs.borderTopLeftRadius) || 0;
     if (fill.a <= 0.01 && !(bw > 0 && bcol.a > 0)) return;
     var opts = { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: fill.a > 0.01 ? { color: hex(blend(fill, slideBg)) } : { type: 'none' }, line: (bw > 0 && bcol.a > 0) ? { color: hex(blend(bcol, slideBg)), width: Math.max(0.5, bw * PT) } : { type: 'none' } };
@@ -67,6 +67,15 @@
   async function slideBgImage(win, slide) {
     var cs = win.getComputedStyle(slide);
     if (!cs.backgroundImage || cs.backgroundImage === 'none') return null;
+    // 이미지 배경(표지·간지 등)은 원본 파일을 직접 데이터로 — html2canvas의 background 축약형 해석 실패(검정) 회피
+    var um = cs.backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+    if (um) {
+      try {
+        var resp = await win.fetch(um[1]); var bl = await resp.blob();
+        var dataUrl = await new Promise(function (res2, rej2) { var fr = new FileReader(); fr.onload = function () { res2(fr.result); }; fr.onerror = rej2; fr.readAsDataURL(bl); });
+        if (dataUrl) return dataUrl;
+      } catch (e) {}
+    }
     var kids = [].slice.call(slide.children), prev = kids.map(function (k) { return k.style.visibility; });
     kids.forEach(function (k) { k.style.visibility = 'hidden'; });
     try {
@@ -114,6 +123,7 @@
           for (var ni = 0; ni < srcN.length; ni++) {
             var cs2 = win.getComputedStyle(srcN[ni]);
             if (srcN[ni].tagName === 'text') dstN[ni].setAttribute('style', 'font-family:' + cs2.fontFamily + ';font-size:' + cs2.fontSize + ';font-weight:' + cs2.fontWeight + ';fill:' + cs2.fill + ';letter-spacing:' + cs2.letterSpacing);
+            else if (srcN[ni].tagName === 'stop') { dstN[ni].setAttribute('stop-color', cs2.stopColor); dstN[ni].setAttribute('stop-opacity', cs2.stopOpacity); }   // 그라디언트 스탑 — var() 폴백(그린)으로 굳는 문제
             else { var fl = cs2.fill; if (fl && fl.indexOf('var(') < 0) dstN[ni].setAttribute('fill', fl); var st2 = cs2.stroke; if (st2 && st2 !== 'none') { dstN[ni].setAttribute('stroke', st2); dstN[ni].setAttribute('stroke-width', cs2.strokeWidth); } }
           }
           clone.setAttribute('width', r2.w); clone.setAttribute('height', r2.h);
@@ -130,8 +140,19 @@
         } catch (e) {}
       }
       [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
+      // 체크 아이콘 — 원(도형)은 위에서 나갔고, ::after 체크는 텍스트 '✓'로 얹는다(가상요소는 직렬화 불가)
+      [].slice.call(slide.querySelectorAll('.p-tick')).forEach(function (el) {
+        var r3 = rel(el, origin); if (r3.w < 3) return;
+        s.addText('✓', { x: r3.x * IN, y: r3.y * IN, w: r3.w * IN, h: r3.h * IN, align: 'center', valign: 'middle', color: 'FFFFFF', bold: true, fontSize: Math.max(8, r3.h * 0.5 * PT), margin: 0 });
+      });
+      // 표·목차 행 밑줄 — border-bottom은 도형 추출에 안 걸려서 얇은 선으로 직접
+      [].slice.call(slide.querySelectorAll('.t-row, .tc-row')).forEach(function (el) {
+        var cs3 = win.getComputedStyle(el); var bw3 = parseFloat(cs3.borderBottomWidth) || 0; var bc3 = parseColor(cs3.borderBottomColor);
+        if (bw3 <= 0 || bc3.a <= 0.01) return; var r4 = rel(el, origin);
+        s.addShape(pptx.ShapeType.rect, { x: r4.x * IN, y: (r4.y + r4.h - bw3) * IN, w: r4.w * IN, h: Math.max(bw3, 1) * IN, fill: { color: hex(blend(bc3, slideBg)) }, line: { type: 'none' } });
+      });
       [].slice.call(slide.querySelectorAll(TEXT_SEL)).forEach(function (el) { if (el.closest && el.closest('svg')) return; addTextBox(win, s, el, origin, slideBg); });
-      [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { addTextBox(win, s, el, origin, slideBg); });
+      [].slice.call(slide.querySelectorAll(LIST_SEL)).forEach(function (el) { var t2 = el.querySelector('[data-edit]'); addTextBox(win, s, t2 || el, origin, slideBg); });   // 불릿은 텍스트 스팬 기준(체크 원과 겹침 방지)
     }
     var name = (doc.title || 'deck').replace(/[\\/:*?"<>|]+/g, '_').trim() || 'deck';
     await pptx.writeFile({ fileName: name + '.pptx' });
