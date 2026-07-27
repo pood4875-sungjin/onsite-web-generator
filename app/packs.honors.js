@@ -305,8 +305,14 @@
       'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
       'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;' +
       'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
-      'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +   /* 글자 크기(_fs) */
-      'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +   /* 텍스트 폭(_tw) */   // 텍스트 정렬(_ta) 적용
+      'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +   // 글자 크기(_fs)
+      'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +   // 텍스트 폭(_tw)
+      // 카드 컨테이너도 이동 단위 — 별도 키공간(c0…)이라 기존 m키 안 밀림. 카드 배경째 이동/숨김/z
+      'var cd=s.querySelectorAll(".g-cell,.l-cardrow,.pr-card,.ps-step,.gl-cell,.s-cell,.t-panel,.sp-panel");' +
+      'for(var q3=0;q3<cd.length;q3++){var el3=cd[q3];if(el3.hasAttribute("data-mvkey"))continue;var ck="c"+q3;el3.setAttribute("data-mvkey",ck);' +
+      'var p3=c.p[ck];if(p3)el3.style.transform="translate("+p3[0]+"px,"+p3[1]+"px)";' +
+      'var z3=c.z[ck];if(z3!=null){el3.style.zIndex=z3;if(getComputedStyle(el3).position==="static")el3.style.position="relative";}' +
+      'if(c.h[ck])el3.style.display="none";}' +
       '}' +
       // 저장된 이동값(_pos)이 텍스트를 슬라이드 위/왼쪽 밖으로 밀면 안쪽으로 클램프 — "타이틀 잘림" 방지.
       // 숨겨진 장은 rect가 0이라 측정 불가 → 보이는 장만, 뷰어는 show() 시점에 __clampSlide 호출.
