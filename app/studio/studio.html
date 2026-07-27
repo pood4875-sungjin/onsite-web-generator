@@ -1279,6 +1279,9 @@
     inp.click();
   }
   function relPathOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
+  // 미디어 자리 이미지 채우기 — data-img(이미지 객체 경로)에 dataURL 저장 후 전체 리렌더. 편집모드 무관 동작
+  function setMediaImg(pm){ const path=pm.getAttribute('data-img'); if(!path) return;
+    pickPptImage((src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); }
   function decoratePpt(doc){
     if(!curMode().slides || !doc || !doc.body) return;
     if(!doc.getElementById('pptedcss')){ const st=doc.createElement('style'); st.id='pptedcss'; st.textContent=
@@ -1286,9 +1289,9 @@
       +'[data-editing] [data-mvkey]:not([contenteditable="true"]){-webkit-user-select:none;user-select:none}'   // 드래그 시 텍스트 긁힘 방지(편집 중엔 허용)
       +'.marquee{position:absolute;border:1px solid #6c2bff;background:rgba(108,43,255,.12);z-index:84;pointer-events:none}'
       +'[data-editing] [data-mvkey]:hover{outline:1px dashed rgba(108,43,255,.5);outline-offset:3px}'
-      // 빈 이미지 자리 안내 — 편집모드에서 클릭 유도
-      +'[data-editing] .p-media.ph[data-img]{cursor:pointer;position:relative}'
-      +'[data-editing] .p-media.ph[data-img]::after{content:"🖼 클릭해서 이미지 넣기";position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;font-weight:700;color:#6c2bff;background:rgba(255,255,255,.92);border:1px dashed rgba(108,43,255,.55);border-radius:8px;padding:4px 12px;white-space:nowrap;pointer-events:none}'
+      // 빈 이미지 자리 안내 — 편집모드 무관 클릭 유도(스튜디오 프리뷰 전용, 발표·내보내기엔 안 나옴)
+      +'.p-media.ph[data-img]{cursor:pointer;position:relative}'
+      +'.p-media.ph[data-img]::after{content:"🖼 클릭해서 이미지 넣기";position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;font-weight:700;color:#6c2bff;background:rgba(255,255,255,.92);border:1px dashed rgba(108,43,255,.55);border-radius:8px;padding:4px 12px;white-space:nowrap;pointer-events:none}'
       +'[data-editing] [data-mvkey].u-sel{outline:2px solid #6c2bff;outline-offset:3px;border-radius:3px}'
       +'[data-editing] [data-mvkey].u-mq{outline:2px solid rgba(108,43,255,.7);outline-offset:2px;background:rgba(108,43,255,.08);border-radius:3px}'
       +'[data-editing] [data-mvkey][contenteditable="true"]{cursor:text}'
@@ -1344,6 +1347,12 @@
         if(kill.size){ kill.forEach(k2=>{ delete s2._pos[k2]; }); texts.forEach(u=>{ if(kill.has(u.getAttribute('data-mvkey'))) u.style.transform=''; }); changed=true; }
       });
       if(changed){ persist(); if(typeof rebuildThumbRail==='function') rebuildThumbRail(); } })();
+    // 이미지 자리 첨부는 편집모드와 무관하게 항상 — 빈 자리 클릭/더블클릭 = 파일창
+    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) setMediaImg(pm); }); }
+    if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
+      doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
+      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
+        if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm); }); }
     if(!editMode) return;
     pptEditor(doc);
   }
@@ -1367,13 +1376,7 @@
     if(!utb){ utb=doc.createElement('div'); utb.id='utb'; utb.className='utb'; utb.style.display='none';
       utb.addEventListener('pointerdown',e=>{ e.stopPropagation(); });
       if(utb.parentElement) utb.remove(); doc.body.appendChild(utb); }
-    // 미디어 자리 더블클릭 = 이미지 채우기
-    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) setMediaImg(pm); }); }
-    // 빈 미디어 자리(.ph)는 한 번 클릭으로 바로 파일창 — 드래그(이동)와 구분하려고 6px 이내 클릭만
-    if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
-      doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
-      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
-        if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm); }); }
+    // (미디어 자리 클릭/더블클릭 첨부는 decoratePpt에서 편집모드 무관 등록)
     const slidesEls=()=>[...doc.querySelectorAll('.ppt-stack > .slide')];
     const unitsOf=(si)=> (slidesEls()[si]? [...slidesEls()[si].querySelectorAll('[data-mvkey]')] : []);
     const grpMap=(si)=> (data.slides[si]||{})._grp||{};
