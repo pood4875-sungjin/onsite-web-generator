@@ -378,6 +378,11 @@
     } else if (slides) {
       slides.forEach(function (sl) { Object.keys(sl).forEach(function (k) { if (k.charAt(0) === '_') delete sl[k]; }); });
     }
+    // 치명 축소 가드 — 응답 잘림·부분 살베지로 덱이 절반 미만이 되면 무변경 처리(전체 덮어쓰기 방지).
+    // 실사고: 13장 덱이 잘린 응답 3장으로 덮여 작업물 소실. 진짜 대량 삭제는 사용자가 다시 지시하면 된다.
+    if (slides && Array.isArray(orig) && orig.length >= 4 && slides.length < Math.ceil(orig.length / 2)) {
+      return { slides: null, message: 'AI 응답이 중간에 잘려 일부 장(' + slides.length + '장)만 도착했어요. 기존 덱(' + orig.length + '장)을 보호하려고 적용하지 않았습니다 — 같은 요청을 한 번 더 보내주세요.' };
+    }
     return { slides: slides, message: String(obj.message || '') };
   }
 
