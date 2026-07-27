@@ -1284,21 +1284,21 @@
     // 진단 — 클릭 권한(user activation)이 어느 창에 있는지 표시
     try{ const ua=w=>{ try{ return (w.navigator.userActivation&&w.navigator.userActivation.isActive)?1:0; }catch(e){ return '?'; } };
       imgTrace('활성: 프리뷰='+ua(frame&&frame.contentWindow?frame.contentWindow:window)+' · 상위='+ua(window)); }catch(e){}
-    // 폴백: 클릭 제스처가 있는 문서(프리뷰 iframe)에 숨은 input — change 유실 가능성이 있어 2순위
+    // 폴백: 상위 문서의 숨은 input — 상위 문서는 리렌더로 죽지 않고, input.click()은 활성 없이도 파일창이 열림
     const fallbackInput=()=>{
-      const idoc=(curMode().slides && frame && frame.contentDocument) ? frame.contentDocument : document;
-      const inp=idoc.createElement('input'); inp.type='file'; inp.accept='image/*';
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
       inp.style.position='fixed'; inp.style.left='-9999px';
-      idoc.body.appendChild(inp);
+      document.body.appendChild(inp);
       const done=()=>{ try{ inp.remove(); }catch(e){} };
       inp.addEventListener('cancel',()=>{ imgTrace(tL('선택이 취소됐어요.')); done(); });
       inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ imgTrace(tL('선택이 취소됐어요.')); done(); return; } processFile(f,done); };
       inp.click();
     };
-    // 1순위: 정식 파일 선택 API. 단 클릭 제스처(user activation)는 프리뷰 iframe 창에 있고
-    // 상위 창으로는 전파되지 않음(실측: "Must be handling a user gesture") — iframe 창의 API로 연다.
-    const pw=(curMode().slides && frame && frame.contentWindow && frame.contentWindow.showOpenFilePicker) ? frame.contentWindow
-           : (window.showOpenFilePicker ? window : null);
+    // 정식 파일 선택 API는 클릭 권한(user activation)이 살아있는 창에서만 가능 — 실측상 두 창 모두 0인 환경이 있어
+    // 활성 있는 창이 있을 때만 시도, 아니면 곧장 input 폴백.
+    const act=w=>{ try{ return !!(w.navigator.userActivation&&w.navigator.userActivation.isActive); }catch(e){ return false; } };
+    const fw=(curMode().slides && frame && frame.contentWindow) ? frame.contentWindow : null;
+    const pw=(fw && act(fw) && fw.showOpenFilePicker) ? fw : ((act(window)&&window.showOpenFilePicker) ? window : null);
     if (pw) {
       pw.showOpenFilePicker({ types:[{ description:'이미지', accept:{ 'image/*':['.png','.jpg','.jpeg','.webp','.gif'] } }], multiple:false })
         .then(hs=>hs[0].getFile()).then(f=>processFile(f,null))
