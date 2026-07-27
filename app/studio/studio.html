@@ -1404,7 +1404,8 @@
     if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm && !pm.classList.contains('ph')) setMediaImg(pm, e.clientX, e.clientY); }); }
     if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
       doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
-      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
+      // 빈 자리든 채워진 이미지든 — 깨끗한 클릭(드래그 아님)이면 그 자리에 파일 버튼. 교체도 같은 동작으로 통일
+      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]');
         if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm, e.clientX, e.clientY); }); }
     // 드래그&드롭 첨부 — 파일창 없이 이미지 파일을 회색 자리에 바로 놓기 (파일창 문제 우회로 겸용)
     if(!doc.__pmDrop){ doc.__pmDrop=1;
