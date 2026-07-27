@@ -1313,18 +1313,24 @@
   // 미디어 자리 이미지 채우기 — data-img(이미지 객체 경로)에 dataURL 저장 후 전체 리렌더. 편집모드 무관 동작
   // 클릭+더블클릭이 겹쳐 파일창이 중복 호출되면 선택 결과가 유실됨 — 900ms 내 재진입 차단
   let _lastPick=0;
-  function setMediaImg(pm){ const path=pm.getAttribute('data-img'); if(!path) return;
+  function setMediaImg(pm, cx, cy){ const path=pm.getAttribute('data-img'); if(!path) return;
     const now=Date.now(); if(now-_lastPick<900) return; _lastPick=now;
     const apply=(src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); };
     const act=w=>{ try{ return !!(w.navigator.userActivation&&w.navigator.userActivation.isActive); }catch(e){ return false; } };
     const fw=(frame&&frame.contentWindow)?frame.contentWindow:null;
     if((fw&&act(fw))||act(window)){ pickPptImage(apply); return; }
     // 크롬이 srcdoc 프리뷰 안 클릭에 활성(user activation)을 안 실어주는 환경 —
-    // 상위 문서 버튼을 한 번 더 클릭시켜 확실한 활성으로 파일창을 연다 (실측: 프리뷰=0·상위=0이면 모든 파일창 차단)
+    // 클릭한 그 자리에 확인 버튼을 띄워 "같은 자리 두 번 클릭(따닥)"으로 파일창이 열리게 한다.
     let chip=document.getElementById('imgPickChip'); if(chip) chip.remove();
     chip=document.createElement('button'); chip.id='imgPickChip';
-    chip.textContent='📁 '+tL('여기를 누르면 파일 선택 창이 열려요');
-    chip.style.cssText='position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:99999;background:#6c2bff;color:#fff;border:none;border-radius:999px;padding:13px 24px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35)';
+    chip.textContent='📁 '+tL('파일 선택');
+    let left='50%', top='', bottom='70px', tf='translateX(-50%)';
+    if(cx!=null && frame && frame.contentWindow){
+      // iframe 좌표 → 상위 좌표 (프리뷰 스케일 반영), 커서가 버튼 안에 오게 중앙 배치
+      try{ const fb=frame.getBoundingClientRect(); const k=fb.width/(frame.contentWindow.innerWidth||fb.width);
+        left=Math.round(fb.left+cx*k)+'px'; top=Math.round(fb.top+cy*k)+'px'; bottom=''; tf='translate(-50%,-50%)'; }catch(e){}
+    }
+    chip.style.cssText='position:fixed;left:'+left+';'+(top?('top:'+top+';'):('bottom:'+bottom+';'))+'transform:'+tf+';z-index:99999;background:#6c2bff;color:#fff;border:none;border-radius:999px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35)';
     chip.onclick=()=>{ chip.remove(); pickPptImage(apply); };
     document.body.appendChild(chip);
     setTimeout(()=>{ try{ chip.remove(); }catch(e){} }, 10000);
@@ -1395,11 +1401,11 @@
       });
       if(changed){ persist(); if(typeof rebuildThumbRail==='function') rebuildThumbRail(); } })();
     // 이미지 자리 첨부는 편집모드와 무관하게 항상. 빈 자리(.ph)는 클릭 담당이므로 더블클릭은 이미지 교체 전용
-    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm && !pm.classList.contains('ph')) setMediaImg(pm); }); }
+    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm && !pm.classList.contains('ph')) setMediaImg(pm, e.clientX, e.clientY); }); }
     if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
       doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
       doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
-        if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm); }); }
+        if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm, e.clientX, e.clientY); }); }
     // 드래그&드롭 첨부 — 파일창 없이 이미지 파일을 회색 자리에 바로 놓기 (파일창 문제 우회로 겸용)
     if(!doc.__pmDrop){ doc.__pmDrop=1;
       doc.addEventListener('dragover',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm){ e.preventDefault(); pm.style.outline='3px dashed #6c2bff'; } });
@@ -1447,7 +1453,7 @@
     function selEls(){ return _selSi<0?[]:unitsOf(_selSi).filter(u=>_sel.has(u.getAttribute('data-mvkey'))); }
     function hideTb(){ utb.style.display='none'; }
     function relOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
-    function tbBtn(html,on,style,fn,cls){ const b=doc.createElement('button'); b.innerHTML=html; b.className=((on?'on ':'')+(cls||'')).trim(); if(style)b.setAttribute('style',style); b.onclick=(e)=>{ e.stopPropagation(); fn(); }; return b; }
+    function tbBtn(html,on,style,fn,cls){ const b=doc.createElement('button'); b.innerHTML=html; b.className=((on?'on ':'')+(cls||'')).trim(); if(style)b.setAttribute('style',style); b.onclick=(e)=>{ e.stopPropagation(); fn(e); }; return b; }
     function showTb(){
       const els=selEls(); if(!els.length){ hideTb(); return; }
       // 선택 요소(다중이면 합집합)의 우상단 모서리에 살짝 겹쳐 배치
@@ -1475,7 +1481,7 @@
           const wp=tbBtn('⇤·⇥',false,'font-size:10px',()=>setTw(only,Math.min(1160,curW+80))); wp.title=tL('폭 넓게'); utb.append(wp); } }
       if(only && only.classList.contains('s-imgwrap')) utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
       // 미디어 자리(회색 영역) — 이미지 바로 채우기/교체 (더블클릭도 동일)
-      if(only && only.classList.contains('p-media') && only.getAttribute('data-img')) utb.append(tbBtn(tL('이미지 넣기'),false,'',()=>setMediaImg(only)));
+      if(only && only.classList.contains('p-media') && only.getAttribute('data-img')) utb.append(tbBtn(tL('이미지 넣기'),false,'',(e)=>setMediaImg(only, e&&e.clientX, e&&e.clientY)));
       // z-순서(앞/뒤) — 맨앞/맨뒤 아이콘(겹친 사각형)
       const Z_FWD='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M16 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h3"/></svg>';
       const Z_BACK='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3"/></svg>';
