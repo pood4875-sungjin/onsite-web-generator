@@ -381,6 +381,10 @@
           else if (o.op === 'remove') { if (at >= out.length) throw new Error('BAD_OP'); out.splice(at, 1); }
           else throw new Error('BAD_OP');
         });
+        // ops 경로에도 축소 가드 — remove 남발·오해석으로 덱이 반토막 이하가 되면 무변경 처리(13→3장 덮임 실사고 2회차)
+        if (orig.length >= 4 && out.length < Math.ceil(orig.length / 2)) {
+          return { slides: null, message: '요청을 적용하면 덱이 ' + orig.length + '장에서 ' + out.length + '장으로 줄어요. 실수 방지를 위해 적용하지 않았습니다 — 정말 줄이시려면 "N번과 M번만 남기고 삭제"처럼 명확히 말씀해주세요.' };
+        }
         if (out.length) return { slides: _endOrder(out), message: String(obj.message || '') };
       } catch (e2) { /* ops 불량 → 전체 배열/무변경 경로로 폴백 */ }
     }
