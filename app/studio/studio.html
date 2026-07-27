@@ -1404,8 +1404,8 @@
     if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm && !pm.classList.contains('ph')) setMediaImg(pm, e.clientX, e.clientY); }); }
     if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
       doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
-      // 빈 자리든 채워진 이미지든 — 깨끗한 클릭(드래그 아님)이면 그 자리에 파일 버튼. 교체도 같은 동작으로 통일
-      doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]');
+      // 편집모드에선 선택 → 툴바 옆 '파일 선택' 버튼이 담당. 이 직접 칩 경로는 편집모드 밖 전용.
+      doc.addEventListener('click',e=>{ if(editMode) return; const pm=e.target.closest&&e.target.closest('.p-media[data-img]');
         if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm, e.clientX, e.clientY); }); }
     // 드래그&드롭 첨부 — 파일창 없이 이미지 파일을 회색 자리에 바로 놓기 (파일창 문제 우회로 겸용)
     if(!doc.__pmDrop){ doc.__pmDrop=1;
@@ -1452,7 +1452,7 @@
         return true; }); }
     function applyCss(){ if(_selSi<0) return; unitsOf(_selSi).forEach(u=>u.classList.toggle('u-sel',_sel.has(u.getAttribute('data-mvkey')))); }
     function selEls(){ return _selSi<0?[]:unitsOf(_selSi).filter(u=>_sel.has(u.getAttribute('data-mvkey'))); }
-    function hideTb(){ utb.style.display='none'; }
+    function hideTb(){ utb.style.display='none'; const b=document.getElementById('imgPickBtn'); if(b) b.remove(); }
     function relOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
     function tbBtn(html,on,style,fn,cls){ const b=doc.createElement('button'); b.innerHTML=html; b.className=((on?'on ':'')+(cls||'')).trim(); if(style)b.setAttribute('style',style); b.onclick=(e)=>{ e.stopPropagation(); fn(e); }; return b; }
     function showTb(){
@@ -1481,8 +1481,6 @@
           const wm=tbBtn('⇥·⇤',false,'font-size:10px',()=>setTw(only,Math.max(160,curW-80))); wm.title=tL('폭 좁게'); utb.append(wm);
           const wp=tbBtn('⇤·⇥',false,'font-size:10px',()=>setTw(only,Math.min(1160,curW+80))); wp.title=tL('폭 넓게'); utb.append(wp); } }
       if(only && only.classList.contains('s-imgwrap')) utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
-      // 미디어 자리(회색 영역) — 이미지 바로 채우기/교체 (더블클릭도 동일)
-      if(only && only.classList.contains('p-media') && only.getAttribute('data-img')) utb.append(tbBtn(tL('이미지 넣기'),false,'',(e)=>setMediaImg(only, e&&e.clientX, e&&e.clientY)));
       // z-순서(앞/뒤) — 맨앞/맨뒤 아이콘(겹친 사각형)
       const Z_FWD='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M16 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h3"/></svg>';
       const Z_BACK='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3"/></svg>';
@@ -1512,6 +1510,22 @@
       // 선택 영역 우측 라인에 우측 정렬, 그 위에(겹치지 않게) 배치
       utb.style.display='flex'; const uw=utb.offsetWidth||90, uh=utb.offsetHeight||34;
       utb.style.left=Math.max(4,r+W.scrollX-uw)+'px'; utb.style.top=Math.max(4,t+W.scrollY-uh-6)+'px';
+      // 이미지 자리 선택 시 — 상위 문서 '파일 선택' 버튼을 툴바 오른쪽에 표시(상위 클릭=확실한 활성 → 파일창 바로 열림)
+      syncPickBtn(only && only.classList.contains('p-media') && only.getAttribute('data-img') ? only : null);
+    }
+    function syncPickBtn(pm){ let b=document.getElementById('imgPickBtn');
+      if(!pm){ if(b) b.remove(); return; }
+      if(!b){ b=document.createElement('button'); b.id='imgPickBtn';
+        b.textContent='📁 '+tL('파일 선택');
+        b.style.cssText='position:fixed;z-index:99999;background:#6c2bff;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+        document.body.appendChild(b); }
+      const path=pm.getAttribute('data-img');
+      b.onclick=()=>{ b.remove(); pickPptImage(src=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); };
+      try{ const fb=frame.getBoundingClientRect(); const k=fb.width/(frame.contentWindow.innerWidth||fb.width);
+        const ur=utb.getBoundingClientRect();
+        b.style.left=Math.round(fb.left+ur.right*k+8)+'px';
+        b.style.top=Math.round(fb.top+ur.top*k)+'px';
+      }catch(e){ b.style.left='50%'; b.style.top='12px'; }
     }
     function setFmt(el,f){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fmt=s._fmt||{}; if(f)s._fmt[rel]=f; else delete s._fmt[rel]; el.style.fontWeight=f==='b'?700:f==='l'?300:''; persist(); refreshThumbAt(_selSi); showTb(); }
     // 글자 크기(_fs) — 사다리 14·16·20·24·28·32·40, 범위 밖은 ±4
@@ -1622,6 +1636,7 @@
       blk.addEventListener('pointerdown',(e)=>{
         if(!editMode) return;
         if(e.target.closest('.imgrs')||e.target.closest('.utb')) return;
+        if((e.target.closest&&e.target.closest('[data-mvkey]'))!==blk) return;   // 가장 안쪽 유닛만 — 카드가 자식 클릭을 가로채 선택을 덮어쓰지 않게
         if(blk.getAttribute('contenteditable')==='true') return;   // 텍스트 편집 중엔 이동 안 함
         const si=slideIndexOf(blk), key=blk.getAttribute('data-mvkey'); if(si<0) return;
         if(!(_selSi===si && _sel.has(key))) selectUnit(si,key,e.shiftKey||e.metaKey);
