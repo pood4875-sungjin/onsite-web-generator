@@ -1271,6 +1271,7 @@
     document.body.appendChild(inp);
     imgTrace('1/4 파일창 여는 중…');
     const done=()=>{ try{ inp.remove(); }catch(e){} };
+    inp.addEventListener('cancel',()=>{ imgTrace(tL('선택이 취소됐어요.')); done(); });
     inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f){ imgTrace(tL('선택이 취소됐어요.')); done(); return; }
       imgTrace('2/4 파일 받음: '+f.name);
       const rd=new FileReader();
@@ -1290,7 +1291,10 @@
   }
   function relPathOf(el){ return (el.getAttribute('data-edit')||'').replace(/^slides\.\d+\./,''); }
   // 미디어 자리 이미지 채우기 — data-img(이미지 객체 경로)에 dataURL 저장 후 전체 리렌더. 편집모드 무관 동작
+  // 클릭+더블클릭이 겹쳐 파일창이 중복 호출되면 선택 결과가 유실됨 — 900ms 내 재진입 차단
+  let _lastPick=0;
   function setMediaImg(pm){ const path=pm.getAttribute('data-img'); if(!path) return;
+    const now=Date.now(); if(now-_lastPick<900) return; _lastPick=now;
     pickPptImage((src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); }
   function decoratePpt(doc){
     if(!curMode().slides || !doc || !doc.body) return;
@@ -1357,8 +1361,8 @@
         if(kill.size){ kill.forEach(k2=>{ delete s2._pos[k2]; }); texts.forEach(u=>{ if(kill.has(u.getAttribute('data-mvkey'))) u.style.transform=''; }); changed=true; }
       });
       if(changed){ persist(); if(typeof rebuildThumbRail==='function') rebuildThumbRail(); } })();
-    // 이미지 자리 첨부는 편집모드와 무관하게 항상 — 빈 자리 클릭/더블클릭 = 파일창
-    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) setMediaImg(pm); }); }
+    // 이미지 자리 첨부는 편집모드와 무관하게 항상. 빈 자리(.ph)는 클릭 담당이므로 더블클릭은 이미지 교체 전용
+    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm && !pm.classList.contains('ph')) setMediaImg(pm); }); }
     if(!doc.__pmClick){ doc.__pmClick=1; let _px=0,_py=0;
       doc.addEventListener('pointerdown',e=>{ _px=e.clientX; _py=e.clientY; },true);
       doc.addEventListener('click',e=>{ const pm=e.target.closest&&e.target.closest('.p-media.ph[data-img]');
