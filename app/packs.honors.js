@@ -31,8 +31,8 @@
   // 이미지/목업 자리 — src 없으면 원본과 동일한 회색 플레이스홀더
   function media(m, P, cls) {
     m = m || {};
-    if (m.src) return '<div class="p-media ' + (cls || '') + '"><img src="' + esc(m.src) + '" alt=""></div>';
-    return '<div class="p-media ph ' + (cls || '') + '"><span' + de(P + '.label') + '>' + esc(m.label || '') + '</span></div>';
+    if (m.src) return '<div class="p-media ' + (cls || '') + '" data-img="' + esc(P) + '"><img src="' + esc(m.src) + '" alt=""></div>';
+    return '<div class="p-media ph ' + (cls || '') + '" data-img="' + esc(P) + '"><span' + de(P + '.label') + '>' + esc(m.label || '') + '</span></div>';
   }
   // 콜아웃 = 32 Bold 제목 + 20 Regular 본문 (인포그래픽 전 장표에서 반복되는 단일 프리미티브)
   function callout(c, P) {
@@ -187,6 +187,21 @@
         headBlock(s, P) + '<div class="pr-grid c' + ((s.tiers || []).length || 3) + '">' + tiers + '</div></section>';
     },
     /* 타임라인 — 로드맵·일정. 마일스톤이 축 위/아래로 교차 배치. 원본 17/18(인포) */
+    /* 프로세스 — 가로 스텝 카드 + 화살표. 동작 방식·절차·파이프라인 흐름 표현. accent=강조 스텝 */
+    process: function (s, P) {
+      var steps = s.steps || [], acc = s.accent == null ? -1 : +s.accent;
+      var cells = steps.map(function (st, i) {
+        var SP = P + '.steps.' + i;
+        var card = '<div class="ps-step' + (i === acc ? ' on' : '') + '">' +
+          (st.who ? '<p class="ps-who"' + de(SP + '.who') + '>' + esc(st.who) + '</p>' : '') +
+          '<p class="ps-head"' + de(SP + '.head') + '>' + esc(st.head || '') + '</p>' +
+          (st.text ? '<p class="ps-text"' + de(SP + '.text') + '>' + ml(st.text) + '</p>' : '') +
+          (st.tag ? '<span class="ps-tag"' + de(SP + '.tag') + '>' + esc(st.tag) + '</span>' : '') + '</div>';
+        return card + (i < steps.length - 1 ? '<span class="ps-arrow">→</span>' : '');
+      }).join('');
+      return '<section class="slide ps' + bgClass(s) + '" data-kind="' + kind(s, 'Process') + '">' +
+        headBlock(s, P) + '<div class="ps-flow">' + cells + '</div></section>';
+    },
     timeline: function (s, P) {
       var items = s.items || [];
       var nodes = items.map(function (it, i) {
@@ -278,7 +293,7 @@
     'svg.cht rect, svg.cht path, svg.cht circle, svg.cht ellipse, svg.cht line, svg.cht polygon, svg.cht text, .ch-ph, ' +
     '.qt-stars, .l-num, .g-arrow, .st-bimg, .tl-dot, .tl-axis, .tl-lead, .pr-div, .mx-dot, .mx-ax, .p-tick, .tc-num';
   function stateScript(slides) {
-    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {} }; });
+    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {}, fs: s._fs || {}, w: s._tw || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
       'var sl=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");' +
       'for(var i=0;i<sl.length;i++){var c=ST[i];if(!c)continue;var s=sl[i];var mv=s.querySelectorAll(SEL);' +
@@ -289,7 +304,9 @@
       'var ed=s.querySelectorAll("[data-edit]");' +
       'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
       'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;' +
-      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";}' +   // 텍스트 정렬(_ta) 적용
+      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
+      'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +   /* 글자 크기(_fs) */
+      'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +   /* 텍스트 폭(_tw) */   // 텍스트 정렬(_ta) 적용
       '}' +
       // 저장된 이동값(_pos)이 텍스트를 슬라이드 위/왼쪽 밖으로 밀면 안쪽으로 클램프 — "타이틀 잘림" 방지.
       // 숨겨진 장은 rect가 0이라 측정 불가 → 보이는 장만, 뷰어는 show() 시점에 __clampSlide 호출.
@@ -447,6 +464,16 @@
       '.st-badge{display:inline-block;border:1px solid currentColor;border-radius:33px;padding:10px 33px;font-size:20px;margin:0 0 27px;width:fit-content}' +
       '.st-bimg{position:absolute;left:0;right:0;bottom:0;height:360px}.st-bimg .p-media{width:100%;height:100%;border-radius:0}' +
       '.st.has-bimg .st-in{margin-top:64px}.st.bottom.has-bimg .st-in{margin-top:64px}' +
+      /* process — 가로 스텝 카드 + 화살표 */
+      '.ps-flow{display:flex;align-items:stretch;gap:14px;margin-top:52px}' +
+      '.ps-step{flex:1;min-width:0;background:var(--grey);border-radius:20px;padding:26px 24px;display:flex;flex-direction:column;gap:9px}' +
+      '.bg-grey .ps-step{background:var(--paper)}' +
+      '.ps-step.on{background:var(--pg);color:#fff}.ps-step.on .ps-who,.ps-step.on .ps-text{color:rgba(255,255,255,.82)}' +
+      '.ps-who{margin:0;font-size:13px;letter-spacing:.05em;text-transform:uppercase;opacity:.6}' +
+      '.ps-head{margin:0;font-size:21px;font-weight:700;line-height:1.3}' +
+      '.ps-text{margin:0;font-size:14.5px;line-height:1.5;opacity:.75}' +
+      '.ps-arrow{align-self:center;font-size:24px;opacity:.45;flex:none}' +
+      '.ps-tag{margin-top:auto;width:fit-content;border:1.5px solid currentColor;border-radius:99px;padding:3px 12px;font-size:12.5px;font-weight:700}' +
       /* table */
       '.tb{display:grid;grid-template-columns:1fr 1.6fr;gap:var(--gut)}' +
       '.tb .tb-txt{display:flex;flex-direction:column;justify-content:center}' +
@@ -568,7 +595,7 @@
       'var cur=s[n];if(cur){' +
       // 타이틀·아이브로·리드 같은 헤딩 블록(slides.N.title 등 최상위 텍스트)은 즉시 표시 — 하위 내용·그래프만 순차 등장
       // 발표 모션 축소(사용자 지시): 텍스트는 즉시, 차트 요소·카드 블록만 순차 등장
-      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat,.tl-axis,.tl-node");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll("svg.cht rect,svg.cht path,svg.cht circle,svg.cht ellipse,svg.cht line,svg.cht polygon,svg.cht text,.ch-ph,.g-cell,.l-cardrow,.ps-step,.pr-card,.gl-cell,.s-cell,.cl-cell,.tc-row,.mx-pt,.t-panel,.sp-panel,.qt-stat,.tl-axis,.tl-node");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       // 숫자 카운트업 — 대형 수치(.bs-num/.bignum)와 수치 그리드(.s-num)가 0→값으로 빠르게 상승(사용자 지시)
@@ -613,6 +640,7 @@
     { type: 'stats', label: '수치 그리드', use: '트랙션·성과 지표를 2~6개 한 화면에 모아 보여줄 때', needs: ['items'], opt: ['title', 'cols'], cap: { items: '2~6개' } },
     { type: 'bigstat', label: '단일 대형 수치', use: '숫자 하나로 임팩트를 줄 때 — 시장 규모, 점유율, 성장률', needs: ['value'], opt: ['title', 'caption'], cap: { value: '~6자' } },
     { type: 'list', label: '넘버드 카드 리스트', use: '해결책·핵심 기능·문제점을 번호 카드 행으로 나열(첫 행 강조). image를 주면 좌측 이미지+우측 카드 리스트', needs: ['rows'], opt: ['title', 'image', 'accent'], cap: { rows: '2~5줄, 각 label ~20자 + sub ~60자' } },
+    { type: 'process', label: '프로세스', use: '입력→처리→출력처럼 단계 흐름을 가로 화살표로 보여줄 때 — 동작 방식, 절차, 파이프라인. accent=강조 스텝 인덱스, 스텝 tag=배지(무료/유료 등)', needs: ['steps'], opt: ['title', 'accent'], cap: { steps: '3~5개, head ~14자 · text ~40자' } },
     { type: 'table', label: '표', use: '거래처·계약처럼 열이 정해진 데이터를 나열할 때', needs: ['columns', 'rows'], opt: ['title', 'text'], cap: { rows: '~5행', columns: '3열' } },
     { type: 'pricing', label: '요금 티어', use: '플랜·가격을 2~3개 비교할 때', needs: ['tiers'], opt: ['title'], cap: { tiers: '2~3개', features: '4개' } },
     { type: 'timeline', label: '타임라인', use: '로드맵, 도입 절차, 연혁처럼 시간 순서가 핵심일 때', needs: ['items'], opt: ['title'], cap: { items: '3~6개' } },
@@ -646,6 +674,7 @@
     stats: { type: 'stats', bg: 'grey', title: '성과', cols: 3, items: [{ value: '00', label: '지표' }, { value: '00', label: '지표' }, { value: '00', label: '지표' }] },
     bigstat: { type: 'bigstat', bg: 'white', eyebrow: 'MARKET', title: '제목', value: '00%', caption: '설명을 입력하세요.' },
     list: { type: 'list', bg: 'white', title: '목록', rows: [{ label: '항목', sub: '보조 설명' }, { label: '항목', sub: '보조 설명' }] },
+    process: { type: 'process', bg: 'white', title: '동작 방식', accent: 1, steps: [{ who: '입력', head: '단계 1', text: '설명' }, { who: '처리', head: '단계 2', text: '설명', tag: '핵심' }, { who: '출력', head: '단계 3', text: '설명' }] },
     table: { type: 'table', bg: 'white', title: '표', columns: ['항목', '값', '비고'], rows: [{ cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }] },
     pricing: { type: 'pricing', bg: 'white', title: '요금제', tiers: [{ name: 'TIER 1', price: '$00', per: 'per month', features: ['기능', '기능'] }, { name: 'TIER 2', price: '$00', per: 'per month', features: ['기능', '기능'] }] },
     timeline: { type: 'timeline', bg: 'grey', title: '로드맵', items: [{ when: '2026 Q1', head: '단계', text: '설명' }, { when: '2026 Q2', head: '단계', text: '설명' }, { when: '2026 Q3', head: '단계', text: '설명' }] },
@@ -684,6 +713,7 @@
     'stats:{eyebrow?,title,cols:2~3,items:[{value,label}],bg?} | ' +
     'bigstat:{eyebrow?,title,value,caption,bg?} | ' +
     'list:{title,rows:[{label,sub}],image?:{label},accent?:강조행인덱스,bg?} | ' +
+    'process:{eyebrow?,title,steps:[{who?,head,text?,tag?}],accent?:강조인덱스,bg?} | ' +
     'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
     'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
     'timeline:{title,items:[{when,head,text}],bg?} | ' +

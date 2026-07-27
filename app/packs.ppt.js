@@ -88,7 +88,7 @@
      함께 옮기려면 스튜디오에서 여러 개 선택 후 '그룹'. DOM 순서 = 키 순서(m0…) */
   var MV_SEL = '[data-edit], .s-imgwrap, .cover-arrow, .agenda-badge, .ag-div, .row-num';   // 텍스트·이미지·화살표·뱃지·구분선·번호까지 전부 개별
   function stateScript(slides) {
-    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {} }; });
+    var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {}, fs: s._fs || {}, w: s._tw || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
       'var sl=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");' +
       'for(var i=0;i<sl.length;i++){var c=ST[i];if(!c)continue;var s=sl[i];' +
@@ -100,7 +100,9 @@
       'var ed=s.querySelectorAll("[data-edit]");' +
       'for(var e2=0;e2<ed.length;e2++){var path=ed[e2].getAttribute("data-edit")||"";var rel=path.replace(/^slides\\.\\d+\\./,"");' +
       'var f=c.f[rel];if(f==="b")ed[e2].style.fontWeight=700;else if(f==="l")ed[e2].style.fontWeight=300;' +
-      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";}' +   // 텍스트 정렬(_ta) 적용
+      'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
+      'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +   /* 글자 크기(_fs) */
+      'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +   /* 텍스트 폭(_tw) */   // 텍스트 정렬(_ta) 적용
       '}' +
       // 저장된 이동값(_pos)이 텍스트를 슬라이드 위/왼쪽 밖으로 밀면 안쪽으로 클램프 — "타이틀 잘림" 방지.
       // 숨겨진 장은 rect가 0이라 측정 불가 → 보이는 장만, 뷰어는 show() 시점에 __clampSlide 호출.

@@ -1265,7 +1265,8 @@
           const MAX=1280, sc=Math.min(1, MAX/Math.max(im.width,im.height));
           const cv=document.createElement('canvas'); cv.width=Math.round(im.width*sc)||1; cv.height=Math.round(im.height*sc)||1;
           cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-          cb(cv.toDataURL('image/jpeg',0.85));
+          // PNG는 PNG로 유지 — JPEG 변환 시 투명 배경이 검게 변함
+          cb(f.type==='image/png' ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg',0.85));
         }catch(e){ console.error('[img]',e); } done(); };
         im.src=rd.result; };
       rd.readAsDataURL(f); };
@@ -1345,6 +1346,7 @@
     const W=doc.defaultView;
     // 텍스트 유닛은 쓰인 만큼만 폭 차지 — 풀폭 블록이면 다중선택·정렬이 무의미해짐(편집모드 한정, 일반 흐름 블록만)
     doc.querySelectorAll('.ppt-stack [data-edit]').forEach(el=>{ if(el.closest('svg')||el.__fitw) return; el.__fitw=1;
+      if(/px$/.test(el.style.width)) return;   // 사용자 지정 폭(_tw)은 fit-content로 덮지 않음
       const cs=W.getComputedStyle(el); if(cs.display!=='block'||cs.position!=='static') return;
       const pd=el.parentElement?W.getComputedStyle(el.parentElement).display:'';
       if(pd!=='block'&&pd!=='flow-root') return;   // 그리드/플렉스 자식은 컨테이너가 정렬 소유 — 건드리면 칸 정렬 깨짐
@@ -1356,6 +1358,8 @@
     if(!utb){ utb=doc.createElement('div'); utb.id='utb'; utb.className='utb'; utb.style.display='none';
       utb.addEventListener('pointerdown',e=>{ e.stopPropagation(); });
       if(utb.parentElement) utb.remove(); doc.body.appendChild(utb); }
+    // 미디어 자리 더블클릭 = 이미지 채우기
+    if(!doc.__pmDbl){ doc.__pmDbl=1; doc.addEventListener('dblclick',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) setMediaImg(pm); }); }
     const slidesEls=()=>[...doc.querySelectorAll('.ppt-stack > .slide')];
     const unitsOf=(si)=> (slidesEls()[si]? [...slidesEls()[si].querySelectorAll('[data-mvkey]')] : []);
     const grpMap=(si)=> (data.slides[si]||{})._grp||{};
@@ -1373,14 +1377,26 @@
       if(only && only.hasAttribute('data-edit')){ const rel=relOf(only), cur=(data.slides[_selSi]._fmt||{})[rel]||'';
         utb.append(tbBtn('B',cur==='b','font-weight:800',()=>setFmt(only,'b')));
         utb.append(tbBtn('L',cur==='l','font-weight:300',()=>setFmt(only,'l')));
-        utb.append(tbBtn(tL('기본'),false,'',()=>setFmt(only,'')));
+        utb.append(tbBtn(tL('기본'),false,'',()=>resetTxt(only)));
         // 텍스트 정렬(좌/중/우) — _ta 저장, 렌더는 팩 stateScript가 적용
         const curTa=(data.slides[_selSi]._ta||{})[rel]||'';
         const TA={l:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg>',
           c:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M6 18h12"/></svg>',
           r:'<svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M10 12h10M7 18h13"/></svg>'};
-        [['l','왼쪽 정렬'],['c','가운데 정렬'],['r','오른쪽 정렬']].forEach(([v,tt])=>{ const b=tbBtn(TA[v],curTa===v,'',()=>setTa(only,curTa===v?'':v)); b.title=tL(tt); utb.append(b); }); }
+        [['l','왼쪽 정렬'],['c','가운데 정렬'],['r','오른쪽 정렬']].forEach(([v,tt])=>{ const b=tbBtn(TA[v],curTa===v,'',()=>setTa(only,curTa===v?'':v)); b.title=tL(tt); utb.append(b); });
+        // 글자 크기 — 14·16·20·24·28·32·40 사다리, 범위 밖은 ±4. 현재값 표시
+        { const curFs=(data.slides[_selSi]._fs||{})[rel]||Math.round(parseFloat(W.getComputedStyle(only).fontSize))||16;
+          const bm=tbBtn('A−',false,'font-size:11px',()=>setFs(only,stepFs(curFs,-1))); bm.title=tL('글자 작게'); utb.append(bm);
+          const lab=doc.createElement('span'); lab.textContent=curFs; lab.style.cssText='min-width:20px;text-align:center;font-size:11px;opacity:.75;align-self:center'; utb.append(lab);
+          const bp=tbBtn('A+',false,'font-size:13px',()=>setFs(only,stepFs(curFs,1))); bp.title=tL('글자 크게'); utb.append(bp); }
+        // 텍스트 폭 — 80px 스텝으로 좁게/넓게(어색한 줄바꿈 해소용 좌우 자유도)
+        { const sl0=only.closest('.slide'); const k0=sl0?(sl0.getBoundingClientRect().width/(sl0.offsetWidth||1)):1;
+          const curW=(data.slides[_selSi]._tw||{})[rel]||Math.round(only.getBoundingClientRect().width/(k0||1));
+          const wm=tbBtn('⇥·⇤',false,'font-size:10px',()=>setTw(only,Math.max(160,curW-80))); wm.title=tL('폭 좁게'); utb.append(wm);
+          const wp=tbBtn('⇤·⇥',false,'font-size:10px',()=>setTw(only,Math.min(1160,curW+80))); wp.title=tL('폭 넓게'); utb.append(wp); } }
       if(only && only.classList.contains('s-imgwrap')) utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
+      // 미디어 자리(회색 영역) — 이미지 바로 채우기/교체 (더블클릭도 동일)
+      if(only && only.classList.contains('p-media') && only.getAttribute('data-img')) utb.append(tbBtn(tL('이미지 넣기'),false,'',()=>setMediaImg(only)));
       // z-순서(앞/뒤) — 맨앞/맨뒤 아이콘(겹친 사각형)
       const Z_FWD='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M16 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h3"/></svg>';
       const Z_BACK='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3"/></svg>';
@@ -1412,6 +1428,23 @@
       utb.style.left=Math.max(4,r+W.scrollX-uw)+'px'; utb.style.top=Math.max(4,t+W.scrollY-uh-6)+'px';
     }
     function setFmt(el,f){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fmt=s._fmt||{}; if(f)s._fmt[rel]=f; else delete s._fmt[rel]; el.style.fontWeight=f==='b'?700:f==='l'?300:''; persist(); refreshThumbAt(_selSi); showTb(); }
+    // 글자 크기(_fs) — 사다리 14·16·20·24·28·32·40, 범위 밖은 ±4
+    const FS_LADDER=[14,16,20,24,28,32,40];
+    function stepFs(cur,dir){ if(dir>0){ if(cur>=40) return cur+4; for(const v of FS_LADDER) if(v>cur+0.5) return v; return cur+4; }
+      if(cur>44-0.5) return cur-4; for(let i=FS_LADDER.length-1;i>=0;i--) if(FS_LADDER[i]<cur-0.5) return FS_LADDER[i]; return Math.max(8,cur-4); }
+    function setFs(el,v){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._fs=s._fs||{}; if(v)s._fs[rel]=v; else delete s._fs[rel]; el.style.fontSize=v?v+'px':''; persist(); refreshThumbAt(_selSi); showTb(); }
+    // 텍스트 폭(_tw) — 좌우 폭 지정으로 어색한 줄바꿈 해소
+    function setTw(el,v){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._tw=s._tw||{}; if(v)s._tw[rel]=v; else delete s._tw[rel];
+      if(v){ el.style.maxWidth='none'; el.style.width=v+'px'; } else { el.style.width=''; el.style.maxWidth=''; }
+      persist(); refreshThumbAt(_selSi); showTb(); }
+    // 서식 초기화 — 굵기·크기·폭 원복(정렬은 정렬 버튼으로 관리)
+    function resetTxt(el){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi];
+      if(s._fmt) delete s._fmt[rel]; if(s._fs) delete s._fs[rel]; if(s._tw) delete s._tw[rel];
+      el.style.fontWeight=''; el.style.fontSize=''; el.style.width=''; el.style.maxWidth='';
+      persist(); refreshThumbAt(_selSi); showTb(); }
+    // 미디어 자리 이미지 채우기 — data-img(이미지 객체 경로)에 dataURL 저장 후 전체 리렌더
+    function setMediaImg(pm){ const path=pm.getAttribute('data-img'); if(!path) return;
+      pickPptImage((src)=>{ pptMutate(()=>{ setField(path+'.src', src); }); }); }
     // 텍스트 정렬(좌/중/우) — slide._ta{상대경로:'l'|'c'|'r'}, 팩 stateScript가 렌더마다 적용(PPTX는 computed 반영)
     function setTa(el,v){ pushUndo(); const rel=relOf(el), s=data.slides[_selSi]; s._ta=s._ta||{}; if(v)s._ta[rel]=v; else delete s._ta[rel];
       el.style.textAlign=v==='c'?'center':v==='r'?'right':v==='l'?'left':'';
