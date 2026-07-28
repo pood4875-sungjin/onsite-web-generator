@@ -161,12 +161,13 @@ const uiLangName = (l) => UI_LANG[l] || UI_LANG.ko;
 const INTAKE_SYSTEM =
   '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고,\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 금지.\n' +
-  '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str,"opts":[str]}]}\n' +
+  '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str,"opts":[str],"multi":bool}]}\n' +
   '규칙:\n' +
   '- name=프로젝트/페이지 이름 후보, product=제품·서비스명. 브리프에서 추출 가능할 때만, 없으면 null.\n' +
   '- questions는 결과물 품질에 정말 필요한데 브리프에 없는 것만 최대 3개. 브리프가 충분하면 빈 배열 [].\n' +
   '- 좋은 질문 예: 발표 목적·청중 유형·선호 톤(kind=ppt), 대상 고객·유도할 행동(kind=web), 강조할 수치가 있는지.\n' +
   '- opts=그 질문에 대한 구체적 선택지 3~4개. 브리프 맥락에 맞게 서로 다른 방향으로("기타"는 넣지 마라 — UI가 붙인다).\n' +
+  '- multi=복수 응답이 자연스러운 질문이면 true(예: 강조하고 싶은 내용, 포함할 요소). 하나만 고르는 게 맞으면 false(예: 청중, 목적, 톤).\n' +
   '  예: 청중 질문이면 ["대학생·취준생","주니어 디자이너","실무 디자이너","리더·경영진"]처럼 브리프 주제에 맞춘 구체 선택지.\n' +
   '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름). 분량도 묻지 마라(따로 고름).\n' +
   '- q·opts는 {LANG}, q는 정중한 한 문장. key는 영문 스네이크(예: target_audience).';

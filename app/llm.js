@@ -318,7 +318,7 @@
     if (i < 0 || k < 0) throw new Error('BAD_JSON');
     var o = _repairParse(s.slice(i, k + 1)) || {};
     var qs = (Array.isArray(o.questions) ? o.questions : []).map(function (x) {
-      return x && { key: String(x.key || ''), q: String(x.q || '').trim(),
+      return x && { key: String(x.key || ''), q: String(x.q || '').trim(), multi: !!x.multi,
         opts: (Array.isArray(x.opts) ? x.opts : []).map(function (t) { return String(t || '').trim(); }).filter(Boolean).slice(0, 4) };
     }).filter(function (x) { return x && x.q; }).slice(0, 3);
     return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
@@ -337,17 +337,24 @@
     'IA 언급이 없거나 single이면 []. productName은 브리프의 실제 제품명을 쓰고, 지어냈다면 assumed에 넣는다. 모든 필드를 빠짐없이 채운다. 브리프 근거 없는 항목은 맥락에 맞는 그럴듯한 예시로 채우고 ' +
     '그 필드명을 assumed에 넣는다(지어낸 수치 stats는 반드시, 단 브리프의 실제 수치를 쓴 필드는 제외). features 3개, stats 3개, ' +
     'footerLinks 표준 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장.';
-  async function composeSite(brief) {
+  async function composeSite(brief, onText) {
     brief = brief || {};
     var payload = { product: brief.product || '', name: brief.name || '', purpose: brief.purpose || '', plan: brief.plan || '', kind: brief.kind || 'single', lang: brief.lang || 'ko' };
     var txt;
     if (usingProxy()) {
+      var wantStream = typeof onText === 'function';
+      payload.stream = wantStream;
       var r = await fetch(proxyUrl() + '/compose-web', {
         method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
       });
-      var j = null; try { j = await r.json(); } catch (e) {}
-      if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
-      txt = j.text;
+      if (!r.ok) { var j = null; try { j = await r.json(); } catch (e) {} throw new Error(_proxyErrMsg(j, r.status)); }
+      var ct = (r.headers.get('content-type') || '');
+      if (wantStream && ct.indexOf('event-stream') >= 0 && r.body) {
+        txt = await _readSse(r.body, onText);
+      } else {
+        var j2 = null; try { j2 = await r.json(); } catch (e) {}
+        txt = j2 && j2.text;
+      }
     } else {
       txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000 });
     }

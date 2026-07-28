@@ -10,6 +10,7 @@
 ['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   body{min-height:100vh;overflow-y:auto}
   .nav{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;z-index:5;pointer-events:none}
@@ -83,6 +84,8 @@
   .cbub.me{background:var(--ink);color:var(--canvas);border-bottom-right-radius:6px;font-weight:var(--fw-med)}
   .cbub.typing i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--mute);margin:0 2px;animation:tdot 1s ease-in-out infinite}
   .cbub.typing i:nth-child(2){animation-delay:.15s}.cbub.typing i:nth-child(3){animation-delay:.3s}
+  .thdots i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--mute);margin:0 1.5px;vertical-align:.1em;animation:tdot 1s ease-in-out infinite}
+  .thdots i:nth-child(2){animation-delay:.15s}.thdots i:nth-child(3){animation-delay:.3s}
   @keyframes tdot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
   .cwidget{margin:8px 0 14px;animation:cin .3s var(--ease)}
   .cwidget.off{opacity:.45;pointer-events:none;filter:saturate(.6)}
@@ -160,12 +163,13 @@
   .hero{position:fixed;inset:0;z-index:7;background:var(--canvas);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
   .hero[hidden]{display:none}
   /* 타이틀 한 줄 + 타이핑 연출 — min-height로 타이핑 중 레이아웃 점프 방지 */
-  .hero h1{font-size:clamp(30px, 5.4vw, 54px);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
+  .hero h1{font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    font-size:clamp(30px, 5.4vw, 54px);font-weight:600;letter-spacing:-.02em;line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
     opacity:0;transform:translateY(24px);animation:kc-in .8s cubic-bezier(.22,1,.36,1) 60ms forwards}
   .hero .caret{display:inline-block;width:3px;height:.92em;background:var(--ink);margin-left:6px;vertical-align:-.1em;border-radius:2px;animation:hblink 1s steps(1) infinite}
   @keyframes hblink{50%{opacity:0}}
-  .hero .hsub{font-size:14px;color:var(--body-mid);margin:0 0 6px;opacity:0;animation:kc-in .8s cubic-bezier(.22,1,.36,1) 160ms forwards}
-  .hbox{width:min(720px,92vw);background:var(--surface-solid);border:1px solid var(--hairline);border-radius:22px;padding:16px 18px 12px;box-shadow:var(--shadow-2);
+  .hero .hsub{font-size:16px;color:var(--body-mid);margin:0 0 6px;opacity:0;animation:kc-in .8s cubic-bezier(.22,1,.36,1) 160ms forwards}
+  .hbox{width:min(760px,94vw);min-height:176px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:22px;padding:20px 20px 14px;box-shadow:var(--shadow-2);
     display:flex;flex-direction:column;gap:6px;text-align:left;transition:var(--dur) var(--ease);
     opacity:0;transform:translateY(28px);animation:kc-in .85s cubic-bezier(.22,1,.36,1) 240ms forwards}
   .hbox:focus-within{border-color:var(--hairline-strong);box-shadow:var(--shadow-3)}
@@ -188,7 +192,7 @@
   @keyframes hspin{to{--hang:1turn}}
   .hbox.quiet::before,.hbox.quiet::after{opacity:0}
   @media (prefers-reduced-motion:reduce){.hbox::before,.hbox::after{animation:none;opacity:.2}}
-  #hinput{border:none;outline:none;background:none;resize:none;font-family:inherit;font-size:15px;line-height:1.6;color:var(--ink);min-height:56px;max-height:160px;width:100%}
+  #hinput{border:none;outline:none;background:none;resize:none;font-family:inherit;font-size:15.5px;line-height:1.6;color:var(--ink);min-height:86px;max-height:220px;width:100%;flex:1}
   #hinput::placeholder{color:var(--mute)}
   .hbrow{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:2px 2px 2px 0}
   .hero .hchips{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;opacity:0;animation:kc-in .9s cubic-bezier(.22,1,.36,1) 360ms forwards}
@@ -201,6 +205,7 @@
   .optcard .oc-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
   .optcard .oc-head b{font-size:14.5px}
   .oc-prog{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .oc-multi{font-size:11.5px;color:var(--mute);font-weight:400;margin-left:6px;white-space:nowrap}
   .oc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   @media (max-width:560px){.oc-grid{grid-template-columns:1fr}}
   .oc-opt{text-align:left;padding:12px 14px;border:1px solid var(--hairline);border-radius:12px;background:var(--surface);cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--ink);transition:var(--dur) var(--ease)}
@@ -329,6 +334,12 @@
       th:'<div class="thumb tb-ppt"><div class="gw gw-ppt"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar cc w50"></span><span class="gwbar cc w50"></span></div></div>'},
   ];
   const PPT_LENGTHS=[['short','5–8장 · 짧은 발표'],['std','10–15장 · 표준 발표'],['deep','20장+ · 심층 자료']];
+  // 종류별 기본 질문 — AI 되묻기 질문 뒤에 "같은 카드 페이저"로 이어붙는다 (종류마다 물을 게 다름)
+  const FIXED_QS={
+    ppt:[{key:'__len', q:'분량은 어느 정도로 할까요?', opts:PPT_LENGTHS.map(([id,label])=>({id,label}))}],
+    single:[{key:'goal', q:'방문자가 페이지에서 어떤 행동을 하면 좋을까요?', opts:['문의 남기기','참가·가입 신청','자료 다운로드','제품 둘러보기']}],
+    multi:[{key:'goal', q:'사이트의 가장 중요한 목표는 무엇인가요?', opts:['제품 소개와 도입 문의','행사·이벤트 안내','채용·회사 소개','고객 지원·문서 제공']}],
+  };
   const BRIEF_PROMPT={
     single:'어떤 페이지인지 자유롭게 알려주세요.\n제품·서비스가 무엇인지, 누구를 위한 것인지, 핵심 기능이나 자랑할 수치, 방문자가 했으면 하는 행동까지 적을수록 초안이 정확해져요.',
     multi:'어떤 사이트인지 자유롭게 알려주세요.\n제품·서비스 소개, 핵심 기능·강점, 수치, 유도할 행동(도입 문의 등)을 적을수록 초안이 정확해져요.',
@@ -392,6 +403,15 @@
   function bot(t){const r=riseRow(el('div','crow'));r.append(el('div','cbub bot',t));msgs.append(r);toBottom();return r;}
   function me(t){const r=riseRow(el('div','crow me'));r.append(el('div','cbub me',t));msgs.append(r);toBottom();return r;}
   function typing(){const r=riseRow(el('div','crow'));r.append(el('div','cbub bot typing','<i></i><i></i><i></i>'));msgs.append(r);toBottom();return r;}
+  // 대기 중 상태 버블 — AI가 지금 뭘 하는지 문구가 돌아가며 표시. 반환된 함수로 제거.
+  function thinking(texts){
+    const r=riseRow(el('div','crow'));
+    const bub=el('div','cbub bot',_L(texts[0])+' <i class="thdots"><i></i><i></i><i></i></i>');
+    r.append(bub); msgs.append(r); toBottom();
+    let i=0; const t=setInterval(()=>{ i=(i+1)%texts.length;
+      bub.innerHTML=_L(texts[i])+' <i class="thdots"><i></i><i></i><i></i></i>'; },1800);
+    return ()=>{ clearInterval(t); r.remove(); };
+  }
   function widget(node){const w=el('div','cwidget');w.append(node);msgs.append(w);toBottom();return w;}
   function off(w){w.classList.add('off');w.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=true);}
   function toBottom(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));}
@@ -518,28 +538,34 @@
       act.append(skipB, nextB); card.append(act);
       const w=widget(card);
       const answers=[];
-      let qi=0, sel=null, pane=null, extra=null;
+      let qi=0, selArr=[], pane=null, extra=null;
       function renderQ(){
         const q=questions[qi];
-        ttl.textContent=_L(q.q); prog.textContent=(qi+1)+' / '+questions.length;
-        nextB.textContent=_L(qi===questions.length-1?'제출':'다음'); nextB.disabled=true; sel=null;
+        ttl.innerHTML=_L(q.q)+(q.multi?' <span class="oc-multi">'+_L('여러 개 선택 가능')+'</span>':'');
+        prog.textContent=(qi+1)+' / '+questions.length;
+        nextB.textContent=_L(qi===questions.length-1?'제출':'다음'); nextB.disabled=true; selArr=[];
         const np=el('div','oc-pane');
         const grid=el('div','oc-grid');
         extra=el('input','ds-input oc-extra'); extra.placeholder=_L('추가 세부 정보 (선택 사항)');
-        (q.opts||[]).map(o=>({id:o,label:o})).concat([{id:'__etc',label:_L('기타')}]).forEach(o=>{
-          const b=el('button','oc-opt',o.label);
-          b.onclick=()=>{ grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); sel=o; nextB.disabled=false;
-            if(o.id==='__etc') extra.focus(); };
+        (q.opts||[]).map(o=> typeof o==='string' ? {id:o,label:o} : o).concat([{id:'__etc',label:_L('기타')}]).forEach(o=>{
+          const b=el('button','oc-opt',o.label); b.__opt=o;
+          b.onclick=()=>{
+            if(q.multi){ b.classList.toggle('on'); if(o.id==='__etc' && b.classList.contains('on')) extra.focus(); }
+            else { grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); if(o.id==='__etc') extra.focus(); }
+            selArr=[...grid.querySelectorAll('.oc-opt.on')].map(x=>x.__opt);
+            nextB.disabled=!selArr.length;
+          };
           grid.append(b); });
         np.append(grid, extra);
         pane=np; body.append(np); toBottom();
       }
       function advance(save){
         if(save && pane){
-          const base=(sel && sel.id!=='__etc') ? sel.label : '';
+          const base=selArr.filter(o=>o.id!=='__etc').map(o=>_L(o.label)).join(' · ');
           const ex=extra.value.trim();
           const text=base + (ex ? (base?' — ':'')+ex : '');
-          if(text) answers.push({q:questions[qi].q, a:text});
+          const one=(!questions[qi].multi && selArr[0] && selArr[0].id!=='__etc') ? selArr[0].id : null;
+          if(text) answers.push({key:questions[qi].key||'', q:questions[qi].q, a:text, id:one});
         }
         if(qi>=questions.length-1){
           off(w);
@@ -578,6 +604,38 @@
       },
       done(n){ const d=head.querySelector('.dot'); if(d) d.style.animation='none';
         msg.textContent=(window.LF?LF:( (t)=>t ))('완성! {n}장을 만들었어요. 스튜디오로 이동해요.', {n:n}); toBottom(); },
+      fail(){ off(w); }
+    };
+  }
+
+  // 웹/랜딩 생성 라이브 로그 — 기획서가 작성되는 과정을 실제 값과 함께 실시간 표시
+  function liveWebLog(){
+    const card=el('div','cwcard');
+    const head=el('div','genlog-head'); const msg=el('span','',_L('페이지를 만들고 있어요 — 핵심 메시지를 뽑는 중…'));
+    head.append(el('span','dot'), msg);
+    const list=el('div','genlog');
+    card.append(head, list);
+    const w=widget(card);
+    const seen=new Set();
+    const un=(s)=>s.replace(/\\"/g,'"').replace(/\\n/g,' ');
+    function push(line){ if(seen.has(line)) return; seen.add(line);
+      const d=el('div','genlog-line'); d.textContent=line; list.append(d);
+      msg.textContent=_L('페이지를 만들고 있어요 — 초안 작성 중…');
+      list.scrollTop=list.scrollHeight; toBottom(); }
+    return {
+      onText(full){
+        let m;
+        if((m=/"productName"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(full)) && m[1]) push('📌 '+_L('제품명')+' — '+un(m[1]));
+        if((m=/"tagline"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(full)) && m[1]) push('✍️ '+_L('핵심 카피')+' — '+un(m[1]));
+        if(/"subcopy"\s*:\s*"/.test(full)) push('📝 '+_L('소개 문구 작성'));
+        const ft=[...full.matchAll(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(x=>un(x[1])).slice(0,3);
+        ft.forEach(t=>push('🧩 '+_L('기능 카드')+' — '+t));
+        if(/"stats"\s*:/.test(full)) push('📊 '+_L('지표 구성'));
+        if(/"bannerText"\s*:/.test(full)) push('🪧 '+_L('배너 문구 작성'));
+        [...full.matchAll(/"name"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(x=>un(x[1])).forEach(n=>push('📄 '+_L('하위 페이지')+' — '+n));
+      },
+      done(){ const d=head.querySelector('.dot'); if(d) d.style.animation='none';
+        msg.textContent=_L('완성! 스튜디오로 이동해요.'); toBottom(); },
       fail(){ off(w); }
     };
   }
@@ -809,10 +867,13 @@
     let pg=p.pages[0]; if(!pg){ pg=addPage(p.id,'main'); }
 
     if(plan && window.LLM && LLM.aiAvailable()){
-      const stop=showAiGen('composeweb');
+      // 오버레이 대신 챗 안 라이브 로그 — 카피·기능·페이지 구성이 실제 값과 함께 실시간으로 찍힘
+      const live=liveWebLog(); const t0w=Date.now();
       let draft=null;
-      try{ draft=await LLM.composeSite({ product:prod, name, plan, kind:S.kind, lang:S.lang }); stop(true); }
-      catch(e){ stop(false); console.warn('[ai] compose-web 실패 → 대화 플로우 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 초안 생성에 실패해 대화로 채우는 방식으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+      try{ draft=await LLM.composeSite({ product:prod, name, plan, kind:S.kind, lang:S.lang }, live.onText); live.done();
+        if(LLM.recordDur) LLM.recordDur('composeweb', Date.now()-t0w);
+        await new Promise(r=>setTimeout(r,700)); }
+      catch(e){ live.fail(); console.warn('[ai] compose-web 실패 → 대화 플로우 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 초안 생성에 실패해 대화로 채우는 방식으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       if(draft){
         const full=getProject(p.id); const pg0=full.pages.find(x=>x.id===pg.id)||full.pages[0];
         const seed={ productName:draft.productName||prod||'', tagline:draft.tagline||'', subcopy:draft.subcopy||'', primaryCta:draft.primaryCta||'',
@@ -950,36 +1011,31 @@
         S.plan=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
       }
 
-      if(S.kind==='ppt' && S.plan){
-        bot(_L('분량은 어느 정도로 할까요?'));
-        S.len=await askChips(PPT_LENGTHS.map(([id,label])=>({id,label})));
-      }
-
-      // AI 되묻기 — 브리프에서 이름·제품명 추출 + 부족 정보만 질문. 실패해도 계속.
+      // AI 되묻기(내용 기반 질문) + 종류별 기본 질문(분량·목표 등) — 전부 카드 한 장 페이저로
+      let aiQs=[], freeQs=[];
       if(S.plan && window.LLM && LLM.aiAvailable()){
-        const tp=typing();
+        // 대기 중 상태 문구 — AI가 지금 뭘 하는지 순환 표시
+        const stopTh=thinking(['입력하신 내용을 꼼꼼히 읽고 있어요','빠진 정보가 있는지 확인하는 중이에요','여쭤볼 질문을 준비하고 있어요']);
         let it=null;
         try{ it=await LLM.intake({kind:S.kind, plan:S.plan}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
-        tp.remove();
+        stopTh();
         if(it){
           if(it.name && !S.name) S.name=it.name;
           if(it.product && !S.product) S.product=it.product;
-          if(it.questions.length){
-            bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
-            // 선택지 있는 질문 = 카드 한 장 안에서 옆으로 넘기며 처리, 없는 질문만 자유입력
-            const withOpts=it.questions.filter(q=>q.opts && q.opts.length);
-            const freeQs=it.questions.filter(q=>!q.opts || !q.opts.length);
-            if(withOpts.length){
-              const ans=await askOptionCards(withOpts);
-              ans.forEach(x=>S.answers.push(x));
-            }
-            for(const q of freeQs){
-              bot(q.q);
-              const a=await askInput('답변을 입력하세요', '건너뛰기');
-              if(a) S.answers.push({q:q.q, a});
-            }
-          }
+          aiQs=it.questions.filter(q=>q.opts && q.opts.length);
+          freeQs=it.questions.filter(q=>!q.opts || !q.opts.length);
         }
+      }
+      const pagerQs=aiQs.concat(FIXED_QS[S.kind]||[]);
+      if(pagerQs.length){
+        bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
+        const ans=await askOptionCards(pagerQs);
+        ans.forEach(x=>{ if(x.key==='__len'){ if(x.id) S.len=x.id; } else S.answers.push({q:x.q, a:x.a}); });
+      }
+      for(const q of freeQs){
+        bot(q.q);
+        const a=await askInput('답변을 입력하세요', '건너뛰기');
+        if(a) S.answers.push({q:q.q, a});
       }
     }
 
