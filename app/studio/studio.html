@@ -241,7 +241,7 @@
   .lg-box{display:flex;flex-direction:column;align-items:center;gap:13px;background:#151827;border:1px solid rgba(255,255,255,.1);
     border-radius:16px;padding:38px 48px 30px;width:min(420px,90vw);text-align:center;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.5)}
   .lg-box b{font-size:16px;font-weight:700}
-  .lg-stage{font-size:13px;color:rgba(255,255,255,.65);min-height:18px}
+  .lg-stage{font-size:16px;font-weight:700;color:#fff;min-height:22px}   /* 순환 문구가 곧 타이틀 */
   .lg-orb{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#3fe0c6,#5b9dff 46%,#8a6bff 82%);
     box-shadow:0 0 30px rgba(90,157,255,.55);animation:lgPulse 1.9s ease-in-out infinite;margin-bottom:2px}
   @keyframes lgPulse{0%,100%{transform:scale(.92);opacity:.85}50%{transform:scale(1.05);opacity:1}}
@@ -1350,24 +1350,28 @@
   /* 준비 게이트 — 첫 장이 완결될 때까지 풀스크린 프로그레스 모달. 걷히는 순간 바로 1번 장이 그려진다 */
   function showLiveGate(){
     const ov=el('div','livegate');
-    ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b>'+tL('장표 구성을 세팅하고 있어요')+'</b>'
-      +'<span class="lg-stage">'+tL('브리프를 분석하고 있어요…')+'</span>'
+    ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b class="lg-stage">'+tL('브리프를 분석하고 있어요…')+'</b>'
       +'<div class="lg-bar"><i style="width:12%"></i></div>'
       +'<span class="lg-hint">'+tL('세팅이 끝나면 한 장씩 그려져요')+'</span></div>';
     document.body.append(ov);
     const st=ov.querySelector('.lg-stage'), bar=ov.querySelector('.lg-bar i');
-    // 오래 걸리는 구간이라 문구를 넉넉히 — 기획→디자인으로 넘어가는 서사, 마지막 문구에서 대기
+    /* 바는 감속 곡선으로 96%에 수렴(단조증가) — 문구는 바 위치에 연동.
+       짧은 런은 앞 문구만 보고 끝나고, 긴 런(20장+)일수록 뒷 문구가 자연히 늦게 나온다.
+       "첫 장부터 그릴게요"는 92%(체감 ~37초)에서만. */
     const stages=[
-      [tL('핵심 메시지를 정리하고 있어요…'),26],
-      [tL('목차 구성을 잡고 있어요…'),40],
-      [tL('장표 틀을 세팅하고 있어요…'),52],
-      [tL('기획이 완료되고 있어요…'),64],
-      [tL('이제 디자인을 입힐 준비를 하고 있어요…'),76],
-      [tL('첫 장부터 차례로 그릴게요, 곧 시작돼요…'),88],
+      [26, tL('핵심 메시지를 정리하고 있어요…')],      // ~2초
+      [40, tL('목차 구성을 잡고 있어요…')],            // ~5초
+      [52, tL('장표 틀을 세팅하고 있어요…')],          // ~8초
+      [64, tL('기획이 완료되고 있어요…')],             // ~12초
+      [76, tL('이제 디자인을 입힐 준비를 하고 있어요…')], // ~17초
+      [92, tL('첫 장부터 차례로 그릴게요, 곧 시작돼요…')], // ~37초
     ];
-    let i=0, barW=12;
-    const setBar=(w)=>{ if(w>barW){ barW=w; bar.style.width=w+'%'; } };   // 프로그레스는 단조증가 — 절대 뒤로 안 간다
-    const t=setInterval(()=>{ if(i<stages.length){ st.textContent=stages[i][0]; setBar(stages[i][1]); i++; } else clearInterval(t); }, 2600);
+    let barW=12, si=0;
+    const t=setInterval(()=>{
+      barW=Math.min(96, barW+(96-barW)*0.033);
+      bar.style.width=barW.toFixed(1)+'%';
+      while(si<stages.length && barW>=stages[si][0]){ st.textContent=stages[si][1]; si++; }
+    }, 400);
     return { close:()=>{ clearInterval(t); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); } };
   }
 
