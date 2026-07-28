@@ -975,10 +975,13 @@
       // AI 되묻기(내용 기반 질문) + 종류별 기본 질문(분량·목표 등) — 전부 카드 한 장 페이저로
       let aiQs=[], freeQs=[];
       if(S.plan && window.LLM && LLM.aiAvailable()){
+        // 대기 구간(2~5초)이 심심하지 않게 — 버블 하나 먼저, 길어지면 시간차로 하나 더
+        bot(_L('입력해주신 내용 잘 받았어요! 꼼꼼히 읽어보는 중이에요 📝'));
         const tp=typing();
+        const extraT=setTimeout(()=>{ const r=bot(_L('어떤 걸 여쭤보면 초안이 더 정확해질지 정리하고 있어요.')); msgs.insertBefore(r, tp); toBottom(); }, 1800);
         let it=null;
         try{ it=await LLM.intake({kind:S.kind, plan:S.plan}); }catch(e){ console.warn('[ai] intake 실패(무시)', e); }
-        tp.remove();
+        clearTimeout(extraT); tp.remove();
         if(it){
           if(it.name && !S.name) S.name=it.name;
           if(it.product && !S.product) S.product=it.product;
