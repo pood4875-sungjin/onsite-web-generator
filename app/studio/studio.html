@@ -1369,7 +1369,7 @@
       tL('첫 장부터 차례로 그릴게요…'),
     ];
     let barW=12, pi=0;
-    const tb=setInterval(()=>{ barW=Math.min(96, barW+(96-barW)*0.033); bar.style.width=barW.toFixed(1)+'%'; }, 400);
+    const tb=setInterval(()=>{ barW=Math.min(96, barW+(96-barW)*0.033); bar.style.width=barW.toFixed(1)+'%'; }, 400);   // 감속 곡선 — 3초 30%·12초 65%·24초 84%
     const tp=setInterval(()=>{ if(pi<main.length){ st.textContent=main[pi]; pi++; } else clearInterval(tp); }, 3000);
     return { close:()=>{ clearInterval(tb); clearInterval(tp); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); } };
   }
