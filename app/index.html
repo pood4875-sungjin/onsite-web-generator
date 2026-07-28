@@ -790,13 +790,19 @@
       const isPitch = !!packKind;
       const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind };
       const hasBrief=!!plan;
-      let deck=null;
+      // AI 가능하면 생성을 스튜디오로 넘김 — 즉시 이동해서 좌측 챗이 과정을 안내하고
+      // 우측에 장표가 한 장씩 실제로 그려진다 (pendingBrief를 스튜디오가 읽어 라이브 생성)
       if(hasBrief && window.LLM && LLM.aiAvailable()){
-        // 모달 안에 실시간 로그 — 완료 즉시 스튜디오로 넘어가 순차 등장 연출로 이어짐
-        const stop=showAiGen('compose');
-        try{ deck=await LLM.composeDeck(brief, stop.onText); stop(true); await new Promise(r=>setTimeout(r,650)); }
-        catch(e){ stop(false); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+        const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:packKind||'ppt' });
+        const full=getProject(p.id); const pg0=full.pages[0];
+        pg0.pageType='ppt'; pg0.name='덱';
+        pg0.data={ slides:[], style:S.pptStyle, accent:'blue' };
+        pg0.pendingBrief=brief;
+        pg0.chat={ log:[], idx:8, generated:false };
+        full.lang=S.lang; upsertProject(full);
+        await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id; return;
       }
+      let deck=null;
       // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
       if(!deck){
         if(packKind==='honors') deck = (hasBrief && window.honorsComposeDeck) ? honorsComposeDeck(brief)

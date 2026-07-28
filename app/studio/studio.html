@@ -1212,6 +1212,76 @@
     fitPreview();   // 레일 노출로 줄어든 폭 반영
   }
 
+  /* ---- 라이브 생성 — index에서 넘어온 pendingBrief를 스튜디오에서 스트리밍 생성.
+     좌측 챗이 과정을 안내하고, 우측 뷰어·썸네일 레일에 장표가 한 장씩 실제로 그려진다. ---- */
+  let _liveComposing=false;
+  // 스트리밍 누적 텍스트에서 "완결된 슬라이드 객체"만 추출 — 중괄호 밸런스 스캔(문자열 내 괄호 무시)
+  function partialSlides(full){
+    const i=full.indexOf('"slides"'); if(i<0) return [];
+    const a=full.indexOf('[', i); if(a<0) return [];
+    const out=[]; let depth=0, start=-1, inStr=false, esc=false;
+    for(let k=a+1;k<full.length;k++){
+      const ch=full[k];
+      if(inStr){ if(esc) esc=false; else if(ch==='\\') esc=true; else if(ch==='"') inStr=false; continue; }
+      if(ch==='"'){ inStr=true; continue; }
+      if(ch==='{'){ if(depth===0) start=k; depth++; }
+      else if(ch==='}'){ depth--; if(depth===0 && start>=0){ try{ const o=JSON.parse(full.slice(start,k+1)); if(o && o.type) out.push(o); }catch(e){} start=-1; } }
+      else if(ch===']' && depth===0) break;
+    }
+    return out;
+  }
+  async function startLiveCompose(){
+    const brief=pageRef.pendingBrief;
+    _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
+    botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
+    const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
+    prow.append(pbub); msgs.append(prow); scroll();
+    let n=0;
+    const onText=(full)=>{
+      const sl=partialSlides(full);
+      if(sl.length>n){
+        n=sl.length;
+        data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
+        const last=sl[sl.length-1];
+        pbub.textContent='✍️ '+n+tL('번째 장 작성 중')+(last.title?' — '+last.title:'');
+        try{ frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(last))]); }catch(e){}
+        try{ rebuildThumbRail(); setCurThumb(n-1); }catch(e){}
+      }
+    };
+    try{
+      const deck=await LLM.composeDeck(brief, onText);
+      data.slides=deck.slides; data.style=deck.style||data.style; data.accent=deck.accent||data.accent;
+      delete pageRef.pendingBrief;
+      pageRef.data=JSON.parse(JSON.stringify(data));
+      prow.remove();
+      botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 편집 모드에서 바로 수정하거나, 채팅으로 고쳐달라고 말해보세요.'));
+      pageRef.chat={ log:chatLog, idx:idx, generated:true };
+      upsertProject(project);
+      _liveComposing=false;
+      mountWidget('done'); render(); scroll();
+      initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI();
+      setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
+    }catch(e){
+      console.warn('[live compose 실패 → 템플릿 폴백]', e);
+      prow.remove();
+      botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
+      try{
+        const pk=brief&&brief.pack;
+        const fb = pk==='honors' && window.honorsTemplateDeck ? honorsTemplateDeck()
+                 : pk==='pitch' && window.pitchTemplateDeck ? pitchTemplateDeck()
+                 : window.pptTemplateDeck ? pptTemplateDeck((brief&&brief.style)||'ax') : {slides:[]};
+        data.slides=fb.slides;
+      }catch(e2){}
+      delete pageRef.pendingBrief;
+      pageRef.data=JSON.parse(JSON.stringify(data));
+      pageRef.chat={ log:chatLog, idx:idx, generated:true };
+      upsertProject(project);
+      _liveComposing=false;
+      mountWidget('done'); render(); scroll();
+      initPptChat();
+    }
+  }
+
   /* ---- PPT 내용수정 채팅 — 내용·구조(추가/분할/삭제/순서) AI 수정. 디자인만 안내로 리다이렉트 ---- */
   // AI 작업중 버블: 단계 메시지 순환 + 경과초 + 진행바. 반환 {row, done()} — done()이 버블 제거.
   function workingBubble(){
@@ -2080,8 +2150,13 @@
       else mountWidget(step);
       render(); scroll();
     } else if(curMode().editOnly){
-      // 편집전용(이메일/PPT): 생성 플로우 없이 기존 구성 그대로 편집
-      generated=true; idx=STEPS.indexOf('done'); botBubble(`${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
+      if(curMode().slides && pageRef.pendingBrief && window.LLM && LLM.aiAvailable()){
+        // index에서 브리프만 들고 넘어온 상태 — 여기서 라이브 생성 (좌측 안내 + 우측 장표가 그려짐)
+        startLiveCompose(); render();
+      } else {
+        // 편집전용(이메일/PPT): 생성 플로우 없이 기존 구성 그대로 편집
+        generated=true; idx=STEPS.indexOf('done'); botBubble(`${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
+      }
     } else {
       const hasContent = !!((data.features && data.features.length) || (data.stats && data.stats.length) || data.bannerText); // 페이지 고유 콘텐츠 기준(공유 시드 제외)
       if(hasContent){ generated=true; idx=STEPS.indexOf('done'); botBubble(`📂 ${project.name} · ${pageRef.name} — ${tL('편집 중')}`); mountWidget('done'); }
@@ -2107,9 +2182,10 @@
     const rs=document.getElementById('reset'); if(rs) rs.style.display='none';
     badge.style.cursor='default';
     // eDM=편집전용 → 대화 패널은 그대로 유지(생성 위젯 없이 편집 안내만). 자동 편집모드.
-    setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
+    // 라이브 생성 중엔 보류 — 완료 시 startLiveCompose가 직접 편집 진입·initPptChat 수행
+    if(!_liveComposing) setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150);
     // PPT: 내용수정 채팅(AI 가능 시) + 통합 되돌리기 버튼 + 진입 순차 등장
-    if(curMode().slides){ initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI(); if(params.get('edit')) _pptRevealPending=true; }
+    if(curMode().slides && !_liveComposing){ initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI(); if(params.get('edit')) _pptRevealPending=true; }
   } else if(params.get('edit') && generated){ setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 150); }
 
   // PPT: 내보내기 = 단일 버튼 + 형식 모달(PPTX/PDF/HTML) — 젠스파크식
