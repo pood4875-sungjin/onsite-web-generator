@@ -1120,9 +1120,9 @@
     const d=el('div','card'); d.style.textAlign='center';
     // 편집전용(이메일/PPT): 재생성 없이 편집 안내만 (packMode.doneKo)
     if(curMode().editOnly){
+      // PPT 계열은 채팅 온보딩(✏️ 안내)이 같은 내용을 말하므로 카드 문구 생략 — 패널만 갱신
+      if(curMode().slides){ refreshPptPanel(); d.style.display='none'; return d; }
       d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL(curMode().doneKo||'우측 편집 버튼으로 수정하세요.')}</span>`));
-      // 슬라이드 내비는 프리뷰 좌측 썸네일 스트립
-      if(curMode().slides) refreshPptPanel();
       return d;
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.')}</span>`));
@@ -1311,10 +1311,11 @@
   /* 장 리빌 — 텍스트를 숨겼다가 커서가 그 자리로 옮겨가며 하나씩 표시.
      제목류(큰 글씨)는 글자 단위 타이핑. 큐가 밀려 있으면(fast) 가속. done 콜백 필수. */
   let _revealTimer=null, _revealCleanup=null;
-  function revealSlideTyping(done, fast){
+  function revealSlideTyping(done, fast, rootEl){
     const doc=frame.contentDocument;
     if(!doc || !doc.body){ if(done) done(); return; }
-    const els=[...doc.body.querySelectorAll('*')].filter(e=>
+    const root=rootEl||doc.body;   // 스택 재생 시 "방금 추가된 장"만 리빌 — 앞 장들은 그대로 둔다
+    const els=[...root.querySelectorAll('*')].filter(e=>
       e.children.length===0 && e.textContent && e.textContent.trim().length>1 && e.offsetParent!==null).slice(0,16);
     if(!els.length){ if(done) done(); return; }
     els.forEach(e=>{ e.__vis=e.style.visibility; e.__full=e.textContent; e.style.visibility='hidden'; });
@@ -1349,22 +1350,35 @@
   /* 준비 게이트 — 첫 장이 완결될 때까지 풀스크린 프로그레스 모달. 걷히는 순간 바로 1번 장이 그려진다 */
   function showLiveGate(){
     const ov=el('div','livegate');
-    ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b>'+tL('AI가 장표를 만들고 있어요')+'</b>'
+    ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b>'+tL('장표 구성을 세팅하고 있어요')+'</b>'
       +'<span class="lg-stage">'+tL('브리프를 분석하는 중…')+'</span>'
       +'<div class="lg-bar"><i style="width:16%"></i></div>'
-      +'<span class="lg-hint">'+tL('잠시 후 한 장씩 그려지는 걸 볼 수 있어요')+'</span></div>';
+      +'<span class="lg-hint">'+tL('세팅이 끝나면 한 장씩 그려져요')+'</span></div>';
     document.body.append(ov);
     const st=ov.querySelector('.lg-stage'), bar=ov.querySelector('.lg-bar i');
-    const stages=[[tL('목차를 구성하는 중…'),44],[tL('표지를 쓰는 중…'),70],[tL('거의 다 됐어요…'),86]];
+    const stages=[[tL('목차 구성을 잡는 중…'),44],[tL('장표 틀을 세팅하는 중…'),70],[tL('거의 다 됐어요…'),86]];
     let i=0; const t=setInterval(()=>{ if(i<stages.length){ st.textContent=stages[i][0]; bar.style.width=stages[i][1]+'%'; i++; } else clearInterval(t); }, 2400);
     return ()=>{ clearInterval(t); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); };
   }
 
-  /* 재생 큐 — 스트리밍 도착 속도와 무관하게 "한 장 한 장 천천히" 순서대로 연출 */
-  let _slideQ=[], _slidePlaying=false, _liveStreamDone=false, _liveDrainCb=null, _livePbub=null;
+  /* 재생 큐 — 스트리밍 도착 속도와 무관하게 "한 장 한 장 천천히" 순서대로 연출.
+     뷰어는 완성 장 누적 스택 — 새 장은 맨 아래에 추가되고 스크롤이 따라 내려간다. */
+  let _slideQ=[], _slidePlaying=false, _liveStreamDone=false, _liveDrainCb=null, _livePbub=null, _livePlayed=[];
   function queueSlide(slide, num){
     _slideQ.push({slide:slide, num:num});
     playNextSlide();
+  }
+  // 다음 장 대기 스켈레톤 — 완성 스택 맨 아래 "다음 장 자리"를 깔아 쌓이는 흐름이 끊기지 않게
+  function appendSkelCard(){
+    try{
+      const doc=frame.contentDocument, stack=doc && doc.querySelector('.ppt-stack');
+      if(!stack || doc.getElementById('liveSkel')) return;
+      if(!doc.getElementById('liveSkelKf')){ const st=doc.createElement('style'); st.id='liveSkelKf'; st.textContent='@keyframes lsq{to{background-position:-200% 0}}'; doc.head.append(st); }
+      const d=doc.createElement('div'); d.id='liveSkel';
+      d.style.cssText='width:var(--slide-w,1280px);height:var(--slide-h,720px);flex:none;border-radius:6px;opacity:.5;background:linear-gradient(100deg,#141926 40%,#1d2436 50%,#141926 60%);background-size:200% 100%;animation:lsq 1.4s linear infinite';
+      stack.append(d);
+      d.scrollIntoView({behavior:'smooth', block:'end'});
+    }catch(e){}
   }
   function playNextSlide(){
     if(_slidePlaying) return;
@@ -1373,12 +1387,22 @@
     _slidePlaying=true;
     if(_livePbub) _livePbub.textContent='✍️ '+item.num+tL('번째 장 작성 중')+(item.slide.title?' — '+item.slide.title:'');
     const fast=_slideQ.length>3;   // 넉 장 이상 밀릴 때만 가속 — 기본은 느긋하게(로딩 시간을 연출로 채움)
+    const fin=()=>{ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false;
+      if(_liveComposing && _slideQ.length===0 && !_liveStreamDone) appendSkelCard();
+      setTimeout(playNextSlide, fast?250:800); };
     try{
+      _livePlayed.push(JSON.parse(JSON.stringify(item.slide)));
       frame.onload=()=>{ frame.onload=null;
-        try{ revealSlideTyping(()=>{ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; setTimeout(playNextSlide, fast?250:800); }, fast); }
-        catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
+        let rootEl=null;
+        try{
+          const doc=frame.contentDocument, secs=doc.querySelectorAll('.ppt-stack > .slide');
+          rootEl=secs.length?secs[secs.length-1]:null;
+          if(rootEl) doc.defaultView.scrollTo(0, Math.max(0, rootEl.offsetTop-20));   // 새 장 위치로 즉시 스크롤 — 그 자리에서 그려진다
+        }catch(e){}
+        try{ revealSlideTyping(fin, fast, rootEl); }
+        catch(e){ fin(); }
       };
-      frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(item.slide))]);
+      frame.srcdoc=renderDeckFor(_livePlayed.map(s=>JSON.parse(JSON.stringify(s))));
     }catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
   }
   async function startLiveCompose(){
@@ -1387,7 +1411,7 @@
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
-    _livePbub=pbub; _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _liveShownN=0;
+    _livePbub=pbub; _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _liveShownN=0; _livePlayed=[];
     try{ empty.classList.add('hide'); }catch(e){}   // render()를 안 거치므로 빈 상태 오버레이 직접 숨김
     paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
     try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
@@ -1413,7 +1437,7 @@
       delete pageRef.pendingBrief;
       pageRef.data=JSON.parse(JSON.stringify(data));
       prow.remove();
-      botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 편집 모드에서 바로 수정하거나, 채팅으로 고쳐달라고 말해보세요.'));
+      botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 슬라이드 텍스트를 클릭하면 바로 고칠 수 있어요.'));
       pageRef.chat={ log:chatLog, idx:idx, generated:true };
       upsertProject(project);
       _liveComposing=false; _livePbub=null; if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
@@ -1423,7 +1447,7 @@
     }catch(e){
       console.warn('[live compose 실패 → 템플릿 폴백]', e);
       closeGate();
-      _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _livePbub=null;
+      _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _livePbub=null; _livePlayed=[];
       prow.remove(); if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
       try{
