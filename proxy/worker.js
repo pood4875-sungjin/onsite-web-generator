@@ -9,7 +9,7 @@
 
 const MODEL = 'claude-sonnet-5';   // 서버 고정 — 클라이언트가 못 바꿈
 const MAX_TOKENS = 8000;   // deep(20~24장) 덱 JSON이 4000에서 잘리던 문제 — 상한 확대
-const DAILY_LIMIT = 999;           // 임시 해제(혼자 사용 중). 팀 배포 시 9로 복원할 것
+const DAILY_LIMIT = 30;            // IP당 일일 한도 — 외부 공유 시작(팀원 시범)이라 복원. 전면 배포 시 정책 재논의
 
 const CORS = {
   'access-control-allow-origin': '*',
