@@ -1251,21 +1251,20 @@
     }
     return out;
   }
-  // 스켈레톤 레일 — 완성된 장 + "지금 그리는 다음 장" 1칸만 스켈레톤 (1칸에서 시작해 늘어남)
+  // 라이브 레일 — "연출이 끝난 장"까지만 표시(_liveShownN). 스트리밍이 앞서가도 레일은 재생 속도를 따라감
+  let _liveShownN=0;
   function paintLiveRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     rail.style.display='flex'; rail.innerHTML='';
     const W=132, sc=(W-4)/1280;
-    const done=(data.slides||[]);
-    const total=done.length + (_liveComposing?1:0) || 1;
+    const done=(data.slides||[]).slice(0, _liveShownN);
     done.forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
       f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]); f.style.transform='scale('+sc+')';
       t.append(f); rail.append(t);
     });
-    for(let i=done.length;i<total;i++){ const t=el('div','thumb skel','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px'; rail.append(t); }
-    const cu=rail.children[Math.max(0,done.length-1)]; if(cu) cu.scrollIntoView({block:'nearest'});
+    const cu=rail.children[done.length-1]; if(cu) cu.scrollIntoView({block:'nearest'});
     fitPreview();
   }
   // AI 작업 커서 — 사람이 조작하듯 뷰어 위를 빠르게 오가며 클릭 펄스 후 장이 그려짐
@@ -1290,34 +1289,64 @@
       + bar('90%','3vh') + bar('82%','3vh') + bar('60%','3vh')
       + '</div><style>@keyframes s{to{background-position:-200% 0}}</style></body></html>';
   }
-  // 장 리빌 — 렌더된 장의 텍스트를 잠시 숨겼다가, 커서가 실제 그 자리로 옮겨가며 하나씩 "입력"됨
+  /* 장 리빌 — 텍스트를 숨겼다가 커서가 그 자리로 옮겨가며 하나씩 표시.
+     제목류(큰 글씨)는 글자 단위 타이핑. 큐가 밀려 있으면(fast) 가속. done 콜백 필수. */
   let _revealTimer=null, _revealCleanup=null;
-  function revealSlideTyping(){
-    const doc=frame.contentDocument; if(!doc || !doc.body) return;
+  function revealSlideTyping(done, fast){
+    const doc=frame.contentDocument;
+    if(!doc || !doc.body){ if(done) done(); return; }
     const els=[...doc.body.querySelectorAll('*')].filter(e=>
-      e.children.length===0 && e.textContent && e.textContent.trim().length>1 && e.offsetParent!==null).slice(0,18);
-    if(!els.length) return;
-    els.forEach(e=>{ e.__vis=e.style.visibility; e.style.visibility='hidden'; });
+      e.children.length===0 && e.textContent && e.textContent.trim().length>1 && e.offsetParent!==null).slice(0,16);
+    if(!els.length){ if(done) done(); return; }
+    els.forEach(e=>{ e.__vis=e.style.visibility; e.__full=e.textContent; e.style.visibility='hidden'; });
     const fr=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
     const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || 1280, sc=fr.width/iw;
-    let i=0;
-    _revealCleanup=()=>{ clearTimeout(_revealTimer); els.forEach(e=>{ e.style.visibility=e.__vis||''; }); _revealCleanup=null; };
+    let i=0, typedN=0;
+    _revealCleanup=()=>{ clearTimeout(_revealTimer);
+      els.forEach(e=>{ if(e.__full!=null) e.textContent=e.__full; e.style.visibility=e.__vis||''; });
+      _revealCleanup=null; };
+    function typeText(e, cb){
+      const full=e.__full; e.textContent=''; e.style.visibility=e.__vis||'';
+      let k=0;
+      (function t(){ if(k>=full.length){ cb(); return; }
+        k+=1; e.textContent=full.slice(0,k); _revealTimer=setTimeout(t, fast?8:26); })();
+    }
     (function step(){
-      if(i>=els.length){ _revealCleanup=null; return; }
+      if(i>=els.length){ _revealCleanup=null; if(done) done(); return; }
       const e=els[i], r=e.getBoundingClientRect();
       cursorToPx(fr.left-pr.left + (r.left+Math.min(r.width*0.4,80))*sc,
                  fr.top-pr.top + (r.top+r.height*0.5)*sc, i%3===0);
-      e.style.visibility=e.__vis||'';
-      i++; _revealTimer=setTimeout(step, i<3?170:95);
+      i++;
+      const fs=parseFloat((doc.defaultView.getComputedStyle(e).fontSize))||14;
+      if(fs>=24 && typedN<2 && e.__full.trim().length>2){
+        typedN++;
+        _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, fast?60:170); }), fast?60:200);
+      } else {
+        e.style.visibility=e.__vis||'';
+        _revealTimer=setTimeout(step, fast?60:185);
+      }
     })();
   }
-  function drawSlideWithCursor(slide){
-    if(_revealCleanup) _revealCleanup();   // 이전 장 리빌이 남았으면 즉시 전체 표시
+  /* 재생 큐 — 스트리밍 도착 속도와 무관하게 "한 장 한 장 천천히" 순서대로 연출 */
+  let _slideQ=[], _slidePlaying=false, _liveStreamDone=false, _liveDrainCb=null, _livePbub=null;
+  function queueSlide(slide, num){
+    _slideQ.push({slide:slide, num:num});
+    playNextSlide();
+  }
+  function playNextSlide(){
+    if(_slidePlaying) return;
+    const item=_slideQ.shift();
+    if(!item){ if(_liveStreamDone && _liveDrainCb){ const cb=_liveDrainCb; _liveDrainCb=null; cb(); } return; }
+    _slidePlaying=true;
+    if(_livePbub) _livePbub.textContent='✍️ '+item.num+tL('번째 장 작성 중')+(item.slide.title?' — '+item.slide.title:'');
+    const fast=_slideQ.length>1;   // 두 장 이상 밀리면 가속
     try{
-      frame.onload=()=>{ frame.onload=null; try{ revealSlideTyping(); }catch(e){} };
-      frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(slide))]);
-    }catch(e){}
-    paintLiveRail();
+      frame.onload=()=>{ frame.onload=null;
+        try{ revealSlideTyping(()=>{ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; setTimeout(playNextSlide, fast?150:420); }, fast); }
+        catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
+      };
+      frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(item.slide))]);
+    }catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
   }
   async function startLiveCompose(){
     const brief=pageRef.pendingBrief;
@@ -1325,7 +1354,8 @@
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
-    // 딤·스피너 없이 — 뷰어는 스켈레톤 장, 레일은 스켈레톤 썸네일로 시작 (바로 작업판이 보임)
+    _livePbub=pbub; _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _liveShownN=0;
+    // 딤·스피너 없이 — 뷰어는 빈 장 골격으로 시작 (바로 작업판이 보임)
     try{ empty.classList.add('hide'); }catch(e){}   // render()를 안 거치므로 빈 상태 오버레이 직접 숨김
     paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
     try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
@@ -1333,15 +1363,15 @@
     const onText=(full)=>{
       const sl=partialSlides(full);
       if(sl.length>n){
+        for(let k=n;k<sl.length;k++) queueSlide(JSON.parse(JSON.stringify(sl[k])), k+1);
         n=sl.length;
         data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
-        const last=sl[sl.length-1];
-        pbub.textContent='✍️ '+n+tL('번째 장 작성 중')+(last.title?' — '+last.title:'');
-        drawSlideWithCursor(last);
       }
     };
     try{
       const deck=await LLM.composeDeck(brief, onText);
+      // 남은 큐를 다 재생할 때까지 대기 — "한 장 한 장 천천히"가 끝나야 완료 처리
+      await new Promise(res=>{ _liveStreamDone=true; _liveDrainCb=res; playNextSlide(); });
       data.slides=deck.slides; data.style=deck.style||data.style; data.accent=deck.accent||data.accent;
       delete pageRef.pendingBrief;
       pageRef.data=JSON.parse(JSON.stringify(data));
@@ -1349,12 +1379,13 @@
       botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 편집 모드에서 바로 수정하거나, 채팅으로 고쳐달라고 말해보세요.'));
       pageRef.chat={ log:chatLog, idx:idx, generated:true };
       upsertProject(project);
-      _liveComposing=false; if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
+      _liveComposing=false; _livePbub=null; if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI();
       setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
     }catch(e){
       console.warn('[live compose 실패 → 템플릿 폴백]', e);
+      _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _livePbub=null;
       prow.remove(); if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
       try{
