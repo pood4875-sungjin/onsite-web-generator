@@ -234,6 +234,21 @@
     padding:3px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 12px rgba(91,157,255,.4)}
   #aiCursor.click svg{animation:aiClick .3s ease}
   @keyframes aiClick{50%{transform:scale(.78)}}
+  /* 준비 게이트 — 첫 장 완결 전 풀스크린 프로그레스 */
+  .livegate{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:rgba(8,10,20,.55);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:opacity .3s ease}
+  .livegate.off{opacity:0;pointer-events:none}
+  .lg-box{display:flex;flex-direction:column;align-items:center;gap:13px;background:#151827;border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;padding:38px 48px 30px;width:min(420px,90vw);text-align:center;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+  .lg-box b{font-size:16px;font-weight:700}
+  .lg-stage{font-size:13px;color:rgba(255,255,255,.65);min-height:18px}
+  .lg-orb{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#3fe0c6,#5b9dff 46%,#8a6bff 82%);
+    box-shadow:0 0 30px rgba(90,157,255,.55);animation:lgPulse 1.9s ease-in-out infinite;margin-bottom:2px}
+  @keyframes lgPulse{0%,100%{transform:scale(.92);opacity:.85}50%{transform:scale(1.05);opacity:1}}
+  .lg-bar{width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .lg-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#3fe0c6,#5b9dff 52%,#8a6bff);
+    box-shadow:0 0 10px rgba(91,157,255,.45);transition:width .9s cubic-bezier(.22,1,.36,1)}
+  .lg-hint{font-size:11.5px;color:rgba(255,255,255,.45)}
   .thumb:hover{border-color:rgba(255,255,255,.28)}
   .thumb.cur{border-color:var(--accent)}
   .thumb .tnum{position:absolute;left:5px;top:4px;z-index:2;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:5px;padding:1px 5px}
@@ -1288,7 +1303,9 @@
     const bar=(w,h)=>'<div style="height:'+h+'%;width:'+w+'%;border-radius:10px;background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:s 1.4s linear infinite"></div>';
     return '<!doctype html><html><body style="margin:0;background:#0b0e16;display:flex;justify-content:center;align-items:flex-start;padding:18px 14px;box-sizing:border-box">'
       + '<div style="width:min(96vw,1280px);aspect-ratio:16/9;background:#fff;border-radius:10px;box-sizing:border-box;padding:6% 7%;display:flex;flex-direction:column;gap:5%;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
-      + bar(44,12) + bar(66,6) + '<div style="flex:1"></div>' + bar(88,5) + bar(78,5) + bar(56,5)
+      // 첫 장이 완결되기 전에도 스트리밍으로 도착하는 제목 글자를 여기 실시간으로 쓴다
+      + '<div id="skTitle" style="min-height:14%;font:600 46px/1.3 Pretendard,\'Apple SD Gothic Neo\',sans-serif;color:#141a2a;letter-spacing:-.5px"></div>'
+      + bar(66,6) + '<div style="flex:1"></div>' + bar(88,5) + bar(78,5) + bar(56,5)
       + '</div><style>@keyframes s{to{background-position:-200% 0}}</style></body></html>';
   }
   /* 장 리빌 — 텍스트를 숨겼다가 커서가 그 자리로 옮겨가며 하나씩 표시.
@@ -1329,6 +1346,20 @@
       }
     })();
   }
+  /* 준비 게이트 — 첫 장이 완결될 때까지 풀스크린 프로그레스 모달. 걷히는 순간 바로 1번 장이 그려진다 */
+  function showLiveGate(){
+    const ov=el('div','livegate');
+    ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b>'+tL('AI가 장표를 만들고 있어요')+'</b>'
+      +'<span class="lg-stage">'+tL('브리프를 분석하는 중…')+'</span>'
+      +'<div class="lg-bar"><i style="width:16%"></i></div>'
+      +'<span class="lg-hint">'+tL('잠시 후 한 장씩 그려지는 걸 볼 수 있어요')+'</span></div>';
+    document.body.append(ov);
+    const st=ov.querySelector('.lg-stage'), bar=ov.querySelector('.lg-bar i');
+    const stages=[[tL('목차를 구성하는 중…'),44],[tL('표지를 쓰는 중…'),70],[tL('거의 다 됐어요…'),86]];
+    let i=0; const t=setInterval(()=>{ if(i<stages.length){ st.textContent=stages[i][0]; bar.style.width=stages[i][1]+'%'; i++; } else clearInterval(t); }, 2400);
+    return ()=>{ clearInterval(t); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); };
+  }
+
   /* 재생 큐 — 스트리밍 도착 속도와 무관하게 "한 장 한 장 천천히" 순서대로 연출 */
   let _slideQ=[], _slidePlaying=false, _liveStreamDone=false, _liveDrainCb=null, _livePbub=null;
   function queueSlide(slide, num){
@@ -1357,14 +1388,17 @@
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
     _livePbub=pbub; _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _liveShownN=0;
-    // 딤·스피너 없이 — 뷰어는 빈 장 골격으로 시작 (바로 작업판이 보임)
     try{ empty.classList.add('hide'); }catch(e){}   // render()를 안 거치므로 빈 상태 오버레이 직접 숨김
     paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
     try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
+    // 첫 장이 완결될 때까지 풀스크린 프로그레스 — 걷히는 순간 바로 1번 장이 그려진다
+    let hideGate=showLiveGate(), gateOpen=true;
+    const closeGate=()=>{ if(gateOpen){ gateOpen=false; hideGate(); } };
     let n=0;
     const onText=(full)=>{
       const sl=partialSlides(full);
       if(sl.length>n){
+        closeGate();   // 첫 장 준비 완료 → 모달 걷고 즉시 그리기 시작
         for(let k=n;k<sl.length;k++) queueSlide(JSON.parse(JSON.stringify(sl[k])), k+1);
         n=sl.length;
         data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
@@ -1372,6 +1406,7 @@
     };
     try{
       const deck=await LLM.composeDeck(brief, onText);
+      closeGate();
       // 남은 큐를 다 재생할 때까지 대기 — "한 장 한 장 천천히"가 끝나야 완료 처리
       await new Promise(res=>{ _liveStreamDone=true; _liveDrainCb=res; playNextSlide(); });
       data.slides=deck.slides; data.style=deck.style||data.style; data.accent=deck.accent||data.accent;
@@ -1387,6 +1422,7 @@
       setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
     }catch(e){
       console.warn('[live compose 실패 → 템플릿 폴백]', e);
+      closeGate();
       _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _livePbub=null;
       prow.remove(); if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
