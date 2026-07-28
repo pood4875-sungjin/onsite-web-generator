@@ -1358,7 +1358,7 @@
     /* 바는 감속 곡선으로 96%에 수렴(단조증가) — 문구는 바 위치에 연동.
        짧은 런은 앞 문구만 보고 끝나고, 긴 런(20장+)일수록 뒷 문구가 자연히 늦게 나온다.
        "첫 장부터 그릴게요"는 92%(체감 ~37초)에서만. */
-    /* 문구는 고정 3초 간격 — 본 시퀀스가 끝나면 마무리 문구 풀이 계속 순환(한 문구에 멈춰서 지루해지지 않게).
+    /* 문구는 고정 3초 균등 간격으로 7개 순차 — 마지막 문구에서 유지(언제 끝날지 모르는 대기).
        바는 감속 곡선으로 96% 수렴(단조증가) — 문구와 독립. */
     const main=[
       tL('핵심 메시지를 정리하고 있어요…'),
@@ -1368,15 +1368,9 @@
       tL('이제 디자인을 입힐 준비를 하고 있어요…'),
       tL('첫 장부터 차례로 그릴게요, 곧 시작돼요…'),
     ];
-    const tail=[
-      tL('표지 문구를 고르고 있어요…'),
-      tL('디테일을 다듬고 있어요…'),
-      tL('문구 톤을 맞추고 있어요…'),
-      tL('조금만요, 곧 첫 장이 나와요…'),
-    ];
     let barW=12, pi=0;
     const tb=setInterval(()=>{ barW=Math.min(96, barW+(96-barW)*0.033); bar.style.width=barW.toFixed(1)+'%'; }, 400);
-    const tp=setInterval(()=>{ st.textContent = pi<main.length ? main[pi] : tail[(pi-main.length)%tail.length]; pi++; }, 3000);
+    const tp=setInterval(()=>{ if(pi<main.length){ st.textContent=main[pi]; pi++; } else clearInterval(tp); }, 3000);
     return { close:()=>{ clearInterval(tb); clearInterval(tp); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); } };
   }
 
