@@ -1264,7 +1264,9 @@
       f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]); f.style.transform='scale('+sc+')';
       t.append(f); rail.append(t);
     });
-    const cu=rail.children[done.length-1]; if(cu) cu.scrollIntoView({block:'nearest'});
+    // 라이브 중엔 "지금 그리는 장" 1칸을 스켈레톤으로 — 레일이 비어 보이지 않게
+    if(_liveComposing){ const t=el('div','thumb skel','<span class="tnum">'+(done.length+1)+'</span>'); t.style.width=W+'px'; rail.append(t); }
+    const cu=rail.children[Math.max(0,done.length-1)]; if(cu) cu.scrollIntoView({block:'nearest'});
     fitPreview();
   }
   // AI 작업 커서 — 사람이 조작하듯 뷰어 위를 빠르게 오가며 클릭 펄스 후 장이 그려짐
@@ -1281,12 +1283,12 @@
     c.style.transform='translate('+x+'px,'+y+'px)';
     if(click){ c.classList.remove('click'); void c.offsetWidth; c.classList.add('click'); }
   }
-  // 뷰어 초기 스켈레톤 장 — 딤·스피너 대신 "빈 장표 골격"으로 시작
+  // 뷰어 초기 스켈레톤 — 16:9 "빈 장표 카드" 한 장만 (뷰어 전체로 늘어지지 않게)
   function skeletonSlideHtml(){
-    const bar=(w,h)=>'<div style="height:'+h+';width:'+w+';border-radius:10px;background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:s 1.4s linear infinite"></div>';
-    return '<!doctype html><html><body style="margin:0;background:#fff"><div style="width:100vw;height:100vh;box-sizing:border-box;padding:9% 10%;display:flex;flex-direction:column;gap:4vh">'
-      + bar('44%','7vh') + bar('68%','3.2vh') + '<div style="flex:1"></div>'
-      + bar('90%','3vh') + bar('82%','3vh') + bar('60%','3vh')
+    const bar=(w,h)=>'<div style="height:'+h+'%;width:'+w+'%;border-radius:10px;background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:s 1.4s linear infinite"></div>';
+    return '<!doctype html><html><body style="margin:0;background:#0b0e16;display:flex;justify-content:center;align-items:flex-start;padding:18px 14px;box-sizing:border-box">'
+      + '<div style="width:min(96vw,1280px);aspect-ratio:16/9;background:#fff;border-radius:10px;box-sizing:border-box;padding:6% 7%;display:flex;flex-direction:column;gap:5%;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
+      + bar(44,12) + bar(66,6) + '<div style="flex:1"></div>' + bar(88,5) + bar(78,5) + bar(56,5)
       + '</div><style>@keyframes s{to{background-position:-200% 0}}</style></body></html>';
   }
   /* 장 리빌 — 텍스트를 숨겼다가 커서가 그 자리로 옮겨가며 하나씩 표시.
@@ -1309,7 +1311,7 @@
       const full=e.__full; e.textContent=''; e.style.visibility=e.__vis||'';
       let k=0;
       (function t(){ if(k>=full.length){ cb(); return; }
-        k+=1; e.textContent=full.slice(0,k); _revealTimer=setTimeout(t, fast?8:26); })();
+        k+=1; e.textContent=full.slice(0,k); _revealTimer=setTimeout(t, fast?14:42); })();
     }
     (function step(){
       if(i>=els.length){ _revealCleanup=null; if(done) done(); return; }
@@ -1320,10 +1322,10 @@
       const fs=parseFloat((doc.defaultView.getComputedStyle(e).fontSize))||14;
       if(fs>=24 && typedN<2 && e.__full.trim().length>2){
         typedN++;
-        _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, fast?60:170); }), fast?60:200);
+        _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, fast?100:260); }), fast?100:300);
       } else {
         e.style.visibility=e.__vis||'';
-        _revealTimer=setTimeout(step, fast?60:185);
+        _revealTimer=setTimeout(step, fast?110:270);
       }
     })();
   }
@@ -1339,10 +1341,10 @@
     if(!item){ if(_liveStreamDone && _liveDrainCb){ const cb=_liveDrainCb; _liveDrainCb=null; cb(); } return; }
     _slidePlaying=true;
     if(_livePbub) _livePbub.textContent='✍️ '+item.num+tL('번째 장 작성 중')+(item.slide.title?' — '+item.slide.title:'');
-    const fast=_slideQ.length>1;   // 두 장 이상 밀리면 가속
+    const fast=_slideQ.length>3;   // 넉 장 이상 밀릴 때만 가속 — 기본은 느긋하게(로딩 시간을 연출로 채움)
     try{
       frame.onload=()=>{ frame.onload=null;
-        try{ revealSlideTyping(()=>{ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; setTimeout(playNextSlide, fast?150:420); }, fast); }
+        try{ revealSlideTyping(()=>{ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; setTimeout(playNextSlide, fast?250:800); }, fast); }
         catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
       };
       frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(item.slide))]);
