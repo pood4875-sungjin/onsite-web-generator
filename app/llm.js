@@ -165,18 +165,53 @@
     return (j && j.error) || ('HTTP ' + status);
   }
 
-  // 브리프 → 덱 JSON (LLM 생성). 세부 문구까지 채움.
-  async function composeDeck(brief) {
+  /* SSE 스트림 리더 — Anthropic content_block_delta의 text를 누적하며 onText(전체 누적분) 콜백.
+     생성 중 "지금까지 나온 내용"을 실시간 표시하는 용도. 완료 시 전체 텍스트 반환. */
+  function _readSse(body, onText) {
+    return new Promise(function (resolve, reject) {
+      var reader = body.getReader(), dec = new TextDecoder(), buf = '', full = '';
+      function pump() {
+        reader.read().then(function (r) {
+          if (r.done) { resolve(full); return; }
+          buf += dec.decode(r.value, { stream: true });
+          var lines = buf.split('\n'); buf = lines.pop();
+          lines.forEach(function (ln) {
+            ln = ln.trim();
+            if (ln.indexOf('data:') !== 0) return;
+            var payload = ln.slice(5).trim();
+            if (!payload || payload === '[DONE]') return;
+            try {
+              var ev = JSON.parse(payload);
+              if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) { full += ev.delta.text; if (onText) { try { onText(full); } catch (e2) {} } }
+            } catch (e3) {}
+          });
+          pump();
+        }).catch(reject);
+      }
+      pump();
+    });
+  }
+
+  // 브리프 → 덱 JSON (LLM 생성). 세부 문구까지 채움. onText 주면 프록시 경로에서 스트리밍.
+  async function composeDeck(brief, onText) {
     brief = brief || {};
     // 프록시 모드: 서버가 프롬프트 조립·모델 고정·일일 제한 적용. 키 불필요.
     if (usingProxy()) {
+      var wantStream = typeof onText === 'function';
       var pres = await fetch(proxyUrl() + '/compose', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '' }),
+        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '', stream: wantStream }),
       });
-      var pj = null; try { pj = await pres.json(); } catch (e) {}
-      if (!pres.ok) throw new Error(_proxyErrMsg(pj, pres.status));
-      var pdeck = parseDeck(pj.text, brief.pack);
+      if (!pres.ok) { var pj = null; try { pj = await pres.json(); } catch (e) {} throw new Error(_proxyErrMsg(pj, pres.status)); }
+      var ptext;
+      var ctype = (pres.headers.get('content-type') || '');
+      if (wantStream && ctype.indexOf('event-stream') >= 0 && pres.body) {
+        ptext = await _readSse(pres.body, onText);
+      } else {
+        var pj2 = null; try { pj2 = await pres.json(); } catch (e) {}
+        ptext = pj2 && pj2.text;
+      }
+      var pdeck = parseDeck(ptext, brief.pack);
       pdeck.style = brief.style || pdeck.style || 'ax';
       pdeck.accent = pdeck.accent || 'blue';
       return pdeck;
@@ -260,9 +295,10 @@
      실패해도 흐름을 막지 않도록 호출측에서 catch → 질문 없이 진행. */
   var INTAKE_SYSTEM =
     '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고 JSON 하나만 출력한다.\n' +
-    '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str}]}\n' +
-    '규칙: name/product는 브리프에서 추출 가능할 때만. questions는 결과물 품질에 정말 필요한데 빠진 것만 최대 2개, ' +
-    '충분하면 []. 이미 있는 건 다시 묻지 않기. 디자인 취향 금지. q는 한국어 존댓말 한 문장.';
+    '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str,"opts":[str]}]}\n' +
+    '규칙: name/product는 브리프에서 추출 가능할 때만. questions는 결과물 품질에 정말 필요한데 빠진 것만 최대 3개, ' +
+    '충분하면 []. opts=브리프 맥락에 맞는 구체적 선택지 3~4개("기타"는 UI가 붙이니 넣지 말기). ' +
+    '이미 있는 건 다시 묻지 않기. 디자인 취향·분량 금지(따로 고름). q는 한국어 존댓말 한 문장.';
   async function intake(brief) {
     brief = brief || {};
     var txt;
@@ -281,7 +317,10 @@
     var i = s.indexOf('{'), k = s.lastIndexOf('}');
     if (i < 0 || k < 0) throw new Error('BAD_JSON');
     var o = _repairParse(s.slice(i, k + 1)) || {};
-    var qs = (Array.isArray(o.questions) ? o.questions : []).map(function (x) { return x && { key: String(x.key || ''), q: String(x.q || '').trim() }; }).filter(function (x) { return x && x.q; }).slice(0, 2);
+    var qs = (Array.isArray(o.questions) ? o.questions : []).map(function (x) {
+      return x && { key: String(x.key || ''), q: String(x.q || '').trim(),
+        opts: (Array.isArray(x.opts) ? x.opts : []).map(function (t) { return String(t || '').trim(); }).filter(Boolean).slice(0, 4) };
+    }).filter(function (x) { return x && x.q; }).slice(0, 3);
     return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
   }
 

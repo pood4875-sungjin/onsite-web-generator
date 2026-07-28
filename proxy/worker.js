@@ -161,13 +161,15 @@ const uiLangName = (l) => UI_LANG[l] || UI_LANG.ko;
 const INTAKE_SYSTEM =
   '너는 제작 브리프를 접수하는 시니어 PM이다. 사용자의 자유 브리프를 읽고,\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 금지.\n' +
-  '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str}]}\n' +
+  '형식: {"name":str|null,"product":str|null,"questions":[{"key":str,"q":str,"opts":[str]}]}\n' +
   '규칙:\n' +
   '- name=프로젝트/페이지 이름 후보, product=제품·서비스명. 브리프에서 추출 가능할 때만, 없으면 null.\n' +
-  '- questions는 결과물 품질에 정말 필요한데 브리프에 없는 것만 최대 2개. 브리프가 충분하면 빈 배열 [].\n' +
-  '- 좋은 질문 예: 대상 고객이 누구인지(kind=web), 청중·발표 목적(kind=ppt), 강조할 수치가 있는지.\n' +
-  '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름).\n' +
-  '- q는 {LANG} 정중한 한 문장, 짧게. key는 영문 스네이크(예: target_audience).';
+  '- questions는 결과물 품질에 정말 필요한데 브리프에 없는 것만 최대 3개. 브리프가 충분하면 빈 배열 [].\n' +
+  '- 좋은 질문 예: 발표 목적·청중 유형·선호 톤(kind=ppt), 대상 고객·유도할 행동(kind=web), 강조할 수치가 있는지.\n' +
+  '- opts=그 질문에 대한 구체적 선택지 3~4개. 브리프 맥락에 맞게 서로 다른 방향으로("기타"는 넣지 마라 — UI가 붙인다).\n' +
+  '  예: 청중 질문이면 ["대학생·취준생","주니어 디자이너","실무 디자이너","리더·경영진"]처럼 브리프 주제에 맞춘 구체 선택지.\n' +
+  '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름). 분량도 묻지 마라(따로 고름).\n' +
+  '- q·opts는 {LANG}, q는 정중한 한 문장. key는 영문 스네이크(예: target_audience).';
 
 /* 내용 수정(채팅) — 전체 slides 교체 계약. 내용·구조(추가/분할/삭제/순서) 전부 허용, 디자인만 거절 */
 const EDIT_SYSTEM =
@@ -261,14 +263,21 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/edit' ? 8000 : route === '/compose-web' ? 8000 : route === '/intake' ? 500 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안·인테이크는 짧음
+        model: MODEL, max_tokens: route === '/edit' ? 8000 : route === '/compose-web' ? 8000 : route === '/intake' ? 800 : MAX_TOKENS,   // edit는 전체 덱 반환이라 여유, 웹 초안은 짧음. 인테이크는 선택지 포함이라 800
         system: system,
         messages: [{ role: 'user', content: userMsg }],
+        // 생성 스트리밍 — 클라이언트가 슬라이드 제목을 실시간 표시("기다리는 맛"). compose 계열만.
+        ...(body.stream === true && (route === '/compose' || route === '/compose-web') ? { stream: true } : {}),
       }),
     });
     if (!res.ok) {
       const t = await res.text().catch(() => '');
       return json({ error: 'UPSTREAM', status: res.status, detail: t.slice(0, 300) }, 502);
+    }
+    // 스트리밍 요청이면 Anthropic SSE를 그대로 통과 — 카운트는 시작 시점에 선차감
+    if (body.stream === true && (route === '/compose' || route === '/compose-web')) {
+      try { await env.RATE_KV.put(rlKey, String(used + 1), { expirationTtl: 90000 }); } catch (e) {}
+      return new Response(res.body, { status: 200, headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', ...CORS } });
     }
     const data = await res.json();
     const text = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');

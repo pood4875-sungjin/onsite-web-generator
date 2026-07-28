@@ -149,6 +149,62 @@
   .tb-org-ensol{background:radial-gradient(130% 130% at 50% -10%,#043636 0%,#0fa3a3 46%,#c9eeee 100%)}
   .tb-org-per{background:radial-gradient(130% 130% at 50% -10%,#3a2b06 0%,#c9992e 46%,#f3e6c8 100%)}
 
+  /* ---- 홈 히어로 — Genspark식 센터 진입 (타이틀+큰 입력창+샘플) ---- */
+  .hero{position:fixed;inset:0;z-index:7;background:var(--canvas);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
+  .hero[hidden]{display:none}
+  /* 타이틀 한 줄 + 타이핑 연출 — min-height로 타이핑 중 레이아웃 점프 방지 */
+  .hero h1{font-size:clamp(24px, 4.6vw, var(--fs-display-lg));font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
+    opacity:0;transform:translateY(24px);animation:kc-in .8s cubic-bezier(.22,1,.36,1) 60ms forwards}
+  .hero .caret{display:inline-block;width:3px;height:.92em;background:var(--ink);margin-left:6px;vertical-align:-.1em;border-radius:2px;animation:hblink 1s steps(1) infinite}
+  @keyframes hblink{50%{opacity:0}}
+  .hero .hsub{font-size:14px;color:var(--body-mid);margin:0 0 6px;opacity:0;animation:kc-in .8s cubic-bezier(.22,1,.36,1) 160ms forwards}
+  .hbox{width:min(720px,92vw);background:var(--surface-solid);border:1px solid var(--hairline);border-radius:22px;padding:16px 18px 12px;box-shadow:var(--shadow-2);
+    display:flex;flex-direction:column;gap:6px;text-align:left;transition:var(--dur) var(--ease);
+    opacity:0;transform:translateY(28px);animation:kc-in .85s cubic-bezier(.22,1,.36,1) 240ms forwards}
+  .hbox:focus-within{border-color:var(--hairline-strong);box-shadow:var(--shadow-3)}
+  /* 입력 유도 글로우 — 그라데이션 빛줄기가 테두리를 한 바퀴씩 은은하게 돎. 타이핑 시작하면 잦아듦 */
+  @property --hang { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  .hbox{position:relative}
+  .hbox::before,.hbox::after{content:'';position:absolute;inset:-2px;border-radius:24px;pointer-events:none;
+    background:conic-gradient(from var(--hang),
+      transparent 0turn, transparent .58turn,
+      rgba(63,224,198,.8) .72turn, rgba(91,157,255,.95) .82turn, rgba(138,107,255,.8) .92turn,
+      transparent 1turn);
+    animation:hspin 4.5s linear infinite;transition:opacity .5s var(--ease)}
+  .hbox::before{padding:2px;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);mask-composite:exclude}
+  .hbox::after{filter:blur(18px);opacity:.32;z-index:-1}
+  @keyframes hspin{to{--hang:1turn}}
+  .hbox.quiet::before,.hbox.quiet::after{opacity:0}
+  @media (prefers-reduced-motion:reduce){.hbox::before,.hbox::after{animation:none;opacity:.2}}
+  #hinput{border:none;outline:none;background:none;resize:none;font-family:inherit;font-size:15px;line-height:1.6;color:var(--ink);min-height:56px;max-height:160px;width:100%}
+  #hinput::placeholder{color:var(--mute)}
+  .hbrow{display:flex;justify-content:flex-end}
+  .hero .hchips{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;opacity:0;animation:kc-in .9s cubic-bezier(.22,1,.36,1) 360ms forwards}
+  .hero .hchip{background:none;border:1px dashed var(--hairline-strong);color:var(--mute);font-size:13px;cursor:pointer;padding:9px 16px;border-radius:var(--r-pill);font-family:inherit;transition:var(--dur) var(--ease);max-width:92vw;white-space:normal;line-height:1.45}
+  .hero .hchip:hover{color:var(--body);border-color:var(--body-mid);background:var(--brand-weak)}
+  .hero.away{opacity:0;transform:translateY(-10px);pointer-events:none;transition:.35s var(--ease)}
+  @media (prefers-reduced-motion:reduce){.hero h1,.hero .hsub,.hbox,.hero .hchips{animation:none;opacity:1;transform:none}}
+
+  /* ---- 선택지 카드형 되묻기 (Genspark 인테이크 패턴) ---- */
+  .optcard .oc-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+  .optcard .oc-head b{font-size:14.5px}
+  .oc-prog{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .oc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  @media (max-width:560px){.oc-grid{grid-template-columns:1fr}}
+  .oc-opt{text-align:left;padding:12px 14px;border:1px solid var(--hairline);border-radius:12px;background:var(--surface);cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--ink);transition:var(--dur) var(--ease)}
+  .oc-opt:hover{border-color:var(--hairline-strong)}
+  .oc-opt.on{border-color:var(--ink);background:var(--brand-weak);font-weight:var(--fw-med)}
+  .oc-extra{margin-top:10px;width:100%;font-size:13px}
+
+  /* ---- 생성 라이브 로그 — 슬라이드 제목이 실시간으로 찍힘 ---- */
+  .genlog-head{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:var(--fw-med);color:var(--ink)}
+  .genlog-head .dot{width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#3fe0c6,#5b9dff 60%,#8a6bff);animation:agPulse 1.6s ease-in-out infinite;flex:none}
+  .genlog{margin-top:10px;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow-y:auto}
+  .genlog-line{font-size:13px;color:var(--body);padding:3px 0 3px 2px;animation:cin .3s var(--ease)}
+  .genlog-line .n{color:var(--mute);font-variant-numeric:tabular-nums;margin-right:8px}
+
   /* 요약 카드 */
   .sumrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--hairline)}
   .sumrow:last-of-type{border-bottom:none}
@@ -183,7 +239,18 @@
   </div>
 </div>
 
-<!-- 챗 화면 — 진입 즉시 대화 시작 (Genspark식 챗 퍼스트) -->
+<!-- 홈 히어로 — 센터 타이틀 + 큰 입력창 + 샘플 (Genspark 홈 패턴). 첫 전송 시 챗으로 전환 -->
+<div class="hero" id="hero">
+  <h1><span id="htype"></span><i class="caret"></i></h1>
+  <p class="hsub" data-i18n="PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요">PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요</p>
+  <div class="hbox">
+    <textarea id="hinput" rows="2" data-i18n-placeholder="만들고 싶은 것을 자유롭게 적어보세요" placeholder="만들고 싶은 것을 자유롭게 적어보세요"></textarea>
+    <div class="hbrow"><button class="sendbtn" id="hsend" data-i18n-title="시작하기" title="시작하기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button></div>
+  </div>
+  <div class="hchips" id="hchips"></div>
+</div>
+
+<!-- 챗 화면 — 히어로 첫 전송 후 대화 (Genspark식 챗 퍼스트) -->
 <div class="cshell" id="cshell">
   <div class="cwrap"><div id="cmsgs" style="display:contents"></div></div>
   <div class="composer">
@@ -412,6 +479,65 @@
     });
   }
 
+  // 선택지 카드 — 질문+옵션 그리드+추가입력+건너뛰기/다음 (Genspark 인테이크 패턴).
+  // 반환: {id?,text} 또는 null(건너뜀). 옵션은 문자열 배열 또는 {id,label} 배열.
+  function askOptionCard(title, opts, idx, total){
+    return new Promise(res=>{
+      const card=el('div','cwcard optcard');
+      const head=el('div','oc-head');
+      head.append(el('b','',_L(title)));
+      if(total) head.append(el('span','oc-prog', idx+' / '+total));
+      card.append(head);
+      const grid=el('div','oc-grid');
+      let sel=null, nextB=null;
+      const items=opts.map(o=> typeof o==='string' ? {id:o,label:o} : o).concat([{id:'__etc',label:_L('기타')}]);
+      const extra=el('input','ds-input oc-extra'); extra.placeholder=_L('추가 세부 정보 (선택 사항)');
+      items.forEach(o=>{ const b=el('button','oc-opt',o.label);
+        b.onclick=()=>{ grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); sel=o; nextB.disabled=false;
+          if(o.id==='__etc') extra.focus(); };
+        grid.append(b); });
+      card.append(grid, extra);
+      const act=el('div','cwact');
+      const skipB=el('button','skipchip',_L('건너뛰기'));
+      nextB=el('button','ds-btn primary',_L('다음')); nextB.disabled=true;
+      skipB.onclick=()=>{ off(w); me(_L('건너뛸게요')); res(null); };
+      nextB.onclick=()=>{ off(w);
+        const base=(sel && sel.id!=='__etc') ? sel.label : '';
+        const ex=extra.value.trim();
+        const text=base + (ex ? (base?' — ':'')+ex : '');
+        me(text || _L('건너뛸게요'));
+        res(text ? {id:sel&&sel.id, text:text} : null); };
+      act.append(skipB, nextB); card.append(act);
+      const w=widget(card);
+    });
+  }
+
+  // 생성 라이브 로그 — 스트리밍 응답에서 슬라이드 제목을 뽑아 실시간으로 한 줄씩 표시
+  function liveGenLog(){
+    const card=el('div','cwcard');
+    const head=el('div','genlog-head'); const msg=el('span','',_L('장표를 만들고 있어요 — 목차를 구성하는 중…'));
+    head.append(el('span','dot'), msg);
+    const list=el('div','genlog');
+    card.append(head, list);
+    const w=widget(card);
+    let seen=0;
+    return {
+      onText(full){
+        const titles=[]; const re=/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g; let m;
+        while((m=re.exec(full))) titles.push(m[1].replace(/\\"/g,'"').replace(/\\n/g,' '));
+        for(; seen<titles.length; seen++){
+          if(seen===0) msg.textContent=_L('장표를 만들고 있어요 — 슬라이드 작성 중…');
+          const line=el('div','genlog-line'); line.append(el('span','n', String(seen+1)+'.'), document.createTextNode(titles[seen]));
+          list.append(line);
+        }
+        list.scrollTop=list.scrollHeight; toBottom();
+      },
+      done(n){ const d=head.querySelector('.dot'); if(d) d.style.animation='none';
+        msg.textContent=(window.LF?LF:( (t)=>t ))('완성! {n}장을 만들었어요. 스튜디오로 이동해요.', {n:n}); toBottom(); },
+      fail(){ off(w); }
+    };
+  }
+
   function styleThumb(id){
     const d=Object.assign((typeof emptyData==='function'?emptyData():{}), {
       productName:'MIDAS AX', tagline:'Design Once.\nScale with AX.',
@@ -603,9 +729,15 @@
       const hasBrief=!!plan;
       let deck=null;
       if(hasBrief && window.LLM && LLM.aiAvailable()){
-        const stop=showAiGen('compose');
-        try{ deck=await LLM.composeDeck(brief); stop(true); }
-        catch(e){ stop(false); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
+        // 오버레이 대신 챗 안 라이브 로그 — 슬라이드 제목이 실시간으로 찍힘 (스트리밍)
+        const live=liveGenLog(); const t0=Date.now();
+        try{
+          deck=await LLM.composeDeck(brief, live.onText);
+          live.done(deck.slides.length);
+          if(LLM.recordDur) LLM.recordDur('compose', Date.now()-t0);
+          await new Promise(r=>setTimeout(r,700));   // '완성' 줄을 읽을 짬
+        }
+        catch(e){ live.fail(); console.warn('[ai] compose 실패 → 기본 조립 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       }
       // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
       if(!deck){
@@ -691,13 +823,32 @@
     location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
   }
 
-  /* ---- 메인 흐름: 챗 퍼스트 ---- */
+  /* ---- 메인 흐름: 홈 히어로 → 챗 ---- */
   let started=false;   // 첫 입력 이후부터 이탈 확인
 
+  /* 홈 히어로 — 센터 입력창. 첫 전송을 하단 컴포저(askInput 대기중)로 프록시하고 챗으로 전환 */
+  const hero=document.getElementById('hero'), hinput=document.getElementById('hinput'), hsend=document.getElementById('hsend');
+  FIRST_SAMPLES.forEach(t=>{ const b=el('button','hchip',_L('✏️ ')+_L(t));
+    b.onclick=()=>{ hinput.value=_L(t); hinput.dispatchEvent(new Event('input')); hinput.focus(); }; document.getElementById('hchips').append(b); });
+  function heroSend(){
+    const v=hinput.value.trim(); if(!v) return;
+    hero.classList.add('away'); setTimeout(()=>{ hero.hidden=true; },360);
+    cinput.value=v; send();
+  }
+  hsend.onclick=heroSend;
+  hinput.addEventListener('keydown',(e)=>{ if(e.isComposing || e.keyCode===229) return;
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); heroSend(); } });
+  hinput.addEventListener('input',()=>{ hinput.style.height='auto'; hinput.style.height=Math.min(hinput.scrollHeight,160)+'px';
+    hero.querySelector('.hbox').classList.toggle('quiet', !!hinput.value.trim()); });   // 타이핑 시작 = 유도 글로우 잦아듦
+  setTimeout(()=>hinput.focus(),250);
+  // 타이틀 타이핑 연출 — 진입 시 한 글자씩. 모션 축소 설정이면 즉시 전체 표시
+  (function(){
+    const ht=document.getElementById('htype'), full=_L('무엇을 만들고 싶으신가요?');
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ ht.textContent=full; return; }
+    let i=0; const tm=setInterval(()=>{ ht.textContent=full.slice(0,++i); if(i>=full.length) clearInterval(tm); }, 62);
+  })();
+
   async function flow0(){
-    bot(_L('무엇을 만들고 싶으신가요?'));
-    bot(_L('PPT · 랜딩페이지 · 웹사이트 · 이메일(eDM)을 대화만으로 만들 수 있어요.\n아래 예시를 눌러 시작해도 좋아요.'));
-    sampleChips(FIRST_SAMPLES);
     const first=await askInput('만들고 싶은 것을 자유롭게 적어주세요');
     started=true; history.pushState({s:'chat'},'',location.href);
 
@@ -741,11 +892,18 @@
           if(it.name && !S.name) S.name=it.name;
           if(it.product && !S.product) S.product=it.product;
           if(it.questions.length){
-            bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요.'));
-            for(const q of it.questions){
-              bot(q.q);
-              const a=await askInput('답변을 입력하세요', '건너뛰기');
-              if(a) S.answers.push({q:q.q, a});
+            bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
+            for(let qi=0; qi<it.questions.length; qi++){
+              const q=it.questions[qi];
+              if(q.opts && q.opts.length){
+                // 선택지 카드 — 클릭으로 답하고, 필요하면 추가 정보만 타이핑
+                const a=await askOptionCard(q.q, q.opts, qi+1, it.questions.length);
+                if(a && a.text) S.answers.push({q:q.q, a:a.text});
+              } else {
+                bot(q.q);
+                const a=await askInput('답변을 입력하세요', '건너뛰기');
+                if(a) S.answers.push({q:q.q, a});
+              }
             }
           }
         }
