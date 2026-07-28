@@ -219,6 +219,21 @@
   .thumbrail{position:absolute;left:0;top:0;bottom:0;width:150px;z-index:6;display:flex;flex-direction:column;gap:8px;padding:10px 8px;overflow-y:auto;background:color-mix(in srgb,#0a0d16 82%,transparent);border-right:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}
   /* 16:9 고정 — border가 박스에 더해져 비율 깨지지 않게 box-sizing:border-box */
   .thumb{position:relative;flex:0 0 auto;box-sizing:border-box;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#11141f;transition:border-color var(--dur) var(--ease)}
+  /* 라이브 생성 — 아직 안 그려진 장은 스켈레톤(쉬머), 완성되는 순서대로 실물로 교체 */
+  .thumb.skel{border:2px dashed rgba(255,255,255,.14);cursor:default;
+    background:linear-gradient(100deg,#141827 40%,#1e2436 50%,#141827 60%);background-size:200% 100%;animation:skelShine 1.4s linear infinite}
+  .thumb.skel .tnum{opacity:.45}
+  @keyframes skelShine{to{background-position:-200% 0}}
+  /* AI 작업 커서 — 뷰어 위를 빠르게 오가며 클릭 펄스 */
+  #aiCursor{position:absolute;left:0;top:0;z-index:9;pointer-events:none;opacity:0;
+    transition:transform .48s cubic-bezier(.3,.9,.35,1),opacity .3s;will-change:transform}
+  #aiCursor.on{opacity:1}
+  #aiCursor .tip{display:flex;align-items:flex-start;gap:5px}
+  #aiCursor svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+  #aiCursor .lbl{margin-top:15px;background:linear-gradient(90deg,#3fe0c6,#5b9dff 60%,#8a6bff);color:#fff;font-size:10.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 12px rgba(91,157,255,.4)}
+  #aiCursor.click svg{animation:aiClick .3s ease}
+  @keyframes aiClick{50%{transform:scale(.78)}}
   .thumb:hover{border-color:rgba(255,255,255,.28)}
   .thumb.cur{border-color:var(--accent)}
   .thumb .tnum{position:absolute;left:5px;top:4px;z-index:2;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:5px;padding:1px 5px}
@@ -420,6 +435,11 @@
       <div class="empty" id="empty"><div class="ai-orb"></div><span class="es"><span data-i18n="대화창을 통해 AI가 실시간으로">대화창을 통해 AI가 실시간으로</span><br><span data-i18n="페이지를 완성합니다">페이지를 완성합니다</span></span></div>
       <div class="genning" id="genning"><div class="gspin"></div><b data-i18n="페이지 생성 중">페이지 생성 중</b><span class="gtext" id="gtext" data-i18n="기획 내용 분석 중…">기획 내용 분석 중…</span><div class="gbar"><i></i></div></div>
       <iframe id="frame" title="preview"></iframe>
+      <!-- 라이브 생성 — AI 작업 커서 (사람이 조작하는 듯한 연출) -->
+      <div id="aiCursor"><div class="tip">
+        <svg width="19" height="19" viewBox="0 0 24 24"><path d="M5 3l14 8-6.4 1.5L9 20z" fill="#1b1c2e" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <span class="lbl">AI <span data-i18n="작성 중…">작성 중…</span></span>
+      </div></div>
     </div>
   </main>
 </div>
@@ -1230,22 +1250,65 @@
     }
     return out;
   }
+  // 분량 설정 → 예상 장수: 스켈레톤 레일을 이만큼 미리 깔고, 완성되는 장부터 실물로 교체
+  let _liveExpected=10;
+  function paintLiveRail(){
+    const rail=document.getElementById('thumbRail'); if(!rail) return;
+    rail.style.display='flex'; rail.innerHTML='';
+    const W=132, sc=(W-4)/1280;
+    const done=(data.slides||[]);
+    const total=Math.max(_liveExpected, done.length + (_liveComposing?1:0));
+    done.forEach((s,i)=>{
+      const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
+      const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
+      f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]); f.style.transform='scale('+sc+')';
+      t.append(f); rail.append(t);
+    });
+    for(let i=done.length;i<total;i++){ const t=el('div','thumb skel','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px'; rail.append(t); }
+    const cu=rail.children[Math.max(0,done.length-1)]; if(cu) cu.scrollIntoView({block:'nearest'});
+    fitPreview();
+  }
+  // AI 작업 커서 — 사람이 조작하듯 뷰어 위를 빠르게 오가며 클릭 펄스 후 장이 그려짐
+  function aiCur(){ return document.getElementById('aiCursor'); }
+  function cursorShow(on){ const c=aiCur(); if(c) c.classList.toggle('on', !!on); }
+  function cursorTo(fx,fy,click){
+    const c=aiCur(); if(!c) return;
+    const r=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
+    c.style.transform='translate('+(r.left-pr.left+r.width*fx)+'px,'+(r.top-pr.top+r.height*fy)+'px)';
+    if(click){ c.classList.remove('click'); void c.offsetWidth; c.classList.add('click'); }
+  }
+  function drawSlideWithCursor(slide){
+    // 제목 자리 → 본문 → 하단 순으로 커서가 움직인 뒤 장이 나타남 (지점은 살짝 랜덤)
+    const pts=[[0.14+Math.random()*0.18, 0.14+Math.random()*0.12],
+               [0.38+Math.random()*0.3, 0.34+Math.random()*0.2],
+               [0.2+Math.random()*0.5, 0.58+Math.random()*0.22]];
+    let i=0;
+    (function step(){
+      if(i<pts.length){ cursorTo(pts[i][0], pts[i][1], i>0); i++; setTimeout(step, 230); return; }
+      try{ frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(slide))]); }catch(e){}
+      paintLiveRail();
+    })();
+  }
   async function startLiveCompose(){
     const brief=pageRef.pendingBrief;
     _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
+    _liveExpected=({short:7, std:12, deep:22})[brief && brief.length] || 10;
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
+    paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
+    const g=document.getElementById('genning'); if(g) g.classList.add('on');
     let n=0;
     const onText=(full)=>{
       const sl=partialSlides(full);
       if(sl.length>n){
         n=sl.length;
+        if(g) g.classList.remove('on');
         data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
+        if(n>=_liveExpected) _liveExpected=n+1;   // 예상보다 길어지면 레일이 한 칸 앞서 늘어남
         const last=sl[sl.length-1];
         pbub.textContent='✍️ '+n+tL('번째 장 작성 중')+(last.title?' — '+last.title:'');
-        try{ frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(last))]); }catch(e){}
-        try{ rebuildThumbRail(); setCurThumb(n-1); }catch(e){}
+        drawSlideWithCursor(last);
       }
     };
     try{
@@ -1257,13 +1320,13 @@
       botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 편집 모드에서 바로 수정하거나, 채팅으로 고쳐달라고 말해보세요.'));
       pageRef.chat={ log:chatLog, idx:idx, generated:true };
       upsertProject(project);
-      _liveComposing=false;
-      mountWidget('done'); render(); scroll();
+      _liveComposing=false; cursorShow(false); if(g) g.classList.remove('on');
+      mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI();
       setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
     }catch(e){
       console.warn('[live compose 실패 → 템플릿 폴백]', e);
-      prow.remove();
+      prow.remove(); cursorShow(false); if(g) g.classList.remove('on');
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
       try{
         const pk=brief&&brief.pack;
@@ -1277,7 +1340,7 @@
       pageRef.chat={ log:chatLog, idx:idx, generated:true };
       upsertProject(project);
       _liveComposing=false;
-      mountWidget('done'); render(); scroll();
+      mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat();
     }
   }
