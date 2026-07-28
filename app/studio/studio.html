@@ -249,13 +249,6 @@
   .lg-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#3fe0c6,#5b9dff 52%,#8a6bff);
     box-shadow:0 0 10px rgba(91,157,255,.45);transition:width .9s cubic-bezier(.22,1,.36,1)}
   .lg-hint{font-size:11.5px;color:rgba(255,255,255,.45)}
-  /* 게이트 라이브 로그 — AI가 실제로 쓰고 있는 장 제목이 실시간으로 찍힌다 */
-  .lg-live{display:none;flex-direction:column;gap:6px;width:100%;text-align:left;min-height:18px}
-  .lg-live.on{display:flex}
-  .lg-ln{font-size:12.5px;color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .lg-ln.cur{color:rgba(255,255,255,.88)}
-  .lg-ln.cur::after{content:'';display:inline-block;width:7px;height:13px;margin-left:3px;vertical-align:-2px;background:#5b9dff;animation:lgCaret .9s steps(1) infinite}
-  @keyframes lgCaret{50%{opacity:0}}
   .thumb:hover{border-color:rgba(255,255,255,.28)}
   .thumb.cur{border-color:var(--accent)}
   .thumb .tnum{position:absolute;left:5px;top:4px;z-index:2;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:5px;padding:1px 5px}
@@ -1358,33 +1351,24 @@
   function showLiveGate(){
     const ov=el('div','livegate');
     ov.innerHTML='<div class="lg-box"><div class="lg-orb"></div><b>'+tL('장표 구성을 세팅하고 있어요')+'</b>'
-      +'<span class="lg-stage">'+tL('브리프를 분석하는 중…')+'</span>'
-      +'<div class="lg-live"></div>'
-      +'<div class="lg-bar"><i style="width:16%"></i></div>'
+      +'<span class="lg-stage">'+tL('브리프를 분석하고 있어요…')+'</span>'
+      +'<div class="lg-bar"><i style="width:12%"></i></div>'
       +'<span class="lg-hint">'+tL('세팅이 끝나면 한 장씩 그려져요')+'</span></div>';
     document.body.append(ov);
-    const st=ov.querySelector('.lg-stage'), bar=ov.querySelector('.lg-bar i'), live=ov.querySelector('.lg-live');
-    const stages=[[tL('목차 구성을 잡는 중…'),44],[tL('장표 틀을 세팅하는 중…'),70],[tL('거의 다 됐어요…'),86]];
-    let i=0, fed=false, barW=16;
+    const st=ov.querySelector('.lg-stage'), bar=ov.querySelector('.lg-bar i');
+    // 오래 걸리는 구간이라 문구를 넉넉히 — 기획→디자인으로 넘어가는 서사, 마지막 문구에서 대기
+    const stages=[
+      [tL('핵심 메시지를 정리하고 있어요…'),26],
+      [tL('목차 구성을 잡고 있어요…'),40],
+      [tL('장표 틀을 세팅하고 있어요…'),52],
+      [tL('기획이 완료되고 있어요…'),64],
+      [tL('이제 디자인을 입힐 준비를 하고 있어요…'),76],
+      [tL('첫 장부터 차례로 그릴게요, 곧 시작돼요…'),88],
+    ];
+    let i=0, barW=12;
     const setBar=(w)=>{ if(w>barW){ barW=w; bar.style.width=w+'%'; } };   // 프로그레스는 단조증가 — 절대 뒤로 안 간다
-    // 가짜 단계문구는 실제 스트리밍 내용이 오기 전까지만 — 오면 feed()가 대체
-    const t=setInterval(()=>{ if(fed){ clearInterval(t); return; } if(i<stages.length){ st.textContent=stages[i][0]; setBar(stages[i][1]); i++; } else clearInterval(t); }, 2400);
-    // 스트리밍 누적 텍스트에서 장 제목을 뽑아 실시간 표시 — 진행중 제목은 스트림이 자라며 자연히 타이핑처럼 보인다
-    function feed(full){
-      const re=/"title"\s*:\s*"((?:[^"\\]|\\.)*)("?)/g; let m; const items=[];
-      while((m=re.exec(full))) items.push({ txt:m[1].replace(/\\"/g,'"').replace(/\\n/g,' '), done:m[2]==='"' });
-      if(!items.length) return;
-      if(!fed){ fed=true; st.style.display='none'; live.classList.add('on'); }
-      const label=(n)=> n===1 ? tL('표지') : n+tL('번 장');
-      live.innerHTML='';
-      items.slice(-3).forEach((it,k,arr)=>{
-        const n=items.length-arr.length+k+1;
-        const cur=(k===arr.length-1 && !it.done);
-        live.append(el('div','lg-ln'+(cur?' cur':''), (it.done?'✓ ':'✍️ ')+label(n)+(it.txt?' — '+it.txt.replace(/</g,'&lt;'):'')));
-      });
-      setBar(Math.min(90, 24+items.length*10));
-    }
-    return { feed:feed, close:()=>{ clearInterval(t); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); } };
+    const t=setInterval(()=>{ if(i<stages.length){ st.textContent=stages[i][0]; setBar(stages[i][1]); i++; } else clearInterval(t); }, 2600);
+    return { close:()=>{ clearInterval(t); bar.style.width='100%'; ov.classList.add('off'); setTimeout(()=>ov.remove(), 320); } };
   }
 
   /* 재생 큐 — 스트리밍 도착 속도와 무관하게 "한 장 한 장 천천히" 순서대로 연출.
@@ -1446,7 +1430,6 @@
     const closeGate=()=>{ if(gateOpen){ gateOpen=false; gate.close(); } };
     let n=0;
     const onText=(full)=>{
-      if(gateOpen){ try{ gate.feed(full); }catch(e){} }
       const sl=partialSlides(full);
       if(sl.length>n){
         closeGate();   // 첫 장 준비 완료 → 모달 걷고 즉시 그리기 시작
