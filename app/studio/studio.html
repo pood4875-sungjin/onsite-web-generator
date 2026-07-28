@@ -220,9 +220,9 @@
   /* 16:9 고정 — border가 박스에 더해져 비율 깨지지 않게 box-sizing:border-box */
   .thumb{position:relative;flex:0 0 auto;box-sizing:border-box;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#11141f;transition:border-color var(--dur) var(--ease)}
   /* 라이브 생성 — 아직 안 그려진 장은 스켈레톤(쉬머), 완성되는 순서대로 실물로 교체 */
-  .thumb.skel{border:2px dashed rgba(255,255,255,.14);cursor:default;
-    background:linear-gradient(100deg,#141827 40%,#1e2436 50%,#141827 60%);background-size:200% 100%;animation:skelShine 1.4s linear infinite}
-  .thumb.skel .tnum{opacity:.45}
+  .thumb.skel{border:2px dashed rgba(255,255,255,.22);cursor:default;
+    background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:skelShine 1.4s linear infinite;opacity:.85}
+  .thumb.skel .tnum{opacity:.6}
   @keyframes skelShine{to{background-position:-200% 0}}
   /* AI 작업 커서 — 뷰어 위를 빠르게 오가며 클릭 펄스 */
   #aiCursor{position:absolute;left:0;top:0;z-index:9;pointer-events:none;opacity:0;
@@ -1277,17 +1277,47 @@
     c.style.transform='translate('+(r.left-pr.left+r.width*fx)+'px,'+(r.top-pr.top+r.height*fy)+'px)';
     if(click){ c.classList.remove('click'); void c.offsetWidth; c.classList.add('click'); }
   }
-  function drawSlideWithCursor(slide){
-    // 제목 자리 → 본문 → 하단 순으로 커서가 움직인 뒤 장이 나타남 (지점은 살짝 랜덤)
-    const pts=[[0.14+Math.random()*0.18, 0.14+Math.random()*0.12],
-               [0.38+Math.random()*0.3, 0.34+Math.random()*0.2],
-               [0.2+Math.random()*0.5, 0.58+Math.random()*0.22]];
+  function cursorToPx(x,y,click){
+    const c=aiCur(); if(!c) return;
+    c.style.transform='translate('+x+'px,'+y+'px)';
+    if(click){ c.classList.remove('click'); void c.offsetWidth; c.classList.add('click'); }
+  }
+  // 뷰어 초기 스켈레톤 장 — 딤·스피너 대신 "빈 장표 골격"으로 시작
+  function skeletonSlideHtml(){
+    const bar=(w,h)=>'<div style="height:'+h+';width:'+w+';border-radius:10px;background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:s 1.4s linear infinite"></div>';
+    return '<!doctype html><html><body style="margin:0;background:#fff"><div style="width:100vw;height:100vh;box-sizing:border-box;padding:9% 10%;display:flex;flex-direction:column;gap:4vh">'
+      + bar('44%','7vh') + bar('68%','3.2vh') + '<div style="flex:1"></div>'
+      + bar('90%','3vh') + bar('82%','3vh') + bar('60%','3vh')
+      + '</div><style>@keyframes s{to{background-position:-200% 0}}</style></body></html>';
+  }
+  // 장 리빌 — 렌더된 장의 텍스트를 잠시 숨겼다가, 커서가 실제 그 자리로 옮겨가며 하나씩 "입력"됨
+  let _revealTimer=null, _revealCleanup=null;
+  function revealSlideTyping(){
+    const doc=frame.contentDocument; if(!doc || !doc.body) return;
+    const els=[...doc.body.querySelectorAll('*')].filter(e=>
+      e.children.length===0 && e.textContent && e.textContent.trim().length>1 && e.offsetParent!==null).slice(0,18);
+    if(!els.length) return;
+    els.forEach(e=>{ e.__vis=e.style.visibility; e.style.visibility='hidden'; });
+    const fr=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
+    const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || 1280, sc=fr.width/iw;
     let i=0;
+    _revealCleanup=()=>{ clearTimeout(_revealTimer); els.forEach(e=>{ e.style.visibility=e.__vis||''; }); _revealCleanup=null; };
     (function step(){
-      if(i<pts.length){ cursorTo(pts[i][0], pts[i][1], i>0); i++; setTimeout(step, 230); return; }
-      try{ frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(slide))]); }catch(e){}
-      paintLiveRail();
+      if(i>=els.length){ _revealCleanup=null; return; }
+      const e=els[i], r=e.getBoundingClientRect();
+      cursorToPx(fr.left-pr.left + (r.left+Math.min(r.width*0.4,80))*sc,
+                 fr.top-pr.top + (r.top+r.height*0.5)*sc, i%3===0);
+      e.style.visibility=e.__vis||'';
+      i++; _revealTimer=setTimeout(step, i<3?170:95);
     })();
+  }
+  function drawSlideWithCursor(slide){
+    if(_revealCleanup) _revealCleanup();   // 이전 장 리빌이 남았으면 즉시 전체 표시
+    try{
+      frame.onload=()=>{ frame.onload=null; try{ revealSlideTyping(); }catch(e){} };
+      frame.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(slide))]);
+    }catch(e){}
+    paintLiveRail();
   }
   async function startLiveCompose(){
     const brief=pageRef.pendingBrief;
@@ -1296,14 +1326,14 @@
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
+    // 딤·스피너 없이 — 뷰어는 스켈레톤 장, 레일은 스켈레톤 썸네일로 시작 (바로 작업판이 보임)
     paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
-    const g=document.getElementById('genning'); if(g) g.classList.add('on');
+    try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
     let n=0;
     const onText=(full)=>{
       const sl=partialSlides(full);
       if(sl.length>n){
         n=sl.length;
-        if(g) g.classList.remove('on');
         data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
         if(n>=_liveExpected) _liveExpected=n+1;   // 예상보다 길어지면 레일이 한 칸 앞서 늘어남
         const last=sl[sl.length-1];
@@ -1320,13 +1350,13 @@
       botBubble('✅ '+tL('완성!')+' '+deck.slides.length+tL('장을 만들었어요. 편집 모드에서 바로 수정하거나, 채팅으로 고쳐달라고 말해보세요.'));
       pageRef.chat={ log:chatLog, idx:idx, generated:true };
       upsertProject(project);
-      _liveComposing=false; cursorShow(false); if(g) g.classList.remove('on');
+      _liveComposing=false; if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat(); const hb=document.getElementById('histBtn'); if(hb) hb.onclick=undoAll; syncUndoUI();
       setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
     }catch(e){
       console.warn('[live compose 실패 → 템플릿 폴백]', e);
-      prow.remove(); cursorShow(false); if(g) g.classList.remove('on');
+      prow.remove(); if(_revealCleanup) _revealCleanup(); cursorShow(false); frame.onload=null;
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
       try{
         const pk=brief&&brief.pack;
