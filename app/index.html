@@ -268,7 +268,9 @@
   <p class="hsub" data-i18n="PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요">PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요</p>
   <div class="hbox">
     <textarea id="hinput" rows="2" data-i18n-placeholder="만들고 싶은 것을 자유롭게 적어보세요" placeholder="만들고 싶은 것을 자유롭게 적어보세요"></textarea>
+    <div class="attrow" id="hattrow" hidden></div>
     <div class="hbrow">
+      <button class="attbtn" id="hatt" data-i18n-title="파일 첨부" title="파일 첨부" style="margin-right:auto"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
       <button class="attbtn micbtn" id="hmic" data-i18n-title="음성으로 입력" title="음성으로 입력"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg></button>
       <button class="sendbtn" id="hsend" data-i18n-title="시작하기" title="시작하기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
     </div>
@@ -463,12 +465,17 @@
   /* ---- 파일 첨부 — txt·md·csv·json·html은 즉시, pdf·docx는 CDN 파서 지연 로드 ---- */
   let attachments=[];
   function paintAtt(){
-    attrow.hidden=!attachments.length;
-    attrow.innerHTML='';
+    // 히어로가 떠 있으면 히어로 입력창 안에, 아니면 하단 컴포저에 칩 표시 (같은 첨부 목록 공유)
+    const hb=document.getElementById('hattrow'), heroEl=document.getElementById('hero');
+    const target=(heroEl && !heroEl.hidden) ? hb : attrow;
+    const other=(target===hb) ? attrow : hb;
+    if(other){ other.hidden=true; other.innerHTML=''; }
+    target.hidden=!attachments.length;
+    target.innerHTML='';
     attachments.forEach((a,i)=>{
       const c=el('span','attchip'+(a.busy?' busy':''),`<span class="an">📄 ${a.name}${a.busy?' …':''}</span>`);
       const x=el('button','ax','✕'); x.onclick=()=>{ attachments.splice(i,1); paintAtt(); };
-      c.append(x); attrow.append(c);
+      c.append(x); target.append(c);
     });
   }
   function loadScript(src){ return new Promise((res,rej)=>{ if([].slice.call(document.scripts).some(s=>s.src===src)) return res();
@@ -936,12 +943,13 @@
   FIRST_SAMPLES.forEach(t=>{ const b=el('button','hchip',_L('✏️ ')+_L(t));
     b.onclick=()=>{ hinput.value=_L(t); hinput.dispatchEvent(new Event('input')); hinput.focus(); }; document.getElementById('hchips').append(b); });
   function heroSend(){
-    const v=hinput.value.trim(); if(!v) return;
+    const v=hinput.value.trim(); if(!v && !attachments.length) return;
     hero.classList.add('away'); setTimeout(()=>{ hero.hidden=true; },360);
     _riseN=3;   // 핸드오프: 내 메시지·타이핑 점·첫 답변이 솟아오르며 등장
     cinput.value=v; send();
   }
   hsend.onclick=heroSend;
+  document.getElementById('hatt').onclick=()=>cfile.click();   // 히어로 첨부 = 컴포저와 같은 파일 입력 공유
   hinput.addEventListener('keydown',(e)=>{ if(e.isComposing || e.keyCode===229) return;
     if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); heroSend(); } });
   hinput.addEventListener('input',()=>{ hinput.style.height='auto'; hinput.style.height=Math.min(hinput.scrollHeight,160)+'px';
