@@ -780,7 +780,7 @@
       if(!tpl){ (window.uiAlert?uiAlert(_L('사용할 이메일 템플릿이 없어요.')):alert('no eDM template')); return; }
       const p=createProjectFromTemplate(tpl);
       if(S.name) p.name=S.name; if(prod){ p.shared=p.shared||{}; p.shared.productName=prod; } p.lang=S.lang; upsertProject(p);
-      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
+      await storeFlush(); leaving=true; location.href='studio/studio.html?v='+Date.now()+'&p='+p.id+'&page='+p.pages[0].id+'&edit=1'; return;
     }
 
     if(S.kind==='ppt'){
@@ -800,7 +800,7 @@
         pg0.pendingBrief=brief;
         pg0.chat={ log:[], idx:8, generated:false };
         full.lang=S.lang; upsertProject(full);
-        await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id; return;
+        await storeFlush(); leaving=true; location.href='studio/studio.html?v='+Date.now()+'&p='+full.id+'&page='+pg0.id; return;
       }
       let deck=null;
       // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
@@ -818,7 +818,7 @@
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
       pg0.chat={ log:[{r:'bot',t:'📊 '+_L(hasBrief?'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.':'전체 템플릿을 한 장씩 담았어요. 필요 없는 장은 지우고, 채팅으로 내용을 채워보세요.')}], idx:8, generated:true };
       full.lang=S.lang; upsertProject(full);
-      await storeFlush(); leaving=true; location.href='studio/studio.html?p='+full.id+'&page='+pg0.id+'&edit=1'; return;
+      await storeFlush(); leaving=true; location.href='studio/studio.html?v='+Date.now()+'&p='+full.id+'&page='+pg0.id+'&edit=1'; return;
     }
 
     // 랜딩/웹사이트 — AI가 전 필드 초안 + 임의 채움 안내(assumed)
@@ -880,12 +880,12 @@
         }
         full.name=name; full.lang=S.lang; upsertProject(full);
         await storeFlush(); leaving=true;
-        location.href=`studio/studio.html?p=${full.id}&page=${pg0.id}`; return;
+        location.href=`studio/studio.html?v=${Date.now()}&p=${full.id}&page=${pg0.id}`; return;
       }
     }
     await storeFlush();
     leaving=true;
-    location.href=`studio/studio.html?p=${p.id}&page=${pg.id}`;
+    location.href=`studio/studio.html?v=${Date.now()}&p=${p.id}&page=${pg.id}`;
   }
 
   /* ---- 메인 흐름: 홈 히어로 → 챗 ---- */
