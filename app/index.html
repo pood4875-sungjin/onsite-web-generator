@@ -74,6 +74,10 @@
   .crow{display:flex;margin:6px 0;animation:cin .3s var(--ease)}
   .crow.me{justify-content:flex-end}
   @keyframes cin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* 히어로→챗 핸드오프 — 첫 메시지들이 입력창 자리에서 크게 솟아오르며 등장 */
+  .crow.rise{animation:riseIn .6s cubic-bezier(.22,1,.36,1)}
+  @keyframes riseIn{from{opacity:0;transform:translateY(52px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.crow.rise{animation:cin .3s var(--ease)}}
   .cbub{max-width:82%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6;letter-spacing:var(--tr-body);white-space:pre-wrap}
   .cbub.bot{background:var(--surface);border:1px solid var(--hairline);color:var(--ink);border-bottom-left-radius:6px}
   .cbub.me{background:var(--ink);color:var(--canvas);border-bottom-right-radius:6px;font-weight:var(--fw-med)}
@@ -203,6 +207,14 @@
   .oc-opt:hover{border-color:var(--hairline-strong)}
   .oc-opt.on{border-color:var(--ink);background:var(--brand-weak);font-weight:var(--fw-med)}
   .oc-extra{margin-top:10px;width:100%;font-size:13px}
+  .optcard .cwact .ds-btn{padding:8px 18px;font-size:13px}   /* 카드 안 버튼은 한 단계 작게 */
+  /* 카드 한 장 안에서 질문이 옆으로 넘어가는 페이저 */
+  .oc-body{position:relative;overflow:hidden}
+  .oc-pane{animation:ocIn .35s var(--ease)}
+  .oc-pane.out{position:absolute;inset:0 0 auto 0;animation:ocOut .3s var(--ease) forwards;pointer-events:none}
+  @keyframes ocIn{from{opacity:0;transform:translateX(46px)}to{opacity:1;transform:none}}
+  @keyframes ocOut{to{opacity:0;transform:translateX(-46px)}}
+  @media (prefers-reduced-motion:reduce){.oc-pane,.oc-pane.out{animation:none}}
 
   /* ---- 생성 라이브 로그 — 슬라이드 제목이 실시간으로 찍힘 ---- */
   .genlog-head{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:var(--fw-med);color:var(--ink)}
@@ -374,9 +386,12 @@
   /* ---- 챗 프리미티브 ---- */
   const msgs=document.getElementById('cmsgs');
   function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
-  function bot(t){const r=el('div','crow');r.append(el('div','cbub bot',t));msgs.append(r);toBottom();return r;}
-  function me(t){const r=el('div','crow me');r.append(el('div','cbub me',t));msgs.append(r);toBottom();return r;}
-  function typing(){const r=el('div','crow');r.append(el('div','cbub bot typing','<i></i><i></i><i></i>'));msgs.append(r);toBottom();return r;}
+  // 히어로→챗 핸드오프: 전환 직후 처음 몇 줄은 .rise(크게 솟아오름)로 등장
+  let _riseN=0;
+  function riseRow(r){ if(_riseN>0){ r.classList.add('rise'); _riseN--; } return r; }
+  function bot(t){const r=riseRow(el('div','crow'));r.append(el('div','cbub bot',t));msgs.append(r);toBottom();return r;}
+  function me(t){const r=riseRow(el('div','crow me'));r.append(el('div','cbub me',t));msgs.append(r);toBottom();return r;}
+  function typing(){const r=riseRow(el('div','crow'));r.append(el('div','cbub bot typing','<i></i><i></i><i></i>'));msgs.append(r);toBottom();return r;}
   function widget(node){const w=el('div','cwidget');w.append(node);msgs.append(w);toBottom();return w;}
   function off(w){w.classList.add('off');w.querySelectorAll('button,input,textarea').forEach(x=>x.disabled=true);}
   function toBottom(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));}
@@ -489,36 +504,55 @@
     });
   }
 
-  // 선택지 카드 — 질문+옵션 그리드+추가입력+건너뛰기/다음 (Genspark 인테이크 패턴).
-  // 반환: {id?,text} 또는 null(건너뜀). 옵션은 문자열 배열 또는 {id,label} 배열.
-  function askOptionCard(title, opts, idx, total){
+  // 선택지 카드 페이저 — 질문 여러 개를 카드 "한 장" 안에서 옆으로 넘기며 처리 (Genspark 인테이크 패턴).
+  // questions=[{q,opts:[str]}] → Promise([{q,a}]). 마지막 제출 시 Q/A 정리를 사용자 버블로 남김.
+  function askOptionCards(questions){
     return new Promise(res=>{
       const card=el('div','cwcard optcard');
-      const head=el('div','oc-head');
-      head.append(el('b','',_L(title)));
-      if(total) head.append(el('span','oc-prog', idx+' / '+total));
-      card.append(head);
-      const grid=el('div','oc-grid');
-      let sel=null, nextB=null;
-      const items=opts.map(o=> typeof o==='string' ? {id:o,label:o} : o).concat([{id:'__etc',label:_L('기타')}]);
-      const extra=el('input','ds-input oc-extra'); extra.placeholder=_L('추가 세부 정보 (선택 사항)');
-      items.forEach(o=>{ const b=el('button','oc-opt',o.label);
-        b.onclick=()=>{ grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); sel=o; nextB.disabled=false;
-          if(o.id==='__etc') extra.focus(); };
-        grid.append(b); });
-      card.append(grid, extra);
+      const head=el('div','oc-head'); const ttl=el('b',''); const prog=el('span','oc-prog');
+      head.append(ttl, prog); card.append(head);
+      const body=el('div','oc-body'); card.append(body);
       const act=el('div','cwact');
       const skipB=el('button','skipchip',_L('건너뛰기'));
-      nextB=el('button','ds-btn primary',_L('다음')); nextB.disabled=true;
-      skipB.onclick=()=>{ off(w); me(_L('건너뛸게요')); res(null); };
-      nextB.onclick=()=>{ off(w);
-        const base=(sel && sel.id!=='__etc') ? sel.label : '';
-        const ex=extra.value.trim();
-        const text=base + (ex ? (base?' — ':'')+ex : '');
-        me(text || _L('건너뛸게요'));
-        res(text ? {id:sel&&sel.id, text:text} : null); };
+      const nextB=el('button','ds-btn primary',_L('다음'));
       act.append(skipB, nextB); card.append(act);
       const w=widget(card);
+      const answers=[];
+      let qi=0, sel=null, pane=null, extra=null;
+      function renderQ(){
+        const q=questions[qi];
+        ttl.textContent=_L(q.q); prog.textContent=(qi+1)+' / '+questions.length;
+        nextB.textContent=_L(qi===questions.length-1?'제출':'다음'); nextB.disabled=true; sel=null;
+        const np=el('div','oc-pane');
+        const grid=el('div','oc-grid');
+        extra=el('input','ds-input oc-extra'); extra.placeholder=_L('추가 세부 정보 (선택 사항)');
+        (q.opts||[]).map(o=>({id:o,label:o})).concat([{id:'__etc',label:_L('기타')}]).forEach(o=>{
+          const b=el('button','oc-opt',o.label);
+          b.onclick=()=>{ grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); sel=o; nextB.disabled=false;
+            if(o.id==='__etc') extra.focus(); };
+          grid.append(b); });
+        np.append(grid, extra);
+        pane=np; body.append(np); toBottom();
+      }
+      function advance(save){
+        if(save && pane){
+          const base=(sel && sel.id!=='__etc') ? sel.label : '';
+          const ex=extra.value.trim();
+          const text=base + (ex ? (base?' — ':'')+ex : '');
+          if(text) answers.push({q:questions[qi].q, a:text});
+        }
+        if(qi>=questions.length-1){
+          off(w);
+          me(answers.length ? answers.map(x=>'Q: '+x.q+'\nA: '+x.a).join('\n\n') : _L('건너뛸게요'));
+          res(answers); return;
+        }
+        qi++;
+        const old=pane; if(old){ old.classList.add('out'); setTimeout(()=>old.remove(), 320); pane=null; }
+        renderQ();
+      }
+      skipB.onclick=()=>advance(false);
+      nextB.onclick=()=>advance(true);
+      renderQ();
     });
   }
 
@@ -843,6 +877,7 @@
   function heroSend(){
     const v=hinput.value.trim(); if(!v) return;
     hero.classList.add('away'); setTimeout(()=>{ hero.hidden=true; },360);
+    _riseN=3;   // 핸드오프: 내 메시지·타이핑 점·첫 답변이 솟아오르며 등장
     cinput.value=v; send();
   }
   hsend.onclick=heroSend;
@@ -887,6 +922,9 @@
     const first=await askInput('만들고 싶은 것을 자유롭게 적어주세요');
     started=true; history.pushState({s:'chat'},'',location.href);
 
+    // 핸드오프 리듬 — 타이핑 점을 잠깐 보여준 뒤 첫 응답 등장 (즉답이면 기계적으로 느껴짐)
+    const tp0=typing(); await new Promise(r=>setTimeout(r,750)); tp0.remove();
+
     // 종류: 입력에서 감지, 애매하면 칩으로 유도 (짧게 말해도 시스템이 제안)
     let kind=detectKind(first);
     if(!kind){
@@ -928,17 +966,17 @@
           if(it.product && !S.product) S.product=it.product;
           if(it.questions.length){
             bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
-            for(let qi=0; qi<it.questions.length; qi++){
-              const q=it.questions[qi];
-              if(q.opts && q.opts.length){
-                // 선택지 카드 — 클릭으로 답하고, 필요하면 추가 정보만 타이핑
-                const a=await askOptionCard(q.q, q.opts, qi+1, it.questions.length);
-                if(a && a.text) S.answers.push({q:q.q, a:a.text});
-              } else {
-                bot(q.q);
-                const a=await askInput('답변을 입력하세요', '건너뛰기');
-                if(a) S.answers.push({q:q.q, a});
-              }
+            // 선택지 있는 질문 = 카드 한 장 안에서 옆으로 넘기며 처리, 없는 질문만 자유입력
+            const withOpts=it.questions.filter(q=>q.opts && q.opts.length);
+            const freeQs=it.questions.filter(q=>!q.opts || !q.opts.length);
+            if(withOpts.length){
+              const ans=await askOptionCards(withOpts);
+              ans.forEach(x=>S.answers.push(x));
+            }
+            for(const q of freeQs){
+              bot(q.q);
+              const a=await askInput('답변을 입력하세요', '건너뛰기');
+              if(a) S.answers.push({q:q.q, a});
             }
           }
         }
