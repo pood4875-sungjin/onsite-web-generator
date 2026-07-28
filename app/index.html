@@ -153,7 +153,7 @@
   .hero{position:fixed;inset:0;z-index:7;background:var(--canvas);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
   .hero[hidden]{display:none}
   /* 타이틀 한 줄 + 타이핑 연출 — min-height로 타이핑 중 레이아웃 점프 방지 */
-  .hero h1{font-size:clamp(24px, 4.6vw, var(--fs-display-lg));font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
+  .hero h1{font-size:clamp(30px, 5.4vw, 54px);font-weight:var(--fw-semi);letter-spacing:var(--tr-display);line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
     opacity:0;transform:translateY(24px);animation:kc-in .8s cubic-bezier(.22,1,.36,1) 60ms forwards}
   .hero .caret{display:inline-block;width:3px;height:.92em;background:var(--ink);margin-left:6px;vertical-align:-.1em;border-radius:2px;animation:hblink 1s steps(1) infinite}
   @keyframes hblink{50%{opacity:0}}
@@ -171,10 +171,13 @@
       rgba(63,224,198,.8) .72turn, rgba(91,157,255,.95) .82turn, rgba(138,107,255,.8) .92turn,
       transparent 1turn);
     animation:hspin 4.5s linear infinite;transition:opacity .5s var(--ease)}
+  /* 둘 다 링 마스크 — 안쪽 면엔 그라데이션이 비치지 않게, 테두리 위주로만 (사용자 지시) */
   .hbox::before{padding:2px;
     -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;
     mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);mask-composite:exclude}
-  .hbox::after{filter:blur(18px);opacity:.32;z-index:-1}
+  .hbox::after{inset:-6px;padding:7px;filter:blur(10px);opacity:.45;
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);mask-composite:exclude}
   @keyframes hspin{to{--hang:1turn}}
   .hbox.quiet::before,.hbox.quiet::after{opacity:0}
   @media (prefers-reduced-motion:reduce){.hbox::before,.hbox::after{animation:none;opacity:.2}}
