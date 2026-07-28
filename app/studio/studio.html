@@ -604,6 +604,7 @@
   function renderProjectPage(pg){ return renderWith(pg.data, pg.pageType, pg.volume||volume, buildNav(pg.id), motion); }
   let _keepScrollY=null;
   function render(){
+    if(typeof _liveComposing!=='undefined' && _liveComposing) return;   // 라이브 생성 중엔 스켈레톤/리빌 화면 유지
     // PPT 편집 중 리렌더(이미지 삽입 등) 시 현재 스크롤 위치 유지(1페이지로 안 튐)
     if(curMode().slides){ try{ _keepScrollY=frame.contentWindow.scrollY; }catch(e){ _keepScrollY=null; } }
     frame.srcdoc = pageHtml();
@@ -1250,14 +1251,13 @@
     }
     return out;
   }
-  // 분량 설정 → 예상 장수: 스켈레톤 레일을 이만큼 미리 깔고, 완성되는 장부터 실물로 교체
-  let _liveExpected=10;
+  // 스켈레톤 레일 — 완성된 장 + "지금 그리는 다음 장" 1칸만 스켈레톤 (1칸에서 시작해 늘어남)
   function paintLiveRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     rail.style.display='flex'; rail.innerHTML='';
     const W=132, sc=(W-4)/1280;
     const done=(data.slides||[]);
-    const total=Math.max(_liveExpected, done.length + (_liveComposing?1:0));
+    const total=done.length + (_liveComposing?1:0) || 1;
     done.forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
@@ -1322,11 +1322,11 @@
   async function startLiveCompose(){
     const brief=pageRef.pendingBrief;
     _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
-    _liveExpected=({short:7, std:12, deep:22})[brief && brief.length] || 10;
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
     prow.append(pbub); msgs.append(prow); scroll();
     // 딤·스피너 없이 — 뷰어는 스켈레톤 장, 레일은 스켈레톤 썸네일로 시작 (바로 작업판이 보임)
+    try{ empty.classList.add('hide'); }catch(e){}   // render()를 안 거치므로 빈 상태 오버레이 직접 숨김
     paintLiveRail(); cursorShow(true); cursorTo(0.3,0.28);
     try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
     let n=0;
@@ -1335,7 +1335,6 @@
       if(sl.length>n){
         n=sl.length;
         data.slides=sl.map(s=>JSON.parse(JSON.stringify(s)));
-        if(n>=_liveExpected) _liveExpected=n+1;   // 예상보다 길어지면 레일이 한 칸 앞서 늘어남
         const last=sl[sl.length-1];
         pbub.textContent='✍️ '+n+tL('번째 장 작성 중')+(last.title?' — '+last.title:'');
         drawSlideWithCursor(last);
@@ -2245,7 +2244,8 @@
     } else if(curMode().editOnly){
       if(curMode().slides && pageRef.pendingBrief && window.LLM && LLM.aiAvailable()){
         // index에서 브리프만 들고 넘어온 상태 — 여기서 라이브 생성 (좌측 안내 + 우측 장표가 그려짐)
-        startLiveCompose(); render();
+        // render() 호출 금지: 팩 기본 템플릿이 스켈레톤을 덮는다
+        startLiveCompose();
       } else {
         // 편집전용(이메일/PPT): 생성 플로우 없이 기존 구성 그대로 편집
         generated=true; idx=STEPS.indexOf('done'); botBubble(`${project.name} — ${tL('편집 중')}`); mountWidget('done'); render();
