@@ -85,6 +85,11 @@
   .cwact{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
   .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0}
   .chiprow.choice{justify-content:flex-end}   /* 선택지=사용자 응답 → 우측 정렬 */
+  /* 추천 입력 예시 — 세로 나열, 점선 테두리로 "제안"임을 구분 (ChatGPT 홈 제안 패턴) */
+  .chiprow.samples{flex-direction:column;align-items:flex-start;gap:6px}
+  .chiprow.samples .ds-chip{background:none;border:1px dashed var(--hairline-strong);color:var(--mute);
+    font-size:13px;text-align:left;white-space:normal;line-height:1.45}
+  .chiprow.samples .ds-chip:hover{color:var(--body);border-color:var(--body-mid);background:var(--bg-soft,rgba(127,127,127,.06))}
   .chiplabel{font-size:12px;font-weight:var(--fw-med);color:var(--body);margin:0 0 6px}
   .skipchip{background:none;border:1px dashed var(--hairline-strong);color:var(--mute);font-size:12.5px;cursor:pointer;padding:7px 14px;border-radius:var(--r-pill);font-family:inherit;transition:var(--dur) var(--ease)}
   .skipchip:hover{color:var(--body);border-color:var(--body-mid)}
@@ -203,8 +208,9 @@
   /* ============================================================
      새 프로젝트 = 종류 선택(풀페이지) → 챗 인테이크(하단 고정 입력창).
      자유 입력은 컴포저로, 선택지는 챗 위젯으로(그동안 컴포저 비활성).
-     흐름: 종류 → 브리프 입력(스킵 가능) → (PPT: 분량 칩) → AI 되묻기 0~2개
-          → 스타일 카드 → 요약 카드 → 생성 → 스튜디오.
+     흐름: 종류 → (사업군) → 스타일 카드 → 브리프 입력(예시 칩·스킵 가능)
+          → (PPT: 분량 칩) → AI 되묻기 0~2개 → 요약 카드 → 생성 → 스튜디오.
+     ※ 스타일을 대화보다 먼저: "뭘 만들지 몰라도 일단 보이는 것부터 고르게" (사용자 지시)
      ============================================================ */
   const _L=(k)=>window.L?window.L(k):k;
   const ORGS=[{id:'enterprise',label:'전사',rec:'midas'},{id:'sk',label:'SK',rec:'aether'},{id:'ensol',label:'엔솔',rec:'krds'},{id:'personal',label:'개인작업',rec:'aether'}];
@@ -229,6 +235,24 @@
     multi:'예) 협업툴 플로우 제품 사이트. 프로젝트 보드·자동 리포트. 무료 체험 가입 유도',
     ppt:'예) 2026 2분기 사업보고. 청중은 경영진. 1.시장 현황 2.실적 3.하반기 계획. 매출 32% 성장 강조',
   };
+  // 첫 입력 추천 예시 — 클릭하면 컴포저에 채워져 수정 후 전송(ChatGPT 홈 제안 패턴)
+  const SAMPLES={
+    single:[
+      '9월 방콕 MBM 세미나 안내 랜딩. 일정·연사·프로그램 소개, 참가 신청 유도',
+      '신제품 소개 랜딩페이지. 핵심 기능 3가지와 도입 문의 버튼',
+      '사내 해커톤 모집 공지 한 장. 일정·참가 자격·신청 방법',
+    ],
+    multi:[
+      '구조설계 소프트웨어 제품 사이트. 메인·주요기능·요금·문의 구성',
+      '기술 세미나 아카이브 사이트. 회차별 발표자료와 영상 정리',
+      '신규 서비스 소개 사이트. 소개·기능·FAQ·문의 페이지',
+    ],
+    ppt:[
+      '2026 하반기 사업계획 발표. 청중은 경영진, 실적과 로드맵 중심',
+      '태국 MBM 세미나 발표 자료. 제품 소개와 도입 사례 중심',
+      '신기능 온보딩 교육 자료. 실무자 대상, 사용 흐름 단계별 설명',
+    ],
+  };
 
   const S={ kind:'', stylePack:'aether', styleName:'', org:'', lang:(window.I18N?I18N.getLang():'ko'), plan:'', answers:[], name:'', product:'', pptStyle:'ax', len:'short', edmTpl:null };
   let leaving=false;
@@ -246,7 +270,7 @@
   /* ---- 하단 고정 컴포저 — 자유 입력은 전부 여기로 ---- */
   const cbox=document.getElementById('cbox'), cinput=document.getElementById('cinput'), csend=document.getElementById('csend');
   const cattach=document.getElementById('cattach'), cfile=document.getElementById('cfile'), attrow=document.getElementById('attrow');
-  let _resolve=null, _skipW=null;
+  let _resolve=null, _skipW=null, _sampleW=null;
   function grow(){ cinput.style.height='auto'; cinput.style.height=Math.min(cinput.scrollHeight,180)+'px'; }
   cinput.addEventListener('input',grow);
   function composerOff(ph){ cinput.disabled=true; csend.disabled=true; cattach.disabled=true; cbox.classList.add('dis'); cinput.placeholder=_L(ph||'위 선택지에서 골라주세요'); }
@@ -265,6 +289,7 @@
     if(!_resolve) return;
     const r=_resolve; _resolve=null;
     if(_skipW){ off(_skipW); _skipW=null; }
+    if(_sampleW){ off(_sampleW); _sampleW=null; }
     // 첨부 문서 → 브리프에 병합 (파일당 8000자 제한)
     let out=v;
     const names=attachments.map(a=>a.name);
@@ -330,6 +355,16 @@
   };
 
   /* ---- 선택 위젯들 ---- */
+  // 추천 입력 칩 — 클릭=컴포저에 채움(전송 아님). 다른 칩 다시 눌러 바꿔볼 수 있고, 전송 시 finishInput이 끈다.
+  function sampleChips(kind){
+    const list=SAMPLES[kind]||[];
+    if(!list.length) return;
+    const rowEl=el('div','chiprow samples');
+    list.forEach(t=>{ const b=el('button','ds-chip',_L('✏️ ')+_L(t));
+      b.onclick=()=>{ cinput.value=_L(t); grow(); cinput.focus(); }; rowEl.append(b); });
+    _sampleW=widget(rowEl);
+  }
+
   function askChips(items){
     // items=[{id,label}] → Promise(id). 사용자 응답이므로 우측 정렬 + 기본 미선택.
     return new Promise(res=>{
@@ -603,8 +638,20 @@
     // 조각 이어붙이기 금지 — 영어·일본어에서 어순이 깨진다
     bot((window.LF?LF:( (t)=>t ))('좋아요, {kind}를 만들게요!', {kind:_L(k.kt)}));
 
+    // ① 사업군 → 스타일 먼저: 내용을 몰라도 보이는 것부터 고르게 (유형 → 스타일 → 대화)
+    if(S.kind==='single'||S.kind==='multi'){
+      bot(_L('어느 사업군 프로젝트인가요? 어울리는 스타일을 추천해드릴게요.'));
+      S.org=await askChips(ORGS.map(o=>({id:o.id,label:o.label})));
+    }
+    bot(_L(S.kind==='edm'?'템플릿을 골라주세요.':'디자인 스타일을 골라주세요.'));
+    const st=await askStyle(S.kind);
+    if(S.kind==='ppt') S.pptStyle=st||'ax';
+    else if(S.kind!=='edm') S.stylePack=st||'aether';
+
+    // ② 대화 진입 — 브리프 입력(추천 예시 칩 함께)
     if(S.kind!=='edm'){
       bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));
+      sampleChips(S.kind);
       S.plan=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
 
       if(S.kind==='ppt' && S.plan){
@@ -632,16 +679,6 @@
         }
       }
     }
-
-    // 사업군 → 스타일: 각각 별개 질문, 선택 즉시 다음으로
-    if(S.kind==='single'||S.kind==='multi'){
-      bot(_L('어느 사업군 프로젝트인가요? 어울리는 스타일을 추천해드릴게요.'));
-      S.org=await askChips(ORGS.map(o=>({id:o.id,label:o.label})));
-    }
-    bot(_L(S.kind==='edm'?'템플릿을 골라주세요.':'디자인 스타일을 골라주세요.'));
-    const st=await askStyle(S.kind);
-    if(S.kind==='ppt') S.pptStyle=st||'ax';
-    else if(S.kind!=='edm') S.stylePack=st||'aether';
 
     bot(_L('이렇게 만들게요. 이름을 다듬고 생성해주세요!'));
     await askSummary();
