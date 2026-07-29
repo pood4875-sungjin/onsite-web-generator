@@ -138,7 +138,9 @@
   var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, process: 1, table: 1, pricing: 1, timeline: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
   // honors 팩 = pitch 타입 + toc(목차)·divider(간지)
   var HONORS_ALLOWED = Object.assign({ toc: 1, divider: 1 }, PITCH_ALLOWED);
-  function allowedFor(pack) { return pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
+  // naver 팩(Design AX Line) — 독자 타입 체계 (packs.naver.js CATALOG와 동일 목록)
+  var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, closing: 1 };
+  function allowedFor(pack) { return pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
     var s = String(txt || '').trim();
     s = s.replace(/^```(?:json)?/i, '').replace(/```$/,'').trim();  // 코드펜스 제거
@@ -216,6 +218,20 @@
       pdeck.accent = pdeck.accent || 'blue';
       return pdeck;
     }
+    // BYOK 직접 호출 — naver 팩(Design AX Line): 챕터 컬러·간지 구조
+    if (brief.pack === 'naver' && window.NAVER_SCHEMA_DOC) {
+      var nsys =
+        '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
+        '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지. 형식: {"slides":[...]}\n' +
+        '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.NAVER_SCHEMA_DOC + '\n' +
+        '각 타입의 필드: ' + window.NAVER_FIELD_DOC + '\n' +
+        '규칙: 1장 cover. 2장 toc(items=챕터명, divider title과 1:1). ' +
+        '챕터마다 divider(ch=1부터 순서대로, title=영문 대문자 짧게, no="01"…). ' +
+        '수치는 stats로 시각화(값은 plan의 실제 수치, 지어내기 금지). 마지막 closing. ' +
+        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';
+      var ntxt = await messages({ system: nsys, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
+      var nd = parseDeck(ntxt, 'naver'); nd.style = 'naver'; return nd;
+    }
     // BYOK 직접 호출 — honors 팩: pitch 레이아웃 + 목차/간지 규칙
     if (brief.pack === 'honors' && window.HONORS_SCHEMA_DOC) {
       var hsys =
@@ -283,7 +299,7 @@
     var sys =
       '너는 프레젠테이션 편집자다. 현재 덱과 사용자 지시를 받아 덱을 수정한다.\n' +
       '반드시 유효한 JSON 하나만 출력: {"slides":[...수정 후 전체 배열...],"message":"<한 줄 요약>"}\n' +
-      '슬라이드 스키마: ' + (pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
+      '슬라이드 스키마: ' + (pack === 'naver' && window.NAVER_FIELD_DOC ? window.NAVER_FIELD_DOC : pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
       '문구·수치·톤 수정, 추가·분할·삭제·순서 변경 전부 가능. 무관한 슬라이드는 원본 그대로 복사. ' +
       '일부 장만 바뀌는 요청(장 추가·삭제·한두 장 수정)은 전체 배열 대신 {"ops":[{"op":"insert","at":인덱스,"slide":{...}}|{"op":"replace","at":인덱스,"slide":{...}}|{"op":"remove","at":인덱스}],"message":"..."}로 바뀐 부분만 출력(at은 0부터, 두 번째 장 앞 삽입=at 1). ' +
       '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +

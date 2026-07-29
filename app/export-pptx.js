@@ -17,10 +17,14 @@
 
   var TEXT_SEL = ['.meta-k', '.meta-v', '.eyebrow', '.cover-title', '.cover-sub', '.s-title', '.s-index', '.row-num', '.row-label', '.row-desc', '.block-sub', '.block-p', '.bignum', '.agenda-title', '.agenda-label', '.agenda-badge', '.contact-k', '.contact-v', '.contact-email', '.contact-title',
     /* pitch 팩 */ '.p-eyebrow', '.p-title', '.p-lead', '.p-body', '.p-note', '.st-title', '.st-sub', '.qt-text', '.qt-by', '.qt-num', '.qt-lab', '.qt-stars', '.g-head', '.g-role', '.g-text', '.s-num', '.s-lab', '.sp-num', '.sp-lab', '.bs-num', '.bs-cap', '.l-num', '.l-body', '.st-badge', '.g-arrow', '.pr-name', '.pr-price', '.pr-per', '.tl-when', '.p-c-head', '.p-c-text', '.mx-lab', '.mx-axl', '.cl-k', '.cl-v', '.t-row > span', '.p-media.ph span', '.ps-who', '.ps-head', '.ps-text', '.ps-tag', '.ps-arrow',
-    /* honors 팩(목차·간지·세리프 캡션) */ '.tc-num', '.tc-label', '.dv-no'].join(',');
+    /* honors 팩(목차·간지·세리프 캡션) */ '.tc-num', '.tc-label', '.dv-no',
+    /* naver 팩(Design AX Line) */ '.nv-hl', '.nv-label', '.nv-nav-it', '.nv-nav-pg', '.nv-rhead', '.nv-rtext', '.nv-chead', '.nv-ctext', '.nv-body', '.nv-big', '.nv-sum p',
+    '.tc-no', '.tc-desc', '.tc-head', '.dv-title', '.dv-lead', '.dv-text', '.cv-title', '.cv-sub', '.cv-mv', '.cv-bandtx',
+    '.stt-blab', '.stt-blabel', '.stt-bval', '.stt-dlab', '.md-cap', '.sp-li span:last-child'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
-    /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag';
+    /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
+    /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 

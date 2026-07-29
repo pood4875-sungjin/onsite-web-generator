@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../pagetypes.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../pagetypes.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../packs.naver.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -578,6 +578,7 @@
     if(pack && pack.id==='ppt' && typeof renderPptDeck==='function') return renderPptDeck(rd);
     if(pack && pack.id==='pitch' && typeof renderPitchDeck==='function') return renderPitchDeck(rd);
     if(pack && pack.id==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(rd);
+    if(pack && pack.id==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(rd);
     if(pack && pack.id==='krds' && typeof renderKrdsPage==='function') return renderKrdsPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='midas' && typeof renderMidasPage==='function') return renderMidasPage(rd, {volume:vol, motion:mot});
     return renderComposed(rd, pack, mot, pt, vol);
@@ -647,7 +648,7 @@
   function packMode(sp){
     if(sp==='edm') return { editOnly:true,  persist:'raw',    styleSwitch:false, reorder:false, exportFmt:['html'],         device:'fixed',      slides:false, doneKo:'이 이메일 템플릿은 편집만 가능합니다. 우측 편집 버튼으로 내용을 수정하세요.' };
     if(sp==='ppt') return { editOnly:true,  persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], device:'fixed',      slides:true,  doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하거나, 아래에서 슬라이드를 추가·정리하세요.' };
-    if(sp==='pitch'||sp==='honors') return { editOnly:true, persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], device:'fixed', slides:true, doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하거나, 아래에서 슬라이드를 추가·정리하세요.' };
+    if(sp==='pitch'||sp==='honors'||sp==='naver') return { editOnly:true, persist:'fields', styleSwitch:false, reorder:false, exportFmt:['pptx','html'], device:'fixed', slides:true, doneKo:'PPT 초안입니다. 슬라이드 텍스트를 클릭해 수정하거나, 아래에서 슬라이드를 추가·정리하세요.' };
     return           { editOnly:false, persist:'fields', styleSwitch:false, reorder:true,  exportFmt:['html','json'], device:'responsive', slides:false, doneKo:'' }; // 웹사이트/랜딩 — 스타일은 생성 시 선택(스튜디오 변경 제거)
   }
   function curMode(){ return packMode(project ? project.stylePack : (pack && pack.id)); }
@@ -655,13 +656,15 @@
   // 슬라이드 덱 렌더 — 팩에 따라 렌더러가 갈린다(썸네일 레일·내보내기 공용)
   function renderDeckFor(slides){
     const sp = project ? project.stylePack : (pack && pack.id);
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'?sp:'ax'), accent: data.accent || '' };
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'?sp:'ax'), accent: data.accent || '' };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
+    if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='pitch' && typeof renderPitchDeck==='function') return renderPitchDeck(payload);
     return renderPptDeck(payload);
   }
   function slidePack(){ const sp = project ? project.stylePack : (pack&&pack.id);
     if(sp==='honors') return { types:window.HONORS_SLIDE_TYPES||[], label:window.HONORS_TYPE_LABEL||{}, make:window.honorsNewSlide, mv:window.HONORS_MV_SEL };
+    if(sp==='naver') return { types:window.NAVER_SLIDE_TYPES||[], label:window.NAVER_TYPE_LABEL||{}, make:window.naverNewSlide, mv:window.NAVER_MV_SEL };
     if(sp==='pitch') return { types:window.PITCH_SLIDE_TYPES||[], label:window.PITCH_TYPE_LABEL||{}, make:window.pitchNewSlide, mv:window.PITCH_MV_SEL };
     return { types:window.PPT_SLIDE_TYPES||[], label:window.PPT_TYPE_LABEL||{}, make:window.pptNewSlide, mv:window.PPT_MV_SEL }; }
   // raw 섹션 팩(eDM): 콘텐츠가 data.sections[i].html에 박혀 있어 setField 대신 DOM→html 되쓰기
@@ -824,7 +827,7 @@
     if(window.AETHER_STYLE) l.push({id:'aglass',name:AETHER_STYLE.name,swatch:AETHER_STYLE.swatch});
     if(window.PPT_STYLE) l.push({id:'ppt',name:PPT_STYLE.name,swatch:PPT_STYLE.swatch});
     return l; }
-  function packById(id){ if(id==='saturn'&&window.SATURN_STYLE) return SATURN_STYLE; if(id==='honors'&&window.HONORS_STYLE) return HONORS_STYLE; if(id==='pitch'&&window.PITCH_STYLE) return PITCH_STYLE; if(id==='ppt'&&window.PPT_STYLE) return PPT_STYLE; if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
+  function packById(id){ if(id==='saturn'&&window.SATURN_STYLE) return SATURN_STYLE; if(id==='naver'&&window.NAVER_STYLE) return NAVER_STYLE; if(id==='honors'&&window.HONORS_STYLE) return HONORS_STYLE; if(id==='pitch'&&window.PITCH_STYLE) return PITCH_STYLE; if(id==='ppt'&&window.PPT_STYLE) return PPT_STYLE; if(id==='aglass'&&window.AETHER_STYLE) return AETHER_STYLE; if(id==='krds'&&window.KRDS_STYLE) return KRDS_STYLE; if(id==='midas'&&window.MIDAS_STYLE) return MIDAS_STYLE; return DARK_PACKS.find(x=>x.id===id)||DARK_PACKS[0]; }
   function changeStyle(id){ pack=packById(id); if(project){ project.stylePack=id; upsertProject(project); } document.getElementById('stylemenu').classList.remove('open'); render(); }
   function buildStyleMenu(){ const m=document.getElementById('stylemenu'); m.innerHTML='';
     allStyles().forEach(s=>{ const b=el('button','si'+(s.id===pack.id?' on':'')); b.innerHTML='<div class="sc" style="background:'+s.swatch+'"></div><div class="sn">'+s.name+'</div>'; b.onclick=(e)=>{ e.stopPropagation(); changeStyle(s.id); }; m.append(b); }); }
@@ -1466,7 +1469,8 @@
       botBubble('⚠️ '+tL('AI 생성에 실패해 기본 구성으로 시작해요.')+' ('+(e&&e.message||'')+')');
       try{
         const pk=brief&&brief.pack;
-        const fb = pk==='honors' && window.honorsTemplateDeck ? honorsTemplateDeck()
+        const fb = pk==='naver' && window.naverTemplateDeck ? naverTemplateDeck()
+                 : pk==='honors' && window.honorsTemplateDeck ? honorsTemplateDeck()
                  : pk==='pitch' && window.pitchTemplateDeck ? pitchTemplateDeck()
                  : window.pptTemplateDeck ? pptTemplateDeck((brief&&brief.style)||'ax') : {slides:[]};
         data.slides=fb.slides;
@@ -2113,7 +2117,7 @@
   function openPreview(){
     persist();
     // 발표 뷰어 — PPT 계열 팩(ppt·pitch)은 한 장씩 넘기는 프레젠테이션 뷰로
-    const viewerFn = pack && (pack.id==='honors' ? window.renderHonorsViewer : pack.id==='pitch' ? window.renderPitchViewer : pack.id==='ppt' ? window.renderPptViewer : null);
+    const viewerFn = pack && (pack.id==='naver' ? window.renderNaverViewer : pack.id==='honors' ? window.renderHonorsViewer : pack.id==='pitch' ? window.renderPitchViewer : pack.id==='ppt' ? window.renderPptViewer : null);
     const isPptPack = typeof viewerFn==='function';
     document.getElementById('pvfTitle').textContent = isPptPack ? tL('발표 미리보기') : tL('미리보기');   // 조작 힌트 문구 제거(사용자 요청)
     pvfFrame.srcdoc = isPptPack ? viewerFn(data, {start:_curThumb||0}) : previewHtml();   // 보고 있던 장부터 발표 시작
@@ -2313,6 +2317,7 @@
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
     pack = (project.stylePack==='saturn' && typeof SATURN_STYLE!=='undefined') ? SATURN_STYLE
+         : (project.stylePack==='naver' && typeof NAVER_STYLE!=='undefined') ? NAVER_STYLE
          : (project.stylePack==='honors' && typeof HONORS_STYLE!=='undefined') ? HONORS_STYLE
          : (project.stylePack==='pitch' && typeof PITCH_STYLE!=='undefined') ? PITCH_STYLE
          : (project.stylePack==='ppt' && typeof PPT_STYLE!=='undefined') ? PPT_STYLE

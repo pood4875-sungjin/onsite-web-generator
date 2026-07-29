@@ -105,6 +105,43 @@ const HONORS_SYSTEM =
   '수치가 있으면 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). ' +
   '본문 bg는 white/grey 교대. 마지막은 closing. ' +
   '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
+/* naver 팩(Design AX Line) — 독자 타입 체계: 직각·라인·챕터 컬러 보고서. packs.naver.js CATALOG와 동기 */
+const NAVER_USE_DOC =
+  'cover(표지): 첫 장 — 타이틀·밴드 문구·크레딧 | ' +
+  'statement(대형 문장): 그린 풀블리드 선언·전환 | ' +
+  'toc(목차): 표지 다음 장, 챕터 리스트(divider와 1:1) | ' +
+  'divider(간지): 챕터 시작 전환 장 — ch(1~5)가 챕터 컬러를 정한다 | ' +
+  'section(본문 표준): 헤드라인+설명 행 — 개념·배경·맥락 | ' +
+  'cards(N열 카드): 동급 항목 2~4개 비교·나열 | ' +
+  'split(좌우 분할): 설명+시각물(큐브 그래픽/체크 리스트/대형 수치) | ' +
+  'stats(수치): 대형 수치·도넛+게이지 비교 | ' +
+  'media(이미지 증빙): 제품 화면·데모 캡처 크게 | ' +
+  'roadmap(로드맵): 단계·일정 흐름(현재 강조) | ' +
+  'closing(마무리): 인사+연락처';
+const NAVER_FIELD_DOC =
+  'cover:{eyebrow?,title,sub?,band?,meta?:[{k,v}]} | ' +
+  'statement:{title,sub?} | ' +
+  'toc:{title?,items:[{label,desc?}]} | ' +
+  'divider:{ch:1~5,no?:"01",title(영문 대문자),lead,text?} | ' +
+  'section:{title,points?:[{head?,text}],text?,summary?} | ' +
+  'cards:{title,cols?:2~4,cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
+  'split:{title,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat",items?:[str],value?,label?},side?:"left",summary?} | ' +
+  'stats:{title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
+  'media:{title,image?:{label},caption?,summary?} | ' +
+  'roadmap:{title,steps:[{when,head,text?,state?:"done|now|next"}],summary?} | ' +
+  'closing:{title,sub?,contacts?:[{k,v}]}';
+const NAVER_SYSTEM =
+  '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ]}\n' +
+  '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + NAVER_USE_DOC + '\n' +
+  '각 타입의 필드: ' + NAVER_FIELD_DOC + '\n' +
+  '규칙: 1장 cover, 2장 toc(items의 label=각 divider title과 1:1). ' +
+  '챕터마다 divider(ch=1부터 등장 순서대로, title=영문 대문자 짧게 예 "WHY NOW", no="01"…) 후 그 챕터 본문 장들. 본문 장에는 ch를 쓰지 않는다(자동 상속). ' +
+  'title·lead·summary에서 **단어** 마크업으로 핵심어만 굵게(장당 1~2회, 과용 금지). 이모지 금지. ' +
+  '본문 장(section/cards/split/stats)에는 가능하면 summary(하단 정리 한 문장)를 넣는다. ' +
+  '수치가 있으면 stats로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). 마지막은 closing. ' +
+  '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 const PITCH_EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +
@@ -221,7 +258,7 @@ export default {
         outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
       };
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = clip(body.pack, 10) === 'honors' ? HONORS_SYSTEM : clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors는 카탈로그 기반 타입 선택
+      system = clip(body.pack, 10) === 'naver' ? NAVER_SYSTEM : clip(body.pack, 10) === 'honors' ? HONORS_SYSTEM : clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
       const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
@@ -244,7 +281,7 @@ export default {
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
       if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
-      system = (clip(body.pack, 10) === 'honors' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HONORS_FIELD_DOC) : clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
+      system = (clip(body.pack, 10) === 'naver' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, NAVER_FIELD_DOC) : clip(body.pack, 10) === 'honors' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HONORS_FIELD_DOC) : clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
     }
 
