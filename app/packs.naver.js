@@ -351,7 +351,7 @@
       var fanOv = '<svg class="ln-fan" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
         (s.items || []).map(function (_, i) {
           var y = ((i + 0.5) * 100 / fanN).toFixed(1);
-          return '<line x1="46.9" y1="50" x2="53.2" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3" vector-effect="non-scaling-stroke"/>';
+          return '<line x1="42.5" y1="50" x2="53.2" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3" vector-effect="non-scaling-stroke"/>';
         }).join('') + '</svg>';
       return '<section class="slide ln" data-kind="' + kind(s, 'Lineup') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + (s.title ? headline(s, P) : '') +
@@ -359,8 +359,8 @@
         '<svg class="nv-iso" viewBox="0 0 560 420" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
         '<polygon points="290,30 500,210 290,390 80,210" fill="' + c.p + '" fill-opacity=".12"/>' +
         '<polygon points="290,72 458,210 290,348 122,210" fill="none" stroke="' + c.p + '" stroke-width="1.4"/>' +
-        '<line x1="0" y1="210" x2="552" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
-        '<circle cx="552" cy="210" r="7" fill="' + c.p + '"/>' +
+        '<line x1="0" y1="210" x2="500" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
+        '<circle cx="500" cy="210" r="7" fill="' + c.p + '"/>' +
         '</svg>' +
         ((s.badge || s.name) ? '<div class="ln-badge">' + (s.badge ? '<span class="ln-bx"' + de(P + '.badge') + '>' + esc(s.badge) + '</span>' : '') + '<p class="ln-bname"' + de(P + '.name') + '>' + ml(s.name || '') + '</p></div>' : '') +
         '</div><div class="ln-list">' + rows + '</div></div>' +
