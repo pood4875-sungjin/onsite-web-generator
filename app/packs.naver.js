@@ -15,8 +15,8 @@
 (function () {
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
-  /* **강조** 마크업 → <b>. 이 시스템의 200↔700 대비 표현 수단(편집 시 마크업은 평문화됨 — 굵기툴바로 재지정) */
-  function mb(s) { return ml(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>'); }
+  /* 마크업 → 웨이트 대비: **굵게**(700) / __흐리게__(200 회색 — 표지 3톤 타이포용) */
+  function mb(s) { return ml(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/__([^_]+)__/g, '<span class="mut">$1</span>'); }
   function de(path) { return ' data-edit="' + path + '"'; }
   function kind(s, fb) { return esc(String(s.title || fb || s.type || 'Slide').replace(/\n/g, ' ').replace(/\*\*/g, '')); }
 
@@ -76,10 +76,12 @@
       g = cube(105, 215, 36, 21, 26, col, 1.8) + cube(195, 170, 36, 21, 26, col, 2.2) + cube(285, 125, 36, 21, 26, col, 2.6, true) +
         dashLine(135, 220, 165, 182, col) + dashLine(225, 178, 255, 138, col) +
         '<path d="M312 92 L330 74 M330 74 L316 74 M330 74 L330 88" stroke="' + col + '" stroke-width="2.2" fill="none"/>';
-    } else { /* arrow */
-      g = cube(160, 175, 46, 27, 34, col, 2.4, true) + cube(265, 120, 34, 20, 26, col, 1.8) +
-        '<path d="M200 150 L300 70" stroke="' + col + '" stroke-width="2" fill="none"/>' +
-        '<polygon points="300,70 284,72 294,86" fill="' + col + '"/>' + node(200, 150, col);
+    } else { /* arrow — 채워진 큐브에서 우상단 상승 라인 + 진행방향 화살촉 + 작은 큐브(원본 클로징 모티프) */
+      g = cube(120, 215, 46, 27, 34, col, 2.4, true) +
+        '<line x1="150" y1="185" x2="296" y2="88" stroke="' + col + '" stroke-width="2.4"/>' +
+        '<polygon points="310,78 296.7,97.7 286.7,82.7" fill="' + col + '"/>' +
+        cube(255, 155, 26, 15, 20, col, 1.6) +
+        node(150, 185, col);
     }
     return '<svg class="nv-iso" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">' +
       '<g opacity=".25">' + dashLine(20, 260, 380, 260, col) + dashLine(40, 40, 40, 280, col) + '</g>' + g + '</svg>';
@@ -127,7 +129,13 @@
       return { x: x, y: y, lab: ((st.when || '') + ' ' + (st.head || '')).trim() };
     });
     var grid = [0, 1, 2, 3].map(function (i) { var y = 26 + i * (H - 66) / 3; return '<line x1="30" y1="' + y + '" x2="' + (W - 30) + '" y2="' + y + '" stroke="#EBECED" stroke-dasharray="3 6"/>'; }).join('');
-    var path = 'M' + pts.map(function (p) { return p.x + ' ' + p.y; }).join(' L');
+    /* 부드러운 S커브(Catmull-Rom→베지어) — 원본 23의 곡선 궤적 */
+    var path = 'M' + pts[0].x + ' ' + pts[0].y;
+    for (var ci = 0; ci < pts.length - 1; ci++) {
+      var p0 = pts[Math.max(0, ci - 1)], p1 = pts[ci], p2 = pts[ci + 1], p3 = pts[Math.min(pts.length - 1, ci + 2)];
+      path += 'C' + (p1.x + (p2.x - p0.x) / 6).toFixed(1) + ' ' + (p1.y + (p2.y - p0.y) / 6).toFixed(1) + ',' +
+        (p2.x - (p3.x - p1.x) / 6).toFixed(1) + ' ' + (p2.y - (p3.y - p1.y) / 6).toFixed(1) + ',' + p2.x + ' ' + p2.y;
+    }
     var marks = pts.map(function (p, i) {
       return '<line x1="' + p.x + '" y1="24" x2="' + p.x + '" y2="' + (H - 26) + '" stroke="#EBECED"/>' +
         '<rect x="' + (p.x - 7) + '" y="' + (p.y - 7) + '" width="14" height="14" transform="rotate(45 ' + p.x + ' ' + p.y + ')" fill="' + col + '"/>' +
@@ -139,36 +147,57 @@
   }
 
   var R = {
-    /* 표지 — 좌 그래픽 패널+컬러 밴드 / 우 메타·타이틀·크레딧 3단. 원본 01 */
+    /* 표지 — 좌 나침반 그래픽 패널+그린 밴드 / 우 3단(라벨·날짜 / PROLOGUE+3톤 타이틀+바 / 규칙선+문서명·팀). 원본 01 */
     cover: function (s, P, ctx) {
-      var metas = (s.meta || []).map(function (m, i) {
-        return '<div class="cv-meta"><span class="nv-label"' + de(P + '.meta.' + i + '.k') + '>' + esc(m.k || '') + '</span><span class="cv-mv"' + de(P + '.meta.' + i + '.v') + '>' + esc(m.v || '') + '</span></div>';
-      }).join('');
+      var col = '#00DE5A';
+      var compass = '<svg class="nv-iso cp" viewBox="0 0 440 480" xmlns="http://www.w3.org/2000/svg">' +
+        /* 상하 축 — 선이 내려오고 끝에 점(링 바로 밖) */
+        '<line x1="220" y1="20" x2="220" y2="66" stroke="' + col + '" stroke-width="1.6"/><circle cx="220" cy="74" r="4" fill="' + col + '"/>' +
+        '<circle cx="220" cy="406" r="4" fill="' + col + '"/><line x1="220" y1="414" x2="220" y2="460" stroke="' + col + '" stroke-width="1.6"/>' +
+        /* 눈금 링(바깥 얇은 원 + 틱) */
+        '<circle cx="220" cy="240" r="152" fill="none" stroke="' + col + '" stroke-width="1" opacity=".3"/>' +
+        (function () { var t = ''; for (var i = 0; i < 60; i++) { var a = i * Math.PI / 30, mj = i % 5 === 0, r1 = mj ? 129 : 134, r2 = 145; t += '<line x1="' + (220 + r1 * Math.cos(a)).toFixed(1) + '" y1="' + (240 + r1 * Math.sin(a)).toFixed(1) + '" x2="' + (220 + r2 * Math.cos(a)).toFixed(1) + '" y2="' + (240 + r2 * Math.sin(a)).toFixed(1) + '" stroke="' + col + '" stroke-width="' + (mj ? 1.4 : 1) + '" opacity="' + (mj ? '.55' : '.4') + '"/>'; } return t; })() +
+        /* 안쪽 다이얼 */
+        '<circle cx="220" cy="240" r="100" fill="none" stroke="' + col + '" stroke-width="2"/>' +
+        /* 바늘 — NE 진한 날 + SW 연한 날(중심 대칭) */
+        '<polygon points="292,168 212,244 236,260" fill="' + col + '" opacity=".88"/>' +
+        '<polygon points="148,312 228,236 204,220" fill="' + col + '" opacity=".32"/>' +
+        '<circle cx="220" cy="240" r="15" fill="' + col + '"/><circle cx="220" cy="240" r="23" fill="none" stroke="' + col + '" stroke-width="1" opacity=".35"/></svg>';
       return '<section class="slide cv" data-kind="' + kind(s, 'Cover') + '"' + chVars(s) + '>' +
-        '<div class="cv-l"><div class="cv-gfx">' + iso('hex', '#00DE5A') + '</div>' +
-        '<div class="cv-band">' + mark(true) + (s.band ? '<p class="cv-bandtx"' + de(P + '.band') + '>' + ml(s.band) + '</p>' : '') + '</div></div>' +
-        '<div class="cv-r"><div class="cv-top">' + (s.eyebrow ? '<span class="nv-label"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</span>' : mark(false)) + '</div>' +
-        '<div class="cv-mid"><h1 class="cv-title"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1><span class="cv-bar"></span>' +
+        '<div class="cv-l"><div class="cv-gfx">' + compass + '</div>' +
+        '<div class="cv-band">' + mark(true) + (s.band ? '<p class="cv-bandtx"' + de(P + '.band') + '>' + mb(s.band) + '</p>' : '') + '</div></div>' +
+        '<div class="cv-r"><div class="cv-top"><span class="nv-label"' + de(P + '.label') + '>' + esc(s.label || 'MIDAS DESIGN AX') + '</span>' +
+        (s.date ? '<span class="nv-label"' + de(P + '.date') + '>' + esc(s.date) + '</span>' : '') + '</div>' +
+        '<div class="cv-mid">' + (s.eyebrow ? '<span class="nv-label gr"' + de(P + '.eyebrow') + '>' + esc(s.eyebrow) + '</span>' : '') +
+        '<h1 class="cv-title"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1><span class="cv-bar"></span>' +
         (s.sub ? '<p class="cv-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') + '</div>' +
-        '<div class="cv-foot">' + metas + '</div></div></section>';
+        '<div class="cv-foot rule"><span class="cv-doc"' + de(P + '.docLabel') + '>' + esc(s.docLabel || '') + '</span><span class="cv-team"' + de(P + '.team') + '>' + esc(s.team || '') + '</span></div></div></section>';
     },
-    /* 풀블리드 대형 문장 — 그린 면 + 화이트 텍스트. 원본 02 */
-    statement: function (s, P) {
+    /* 풀블리드 대형 문장 — 그린 면 + 화이트, 하단 2열 미니 비교 블록. 원본 02 */
+    statement: function (s, P, ctx) {
+      var cols = (s.cols || []).map(function (cItem, i) {
+        var IP = P + '.cols.' + i;
+        return '<div class="st-col"><span class="st-ctag"' + de(IP + '.tag') + '>' + esc(cItem.tag || '') + '</span>' +
+          '<p class="st-ctx"' + de(IP + '.text') + '>' + mb(cItem.text || '') + '</p></div>';
+      }).join('');
       return '<section class="slide st" data-kind="' + kind(s, 'Statement') + '">' +
-        '<div class="st-top">' + mark(true) + '</div>' +
+        '<div class="st-top">' + mark(true) + '<span class="st-pg">' + (ctx && ctx.no < 10 ? '0' : '') + (ctx ? ctx.no : '') + '</span></div>' +
         '<h1 class="st-title"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
-        (s.sub ? '<p class="st-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') + '</section>';
+        (s.sub ? '<p class="st-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') +
+        (cols ? '<div class="st-cols">' + cols + '</div>' : '<div class="st-fill"></div>') + '</section>';
     },
-    /* 목차 — 챕터 번호+라벨 리스트, 번호는 각 챕터 컬러. 원본 03 */
-    toc: function (s, P) {
+    /* 목차 — 풀폭 행: 대형 번호(챕터컬러 200)+영문 라벨(회색 700)+한 줄 설명(**강조**)+우측 페이지 범위. 원본 03 */
+    toc: function (s, P, ctx) {
       var rows = (s.items || []).map(function (it, i) {
-        var c = CH[i + 1] || CH.g;
-        return '<div class="tc-row"><span class="tc-no" style="color:' + c.t + '"' + de(P + '.items.' + i + '.no') + '>' + esc(it.no || ('0' + (i + 1))) + '</span>' +
-          '<span class="tc-label"' + de(P + '.items.' + i + '.label') + '>' + esc(it.label || '') + '</span>' +
-          (it.desc ? '<span class="tc-desc"' + de(P + '.items.' + i + '.desc') + '>' + esc(it.desc) + '</span>' : '') + '</div>';
+        var IP = P + '.items.' + i, c = CH[i + 1] || CH.g;
+        return '<div class="tc-row"><span class="tc-no" style="color:' + c.t + '"' + de(IP + '.no') + '>' + esc(it.no || ('0' + (i + 1))) + '</span>' +
+          '<span class="tc-label"' + de(IP + '.label') + '>' + esc(it.label || '') + '</span>' +
+          '<span class="tc-desc"' + de(IP + '.desc') + '>' + mb(it.desc || '') + '</span>' +
+          (it.pages ? '<span class="tc-pages"' + de(IP + '.pages') + '>' + esc(it.pages) + '</span>' : '') + '</div>';
       }).join('');
       return '<section class="slide tc" data-kind="' + kind(s, 'Contents') + '">' +
-        '<div class="tc-l">' + mark(false) + '<p class="tc-head"' + de(P + '.title') + '>' + ml(s.title || 'CONTENTS') + '</p></div>' +
+        '<div class="tc-top">' + mark(false) + '<span class="st-pg" style="color:var(--ink)">' + (ctx && ctx.no < 10 ? '0' : '') + (ctx ? ctx.no : '') + '</span></div>' +
+        '<p class="tc-head"' + de(P + '.title') + '>' + ml(s.title || 'CONTENTS') + '</p>' +
         '<div class="tc-list">' + rows + '</div></section>';
     },
     /* 간지 — 좌 챕터컬러 패널(마크+NO+영문 49px/200)+그래픽 / 우 리드 33px+본문. 원본 04/09/12/16/22 */
@@ -190,14 +219,17 @@
         '<div class="nl-list">' + s.points.map(function (p, i) { return numRow(p, P + '.points.' + i, i); }).join('') + '</div>';
       else if (s.text) body = '<p class="nv-body lg"' + de(P + '.text') + '>' + ml(s.text) + '</p>';
       var aside = '';
-      if (s.aside) {
+      if (s.points2) {   // 2열 넘버 리스트(원본 08) — 우측 리스트는 챕터컬러 톤
+        var p2 = '<div class="nl-list">' + s.points2.map(function (p, i) { return numRow(p, P + '.points2.' + i, i); }).join('') + '</div>';
+        aside = '<div class="sc-col2 tone-ch">' + listCap(s.listTitle2, P + '.listTitle2') + p2 + '</div>';
+      } else if (s.aside) {
         var ai = (s.aside.items || []).map(function (t, i) {
           return '<div class="as-row"><span class="nl-no w44">' + (i < 9 ? '0' : '') + (i + 1) + '</span><span class="as-val"' + de(P + '.aside.items.' + i) + '>' + ml(t) + '</span></div>';
         }).join('');
         aside = '<div class="sc-aside">' + listCap(s.aside.title, P + '.aside.title') + '<div class="nl-list">' + ai + '</div></div>';
       }
-      return '<section class="slide sc' + (aside ? ' has-aside' : '') + '" data-kind="' + kind(s, 'Section') + '"' + chVars(s) + '>' +
-        (aside ? '<span class="sc-bleed"></span>' : '') +
+      return '<section class="slide sc' + (s.aside && !s.points2 ? ' has-aside' : '') + (s.points2 ? ' two-col' : '') + '" data-kind="' + kind(s, 'Section') + '"' + chVars(s) + '>' +
+        (s.aside && !s.points2 ? '<span class="sc-bleed"></span>' : '') +
         '<div class="sc-in">' + navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
         '<div class="sc-cols"><div class="sc-main">' + body + summary(s, P) + '</div>' + aside + '</div></div></section>';
     },
@@ -211,6 +243,12 @@
         if (brand) {
           return '<div class="nv-card brand">' + listCap(it.tag || '', IP + '.tag') +
             '<p class="bd-head"' + de(IP + '.head') + '>' + ml(it.head || '') + '</p>' +
+            (it.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div>';
+        }
+        if (s.variant === 'tile') {
+          return '<div class="nv-card tile">' +
+            (it.tag ? '<span class="nv-label ch"' + de(IP + '.tag') + '>' + esc(it.tag) + '</span>' : '') +
+            '<p class="tile-head"' + de(IP + '.head') + '>' + ml(it.head || '') + '</p>' +
             (it.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div>';
         }
         var tone = it.tone === 'on' ? ' on' : it.tone === 'dim' ? ' dim' : '';
@@ -296,24 +334,32 @@
           '<span class="ln-rule"></span>' +
           (it.text ? '<p class="ln-text"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div>';
       }).join('');
+      /* 원본 13: 뱃지가 다이아 수평 중심선 좌측 끝에 겹쳐 앉고, 중심선이 마름모를 관통해
+         우측 꼭짓점(점)에서 항목 수만큼 부챗살로 갈라져 리스트를 향한다. 리스트는 균등 칸(센터 정렬) */
+      var fanN = Math.max((s.items || []).length, 2), GH = 420;
+      var fan = (s.items || []).map(function (_, i) {
+        var y = Math.round((i + 0.5) * GH / fanN);
+        return '<line x1="500" y1="210" x2="560" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3"/>';
+      }).join('');
       return '<section class="slide ln" data-kind="' + kind(s, 'Lineup') + '"' + chVars(s) + '>' +
-        navStrip(ctx.chapters, s.ch, ctx.no) +
+        navStrip(ctx.chapters, s.ch, ctx.no) + (s.title ? headline(s, P) : '') +
         '<div class="ln-cols"><div class="ln-gfx">' +
-        '<svg class="nv-iso" viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg">' +
-        '<polygon points="260,30 470,210 260,390 50,210" fill="' + c.p + '" fill-opacity=".1"/>' +
-        '<polygon points="260,70 430,210 260,350 90,210" fill="none" stroke="' + c.p + '" stroke-width="1.6"/>' +
-        '<line x1="50" y1="210" x2="470" y2="210" stroke="' + c.p + '" stroke-width="1.4"/>' +
-        '<circle cx="470" cy="210" r="8" fill="' + c.p + '"/>' +
-        '<line x1="470" y1="210" x2="520" y2="140" stroke="' + c.p + '" stroke-width="1.4"/><line x1="470" y1="210" x2="520" y2="210" stroke="' + c.p + '" stroke-width="1.4"/><line x1="470" y1="210" x2="520" y2="280" stroke="' + c.p + '" stroke-width="1.4"/>' +
+        '<svg class="nv-iso" viewBox="0 0 560 420" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<polygon points="290,30 500,210 290,390 80,210" fill="' + c.p + '" fill-opacity=".08"/>' +
+        '<polygon points="290,72 458,210 290,348 122,210" fill="none" stroke="' + c.p + '" stroke-width="1.4"/>' +
+        '<line x1="0" y1="210" x2="500" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
+        fan + '<circle cx="500" cy="210" r="7" fill="' + c.p + '"/>' +
         '</svg>' +
-        (s.badge ? '<div class="ln-badge"><span class="ln-bx"' + de(P + '.badge') + '>' + esc(s.badge) + '</span><p class="ln-bname"' + de(P + '.title') + '>' + ml(s.title || '') + '</p></div>' : headline(s, P)) +
-        '</div><div class="ln-list">' + rows + '</div></div>' + summary(s, P) + '</section>';
+        ((s.badge || s.name) ? '<div class="ln-badge">' + (s.badge ? '<span class="ln-bx"' + de(P + '.badge') + '>' + esc(s.badge) + '</span>' : '') + '<p class="ln-bname"' + de(P + '.name') + '>' + ml(s.name || '') + '</p></div>' : '') +
+        '</div><div class="ln-list">' + rows + '</div></div>' +
+        (s.note ? '<p class="ln-note"' + de(P + '.note') + '>' + esc(s.note) + '</p>' : summary(s, P)) + '</section>';
     },
     /* 분기 — 좌 리드 + 커넥터 + 우 항목들(라벨+굵은 규칙선+제목+설명). 원본 10 */
     branch: function (s, P, ctx) {
       var items = s.branches || [], c = chOf(s);
       var n = Math.max(items.length, 2), H = 420;
-      var ys = items.map(function (_, i) { return Math.round(40 + i * (H - 80) / (n - 1)); });
+      // 각 행이 균등 높이(flex space-around)이므로 화살표는 각 칸의 세로 중앙으로
+      var ys = items.map(function (_, i) { return Math.round((i + 0.5) * H / n); });
       var mid = H / 2;
       var conn = '<svg class="br-conn" viewBox="0 0 120 ' + H + '" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">' +
         '<line x1="0" y1="' + mid + '" x2="40" y2="' + mid + '" stroke="' + c.p + '" stroke-width="1.6"/>' +
@@ -334,12 +380,14 @@
         '<p class="br-leadtx"' + de(P + '.lead.text') + '>' + mb(lead.text || '') + '</p></div>' +
         conn + '<div class="br-list">' + rows + '</div></div>' + summary(s, P) + '</section>';
     },
-    /* 단독 대형 수치 — 숫자 하나로 임팩트 */
+    /* 단독 대형 수치 — 좌 설명 / 우 대형 넘버 2단(사용자 지시) */
     bigstat: function (s, P, ctx) {
       return '<section class="slide bs" data-kind="' + kind(s, 'Bigstat') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
-        '<div class="bs-body"><p class="nv-big xl"' + de(P + '.value') + '>' + esc(s.value || '') + '</p>' +
-        (s.caption ? '<p class="bs-cap"' + de(P + '.caption') + '>' + mb(s.caption) + '</p>' : '') + '</div>' + summary(s, P) + '</section>';
+        '<div class="bs-body">' +
+        (s.caption ? '<p class="bs-cap"' + de(P + '.caption') + '>' + mb(s.caption) + '</p>' : '<span></span>') +
+        '<p class="nv-big xl"' + de(P + '.value') + '>' + esc(s.value || '') + '</p>' +
+        '</div>' + summary(s, P) + '</section>';
     },
     /* 수치 그리드 — KPI 2~4개 나열(카드 위계) */
     kpi: function (s, P, ctx) {
@@ -377,7 +425,7 @@
       }).join('');
       return '<section class="slide tl" data-kind="' + kind(s, 'Timeline') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
-        '<div class="tl-body"><span class="tl-axis"></span><div class="tl-grid" style="--tln:' + Math.max(items.length, 2) + '">' + cells + '</div></div>' + summary(s, P) + '</section>';
+        '<div class="tl-body"><div class="tl-grid" style="--tln:' + Math.max(items.length, 2) + '">' + cells + '</div></div>' + summary(s, P) + '</section>';
     },
     /* 프로세스 — 단계 → 화살표 흐름 */
     process: function (s, P, ctx) {
@@ -430,24 +478,39 @@
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
         '<div class="ps-cols">' + cells + '</div>' + summary(s, P) + '</section>';
     },
-    /* 체크리스트 — 2열 체크 그리드(전면) */
+    /* 체크리스트 — 2열 그리드, 사각 체크 아이콘(직각 시스템) */
     checklist: function (s, P, ctx) {
       var items = (s.items || []).map(function (t, i) {
-        return '<div class="sp-li"><span class="sp-tick"></span><span' + de(P + '.items.' + i) + '>' + ml(t) + '</span></div>';
+        return '<div class="ck-li"><span class="ck-icon"></span><span class="ck-tx"' + de(P + '.items.' + i) + '>' + ml(t) + '</span></div>';
       }).join('');
+      var ckCols = +s.cols || ((s.items || []).length > 4 ? 2 : 1);   // 항목 적으면 1단
       return '<section class="slide ck" data-kind="' + kind(s, 'Checklist') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
-        '<div class="ck-grid">' + items + '</div>' + summary(s, P) + '</section>';
+        '<div class="ck-grid c' + ckCols + '">' + items + '</div>' + summary(s, P) + '</section>';
     },
-    /* 클로징 — 좌 그래픽+다크 밴드 / 우 대형 인사+연락처. 원본 24 */
+    /* 클로징 — 좌 글로브 그래픽(눈금 링+점선 원+굵은 아크+지구본+축)+다크 밴드 / 우 대형 인사. 원본 24 */
     closing: function (s, P) {
+      var col = '#00DE5A';
+      var globe = '<svg class="nv-iso cp" viewBox="0 0 440 520" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="220" cy="260" r="185" fill="none" stroke="' + col + '" stroke-width="1" opacity=".28"/>' +
+        (function () { var t = ''; for (var i = 0; i < 40; i++) { var a = i * Math.PI / 20; t += '<line x1="' + (220 + 172 * Math.cos(a)).toFixed(1) + '" y1="' + (260 + 172 * Math.sin(a)).toFixed(1) + '" x2="' + (220 + 185 * Math.cos(a)).toFixed(1) + '" y2="' + (260 + 185 * Math.sin(a)).toFixed(1) + '" stroke="' + col + '" stroke-width="1" opacity=".35"/>'; } return t; })() +
+        '<circle cx="220" cy="260" r="130" fill="none" stroke="' + col + '" stroke-width="1" stroke-dasharray="3 7" opacity=".45"/>' +
+        '<circle cx="220" cy="260" r="95" fill="none" stroke="' + col + '" stroke-width="14" stroke-dasharray="520 78" stroke-linecap="round" transform="rotate(-118 220 260)" opacity=".85"/>' +
+        '<circle cx="220" cy="260" r="66" fill="none" stroke="' + col + '" stroke-width="1.6"/>' +
+        '<ellipse cx="220" cy="260" rx="30" ry="66" fill="none" stroke="' + col + '" stroke-width="1.2" opacity=".7"/>' +
+        '<ellipse cx="220" cy="260" rx="66" ry="21" fill="none" stroke="' + col + '" stroke-width="1.2" opacity=".6"/>' +
+        '<line x1="220" y1="96" x2="220" y2="486" stroke="' + col + '" stroke-width="1.4"/>' +
+        '<polygon points="220,82 212,100 228,100" fill="' + col + '"/>' +
+        '<circle cx="220" cy="492" r="5" fill="' + col + '"/>' +
+        '<line x1="44" y1="260" x2="74" y2="260" stroke="' + col + '" stroke-width="1.2" opacity=".6"/><line x1="366" y1="260" x2="396" y2="260" stroke="' + col + '" stroke-width="1.2" opacity=".6"/>' +
+        '<circle cx="220" cy="260" r="11" fill="' + col + '"/></svg>';
       var metas = (s.contacts || []).map(function (m, i) {
         return '<div class="cv-meta"><span class="nv-label" style="color:rgba(255,255,255,.55)"' + de(P + '.contacts.' + i + '.k') + '>' + esc(m.k || '') + '</span><span class="cv-mv" style="color:#fff"' + de(P + '.contacts.' + i + '.v') + '>' + esc(m.v || '') + '</span></div>';
       }).join('');
       return '<section class="slide cl" data-kind="' + kind(s, 'Closing') + '">' +
-        '<div class="cv-l"><div class="cv-gfx">' + iso('arrow', '#00DE5A') + '</div>' +
+        '<div class="cv-l"><div class="cv-gfx">' + globe + '</div>' +
         '<div class="cv-band dark">' + mark(true) + metas + '</div></div>' +
-        '<div class="cv-r"><div class="cv-top">' + mark(false) + '</div>' +
+        '<div class="cv-r"><div class="cv-top"></div>' +
         '<div class="cv-mid"><h1 class="cv-title"' + de(P + '.title') + '>' + mb(s.title || 'Thank you') + '</h1><span class="cv-bar"></span>' +
         (s.sub ? '<p class="cv-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') + '</div><div class="cv-foot"></div></div></section>';
     }
@@ -565,6 +628,9 @@
       /* 브랜드 카드 — 캡+규칙선+컬러 대형 이름(원본 07: 44px 700→29px) */
       '.nv-card.brand{border-top:0;padding-top:0;gap:12px}' +
       '.bd-head{font-size:29px;font-weight:700;letter-spacing:-.02em;color:var(--cht);margin:0}' +
+      /* 틴트 타일 카드 — 원본 15 "탑재물": 틴트 면+상단 4px 컬러 바+라벨/대형 이름 700/설명 300 강약 */
+      '.nv-card.tile{border-top:4px solid var(--ch);background:var(--chbg);padding:24px 26px 28px;gap:12px}' +
+      '.tile-head{font-size:29px;font-weight:700;letter-spacing:-.02em;margin:0}' +
       /* 로드맵 라인 차트 */
       '.rm-chartwrap{flex:1;display:flex;align-items:center;min-height:0}.rm-chart{width:100%;height:auto;max-height:230px}' +
       '.cd-grid.rmg{flex:none;align-content:start;padding:8px 0 0}' +
@@ -584,12 +650,13 @@
       '.ln-row.dim .ln-head,.ln-row.dim .ln-tag,.ln-row.dim .ln-text{color:var(--muted)}' +
       '.ln-row.dim .ln-rule{height:3px;background:var(--rule)}' +
       /* 분기 — 좌 리드+커넥터+우 3항목 */
-      '.br-cols{flex:1;display:grid;grid-template-columns:300px 80px 1fr;gap:22px;align-items:center;min-height:0}' +
-      '.br-lead{display:flex;flex-direction:column;gap:12px}' +
+      '.br-cols{flex:1;display:grid;grid-template-columns:300px 80px 1fr;gap:22px;align-items:stretch;min-height:0}' +
+      '.br-lead{display:flex;flex-direction:column;gap:12px;justify-content:center}' +
       '.br-leadtx{font-size:29px;font-weight:200;line-height:1.4;letter-spacing:-.02em;margin:0}.br-leadtx b{font-weight:700}' +
-      '.br-conn{width:100%;height:88%}' +
-      '.br-list{display:flex;flex-direction:column;gap:28px}' +
-      '.br-row{display:flex;flex-direction:column;gap:8px}' +
+      '.br-conn{width:100%;height:100%}' +
+      /* 행을 균등 칸으로(space-around) — 커넥터 화살표 y와 행 센터가 맞는다 */
+      '.br-list{display:flex;flex-direction:column;justify-content:space-around;gap:0;height:100%}' +
+      '.br-row{display:flex;flex-direction:column;gap:8px;justify-content:center}' +
       '.br-rule{display:block;height:3px;background:var(--ch)}' +
       '.br-head{font-size:23px;font-weight:700;margin:4px 0 0}' +
       '.nv-body{font-size:16px;font-weight:300;line-height:1.75;color:var(--body);margin:0;max-width:600px;text-wrap:pretty}' +
@@ -605,29 +672,48 @@
       '.cv-band{height:213px;flex:none;background:var(--green);padding:32px 37px;display:flex;flex-direction:column;justify-content:space-between}' +
       '.cv-band.dark{background:var(--ink)}' +
       '.cv-bandtx{font-size:17px;font-weight:500;line-height:1.5;color:#fff;margin:0;white-space:pre-wrap}' +
-      '.cv-r{padding:43px 59px 43px 64px;display:flex;flex-direction:column;justify-content:space-between}' +
-      '.cv-title{font-size:67px;font-weight:200;line-height:1.04;letter-spacing:-.035em;margin:0}' +
-      '.cv-title b{font-weight:700}' +
-      '.cv-bar{display:block;width:93px;height:3px;background:var(--green);margin:22px 0 0}' +
+      '.cv-r{padding:43px 59px 36px 64px;display:flex;flex-direction:column;justify-content:space-between}' +
+      '.cv-top{display:flex;justify-content:space-between;align-items:flex-start}' +
+      '.cv-mid{display:flex;flex-direction:column;align-items:flex-start;gap:0}' +
+      '.cv-mid .nv-label.gr{color:var(--greent);margin-bottom:22px}' +
+      '.cv-title{font-size:60px;font-weight:200;line-height:1.15;letter-spacing:-.035em;margin:0}' +
+      '.cv-title b{font-weight:700}.cv-title .mut{color:#A6A8AB;font-weight:200}' +
+      '.mut{color:#A6A8AB;font-weight:200}' +
+      '.cv-bar{display:block;width:93px;height:3px;background:var(--green);margin:34px 0 0}' +
       '.cv-sub{font-size:19px;font-weight:300;line-height:1.6;color:var(--body);margin:18px 0 0;max-width:520px}' +
       '.cv-foot{display:flex;gap:44px}' +
+      '.cv-foot.rule{border-top:1px solid var(--rule);padding-top:18px;justify-content:space-between;align-items:baseline}' +
+      '.cv-doc{font-size:18px;font-weight:400;color:var(--ink)}.cv-team{font-size:17px;font-weight:300;color:var(--muted)}' +
       '.cv-meta{display:flex;flex-direction:column;gap:5px}.cv-mv{font-size:17px;font-weight:500;color:var(--ink)}' +
-      /* 풀블리드 문장 */
-      '.slide.st{background:var(--green);color:#fff;padding:37px 43px 45px}' +
-      '.st-top{margin-bottom:auto}' +
-      '.st-title{font-size:79px;font-weight:200;line-height:1.06;letter-spacing:-.035em;margin:0;max-width:1100px}' +
+      '.cv-band .nv-mark ~ .cv-bandtx b,.cv-bandtx b{font-weight:700;color:#fff}' +
+      '.cv-gfx svg.cp{width:74%;max-height:100%}' +
+      /* 풀블리드 문장 — 상단 마크+페이지, 대형 2줄, 본문, 하단 2열 미니 비교 블록(원본 02) */
+      '.slide.st{background:var(--green);color:#fff;padding:37px 56px 56px 43px;gap:0}' +
+      '.st-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:auto}' +
+      '.st-pg{font-size:15px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.9)}' +
+      '.st-title{font-size:75px;font-weight:200;line-height:1.1;letter-spacing:-.035em;margin:0;max-width:1100px}' +
       '.st-title b{font-weight:700}' +
-      '.st-sub{font-size:20px;font-weight:300;line-height:1.55;color:rgba(255,255,255,.85);margin:20px 0 0;max-width:700px}' +
-      /* 목차 */
-      '.slide.tc{flex-direction:row;gap:60px;padding:43px 56px}' +
-      '.tc-l{width:300px;flex:none;display:flex;flex-direction:column;gap:22px}' +
-      '.tc-head{font-size:44px;font-weight:200;letter-spacing:-.02em;margin:0}' +
-      '.tc-list{flex:1;display:flex;flex-direction:column;justify-content:center}' +
-      '.tc-row{display:flex;align-items:baseline;gap:22px;padding:17px 4px;border-top:1px solid var(--rule)}' +
-      '.tc-row:last-child{border-bottom:1px solid var(--rule)}' +
-      '.tc-no{font-size:24px;font-weight:700;letter-spacing:.02em;min-width:44px}' +
-      '.tc-label{font-size:26px;font-weight:500;letter-spacing:-.01em}' +
-      '.tc-desc{font-size:16px;font-weight:300;color:var(--muted);margin-left:auto;text-align:right}' +
+      '.st-sub{font-size:19px;font-weight:300;line-height:1.65;color:rgba(255,255,255,.9);margin:30px 0 0;max-width:820px}' +
+      '.st-cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:48px}' +
+      '.st-fill{height:56px}' +
+      '.st-col{border-top:1px solid rgba(255,255,255,.65);padding-top:15px;display:flex;flex-direction:column;gap:9px}' +
+      '.st-ctag{font-size:15px;font-weight:700;letter-spacing:.14em}' +
+      '.st-ctx{font-size:21px;font-weight:300;margin:0}.st-ctx b{font-weight:700}' +
+      /* 목차 — 풀폭 행(대형 번호 200/영문 라벨/설명/우측 페이지 범위). 원본 03 */
+      '.slide.tc{padding:29px 56px 43px;gap:0}' +
+      '.tc-top{display:flex;justify-content:space-between;align-items:flex-start}' +
+      '.tc-head{font-size:26px;font-weight:700;letter-spacing:.04em;margin:20px 0 14px}' +
+      '.tc-list{flex:1;display:flex;flex-direction:column;justify-content:space-evenly;border-top:1px solid var(--rule)}' +
+      '.tc-row{display:grid;grid-template-columns:82px 230px 1fr auto;gap:26px;align-items:center;padding:16px 0;border-bottom:1px solid var(--rule)}' +
+      '.tc-row:last-child{border-bottom:0}' +
+      '.tc-no{font-size:31px;font-weight:200;letter-spacing:.02em}' +
+      '.tc-label{font-size:16px;font-weight:700;letter-spacing:.12em;color:var(--muted)}' +
+      '.tc-desc{font-size:21px;font-weight:300;color:var(--ink)}.tc-desc b{font-weight:700}' +
+      '.tc-pages{font-size:15px;font-weight:500;color:var(--muted);letter-spacing:.06em}' +
+      /* 본문 2열 넘버 리스트(원본 08) — 우측 열은 챕터컬러 톤 */
+      '.slide.sc.two-col .sc-cols{grid-template-columns:1fr 1fr;gap:56px}' +
+      '.sc-col2{display:flex;flex-direction:column;gap:20px}' +
+      '.sc-col2.tone-ch .nl-cap{border-bottom-color:var(--ch)}' +
       /* 간지 */
       '.slide.dv{padding:0;display:grid;grid-template-columns:397px 1fr}' +
       '.dv-l{display:flex;flex-direction:column}' +
@@ -661,7 +747,7 @@
       '.sp-stat{text-align:center}.sp-num{font-size:73px;font-weight:700;letter-spacing:-.02em;color:var(--cht);margin:0}' +
       '.sp-lab{font-size:17px;font-weight:500;color:var(--body);margin:8px 0 0}' +
       /* 수치 */
-      '.stt-cols{flex:1;display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;padding:14px 0}' +
+      '.stt-cols{flex:1;display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;padding:0 0 70px}' +
       '.stt-big .nv-big{font-size:100px;font-weight:700;letter-spacing:-.03em;color:var(--cht);margin:0;line-height:1}' +
       '.nv-big.sm{font-size:48px;font-weight:700;color:var(--ink);margin:0}' +
       '.stt-blab{font-size:19px;font-weight:500;color:var(--body);margin:12px 0 0;white-space:pre-wrap}' +
@@ -682,9 +768,9 @@
       /* 클로징 우측 */
       '.slide.cl .cv-title{font-size:55px}' +
       /* 단독 대형 수치 */
-      '.bs-body{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:16px;padding:10px 0}' +
-      '.nv-big.xl{font-size:147px;font-weight:700;letter-spacing:-.035em;line-height:.95;color:var(--cht);margin:0}' +
-      '.bs-cap{font-size:19px;font-weight:200;line-height:1.5;color:var(--body);margin:0;max-width:640px}.bs-cap b{font-weight:700;color:var(--cht)}' +
+      '.bs-body{flex:1;display:grid;grid-template-columns:1fr auto;gap:70px;align-items:center;padding:0 0 70px}' +
+      '.nv-big.xl{font-size:147px;font-weight:700;letter-spacing:-.035em;line-height:.95;color:var(--cht);margin:0;text-align:right}' +
+      '.bs-cap{font-size:21px;font-weight:200;line-height:1.55;color:var(--ink);margin:0;max-width:560px}.bs-cap b{font-weight:700;color:var(--cht)}' +
       /* KPI 그리드 */
       '.kp-val{font-size:44px;font-weight:700;letter-spacing:-.02em;color:var(--cht);margin:0;line-height:1}' +
       '.nv-chead.sm{font-size:19px}' +
@@ -694,20 +780,20 @@
       '.tb-row span:first-child{font-weight:500;color:var(--ink)}' +
       '.tb-row.hd{border-top:2px solid var(--ink)}.tb-row.hd span,.tb-row.hd .nv-label{font-weight:700;color:var(--label)}' +
       '.tb-row:last-child{border-bottom:1px solid var(--rule)}' +
-      /* 타임라인 — 축선 + 45° 마커 */
-      '.tl-body{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;padding:16px 0}' +
-      '.tl-axis{display:block;height:1px;background:var(--rule);margin-bottom:-6px}' +
-      '.tl-grid{display:grid;grid-template-columns:repeat(var(--tln),1fr);gap:28px}' +
-      '.tl-cell{padding-top:22px;display:flex;flex-direction:column;gap:8px;position:relative}' +
-      '.tl-mark{position:absolute;top:-6px;left:2px;width:11px;height:11px;background:#fff;border:2px solid var(--muted);transform:rotate(45deg)}' +
+      /* 타임라인 — 축선을 그리드 좌표계 안에(::before) 두고 마커 중심을 축선 위에 정확히 얹는다 */
+      '.tl-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 0}' +
+      '.tl-grid{position:relative;display:grid;grid-template-columns:repeat(var(--tln),1fr);gap:28px;padding-top:30px}' +
+      '.tl-grid::before{content:"";position:absolute;left:2px;right:2px;top:8px;height:1px;background:var(--rule)}' +
+      '.tl-cell{display:flex;flex-direction:column;gap:8px;position:relative}' +
+      '.tl-mark{position:absolute;top:-27px;left:2px;width:11px;height:11px;background:#fff;border:2px solid var(--muted);transform:rotate(45deg)}' +
       '.tl-cell.on .tl-mark{background:var(--ch);border-color:var(--ch)}' +
-      /* 프로세스 */
-      '.pc-flow{flex:1;display:flex;align-items:center;gap:18px;padding:16px 0}' +
+      /* 프로세스 — 카드 상단 기준 정렬, 화살표는 소제목 라인에 맞춤 */
+      '.pc-flow{flex:none;display:flex;align-items:flex-start;gap:18px;margin:auto 0;padding:0 0 70px}' +
       '.pc-step{flex:1;border-top:2px solid var(--ink);padding-top:16px;display:flex;flex-direction:column;gap:8px}' +
       '.pc-step.on{border-top:4px solid var(--ch);padding-top:14px}' +
-      '.pc-arrow{font-size:26px;font-weight:200;color:var(--muted);flex:none}' +
-      /* 비교 */
-      '.cmp-cols{flex:1;display:grid;grid-template-columns:1fr auto 1fr;gap:34px;align-items:stretch;align-content:center;padding:16px 0}' +
+      '.pc-arrow{font-size:26px;font-weight:200;color:var(--muted);flex:none;margin-top:16px}' +
+      /* 비교 — 두 덩어리를 세로 중앙에, 내용 높이만큼만 */
+      '.cmp-cols{flex:none;display:grid;grid-template-columns:1fr auto 1fr;gap:34px;align-items:center;margin:auto 0;padding:0 0 70px}' +
       '.nv-card.cmp{gap:14px}.nv-card.cmp .sp-li{padding:0;background:none;font-size:16px}' +
       '.sp-li.flat{background:none;padding:2px 0}' +
       '.nv-card.cmp .sp-tick{background:var(--ch)}.nv-card.cmp.dim .sp-tick{background:var(--muted)}' +
@@ -717,13 +803,18 @@
       '.qt-bar{flex:none;width:4px;align-self:stretch;background:var(--ch);margin:20px 0}' +
       '.qt-text{font-size:37px;font-weight:200;line-height:1.4;letter-spacing:-.02em;margin:0;max-width:920px}.qt-text b{font-weight:700;color:var(--cht)}' +
       '.qt-by{font-size:17px;font-weight:500;color:var(--muted);margin:18px 0 0}' +
-      /* 포지셔닝 — 중앙 강조 3패널 */
-      '.ps-cols{flex:1;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:30px;align-items:stretch;align-content:center;padding:16px 0}' +
-      '.ps-panel{background:var(--surf);padding:26px 28px;display:flex;flex-direction:column;gap:10px;justify-content:center}' +
-      '.ps-panel.on{background:#fff;border:2px solid var(--ch);box-shadow:0 0 0 0}' +
-      /* 체크리스트 */
-      '.ck-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;align-content:center;padding:16px 0}' +
-      '.ck-grid .sp-li{background:var(--chbg)}' +
+      /* 포지셔닝 — 중앙 강조 3패널, 세로 중앙·충분한 높이(비어 보임 방지) */
+      '.ps-cols{flex:1;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:26px;align-items:center;align-content:center;padding:16px 0}' +
+      '.ps-panel{background:var(--surf);min-height:264px;padding:32px 32px;display:flex;flex-direction:column;gap:12px;justify-content:center}' +
+      '.ps-panel.on{background:#fff;border:2px solid var(--ch);min-height:300px}' +
+      '.ps-panel.on .nv-chead{font-size:29px;color:var(--cht)}' +
+      '.ps-panel .nv-ctext{font-size:17px}' +
+      /* 체크리스트 — 사각 체크 아이콘 + 넉넉한 행 */
+      '.ck-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px 44px;align-content:center;padding:0 0 50px}' +
+      '.ck-grid.c1{grid-template-columns:1fr;max-width:900px}' +
+      '.ck-li{display:flex;align-items:center;gap:18px;background:var(--chbg);padding:22px 26px;font-size:19px;font-weight:400;line-height:1.5}' +
+      '.ck-icon{flex:none;width:26px;height:26px;background:var(--ch);position:relative}' +
+      '.ck-icon::after{content:"";position:absolute;left:50%;top:47%;width:7px;height:13px;border:2.5px solid #fff;border-top:0;border-left:0;transform:translate(-50%,-55%) rotate(45deg)}' +
       /* 발표 뷰어 등장 모션 */
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
@@ -808,7 +899,7 @@
     { type: 'toc', label: '목차', use: '표지 다음 장. 챕터 리스트(번호는 챕터 컬러 자동). divider 제목과 1:1 일치', needs: ['items'], opt: ['title'], cap: { items: '3~5개' } },
     { type: 'divider', label: '간지', use: '챕터 시작 전환 장 — ch(1~5)가 컬러를 정한다. title=영문 대문자 챕터명, lead=핵심 한 문장(**강조** 가능)', needs: ['ch', 'title', 'lead'], opt: ['text', 'no'], cap: { title: '~16자', lead: '~50자' } },
     { type: 'section', label: '본문 표준', use: '넘버 리스트(01+소제목+설명)가 기본 장. listTitle=리스트 캡, aside=우측 서피스 패널(간단 항목 나열), summary=SO WHAT 정리', needs: ['title'], opt: ['listTitle', 'points', 'text', 'aside', 'summary'], cap: { points: '2~4개' } },
-    { type: 'cards', label: 'N열 카드', use: '동급 항목 2~4개 비교·나열. tone:on=강조(챕터컬러 4px), dim=비활성. variant:"brand"=사례 카드(캡+컬러 대형 이름 — 기업·제품 사례), banner:true=상단 챕터컬러 밴드 헤더(사례·벤치마크 장에 어울림)', needs: ['title', 'cards'], opt: ['cols', 'variant', 'banner', 'summary'], cap: { cards: '2~4개, head ~16자·text ~90자' } },
+    { type: 'cards', label: 'N열 카드', use: '동급 항목 2~4개 비교·나열. tone:on=강조(챕터컬러 4px), dim=비활성. variant:"brand"=사례 카드(캡+컬러 대형 이름 — 기업·제품 사례), variant:"tile"=틴트 면 카드(구성 요소·산출물 나열), banner:true=상단 챕터컬러 밴드 헤더', needs: ['title', 'cards'], opt: ['cols', 'variant', 'banner', 'summary'], cap: { cards: '2~4개, head ~16자·text ~90자' } },
     { type: 'split', label: '좌우 분할', use: '넘버 리스트(좌)+패널(우) — panel.kind: iso(큐브 그래픽)|list(체크)|stat(대형 수치)|question(챕터컬러 면+큰 질문 문장, 문제 제기 장)', needs: ['title'], opt: ['listTitle', 'text', 'points', 'panel', 'side', 'summary'], cap: { points: '2~4개' } },
     { type: 'stats', label: '수치', use: '성과·지표 — 좌측 big(대형 수치) 또는 donut(구성비), 우측 bars(게이지 비교)', needs: ['title'], opt: ['big', 'donut', 'bars', 'summary'], cap: { bars: '2~4개' } },
     { type: 'media', label: '이미지 증빙', use: '제품 화면·데모·시연 캡처를 크게 보여줄 때 (이미지 슬롯)', needs: ['title'], opt: ['image', 'caption', 'summary'], cap: {} },
@@ -839,9 +930,13 @@
   };
 
   var STARTERS = {
-    cover: { type: 'cover', eyebrow: 'MIDAS DESIGN AX', title: '발표 제목', sub: '부제를 입력하세요', band: '프로젝트 설명', meta: [{ k: 'DATE', v: '2026' }, { k: 'TEAM', v: 'AX' }] },
-    statement: { type: 'statement', title: '핵심 선언을 **입력하세요**', sub: '보조 설명' },
-    toc: { type: 'toc', title: 'CONTENTS', items: [{ label: '첫 번째 주제' }, { label: '두 번째 주제' }, { label: '세 번째 주제' }] },
+    cover: { type: 'cover', label: 'MIDAS DESIGN AX', date: '2026 · 07', eyebrow: 'PROLOGUE', title: 'The Machine\n**That Builds** __the Machine__', band: '자동차가 아니라,\n**자동차를 만드는 시스템**', docLabel: '디자인 AX 보고', team: 'ExD팀' },
+    statement: { type: 'statement', title: 'The Machine\n**That Builds Design**', sub: '한 건씩 잘 만드는 것만으로는 회사 전체의 품질과 생산성을 바꾸기 어렵습니다.\n좋은 디자인이 반복적으로 생산되는 시스템 자체를 설계합니다.',
+      cols: [{ tag: 'TESLA', text: '자동차 한 대 → **생산 시스템**' }, { tag: 'MIDAS', text: '디자인 결과물 → **디자인 에이전트**' }] },
+    toc: { type: 'toc', title: 'CONTENTS', items: [
+      { label: 'WHY NOW', desc: '누구나 만드는 시대, 차이는 **기준**에서 생깁니다', pages: '04 — 08' },
+      { label: 'WHERE WE STAND', desc: 'AI가 함께 참조할 **기준**이 필요합니다', pages: '09 — 11' },
+      { label: 'THE SYSTEM', desc: '기준을 담아 실행하는 **디자인 Agent**', pages: '12 — 15' }] },
     divider: { type: 'divider', ch: 1, title: 'SECTION', lead: '이 챕터의 핵심 한 문장' },
     section: { type: 'section', title: '‘만드는 것’은\n이제 **누구나 할 수 있는 일**이 되었습니다', listTitle: '그 결과 나타나는 변화',
       points: [{ head: '진입장벽 하락', text: '전문 도구를 익히지 않아도 결과가 나옵니다' }, { head: '경계 축소', text: '기획 · 제작 · 개발의 구분이 통합됩니다' }, { head: '결과물 증가', text: '만드는 속도와 양이 동시에 상승합니다' }],
@@ -865,7 +960,7 @@
     quote: { type: 'quote', text: '인용문 또는 **핵심 선언**을 입력하세요', by: '— 이름 · 소속' },
     position: { type: 'position', title: '포지셔닝', panels: [{ tag: 'BEFORE', head: '이전 단계', text: '설명' }, { tag: 'OURS', head: '우리 위치', text: '설명', tone: 'on' }, { tag: 'AFTER', head: '다음 단계', text: '설명' }] },
     checklist: { type: 'checklist', title: '체크리스트', items: ['확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요'] },
-    lineup: { type: 'lineup', badge: 'DRS', title: 'DESIGN AGENT',
+    lineup: { type: 'lineup', title: '디자인 에이전트 **라인업**', badge: 'DRS', name: 'DESIGN AGENT',
       items: [{ head: 'WEB GENERATOR', tag: '현재 프로토타입', text: '기획 입력 → 웹 생성 → 수정 · 출력' }, { head: 'MOTION WORKFLOW', tag: '일부 실사용', text: '반복 편집 · 자막 · 버전 · 포맷 제작' }, { head: 'VISUAL GENERATOR', tag: '후보', text: '행사 · 캠페인 · 상품 커뮤니케이션 자산', state: 'dim' }, { head: 'PRESENTATION AGENT', tag: '후보', text: '발표자료 초안 · 정리 · 행사 기준 검수', state: 'dim' }] },
     branch: { type: 'branch', title: '디자인 업무는\n**전사 전 영역**에 걸쳐 있습니다',
       lead: { label: '새로 필요한 것', text: '세 영역이 함께 참조할\n**기준과 자산**' },
@@ -874,10 +969,14 @@
   };
 
   function naverTemplateDeck() {
+    var k = 0;
     var slides = CATALOG.map(function (c) {
       var s = JSON.parse(JSON.stringify(STARTERS[c.type]));
-      // 쇼케이스 가독성 — 본문류 장 제목을 타입 라벨로(어떤 템플릿인지 한눈에)
-      if (s.title != null && ['cover', 'statement', 'closing', 'divider', 'toc'].indexOf(c.type) < 0) s.title = c.label;
+      // 쇼케이스 가독성 — 본문류 장 제목을 타입 라벨로 + 챕터 컬러 5종 순환(오렌지까지 전부 보이게)
+      if (['cover', 'statement', 'closing', 'toc'].indexOf(c.type) < 0) {
+        if (s.title != null && c.type !== 'divider') s.title = c.label;
+        s.ch = (k++ % 5) + 1;
+      }
       return s;
     });
     if (slides[0]) { slides[0].title = '전체 템플릿'; slides[0].sub = '필요 없는 장은 지우고, 내용을 채워보세요'; }
@@ -888,12 +987,12 @@
     return c.type + '(' + c.label + '): ' + c.use + ' | 필수 ' + c.needs.join(',') + (c.opt ? ' | 선택 ' + c.opt.join(',') : '');
   }).join('\n');
   var FIELD_DOC =
-    'cover:{eyebrow?,title,sub?,band?,meta?:[{k,v}]} | ' +
-    'statement:{title,sub?} | ' +
-    'toc:{title?,items:[{label,desc?}]} | ' +
+    'cover:{label?(상단좌 문서 라벨),date?("2026 · 07"),eyebrow?("PROLOGUE"류),title(3톤: **굵게**·__회색 흐림__),sub?,band?(좌하단 그린 밴드 문구, **강조**),docLabel?(하단좌),team?(하단우)} | ' +
+    'statement:{title(**굵게** 조합),sub?,cols?:[{tag(영문 라벨),text(**강조** — "A → **B**" 비유 비교)}](2개)} | ' +
+    'toc:{title?,items:[{no?,label(영문 대문자 챕터명),desc(한 줄 메시지, **강조**),pages?:"04 — 08"}]} | ' +
     'divider:{ch:1~5,no?:"01",title(영문 대문자),lead,text?} | ' +
-    'section:{ch?,title,listTitle?,points?:[{head?,text}],text?,aside?:{title,items:[str]},summary?,summaryLabel?} | ' +
-    'cards:{ch?,title,cols?:2~4,variant?:"brand"(사례 카드),banner?:true(상단 컬러 밴드),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
+    'section:{ch?,title,listTitle?,points?:[{head?,text}],text?,points2?:[{head?,text}]+listTitle2?(2열 대비 리스트 — 좌 일반/우 챕터컬러),aside?:{title,items:[str]},summary?,summaryLabel?} | ' +
+    'cards:{ch?,title,cols?:2~4,variant?:"brand"(사례 카드)|"tile"(틴트 면 카드),banner?:true(상단 컬러 밴드),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
     'split:{ch?,title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +
     'stats:{ch?,title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
     'media:{ch?,title,image?:{label},caption?,summary?} | ' +
@@ -906,8 +1005,8 @@
     'compare:{ch?,title,items:[{head,points:[str],tone?:"on|dim"}](2개),summary?} | ' +
     'quote:{ch?,text,by?,summary?} | ' +
     'position:{ch?,title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
-    'checklist:{ch?,title,items:[str],summary?} | ' +
-    'lineup:{ch?,badge?,title?,items:[{head(영문 대문자),tag?,text,state?:"dim"(후보·예정)}],summary?} | ' +
+    'checklist:{ch?,title,items:[str],cols?:1~2,summary?} | ' +
+    'lineup:{ch?,title?,badge?,name?(뱃지 옆 시스템명),items:[{head(영문 대문자),tag?,text,state?:"dim"(후보·예정)}],summary?} | ' +
     'branch:{ch?,title,lead?:{label,text},branches:[{label,head,text?}],summary?} | ' +
     'closing:{title,sub?,contacts?:[{k,v}]}' +
     '\n규칙: 챕터마다 divider(ch=1부터 순서대로)를 넣고, 그 챕터의 본문 장들은 ch 생략(자동 상속). ' +
