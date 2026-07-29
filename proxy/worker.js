@@ -137,7 +137,7 @@ const NAVER_FIELD_DOC =
   'toc:{title?,items:[{no?,label(영문 대문자 챕터명),desc(한 줄 메시지, **강조**),pages?:"04 — 08"}]} | ' +
   'divider:{ch:1~5,no?:"01",title(영문 대문자),lead(핵심 문장 — **강조** 권장),text?(보조 설명 2~3문장),items?:[{head,text}](넘버 리스트 2~3개),note?(하단 주석 한 줄, **강조** 가능)} | ' +
   'section:{title,listTitle?,points?:[{head?,text}],text?,points2?:[{head?,text}]+listTitle2?(2열 대비 리스트),aside?:{title,items:[str]},summary?} | ' +
-  'cards:{title,cols?:2~4,variant?:"brand"(사례·기업 카드)|"tile"(틴트 면 카드 — 구성 요소·산출물),banner?:true(상단 컬러 밴드 헤더),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
+  'cards:{title,cols?:2~4,variant?:"brand"(사례·기업 카드)|"tile"(틴트 면 카드 — 구성 요소·산출물),banner?:true(상단 컬러 밴드 헤더),cards:[{head,text?,tone?:"on|dim",tag?}],summary?,footnote?(우하단 출처 각주)} | ' +
   'split:{title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +
   'stats:{title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
   'media:{title,image?:{label},caption?,summary?} | ' +

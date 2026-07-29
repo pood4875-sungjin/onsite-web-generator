@@ -174,12 +174,13 @@
         /* 눈금 링(바깥 얇은 원 + 틱) */
         '<circle cx="220" cy="240" r="152" fill="none" stroke="' + col + '" stroke-width="1" opacity=".3"/>' +
         (function () { var t = ''; for (var i = 0; i < 60; i++) { var a = i * Math.PI / 30, mj = i % 5 === 0, r1 = mj ? 129 : 134, r2 = 145; t += '<line x1="' + (220 + r1 * Math.cos(a)).toFixed(1) + '" y1="' + (240 + r1 * Math.sin(a)).toFixed(1) + '" x2="' + (220 + r2 * Math.cos(a)).toFixed(1) + '" y2="' + (240 + r2 * Math.sin(a)).toFixed(1) + '" stroke="' + col + '" stroke-width="' + (mj ? 1.4 : 1) + '" opacity="' + (mj ? '.55' : '.4') + '"/>'; } return t; })() +
-        /* 안쪽 다이얼 */
-        '<circle cx="220" cy="240" r="100" fill="none" stroke="' + col + '" stroke-width="2"/>' +
-        /* 바늘 — 두 날이 같은 베이스 코너를 공유(중심 대칭, 45° 축) */
-        '<polygon points="288,172 230,250 210,230" fill="' + col + '" opacity=".88"/>' +
-        '<polygon points="152,308 210,230 230,250" fill="' + col + '" opacity=".32"/>' +
-        '<circle cx="220" cy="240" r="15" fill="' + col + '"/><circle cx="220" cy="240" r="23" fill="none" stroke="' + col + '" stroke-width="1" opacity=".35"/></svg>';
+        /* 안쪽 다이얼 — 원본은 가는 선 이중 링(무겁지 않게) */
+        '<circle cx="220" cy="240" r="100" fill="none" stroke="' + col + '" stroke-width="1.2"/>' +
+        '<circle cx="220" cy="240" r="78" fill="none" stroke="' + col + '" stroke-width="1" opacity=".22"/>' +
+        /* 바늘 — 원본 비율로 축소(다이얼 안에 여백), 두 날이 같은 베이스 코너 공유 */
+        '<polygon points="272,188 228,248 212,232" fill="' + col + '" opacity=".9"/>' +
+        '<polygon points="168,292 212,232 228,248" fill="' + col + '" opacity=".28"/>' +
+        '<circle cx="220" cy="240" r="10" fill="' + col + '"/><circle cx="220" cy="240" r="19" fill="none" stroke="' + col + '" stroke-width="1" opacity=".35"/></svg>';
       return '<section class="slide cv" data-kind="' + kind(s, 'Cover') + '"' + chVars(s) + '>' +
         '<div class="cv-l"><div class="cv-gfx">' + compass + '</div>' +
         '<div class="cv-band">' + mark(true) + (s.band ? '<p class="cv-bandtx"' + de(P + '.band') + '>' + mb(s.band) + '</p>' : '') + '</div></div>' +
@@ -287,7 +288,8 @@
         ? '<div class="cd-band">' + '<div class="cd-band-in">' + navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) + '</div>' + radialSVG() + '</div>'
         : navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P);
       return '<section class="slide cd' + (s.banner ? ' banded' : '') + '" data-kind="' + kind(s, 'Cards') + '"' + chVars(s) + '>' +
-        top + '<div class="cd-grid c' + cols + '">' + cells + '</div>' + summary(s, P) + '</section>';
+        top + '<div class="cd-grid c' + cols + '">' + cells + '</div>' + summary(s, P) +
+        (s.footnote ? '<p class="cd-fn"' + de(P + '.footnote') + '>' + ml(s.footnote) + '</p>' : '') + '</section>';
     },
     /* 좌 텍스트 / 우 패널(아이소 그래픽·리스트·수치). 원본 06/08/13 */
     split: function (s, P, ctx) {
@@ -297,7 +299,13 @@
         return '<div class="sp-li"><span class="sp-tick" style="background:' + c.p + '"></span><span' + de(P + '.panel.items.' + i) + '>' + ml(t) + '</span></div>';
       }).join('') + '</div>';
       else if (pn.kind === 'question') v = '<div class="sp-q"><span class="nv-label wh"' + de(P + '.panel.label') + '>' + esc(pn.label || 'THE QUESTION') + '</span>' +
-        '<p class="sp-qtx"' + de(P + '.panel.text') + '>' + mb(pn.text || '') + '</p></div>';
+        '<p class="sp-qtx"' + de(P + '.panel.text') + '>' + mb(pn.text || '') + '</p>' +
+        /* 흰 반투명 물음표 장식 — 우하단 크기 불규칙 산포(원본 06) */
+        '<span class="sp-qm" aria-hidden="true"><b style="right:18%;bottom:24%;font-size:96px;opacity:.5">?</b>' +
+        '<b style="right:34%;bottom:14%;font-size:56px;opacity:.34">?</b>' +
+        '<b style="right:8%;bottom:9%;font-size:42px;opacity:.28">?</b>' +
+        '<b style="right:46%;bottom:26%;font-size:34px;opacity:.22">?</b>' +
+        '<b style="right:24%;bottom:4%;font-size:28px;opacity:.3">?</b></span></div>';
       else v = iso(pn.motif || CH_MOTIF[s.ch] || 'scatter', c.p);
       var body = '';
       if (s.points && s.points.length) body = listCap(s.listTitle, P + '.listTitle') +
@@ -679,6 +687,9 @@
       '.nv-panel.q{background:var(--ch);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:20px;padding:36px 38px}' +
       '.nv-label.wh{color:rgba(255,255,255,.85)}' +
       '.sp-qtx{font-size:31px;font-weight:200;line-height:1.45;letter-spacing:-.02em;color:#fff;margin:0}.sp-qtx b{font-weight:700;color:#fff}' +
+      '.sp-q{position:relative;height:100%;display:flex;flex-direction:column;gap:18px}' +
+      '.sp-qm b{position:absolute;color:#fff;font-weight:700;line-height:1;pointer-events:none}' +
+      '.cd-fn{position:absolute;right:37px;bottom:18px;margin:0;font-size:10.5px;letter-spacing:.1em;line-height:1.8;color:var(--label);text-align:right;white-space:pre-wrap}' +
       /* 밴드 헤더 — 원본 07 상단 챕터컬러 밴드(흰 헤드라인+라디얼 그래픽) */
       '.cd-band{position:relative;background:var(--ch);color:#fff;margin:-29px -43px 0 -56px;padding:29px 43px 40px 56px;flex:none;overflow:hidden}' +
       '.cd-band-in{position:relative;z-index:2}' +
@@ -1080,7 +1091,8 @@
       summary: '생성은 누구나 가능해졌지만,\n**퀄리티는 모두 같지 않습니다.**' },
     cards: { type: 'cards', banner: true, variant: 'brand', title: '선도기업은 자사의 디자인 기준을\n**AI 시스템에 반영**하고 있습니다',
       cards: [{ tag: 'MCP · CODE CONNECT', head: 'Figma', text: '디자인 파일의 컴포넌트·스타일·변수를 생성 도구에 전달' }, { tag: 'FLUENT 2 · AGENT', head: 'Microsoft', text: '공통 기반 규정, 책임 있는 AI 루브릭 심사' }, { tag: 'GENSTUDIO · BRAND', head: 'Adobe', text: '브랜드 가이드 등록으로 생성물 자동 검증' }],
-      summary: '기준을 시스템에 담는 것은 이미 **업계의 공통된 선택**입니다.' },
+      summary: '기준을 시스템에 담는 것은 이미 **업계의 공통된 선택**입니다.',
+      footnote: '출처 · Figma Blog / Microsoft Learn · Fluent 2\nAdobe GenStudio Brand Compliance (2026. 07 확인)' },
     split: { type: 'split', title: '‘만들었다’와\n**‘잘 만들었다’**는 다릅니다', listTitle: '기준 없는 생성 결과',
       points: [{ text: '화면마다 다른 완성도' }, { text: '불분명한 정보 구조와 시각 위계' }, { text: '사용성과 심미성의 불균형' }],
       panel: { kind: 'question', label: 'THE QUESTION', text: '무엇이 **좋은 결과**인지\n누가, 어떤 기준으로\n판단할 것인가?' } },
@@ -1135,7 +1147,7 @@
     'toc:{title?,items:[{no?,label(영문 대문자 챕터명),desc(한 줄 메시지, **강조**),pages?:"04 — 08"}]} | ' +
     'divider:{ch:1~5,no?:"01",title(영문 대문자),lead(핵심 문장 — 둘째 줄 **강조** 권장),text?(보조 설명 2~3문장),items?:[{head,text}](넘버 리스트 2~3개),note?(하단 주석 한 줄, **강조** 가능)} | ' +
     'section:{ch?,title,listTitle?,points?:[{head?,text}],text?,points2?:[{head?,text}]+listTitle2?(2열 대비 리스트 — 좌 일반/우 챕터컬러),aside?:{title,items:[str]},summary?,summaryLabel?} | ' +
-    'cards:{ch?,title,cols?:2~4,variant?:"brand"(사례 카드)|"tile"(틴트 면 카드),banner?:true(상단 컬러 밴드),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
+    'cards:{ch?,title,cols?:2~4,variant?:"brand"(사례 카드)|"tile"(틴트 면 카드),banner?:true(상단 컬러 밴드),cards:[{head,text?,tone?:"on|dim",tag?}],summary?,footnote?(우하단 출처 각주 — 사례·벤치마크 장 권장)} | ' +
     'split:{ch?,title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +
     'stats:{ch?,title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
     'media:{ch?,title,image?:{label},caption?,summary?} | ' +

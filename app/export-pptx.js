@@ -26,7 +26,7 @@
     '.ln-head', '.ln-tag', '.ln-text', '.ln-bx', '.ln-bname', '.br-leadtx', '.br-head',
     '.hlx-title', '.hl-no', '.hl-head', '.hl-text', '.hlx-note p', '.hlx-fn', '.bd-lead', '.bd-stit', '.bd-it', '.bd-fi',
     '.ps-no', '.ps-tag', '.ps-head', '.ps-text', '.ps-cap', '.ck-tx', '.ln-note',
-    '.dv-ino', '.dv-ihead', '.dv-itext', '.dv-note', '.rm-lbl'].join(',');
+    '.dv-ino', '.dv-ihead', '.dv-itext', '.dv-note', '.rm-lbl', '.cd-fn', '.sp-qm b'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
