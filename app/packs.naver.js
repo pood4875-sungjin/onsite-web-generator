@@ -83,7 +83,8 @@
           '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (r * .34).toFixed(1) + '" ry="' + r + '" fill="none" stroke="' + (fill ? '#fff' : col) + '" stroke-width="1" opacity="' + (fill ? '.7' : '.6') + '"/>' +
           node(cx, cy, fill ? '#fff' : col, 3);
       };
-      g = dashLine(50, 272, 340, 52, col) + sph(85, 250, 30, true) + sph(185, 175, 46) + sph(300, 92, 60);
+      /* 세 구체 중심 (85,250)·(185,177)·(300,92)는 같은 직선 위 — 점선이 중심들을 관통 */
+      g = dashLine(49, 277, 336, 65, col) + sph(85, 250, 30, true) + sph(185, 177, 46) + sph(300, 92, 60);
     } else { /* arrow — 채워진 큐브에서 우상단 상승 라인 + 진행방향 화살촉 + 작은 큐브(원본 클로징 모티프) */
       g = cube(120, 215, 46, 27, 34, col, 2.4, true) +
         '<line x1="150" y1="185" x2="296" y2="88" stroke="' + col + '" stroke-width="2.4"/>' +
