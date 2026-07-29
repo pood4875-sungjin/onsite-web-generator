@@ -233,6 +233,111 @@
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
         '<div class="cd-grid c' + Math.min((s.steps || []).length || 3, 4) + '">' + cells + '</div>' + summary(s, P) + '</section>';
     },
+    /* 단독 대형 수치 — 숫자 하나로 임팩트 */
+    bigstat: function (s, P, ctx) {
+      return '<section class="slide bs" data-kind="' + kind(s, 'Bigstat') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="bs-body"><p class="nv-big xl"' + de(P + '.value') + '>' + esc(s.value || '') + '</p>' +
+        (s.caption ? '<p class="bs-cap"' + de(P + '.caption') + '>' + mb(s.caption) + '</p>' : '') + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 수치 그리드 — KPI 2~4개 나열(카드 위계) */
+    kpi: function (s, P, ctx) {
+      var items = s.items || [], cols = Math.min(Math.max(+s.cols || items.length || 3, 2), 4);
+      var cells = items.map(function (it, i) {
+        var IP = P + '.items.' + i, tone = it.tone === 'on' ? ' on' : '';
+        return '<div class="nv-card' + tone + '"><p class="kp-val"' + de(IP + '.value') + '>' + esc(it.value || '') + '</p>' +
+          '<p class="nv-chead sm"' + de(IP + '.label') + '>' + esc(it.label || '') + '</p>' +
+          (it.desc ? '<p class="nv-ctext"' + de(IP + '.desc') + '>' + ml(it.desc) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide kp" data-kind="' + kind(s, 'KPI') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="cd-grid c' + cols + '">' + cells + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 표 — 1px 규칙선, 첫 열 500. 열 고정 데이터 */
+    table: function (s, P, ctx) {
+      var cols = s.columns || [];
+      var head = '<div class="tb-row hd">' + cols.map(function (c, i) { return '<span class="nv-label"' + de(P + '.columns.' + i) + '>' + esc(c) + '</span>'; }).join('') + '</div>';
+      var rows = (s.rows || []).map(function (r, ri) {
+        return '<div class="tb-row">' + (r.cells || []).map(function (c, ci) { return '<span' + de(P + '.rows.' + ri + '.cells.' + ci) + '>' + ml(c) + '</span>'; }).join('') + '</div>';
+      }).join('');
+      return '<section class="slide tb" data-kind="' + kind(s, 'Table') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="tb-wrap" style="--tbc:' + Math.max(cols.length, 2) + '">' + head + rows + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 타임라인 — 가로 축선 + 45° 마커(라인차트 마커 규칙) */
+    timeline: function (s, P, ctx) {
+      var items = s.items || [];
+      var cells = items.map(function (it, i) {
+        var IP = P + '.items.' + i, on = it.on || it.state === 'now';
+        return '<div class="tl-cell' + (on ? ' on' : '') + '"><span class="tl-mark"></span>' +
+          '<span class="nv-label' + (on ? ' ch' : '') + '"' + de(IP + '.when') + '>' + esc(it.when || '') + '</span>' +
+          '<p class="nv-chead sm"' + de(IP + '.head') + '>' + ml(it.head || '') + '</p>' +
+          (it.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide tl" data-kind="' + kind(s, 'Timeline') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="tl-body"><span class="tl-axis"></span><div class="tl-grid" style="--tln:' + Math.max(items.length, 2) + '">' + cells + '</div></div>' + summary(s, P) + '</section>';
+    },
+    /* 프로세스 — 단계 → 화살표 흐름 */
+    process: function (s, P, ctx) {
+      var steps = s.steps || [], accI = s.accent == null ? -1 : +s.accent;
+      var cells = steps.map(function (st, i) {
+        var IP = P + '.steps.' + i, on = i === accI;
+        return (i ? '<span class="pc-arrow">→</span>' : '') +
+          '<div class="pc-step' + (on ? ' on' : '') + '">' +
+          (st.tag ? '<span class="nv-label ch"' + de(IP + '.tag') + '>' + esc(st.tag) + '</span>' : '') +
+          '<p class="nv-chead sm"' + de(IP + '.head') + '>' + ml(st.head || '') + '</p>' +
+          (st.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(st.text) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide pc" data-kind="' + kind(s, 'Process') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="pc-flow">' + cells + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 비교 — 좌/우 2패널(전/후, A vs B). tone on=챕터 강조 */
+    compare: function (s, P, ctx) {
+      var items = (s.items || []).slice(0, 2);
+      var cells = items.map(function (it, i) {
+        var IP = P + '.items.' + i, tone = it.tone === 'on' ? ' on' : it.tone === 'dim' ? ' dim' : (i === 1 ? ' on' : ' dim');
+        var pts = (it.points || []).map(function (t, k) {
+          return '<div class="sp-li flat"><span class="sp-tick"></span><span' + de(IP + '.points.' + k) + '>' + ml(t) + '</span></div>';
+        }).join('');
+        return '<div class="nv-card cmp' + tone + '"><p class="nv-chead"' + de(IP + '.head') + '>' + ml(it.head || '') + '</p>' + pts + '</div>';
+      }).join('<span class="cmp-vs">→</span>');
+      return '<section class="slide cm" data-kind="' + kind(s, 'Compare') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="cmp-cols">' + cells + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 인용 — 좌 챕터 바 + 대형 200웨이트 문장 */
+    quote: function (s, P, ctx) {
+      return '<section class="slide qt" data-kind="Quote"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) +
+        '<div class="qt-body"><span class="qt-bar"></span><div>' +
+        '<p class="qt-text"' + de(P + '.text') + '>' + mb(s.text || '') + '</p>' +
+        (s.by ? '<p class="qt-by"' + de(P + '.by') + '>' + esc(s.by) + '</p>' : '') + '</div></div>' + summary(s, P) + '</section>';
+    },
+    /* 포지셔닝 — 3패널 중앙 강조(원본 14 "Web Generator 위치") */
+    position: function (s, P, ctx) {
+      var panels = (s.panels || []).slice(0, 3);
+      var cells = panels.map(function (p2, i) {
+        var IP = P + '.panels.' + i, on = p2.tone === 'on' || (p2.tone == null && i === 1);
+        return '<div class="ps-panel' + (on ? ' on' : '') + '">' +
+          (p2.tag ? '<span class="nv-label' + (on ? ' ch' : '') + '"' + de(IP + '.tag') + '>' + esc(p2.tag) + '</span>' : '') +
+          '<p class="nv-chead"' + de(IP + '.head') + '>' + ml(p2.head || '') + '</p>' +
+          (p2.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(p2.text) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide ps" data-kind="' + kind(s, 'Position') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="ps-cols">' + cells + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 체크리스트 — 2열 체크 그리드(전면) */
+    checklist: function (s, P, ctx) {
+      var items = (s.items || []).map(function (t, i) {
+        return '<div class="sp-li"><span class="sp-tick"></span><span' + de(P + '.items.' + i) + '>' + ml(t) + '</span></div>';
+      }).join('');
+      return '<section class="slide ck" data-kind="' + kind(s, 'Checklist') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="ck-grid">' + items + '</div>' + summary(s, P) + '</section>';
+    },
     /* 클로징 — 좌 그래픽+다크 밴드 / 우 대형 인사+연락처. 원본 24 */
     closing: function (s, P) {
       var metas = (s.contacts || []).map(function (m, i) {
@@ -266,7 +371,7 @@
   }
 
   /* 이동/숨김/굵기 상태 재적용 — honors 팩과 동일 계약(_pos/_hide/_fmt/_z/_ta/_fs/_tw) */
-  var MV_SEL = '[data-edit], .s-imgwrap, .p-media, .nv-iso, .nv-mark, .cv-bar, .nv-donut, .nv-gauge, .sp-tick';
+  var MV_SEL = '[data-edit], .s-imgwrap, .p-media, .nv-iso, .nv-mark, .cv-bar, .nv-donut, .nv-gauge, .sp-tick, .tl-mark, .tl-axis, .qt-bar, .pc-arrow, .cmp-vs';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {}, fs: s._fs || {}, w: s._tw || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -282,7 +387,7 @@
       'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
       'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +
       'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +
-      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta");' +
+      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row");' +
       'for(var q3=0;q3<cd.length;q3++){var el3=cd[q3];if(el3.hasAttribute("data-mvkey"))continue;var ck="c"+q3;el3.setAttribute("data-mvkey",ck);' +
       'var p3=c.p[ck];if(p3)el3.style.transform="translate("+p3[0]+"px,"+p3[1]+"px)";' +
       'var z3=c.z[ck];if(z3!=null){el3.style.zIndex=z3;if(getComputedStyle(el3).position==="static")el3.style.position="relative";}' +
@@ -413,6 +518,49 @@
       '.md-cap{font-size:16px;font-weight:300;color:var(--muted);margin:0}' +
       /* 클로징 우측 */
       '.slide.cl .cv-title{font-size:55px}' +
+      /* 단독 대형 수치 */
+      '.bs-body{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:16px;padding:10px 0}' +
+      '.nv-big.xl{font-size:147px;font-weight:700;letter-spacing:-.035em;line-height:.95;color:var(--cht);margin:0}' +
+      '.bs-cap{font-size:19px;font-weight:200;line-height:1.5;color:var(--body);margin:0;max-width:640px}.bs-cap b{font-weight:700;color:var(--cht)}' +
+      /* KPI 그리드 */
+      '.kp-val{font-size:44px;font-weight:700;letter-spacing:-.02em;color:var(--cht);margin:0;line-height:1}' +
+      '.nv-chead.sm{font-size:19px}' +
+      /* 표 */
+      '.tb-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 0}' +
+      '.tb-row{display:grid;grid-template-columns:repeat(var(--tbc),1fr);gap:24px;padding:14px 4px;border-top:1px solid var(--rule);font-size:16px;font-weight:300;color:var(--body)}' +
+      '.tb-row span:first-child{font-weight:500;color:var(--ink)}' +
+      '.tb-row.hd{border-top:2px solid var(--ink)}.tb-row.hd span,.tb-row.hd .nv-label{font-weight:700;color:var(--label)}' +
+      '.tb-row:last-child{border-bottom:1px solid var(--rule)}' +
+      /* 타임라인 — 축선 + 45° 마커 */
+      '.tl-body{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;padding:16px 0}' +
+      '.tl-axis{display:block;height:1px;background:var(--rule);margin-bottom:-6px}' +
+      '.tl-grid{display:grid;grid-template-columns:repeat(var(--tln),1fr);gap:28px}' +
+      '.tl-cell{padding-top:22px;display:flex;flex-direction:column;gap:8px;position:relative}' +
+      '.tl-mark{position:absolute;top:-6px;left:2px;width:11px;height:11px;background:#fff;border:2px solid var(--muted);transform:rotate(45deg)}' +
+      '.tl-cell.on .tl-mark{background:var(--ch);border-color:var(--ch)}' +
+      /* 프로세스 */
+      '.pc-flow{flex:1;display:flex;align-items:center;gap:18px;padding:16px 0}' +
+      '.pc-step{flex:1;border-top:2px solid var(--ink);padding-top:16px;display:flex;flex-direction:column;gap:8px}' +
+      '.pc-step.on{border-top:4px solid var(--ch);padding-top:14px}' +
+      '.pc-arrow{font-size:26px;font-weight:200;color:var(--muted);flex:none}' +
+      /* 비교 */
+      '.cmp-cols{flex:1;display:grid;grid-template-columns:1fr auto 1fr;gap:34px;align-items:stretch;align-content:center;padding:16px 0}' +
+      '.nv-card.cmp{gap:14px}.nv-card.cmp .sp-li{padding:0;background:none;font-size:16px}' +
+      '.sp-li.flat{background:none;padding:2px 0}' +
+      '.nv-card.cmp .sp-tick{background:var(--ch)}.nv-card.cmp.dim .sp-tick{background:var(--muted)}' +
+      '.cmp-vs{align-self:center;font-size:30px;font-weight:200;color:var(--muted)}' +
+      /* 인용 */
+      '.qt-body{flex:1;display:flex;align-items:center;gap:30px;padding:16px 40px}' +
+      '.qt-bar{flex:none;width:4px;align-self:stretch;background:var(--ch);margin:20px 0}' +
+      '.qt-text{font-size:37px;font-weight:200;line-height:1.4;letter-spacing:-.02em;margin:0;max-width:920px}.qt-text b{font-weight:700;color:var(--cht)}' +
+      '.qt-by{font-size:17px;font-weight:500;color:var(--muted);margin:18px 0 0}' +
+      /* 포지셔닝 — 중앙 강조 3패널 */
+      '.ps-cols{flex:1;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:30px;align-items:stretch;align-content:center;padding:16px 0}' +
+      '.ps-panel{background:var(--surf);padding:26px 28px;display:flex;flex-direction:column;gap:10px;justify-content:center}' +
+      '.ps-panel.on{background:#fff;border:2px solid var(--ch);box-shadow:0 0 0 0}' +
+      /* 체크리스트 */
+      '.ck-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;align-content:center;padding:16px 0}' +
+      '.ck-grid .sp-li{background:var(--chbg)}' +
       /* 발표 뷰어 등장 모션 */
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
@@ -459,7 +607,7 @@
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
       's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
       'var cur=s[n];if(cur){' +
-      'var us=cur.querySelectorAll(".nv-card,.nv-row,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll(".nv-card,.nv-row,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       'var cu=cur.querySelectorAll(".nv-big,.sp-num,.stt-bval");for(var w=0;w<cu.length;w++){(function(el){' +
@@ -502,6 +650,15 @@
     { type: 'stats', label: '수치', use: '성과·지표 — 좌측 big(대형 수치) 또는 donut(구성비), 우측 bars(게이지 비교)', needs: ['title'], opt: ['big', 'donut', 'bars', 'summary'], cap: { bars: '2~4개' } },
     { type: 'media', label: '이미지 증빙', use: '제품 화면·데모·시연 캡처를 크게 보여줄 때 (이미지 슬롯)', needs: ['title'], opt: ['image', 'caption', 'summary'], cap: {} },
     { type: 'roadmap', label: '로드맵', use: '단계·일정 흐름 — steps의 state: done(완료)|now(현재 강조)|next(예정 흐림)', needs: ['title', 'steps'], opt: ['summary'], cap: { steps: '3~4개' } },
+    { type: 'bigstat', label: '단독 대형 수치', use: '숫자 하나로 임팩트 — 성장률·규모·달성률', needs: ['title', 'value'], opt: ['caption', 'summary'], cap: { value: '~6자' } },
+    { type: 'kpi', label: '수치 그리드', use: 'KPI 2~4개를 한 화면에 — 지표 요약. tone:on=강조', needs: ['title', 'items'], opt: ['cols', 'summary'], cap: { items: '2~4개' } },
+    { type: 'table', label: '표', use: '열이 정해진 데이터 나열 — 거래·비교표·현황', needs: ['title', 'columns', 'rows'], opt: ['summary'], cap: { rows: '~5행', columns: '3~4열' } },
+    { type: 'timeline', label: '타임라인', use: '시간 순서가 핵심일 때 — 연혁·마일스톤. on:true=현재 시점 강조', needs: ['title', 'items'], opt: ['summary'], cap: { items: '3~5개' } },
+    { type: 'process', label: '프로세스', use: '입력→처리→출력 단계 흐름을 화살표로. accent=강조 스텝 인덱스', needs: ['title', 'steps'], opt: ['accent', 'summary'], cap: { steps: '3~4개' } },
+    { type: 'compare', label: '비교', use: '전/후, A vs B 두 축 비교 — items 2개(기본: 첫째 dim, 둘째 챕터 강조)', needs: ['title', 'items'], opt: ['summary'], cap: { items: '2개, points 각 2~4개' } },
+    { type: 'quote', label: '인용', use: '고객·전문가 발언, 선언적 메시지 하나를 크게', needs: ['text'], opt: ['by', 'summary'], cap: { text: '~80자' } },
+    { type: 'position', label: '포지셔닝', use: '흐름 속 우리 위치 — 3패널 중앙 강조(전=좌, 우리=중앙, 후=우)', needs: ['title', 'panels'], opt: ['summary'], cap: { panels: '3개' } },
+    { type: 'checklist', label: '체크리스트', use: '확인·완료 항목 나열 — 검증 결과, 제공 범위', needs: ['title', 'items'], opt: ['summary'], cap: { items: '4~8개' } },
     { type: 'closing', label: '마무리', use: '마지막 장 — 인사+연락처', needs: ['title'], opt: ['sub', 'contacts'], cap: { contacts: '~3개' } },
   ];
 
@@ -527,11 +684,25 @@
     stats: { type: 'stats', title: '수치 제목', big: { value: '00%', label: '지표 설명' }, bars: [{ label: '항목', pct: 70, on: true }, { label: '항목', pct: 40 }] },
     media: { type: 'media', title: '화면 제목', image: { label: 'ADD IMAGE' }, caption: '캡션' },
     roadmap: { type: 'roadmap', title: '로드맵', steps: [{ when: 'NOW', head: '단계', text: '설명', state: 'now' }, { when: 'NEXT', head: '단계', text: '설명', state: 'next' }, { when: 'LATER', head: '단계', text: '설명', state: 'next' }] },
+    bigstat: { type: 'bigstat', title: '단독 대형 수치', value: '+32%', caption: '지표에 대한 **핵심 설명**을 입력하세요' },
+    kpi: { type: 'kpi', title: '수치 그리드', items: [{ value: '00', label: '지표', tone: 'on' }, { value: '00', label: '지표' }, { value: '00', label: '지표' }] },
+    table: { type: 'table', title: '표', columns: ['항목', '내용', '비고'], rows: [{ cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }] },
+    timeline: { type: 'timeline', title: '타임라인', items: [{ when: '2026 Q1', head: '단계', text: '설명' }, { when: '2026 Q2', head: '단계', text: '설명', on: true }, { when: '2026 Q3', head: '단계', text: '설명' }] },
+    process: { type: 'process', title: '프로세스', accent: 1, steps: [{ head: '입력', text: '설명' }, { head: '처리', text: '설명', tag: '핵심' }, { head: '출력', text: '설명' }] },
+    compare: { type: 'compare', title: '비교', items: [{ head: '이전', points: ['항목', '항목'], tone: 'dim' }, { head: '이후', points: ['항목', '항목'], tone: 'on' }] },
+    quote: { type: 'quote', text: '인용문 또는 **핵심 선언**을 입력하세요', by: '— 이름 · 소속' },
+    position: { type: 'position', title: '포지셔닝', panels: [{ tag: 'BEFORE', head: '이전 단계', text: '설명' }, { tag: 'OURS', head: '우리 위치', text: '설명', tone: 'on' }, { tag: 'AFTER', head: '다음 단계', text: '설명' }] },
+    checklist: { type: 'checklist', title: '체크리스트', items: ['확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요'] },
     closing: { type: 'closing', title: 'Thank you', contacts: [{ k: 'EMAIL', v: '' }, { k: 'TEAM', v: '' }] },
   };
 
   function naverTemplateDeck() {
-    var slides = CATALOG.map(function (c) { return JSON.parse(JSON.stringify(STARTERS[c.type])); });
+    var slides = CATALOG.map(function (c) {
+      var s = JSON.parse(JSON.stringify(STARTERS[c.type]));
+      // 쇼케이스 가독성 — 본문류 장 제목을 타입 라벨로(어떤 템플릿인지 한눈에)
+      if (s.title != null && ['cover', 'statement', 'closing', 'divider', 'toc'].indexOf(c.type) < 0) s.title = c.label;
+      return s;
+    });
     if (slides[0]) { slides[0].title = '전체 템플릿'; slides[0].sub = '필요 없는 장은 지우고, 내용을 채워보세요'; }
     return { slides: slides, style: 'naver' };
   }
@@ -550,6 +721,15 @@
     'stats:{ch?,title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
     'media:{ch?,title,image?:{label},caption?,summary?} | ' +
     'roadmap:{ch?,title,steps:[{when,head,text?,state?:"done|now|next"}],summary?} | ' +
+    'bigstat:{ch?,title,value,caption?,summary?} | ' +
+    'kpi:{ch?,title,cols?:2~4,items:[{value,label,desc?,tone?:"on"}],summary?} | ' +
+    'table:{ch?,title,columns:[str],rows:[{cells:[str]}],summary?} | ' +
+    'timeline:{ch?,title,items:[{when,head,text?,on?:true}],summary?} | ' +
+    'process:{ch?,title,steps:[{head,text?,tag?}],accent?:강조인덱스,summary?} | ' +
+    'compare:{ch?,title,items:[{head,points:[str],tone?:"on|dim"}](2개),summary?} | ' +
+    'quote:{ch?,text,by?,summary?} | ' +
+    'position:{ch?,title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
+    'checklist:{ch?,title,items:[str],summary?} | ' +
     'closing:{title,sub?,contacts?:[{k,v}]}' +
     '\n규칙: 챕터마다 divider(ch=1부터 순서대로)를 넣고, 그 챕터의 본문 장들은 ch 생략(자동 상속). ' +
     'title·lead·summary에서 **단어**로 핵심어만 굵게(과용 금지, 장당 1~2회). 이모지 금지.';

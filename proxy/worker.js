@@ -117,6 +117,15 @@ const NAVER_USE_DOC =
   'stats(수치): 대형 수치·도넛+게이지 비교 | ' +
   'media(이미지 증빙): 제품 화면·데모 캡처 크게 | ' +
   'roadmap(로드맵): 단계·일정 흐름(현재 강조) | ' +
+  'bigstat(단독 대형 수치): 숫자 하나로 임팩트 | ' +
+  'kpi(수치 그리드): 지표 2~4개 요약 | ' +
+  'table(표): 열 고정 데이터 나열 | ' +
+  'timeline(타임라인): 연혁·마일스톤(on=현재) | ' +
+  'process(프로세스): 입력→처리→출력 단계 화살표 | ' +
+  'compare(비교): 전/후·A vs B 두 패널 | ' +
+  'quote(인용): 발언·선언 하나를 크게 | ' +
+  'position(포지셔닝): 흐름 속 우리 위치, 3패널 중앙 강조 | ' +
+  'checklist(체크리스트): 확인·완료 항목 나열 | ' +
   'closing(마무리): 인사+연락처';
 const NAVER_FIELD_DOC =
   'cover:{eyebrow?,title,sub?,band?,meta?:[{k,v}]} | ' +
@@ -129,6 +138,15 @@ const NAVER_FIELD_DOC =
   'stats:{title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
   'media:{title,image?:{label},caption?,summary?} | ' +
   'roadmap:{title,steps:[{when,head,text?,state?:"done|now|next"}],summary?} | ' +
+  'bigstat:{title,value,caption?,summary?} | ' +
+  'kpi:{title,cols?:2~4,items:[{value,label,desc?,tone?:"on"}],summary?} | ' +
+  'table:{title,columns:[str],rows:[{cells:[str]}],summary?} | ' +
+  'timeline:{title,items:[{when,head,text?,on?:true}],summary?} | ' +
+  'process:{title,steps:[{head,text?,tag?}],accent?:강조인덱스,summary?} | ' +
+  'compare:{title,items:[{head,points:[str],tone?:"on|dim"}](2개),summary?} | ' +
+  'quote:{text,by?,summary?} | ' +
+  'position:{title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
+  'checklist:{title,items:[str],summary?} | ' +
   'closing:{title,sub?,contacts?:[{k,v}]}';
 const NAVER_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +

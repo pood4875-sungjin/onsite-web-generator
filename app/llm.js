@@ -139,7 +139,7 @@
   // honors 팩 = pitch 타입 + toc(목차)·divider(간지)
   var HONORS_ALLOWED = Object.assign({ toc: 1, divider: 1 }, PITCH_ALLOWED);
   // naver 팩(Design AX Line) — 독자 타입 체계 (packs.naver.js CATALOG와 동일 목록)
-  var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, closing: 1 };
+  var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, bigstat: 1, kpi: 1, table: 1, timeline: 1, process: 1, compare: 1, quote: 1, position: 1, checklist: 1, closing: 1 };
   function allowedFor(pack) { return pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
     var s = String(txt || '').trim();
