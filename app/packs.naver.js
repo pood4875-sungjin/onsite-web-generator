@@ -132,7 +132,7 @@
       '<circle cx="250" cy="105" r="22" fill="rgba(255,255,255,.85)"/><circle cx="155" cy="105" r="6" fill="rgba(255,255,255,.7)"/><circle cx="250" cy="10" r="5" fill="rgba(255,255,255,.6)"/></svg>';
   }
   /* 로드맵 라인 차트 — 점선 그리드 + 상승 커브 + 45° 마커 + 시점 라벨(원본 23) */
-  function roadChart(steps, col) {
+  function roadChart(steps, col, P) {
     var n = Math.max(steps.length, 2), W = 1150, H = 210;
     var pts = steps.map(function (st, i) {
       var x = 60 + i * (W - 140) / (n - 1), y = (H - 44) - i * (H - 92) / (n - 1);
@@ -148,12 +148,19 @@
     }
     var marks = pts.map(function (p, i) {
       return '<line x1="' + p.x + '" y1="24" x2="' + p.x + '" y2="' + (H - 26) + '" stroke="#EBECED"/>' +
-        '<rect x="' + (p.x - 7) + '" y="' + (p.y - 7) + '" width="14" height="14" transform="rotate(45 ' + p.x + ' ' + p.y + ')" fill="' + col + '"/>' +
-        '<text x="' + Math.min(p.x + 14, W - 260) + '" y="' + (p.y - 16) + '" font-size="16" font-weight="700" fill="#2C2D2E" font-family="Pretendard,sans-serif">' + esc(p.lab.slice(0, 26)) + '</text>';
+        '<rect x="' + (p.x - 7) + '" y="' + (p.y - 7) + '" width="14" height="14" transform="rotate(45 ' + p.x + ' ' + p.y + ')" fill="' + col + '"/>';
+    }).join('');
+    /* 시점 라벨 — SVG 밖 HTML 오버레이: 편집·이동 가능 + 흰 칩 배경이라 라인·축과 겹쳐도 읽힘.
+       마커 위에 배치(라인이 지나가는 우측이 아니라) — 첫 점은 좌측정렬·끝 점은 우측정렬로 화면 밖 방지 */
+    var labs = pts.map(function (p, i) {
+      var tx = i === 0 ? '0' : i === pts.length - 1 ? '-100%' : '-50%';
+      return '<span class="rm-lbl" style="left:' + (p.x / W * 100).toFixed(2) + '%;top:' + ((p.y - 15) / H * 100).toFixed(2) + '%;transform:translate(' + tx + ',-100%)">' +
+        (steps[i].when ? '<i' + (P ? de(P + '.steps.' + i + '.when') : '') + '>' + esc(steps[i].when) + '</i> ' : '') +
+        '<em' + (P ? de(P + '.steps.' + i + '.head') : '') + '>' + esc(steps[i].head || '') + '</em></span>';
     }).join('');
     return '<svg class="rm-chart" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' + grid +
-      '<path d="' + path + '" fill="none" stroke="' + col + '" stroke-width="2.5"/>' + marks +
-      '<line x1="30" y1="' + (H - 26) + '" x2="' + (W - 30) + '" y2="' + (H - 26) + '" stroke="#2C2D2E" stroke-width="1.4"/></svg>';
+      '<path pathLength="1" d="' + path + '" fill="none" stroke="' + col + '" stroke-width="2.5"/>' + marks +
+      '<line x1="30" y1="' + (H - 26) + '" x2="' + (W - 30) + '" y2="' + (H - 26) + '" stroke="#2C2D2E" stroke-width="1.4"/></svg>' + labs;
   }
 
   var R = {
@@ -219,8 +226,17 @@
         '<p class="dv-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</p></div>' +
         '<div class="dv-gfx">' + iso(s.motif || CH_MOTIF[s.ch] || 'scatter', c.p) + '</div></div>' +
         '<div class="dv-r">' + navStrip(ctx.chapters, s.ch, ctx.no) +
+        '<div class="dv-mid">' +
         '<p class="dv-lead"' + de(P + '.lead') + '>' + mb(s.lead || '') + '</p>' +
-        (s.text ? '<p class="dv-text"' + de(P + '.text') + '>' + ml(s.text) + '</p>' : '') + '</div></section>';
+        (s.text ? '<p class="dv-text"' + de(P + '.text') + '>' + mb(s.text) + '</p>' : '') +
+        /* 넘버 리스트(원본 09 "ONE COMPANY") — 01 컬러 넘버 + 굵은 소제목 + 흐린 설명, 규칙선 행 */
+        (s.items && s.items.length ? '<div class="dv-list">' + s.items.map(function (it, i) {
+          return '<div class="dv-item"><span class="dv-ino">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+            '<span class="dv-ihead"' + de(P + '.items.' + i + '.head') + '>' + esc(it.head || '') + '</span>' +
+            '<span class="dv-itext"' + de(P + '.items.' + i + '.text') + '>' + mb(it.text || '') + '</span></div>';
+        }).join('') + '</div>' : '') +
+        (s.note ? '<p class="dv-note"' + de(P + '.note') + '>' + mb(s.note) + '</p>' : '') +
+        '</div></div></section>';
     },
     /* 본문 표준 — 넘버 리스트(01+굵은 소제목+설명) + 옵션 우측 풀하이트 패널(aside). 원본 05 실측 */
     section: function (s, P, ctx) {
@@ -296,7 +312,7 @@
       var c = chOf(s), l = '';
       if (s.donut) {
         var pct = Math.max(0, Math.min(100, +s.donut.pct || 0));
-        l = '<div class="stt-donut nv-donut" style="background:conic-gradient(' + c.p + ' 0 ' + pct + '%,#E4E5E7 ' + pct + '% 100%)"><div class="stt-hole"><p class="nv-big sm"' + de(P + '.donut.value') + '>' + esc(s.donut.value || (pct + '%')) + '</p>' +
+        l = '<div class="stt-donut nv-donut" style="--gp:' + pct + '%;--gcol:' + c.p + ';background:conic-gradient(' + c.p + ' 0 ' + pct + '%,#E4E5E7 ' + pct + '% 100%)"><div class="stt-hole"><p class="nv-big sm"' + de(P + '.donut.value') + '>' + esc(s.donut.value || (pct + '%')) + '</p>' +
           (s.donut.label ? '<p class="stt-dlab"' + de(P + '.donut.label') + '>' + esc(s.donut.label) + '</p>' : '') + '</div></div>';
       } else if (s.big) {
         l = '<div class="stt-big"><p class="nv-big"' + de(P + '.big.value') + '>' + esc(s.big.value || '') + '</p>' +
@@ -305,7 +321,8 @@
       var bars = (s.bars || []).map(function (b, i) {
         var IP = P + '.bars.' + i, pct = Math.max(0, Math.min(100, +b.pct || 0)), on = b.on;
         return '<div class="stt-bar"><div class="stt-bmeta"><span class="stt-blabel"' + de(IP + '.label') + '>' + esc(b.label || '') + '</span><span class="stt-bval"' + de(IP + '.value') + '>' + esc(b.value != null ? b.value : pct + '%') + '</span></div>' +
-          '<div class="nv-gauge' + (on ? ' on' : '') + '"><i style="width:' + pct + '%;background:' + (on ? c.p : '#DFE1E3') + '"></i></div></div>';
+          /* 비강조 바도 챕터색(반투명)으로 확실히 채움 — 회색-회색은 "빈 그래프"로 보인다 */
+          '<div class="nv-gauge' + (on ? ' on' : '') + '"><i style="width:' + pct + '%;background:' + (on ? c.p : c.p + '59') + ';animation-delay:' + (0.15 + i * 0.12).toFixed(2) + 's"></i></div></div>';
       }).join('');
       return '<section class="slide stt" data-kind="' + kind(s, 'Stats') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
@@ -328,7 +345,7 @@
           '<p class="nv-chead"' + de(IP + '.head') + '>' + ml(st.head || '') + '</p>' +
           (st.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(st.text) + '</p>' : '') + '</div>';
       }).join('');
-      var chart = (s.steps && s.steps.length >= 2 && s.chart !== false) ? '<div class="rm-chartwrap">' + roadChart(s.steps, chOf(s).p) + '</div>' : '';
+      var chart = (s.steps && s.steps.length >= 2 && s.chart !== false) ? '<div class="rm-chartwrap">' + roadChart(s.steps, chOf(s).p, P) + '</div>' : '';
       return '<section class="slide rm" data-kind="' + kind(s, 'Roadmap') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) + chart +
         '<div class="cd-grid rmg c' + Math.min((s.steps || []).length || 3, 4) + '">' + cells + '</div>' + summary(s, P) + '</section>';
@@ -593,7 +610,7 @@
   }
 
   /* 이동/숨김/굵기 상태 재적용 — honors 팩과 동일 계약(_pos/_hide/_fmt/_z/_ta/_fs/_tw) */
-  var MV_SEL = '[data-edit], .s-imgwrap, .p-media, .nv-iso, .nv-mark, .cv-bar, .nv-donut, .nv-gauge, .sp-tick, .tl-mark, .tl-axis, .qt-bar, .pc-arrow, .cmp-vs';
+  var MV_SEL = '[data-edit], .s-imgwrap, .p-media, .nv-iso, .nv-mark, .cv-bar, .nv-donut, .nv-gauge, .sp-tick, .tl-mark, .tl-axis, .qt-bar, .pc-arrow, .cmp-vs, .rm-chart';
   function stateScript(slides) {
     var st = (slides || []).map(function (s) { return { p: s._pos || {}, h: s._hide || {}, f: s._fmt || {}, z: s._z || {}, a: s._ta || {}, fs: s._fs || {}, w: s._tw || {} }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -609,7 +626,7 @@
       'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
       'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +
       'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +
-      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row");' +
+      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row,.dv-item");' +
       'for(var q3=0;q3<cd.length;q3++){var el3=cd[q3];if(el3.hasAttribute("data-mvkey"))continue;var ck="c"+q3;el3.setAttribute("data-mvkey",ck);' +
       'var p3=c.p[ck];if(p3)el3.style.transform="translate("+p3[0]+"px,"+p3[1]+"px)";' +
       'var z3=c.z[ck];if(z3!=null){el3.style.zIndex=z3;if(getComputedStyle(el3).position==="static")el3.style.position="relative";}' +
@@ -690,7 +707,14 @@
       '.nv-card.tile{border-top:4px solid var(--ch);background:var(--chbg);padding:24px 26px 28px;gap:12px}' +
       '.tile-head{font-size:29px;font-weight:700;letter-spacing:-.02em;margin:0}' +
       /* 로드맵 라인 차트 */
-      '.rm-chartwrap{flex:1;display:flex;align-items:center;min-height:0}.rm-chart{width:100%;height:auto;max-height:230px}' +
+      '.rm-chartwrap{flex:1;display:flex;align-items:center;min-height:0;position:relative}.rm-chart{width:100%;height:auto;max-height:230px}' +
+      /* 시점 라벨(HTML 오버레이) — 흰 칩 배경으로 라인·축 위에서도 읽힘. i=시점, em=제목 */
+      '.rm-lbl{position:absolute;font-size:12.5px;font-weight:700;color:var(--ink);background:rgba(255,255,255,.92);padding:2px 7px;white-space:nowrap;line-height:1.4;animation:vfu .5s .75s both}' +
+      '.rm-lbl i,.rm-lbl em{font-style:normal}' +
+      /* 라인 드로잉 모션 — pathLength=1 기준 */
+      '.rm-chart path{stroke-dasharray:1;stroke-dashoffset:1;animation:rmdraw 1.1s .15s cubic-bezier(.3,.6,.3,1) forwards}' +
+      '.rm-chart rect{opacity:0;animation:vfu .4s .8s forwards}' +
+      '@keyframes rmdraw{to{stroke-dashoffset:0}}' +
       '.cd-grid.rmg{flex:none;align-content:start;padding:8px 0 0}' +
       '.nv-card.rm{background:var(--chbg);padding:18px 22px 24px}.nv-card.rm.dim{background:var(--surf)}' +
       /* 라인업 — 좌 다이아 그래픽+뱃지, 우 언더라인 리스트 */
@@ -783,9 +807,19 @@
       '.dv-title{font-size:49px;font-weight:200;line-height:1.05;letter-spacing:-.02em;margin:0;text-transform:uppercase;white-space:pre-wrap}' +
       '.dv-gfx{flex:1;background:var(--surf);display:grid;place-items:center;padding:20px}.dv-gfx svg{width:90%;height:auto}' +
       '.dv-r{padding:29px 37px 37px 56px;display:flex;flex-direction:column}' +
-      '.dv-lead{font-size:33px;font-weight:200;line-height:1.3;letter-spacing:-.02em;margin:96px 0 0;max-width:700px}' +
+      /* 우측 콘텐츠 — 원본 04·09: 세로 중앙 블록(리드+본문+넘버리스트+주석). 리드만 있으면 기존과 동일한 위치감 */
+      '.dv-mid{flex:1;display:flex;flex-direction:column;justify-content:center;gap:25px;max-width:707px}' +
+      '.dv-lead{font-size:33px;font-weight:200;line-height:1.32;letter-spacing:-.02em;margin:0}' +
       '.dv-lead b{font-weight:700;color:var(--cht)}' +
-      '.dv-text{font-size:16px;font-weight:300;line-height:1.8;color:var(--body);margin:26px 0 0;max-width:620px;text-wrap:pretty}' +
+      '.dv-text{font-size:16px;font-weight:300;line-height:1.9;color:var(--body);margin:0;max-width:620px;text-wrap:pretty}' +
+      '.dv-list{display:flex;flex-direction:column}' +
+      '.dv-item{display:grid;grid-template-columns:44px 170px 1fr;gap:12px;align-items:baseline;border-top:1px solid var(--rule);padding:15px 0}' +
+      '.dv-item:last-child{border-bottom:1px solid var(--rule)}' +
+      '.dv-ino{font-size:14px;font-weight:700;letter-spacing:.08em;color:var(--cht)}' +
+      '.dv-ihead{font-size:19px;font-weight:700}' +
+      '.dv-itext{font-size:15px;font-weight:300;line-height:1.6;color:var(--body)}' +
+      '.dv-note{font-size:16px;font-weight:300;color:var(--body);margin:3px 0 0}' +
+      '.dv-note b,.dv-itext b{font-weight:700;color:var(--cht)}' +
       /* 카드 그리드 */
       '.sc-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 0}' +
       '.cd-grid{flex:1;display:grid;gap:32px;align-content:center;padding:22px 0}' +
@@ -812,13 +846,19 @@
       '.stt-big .nv-big{font-size:100px;font-weight:700;letter-spacing:-.03em;color:var(--cht);margin:0;line-height:1}' +
       '.nv-big.sm{font-size:48px;font-weight:700;color:var(--ink);margin:0}' +
       '.stt-blab{font-size:19px;font-weight:500;color:var(--body);margin:12px 0 0;white-space:pre-wrap}' +
-      '.nv-donut{width:293px;height:293px;border-radius:50%;display:grid;place-items:center;margin:0 auto}' +
+      /* 도넛 — --gp가 0%에서 목표치까지 차오르는 모션(@property 등록으로 conic 각도 보간) */
+      '@property --gp{syntax:"<percentage>";inherits:false;initial-value:0%}' +
+      '.nv-donut{width:293px;height:293px;border-radius:50%;display:grid;place-items:center;margin:0 auto;' +
+      'background:conic-gradient(var(--gcol) 0 var(--gp),#E4E5E7 var(--gp) 100%)!important;animation:dfill 1.1s .1s cubic-bezier(.3,.6,.3,1) both}' +
+      '@keyframes dfill{from{--gp:0%}}' +
       '.stt-hole{width:213px;height:213px;border-radius:50%;background:#fff;display:grid;place-content:center;text-align:center;gap:4px}' +
       '.stt-dlab{font-size:16px;font-weight:500;color:var(--muted);margin:0}' +
       '.stt-r{display:flex;flex-direction:column;gap:22px}' +
       '.stt-bmeta{display:flex;justify-content:space-between;margin-bottom:8px}' +
       '.stt-blabel{font-size:17px;font-weight:500}.stt-bval{font-size:17px;font-weight:700;color:var(--cht)}' +
-      '.nv-gauge{height:5px;background:#E9EAEB}.nv-gauge.on{height:8px}.nv-gauge i{display:block;height:100%}' +
+      '.nv-gauge{height:5px;background:#E9EAEB}.nv-gauge.on{height:8px}' +
+      '.nv-gauge i{display:block;height:100%;animation:gfill .9s cubic-bezier(.2,.7,.3,1) both}' +
+      '@keyframes gfill{from{width:0}}' +
       /* 미디어 */
       '.md-body{flex:1;display:flex;flex-direction:column;gap:14px;padding:18px 0 0}' +
       '.p-media{background:var(--surf);overflow:hidden;display:grid;place-items:center}' +
@@ -958,7 +998,7 @@
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
       's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
       'var cur=s[n];if(cur){' +
-      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart,.dv-item");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       'var cu=cur.querySelectorAll(".nv-big,.sp-num,.stt-bval");for(var w=0;w<cu.length;w++){(function(el){' +
@@ -994,7 +1034,7 @@
     { type: 'cover', label: '표지', use: '첫 장. 좌측 그래픽+그린 밴드, 우측 타이틀. band=밴드 문구, meta=날짜·팀 크레딧', needs: ['title'], opt: ['sub', 'band', 'meta', 'eyebrow'], cap: { title: '~24자' } },
     { type: 'statement', label: '대형 문장', use: '그린 풀블리드에 문장 하나로 선언·전환. **단어**로 핵심어 굵게', needs: ['title'], opt: ['sub'], cap: { title: '~36자' } },
     { type: 'toc', label: '목차', use: '표지 다음 장. 챕터 리스트(번호는 챕터 컬러 자동). divider 제목과 1:1 일치', needs: ['items'], opt: ['title'], cap: { items: '3~5개' } },
-    { type: 'divider', label: '간지', use: '챕터 시작 전환 장 — ch(1~5)가 컬러를 정한다. title=영문 대문자 챕터명, lead=핵심 한 문장(**강조** 가능)', needs: ['ch', 'title', 'lead'], opt: ['text', 'no'], cap: { title: '~16자', lead: '~50자' } },
+    { type: 'divider', label: '간지', use: '챕터 시작 전환 장 — ch(1~5)가 컬러를 정한다. title=영문 대문자 챕터명, lead=핵심 문장(**강조** 가능). 리드만 두면 비어 보인다 — text(2~3문장)나 items(넘버 리스트 2~3개)로 채울 것', needs: ['ch', 'title', 'lead'], opt: ['text', 'items', 'note', 'no'], cap: { title: '~16자', lead: '~60자', items: '2~3개' } },
     { type: 'section', label: '본문 표준', use: '넘버 리스트(01+소제목+설명)가 기본 장. listTitle=리스트 캡, aside=우측 서피스 패널(간단 항목 나열), summary=SO WHAT 정리', needs: ['title'], opt: ['listTitle', 'points', 'text', 'aside', 'summary'], cap: { points: '2~4개' } },
     { type: 'cards', label: 'N열 카드', use: '동급 항목 2~4개 비교·나열. tone:on=강조(챕터컬러 4px), dim=비활성. variant:"brand"=사례 카드(캡+컬러 대형 이름 — 기업·제품 사례), variant:"tile"=틴트 면 카드(구성 요소·산출물 나열), banner:true=상단 챕터컬러 밴드 헤더', needs: ['title', 'cards'], opt: ['cols', 'variant', 'banner', 'summary'], cap: { cards: '2~4개, head ~16자·text ~90자' } },
     { type: 'split', label: '좌우 분할', use: '넘버 리스트(좌)+패널(우) — panel.kind: iso(큐브 그래픽)|list(체크)|stat(대형 수치)|question(챕터컬러 면+큰 질문 문장, 문제 제기 장)', needs: ['title'], opt: ['listTitle', 'text', 'points', 'panel', 'side', 'summary'], cap: { points: '2~4개' } },
@@ -1022,7 +1062,10 @@
     slides: [
       { type: 'cover', eyebrow: 'MIDAS DESIGN AX', title: '발표 제목을\n**입력하세요**', sub: '핵심 메시지를 한 줄로.', band: '프로젝트 설명을 입력하세요', meta: [{ k: 'DATE', v: '2026' }, { k: 'TEAM', v: 'AX' }] },
       { type: 'toc', title: 'CONTENTS', items: [{ label: '첫 번째 주제' }, { label: '두 번째 주제' }, { label: '세 번째 주제' }] },
-      { type: 'divider', ch: 1, title: 'WHY NOW', lead: '왜 지금 이 이야기를 하는가 — **핵심 한 문장**' },
+      { type: 'divider', ch: 1, title: 'WHY NOW', lead: '왜 지금 이 이야기를 하는가 —\n**핵심 메시지가 여기 옵니다**',
+        text: '자연어 입력만으로 UI · 이미지 · 코드까지 생성됩니다. 전문 도구의 진입장벽이 낮아졌고, 차이는 어디에서 생기는지 살펴봅니다.',
+        items: [{ head: '첫 번째 근거', text: '핵심 변화를 한 줄로 요약' }, { head: '두 번째 근거', text: '뒷받침하는 사실 또는 수치' }, { head: '세 번째 근거', text: '이 챕터에서 다룰 범위' }],
+        note: '조직 구조가 아니라, **기준의 위치**에 대한 이야기입니다.' },
       { type: 'cards', title: '핵심 방향', cards: [{ head: '항목', text: '설명을 입력하세요.', tone: 'on' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] },
       { type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: '' }, { k: 'NAME', v: '' }] },
     ],
@@ -1036,7 +1079,10 @@
       { label: 'WHY NOW', desc: '누구나 만드는 시대, 차이는 **기준**에서 생깁니다', pages: '04 — 08' },
       { label: 'WHERE WE STAND', desc: 'AI가 함께 참조할 **기준**이 필요합니다', pages: '09 — 11' },
       { label: 'THE SYSTEM', desc: '기준을 담아 실행하는 **디자인 Agent**', pages: '12 — 15' }] },
-    divider: { type: 'divider', ch: 1, title: 'SECTION', lead: '이 챕터의 핵심 한 문장' },
+    divider: { type: 'divider', ch: 1, title: 'SECTION', lead: '이 챕터의 핵심 문장 —\n**강조 구절**이 여기 옵니다',
+      text: '챕터에서 다룰 내용을 두세 문장으로 소개합니다. 리드 아래 보조 설명이 붙어 간지가 비어 보이지 않습니다.',
+      items: [{ head: '첫 번째 항목', text: '핵심 변화를 한 줄로 요약' }, { head: '두 번째 항목', text: '뒷받침하는 사실 또는 수치' }, { head: '세 번째 항목', text: '이 챕터에서 다룰 범위' }],
+      note: '구조가 아니라, **기준의 위치**에 대한 이야기입니다.' },
     section: { type: 'section', title: '‘만드는 것’은\n이제 **누구나 할 수 있는 일**이 되었습니다', listTitle: '그 결과 나타나는 변화',
       points: [{ head: '진입장벽 하락', text: '전문 도구를 익히지 않아도 결과가 나옵니다' }, { head: '경계 축소', text: '기획 · 제작 · 개발의 구분이 통합됩니다' }, { head: '결과물 증가', text: '만드는 속도와 양이 동시에 상승합니다' }],
       aside: { title: '자연어로 생성되는 것', items: ['UI', '이미지', '영상', '코드'] },
@@ -1096,7 +1142,7 @@
     'cover:{label?(상단좌 문서 라벨),date?("2026 · 07"),eyebrow?("PROLOGUE"류),title(3톤: **굵게**·__회색 흐림__),sub?,band?(좌하단 그린 밴드 문구, **강조**),docLabel?(하단좌),team?(하단우)} | ' +
     'statement:{title(**굵게** 조합),sub?,cols?:[{tag(영문 라벨),text(**강조** — "A → **B**" 비유 비교)}](2개)} | ' +
     'toc:{title?,items:[{no?,label(영문 대문자 챕터명),desc(한 줄 메시지, **강조**),pages?:"04 — 08"}]} | ' +
-    'divider:{ch:1~5,no?:"01",title(영문 대문자),lead,text?} | ' +
+    'divider:{ch:1~5,no?:"01",title(영문 대문자),lead(핵심 문장 — 둘째 줄 **강조** 권장),text?(보조 설명 2~3문장),items?:[{head,text}](넘버 리스트 2~3개),note?(하단 주석 한 줄, **강조** 가능)} | ' +
     'section:{ch?,title,listTitle?,points?:[{head?,text}],text?,points2?:[{head?,text}]+listTitle2?(2열 대비 리스트 — 좌 일반/우 챕터컬러),aside?:{title,items:[str]},summary?,summaryLabel?} | ' +
     'cards:{ch?,title,cols?:2~4,variant?:"brand"(사례 카드)|"tile"(틴트 면 카드),banner?:true(상단 컬러 밴드),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
     'split:{ch?,title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +

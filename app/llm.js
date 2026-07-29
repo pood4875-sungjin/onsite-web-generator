@@ -229,7 +229,7 @@
         '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.NAVER_SCHEMA_DOC + '\n' +
         '각 타입의 필드: ' + window.NAVER_FIELD_DOC + '\n' +
         '규칙: 1장 cover. 2장 toc(items=챕터명, divider title과 1:1). ' +
-        '챕터마다 divider(ch=1부터 순서대로, title=영문 대문자 짧게, no="01"…). ' +
+        '챕터마다 divider(ch=1부터 순서대로, title=영문 대문자 짧게, no="01"…) — lead 한 줄로 끝내지 말고 text(2~3문장)나 items(넘버 리스트 2~3개)로 채울 것. ' +
         '챕터 컬러 규칙(엄수): 컬러는 divider의 ch가 정하고 하위 본문 장 전체가 같은 컬러를 자동 상속 — 본문 장에 ch 금지(교차 금지). ' +
         '수치는 stats로 시각화(값은 plan의 실제 수치, 지어내기 금지). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';

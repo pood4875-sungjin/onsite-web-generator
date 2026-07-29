@@ -135,7 +135,7 @@ const NAVER_FIELD_DOC =
   'cover:{label?(상단좌 문서 라벨),date?("2026 · 07"),eyebrow?("PROLOGUE"류),title(3톤 조합: **굵게**·__회색 흐림__),sub?,band?(좌하단 그린 밴드 문구 — 비유 한 줄, **강조**),docLabel?(하단좌),team?(하단우)} | ' +
   'statement:{title(**굵게** 조합),sub?,cols?:[{tag(영문 라벨),text("A → **B**" 비교)}](2개)} | ' +
   'toc:{title?,items:[{no?,label(영문 대문자 챕터명),desc(한 줄 메시지, **강조**),pages?:"04 — 08"}]} | ' +
-  'divider:{ch:1~5,no?:"01",title(영문 대문자),lead,text?} | ' +
+  'divider:{ch:1~5,no?:"01",title(영문 대문자),lead(핵심 문장 — **강조** 권장),text?(보조 설명 2~3문장),items?:[{head,text}](넘버 리스트 2~3개),note?(하단 주석 한 줄, **강조** 가능)} | ' +
   'section:{title,listTitle?,points?:[{head?,text}],text?,points2?:[{head?,text}]+listTitle2?(2열 대비 리스트),aside?:{title,items:[str]},summary?} | ' +
   'cards:{title,cols?:2~4,variant?:"brand"(사례·기업 카드)|"tile"(틴트 면 카드 — 구성 요소·산출물),banner?:true(상단 컬러 밴드 헤더),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
   'split:{title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +
@@ -164,6 +164,7 @@ const NAVER_SYSTEM =
   '각 타입의 필드: ' + NAVER_FIELD_DOC + '\n' +
   '규칙: 1장 cover, 2장 toc(items의 label=각 divider title과 1:1). ' +
   '챕터마다 divider(ch=1부터 등장 순서대로, title=영문 대문자 짧게 예 "WHY NOW", no="01"…) 후 그 챕터 본문 장들. ' +
+  'divider는 lead 한 줄로 끝내지 말 것 — text(보조 설명 2~3문장) 또는 items(넘버 리스트 2~3개, 챕터에서 다룰 근거·범위)로 채우고 필요하면 note 한 줄. ' +
   '챕터 컬러 규칙(엄수): 컬러는 divider의 ch가 정하고, 그 챕터의 모든 하위 본문 장은 같은 컬러를 자동 상속한다 — 본문 장에 ch를 절대 쓰지 말 것(다른 챕터 컬러 교차 금지). ' +
   'title·lead·summary에서 **단어** 마크업으로 핵심어만 굵게(장당 1~2회, 과용 금지). 이모지 금지. ' +
   '본문 장은 밀도 있게 — section엔 listTitle+points(3개 내외)+가능하면 aside, split은 question 패널을 문제 제기 장에 적극 활용, 사례·벤치마크 장은 cards(variant brand, banner true). ' +
