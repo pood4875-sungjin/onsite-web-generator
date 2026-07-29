@@ -227,6 +227,7 @@
         '각 타입의 필드: ' + window.NAVER_FIELD_DOC + '\n' +
         '규칙: 1장 cover. 2장 toc(items=챕터명, divider title과 1:1). ' +
         '챕터마다 divider(ch=1부터 순서대로, title=영문 대문자 짧게, no="01"…). ' +
+        '챕터 컬러 규칙(엄수): 컬러는 divider의 ch가 정하고 하위 본문 장 전체가 같은 컬러를 자동 상속 — 본문 장에 ch 금지(교차 금지). ' +
         '수치는 stats로 시각화(값은 plan의 실제 수치, 지어내기 금지). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';
       var ntxt = await messages({ system: nsys, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });

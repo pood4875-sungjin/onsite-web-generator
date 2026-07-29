@@ -159,9 +159,9 @@
         (function () { var t = ''; for (var i = 0; i < 60; i++) { var a = i * Math.PI / 30, mj = i % 5 === 0, r1 = mj ? 129 : 134, r2 = 145; t += '<line x1="' + (220 + r1 * Math.cos(a)).toFixed(1) + '" y1="' + (240 + r1 * Math.sin(a)).toFixed(1) + '" x2="' + (220 + r2 * Math.cos(a)).toFixed(1) + '" y2="' + (240 + r2 * Math.sin(a)).toFixed(1) + '" stroke="' + col + '" stroke-width="' + (mj ? 1.4 : 1) + '" opacity="' + (mj ? '.55' : '.4') + '"/>'; } return t; })() +
         /* 안쪽 다이얼 */
         '<circle cx="220" cy="240" r="100" fill="none" stroke="' + col + '" stroke-width="2"/>' +
-        /* 바늘 — NE 진한 날 + SW 연한 날(중심 대칭) */
-        '<polygon points="292,168 212,244 236,260" fill="' + col + '" opacity=".88"/>' +
-        '<polygon points="148,312 228,236 204,220" fill="' + col + '" opacity=".32"/>' +
+        /* 바늘 — 두 날이 같은 베이스 코너를 공유(중심 대칭, 45° 축) */
+        '<polygon points="288,172 230,250 210,230" fill="' + col + '" opacity=".88"/>' +
+        '<polygon points="152,308 210,230 230,250" fill="' + col + '" opacity=".32"/>' +
         '<circle cx="220" cy="240" r="15" fill="' + col + '"/><circle cx="220" cy="240" r="23" fill="none" stroke="' + col + '" stroke-width="1" opacity=".35"/></svg>';
       return '<section class="slide cv" data-kind="' + kind(s, 'Cover') + '"' + chVars(s) + '>' +
         '<div class="cv-l"><div class="cv-gfx">' + compass + '</div>' +
@@ -336,19 +336,21 @@
       }).join('');
       /* 원본 13: 뱃지가 다이아 수평 중심선 좌측 끝에 겹쳐 앉고, 중심선이 마름모를 관통해
          우측 꼭짓점(점)에서 항목 수만큼 부챗살로 갈라져 리스트를 향한다. 리스트는 균등 칸(센터 정렬) */
-      var fanN = Math.max((s.items || []).length, 2), GH = 420;
-      var fan = (s.items || []).map(function (_, i) {
-        var y = Math.round((i + 0.5) * GH / fanN);
-        return '<line x1="500" y1="210" x2="560" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3"/>';
-      }).join('');
+      /* 부챗살은 두 컬럼을 가로지르는 오버레이 SVG — 각 항목 행의 세로 중앙(타이틀 라인)으로 정확히 향한다 */
+      var fanN = Math.max((s.items || []).length, 2);
+      var fanOv = '<svg class="ln-fan" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+        (s.items || []).map(function (_, i) {
+          var y = ((i + 0.5) * 100 / fanN).toFixed(1);
+          return '<line x1="47.6" y1="50" x2="53.2" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3" vector-effect="non-scaling-stroke"/>';
+        }).join('') + '</svg>';
       return '<section class="slide ln" data-kind="' + kind(s, 'Lineup') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + (s.title ? headline(s, P) : '') +
-        '<div class="ln-cols"><div class="ln-gfx">' +
+        '<div class="ln-cols">' + fanOv + '<div class="ln-gfx">' +
         '<svg class="nv-iso" viewBox="0 0 560 420" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
         '<polygon points="290,30 500,210 290,390 80,210" fill="' + c.p + '" fill-opacity=".08"/>' +
         '<polygon points="290,72 458,210 290,348 122,210" fill="none" stroke="' + c.p + '" stroke-width="1.4"/>' +
-        '<line x1="0" y1="210" x2="500" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
-        fan + '<circle cx="500" cy="210" r="7" fill="' + c.p + '"/>' +
+        '<line x1="0" y1="210" x2="552" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
+        '<circle cx="552" cy="210" r="7" fill="' + c.p + '"/>' +
         '</svg>' +
         ((s.badge || s.name) ? '<div class="ln-badge">' + (s.badge ? '<span class="ln-bx"' + de(P + '.badge') + '>' + esc(s.badge) + '</span>' : '') + '<p class="ln-bname"' + de(P + '.name') + '>' + ml(s.name || '') + '</p></div>' : '') +
         '</div><div class="ln-list">' + rows + '</div></div>' +
@@ -635,13 +637,14 @@
       '.rm-chartwrap{flex:1;display:flex;align-items:center;min-height:0}.rm-chart{width:100%;height:auto;max-height:230px}' +
       '.cd-grid.rmg{flex:none;align-content:start;padding:8px 0 0}' +
       /* 라인업 — 좌 다이아 그래픽+뱃지, 우 언더라인 리스트 */
-      '.ln-cols{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;min-height:0}' +
-      '.ln-gfx{display:flex;flex-direction:column;gap:20px}.ln-gfx .nv-iso{width:88%}' +
+      '.ln-cols{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4.8%;align-items:stretch;min-height:0;position:relative}' +
+      '.ln-fan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}' +
+      '.ln-gfx{display:flex;flex-direction:column;gap:20px;justify-content:center}.ln-gfx .nv-iso{width:100%;max-height:78%}' +
       '.ln-badge{display:flex;align-items:center;gap:16px}' +
       '.ln-bx{background:var(--ch);color:#fff;font-weight:700;font-size:15px;letter-spacing:.06em;padding:15px 17px}' +
       '.ln-bname{font-size:25px;font-weight:700;letter-spacing:.02em;margin:0}' +
-      '.ln-list{display:flex;flex-direction:column;gap:24px}' +
-      '.ln-row{display:flex;flex-direction:column;gap:9px}' +
+      '.ln-list{display:flex;flex-direction:column;justify-content:space-around;gap:0;height:100%}' +
+      '.ln-row{display:flex;flex-direction:column;gap:9px;justify-content:center}' +
       '.ln-head-row{display:flex;align-items:baseline;gap:12px}' +
       '.ln-head{font-size:21px;font-weight:700;letter-spacing:.02em;margin:0}' +
       '.ln-tag{font-size:15px;font-weight:700;color:var(--cht)}' +
@@ -717,12 +720,12 @@
       /* 간지 */
       '.slide.dv{padding:0;display:grid;grid-template-columns:397px 1fr}' +
       '.dv-l{display:flex;flex-direction:column}' +
-      '.dv-panel{background:var(--ch);color:#fff;padding:23px 32px 35px;display:flex;flex-direction:column;gap:14px}' +
-      '.dv-no{font-size:16px;font-weight:700;letter-spacing:.12em;margin:16px 0 0}' +
+      '.dv-panel{background:var(--ch);color:#fff;padding:23px 32px 35px;min-height:313px;display:flex;flex-direction:column;gap:14px}' +
+      '.dv-no{font-size:16px;font-weight:700;letter-spacing:.12em;margin:26px 0 0}' +
       '.dv-title{font-size:49px;font-weight:200;line-height:1.05;letter-spacing:-.02em;margin:0;text-transform:uppercase;white-space:pre-wrap}' +
-      '.dv-gfx{flex:1;background:var(--surf);display:grid;place-items:center;padding:24px}.dv-gfx svg{width:82%;height:auto}' +
+      '.dv-gfx{flex:1;background:var(--surf);display:grid;place-items:center;padding:20px}.dv-gfx svg{width:90%;height:auto}' +
       '.dv-r{padding:29px 37px 37px 56px;display:flex;flex-direction:column}' +
-      '.dv-lead{font-size:33px;font-weight:200;line-height:1.3;letter-spacing:-.02em;margin:40px 0 0;max-width:700px}' +
+      '.dv-lead{font-size:33px;font-weight:200;line-height:1.3;letter-spacing:-.02em;margin:96px 0 0;max-width:700px}' +
       '.dv-lead b{font-weight:700;color:var(--cht)}' +
       '.dv-text{font-size:16px;font-weight:300;line-height:1.8;color:var(--body);margin:26px 0 0;max-width:620px;text-wrap:pretty}' +
       /* 카드 그리드 */

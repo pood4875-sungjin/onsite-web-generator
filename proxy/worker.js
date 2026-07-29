@@ -159,7 +159,8 @@ const NAVER_SYSTEM =
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + NAVER_USE_DOC + '\n' +
   '각 타입의 필드: ' + NAVER_FIELD_DOC + '\n' +
   '규칙: 1장 cover, 2장 toc(items의 label=각 divider title과 1:1). ' +
-  '챕터마다 divider(ch=1부터 등장 순서대로, title=영문 대문자 짧게 예 "WHY NOW", no="01"…) 후 그 챕터 본문 장들. 본문 장에는 ch를 쓰지 않는다(자동 상속). ' +
+  '챕터마다 divider(ch=1부터 등장 순서대로, title=영문 대문자 짧게 예 "WHY NOW", no="01"…) 후 그 챕터 본문 장들. ' +
+  '챕터 컬러 규칙(엄수): 컬러는 divider의 ch가 정하고, 그 챕터의 모든 하위 본문 장은 같은 컬러를 자동 상속한다 — 본문 장에 ch를 절대 쓰지 말 것(다른 챕터 컬러 교차 금지). ' +
   'title·lead·summary에서 **단어** 마크업으로 핵심어만 굵게(장당 1~2회, 과용 금지). 이모지 금지. ' +
   '본문 장은 밀도 있게 — section엔 listTitle+points(3개 내외)+가능하면 aside, split은 question 패널을 문제 제기 장에 적극 활용, 사례·벤치마크 장은 cards(variant brand, banner true). ' +
   '본문 장(section/cards/split/stats)에는 가능하면 summary("SO WHAT" 정리 문장, 마무리 구절 **굵게**)를 넣는다. ' +
