@@ -21,11 +21,14 @@
     /* naver 팩(Design AX Line) */ '.nv-hl', '.nv-label', '.nv-nav-it', '.nv-nav-pg', '.nv-rhead', '.nv-rtext', '.nv-chead', '.nv-ctext', '.nv-body', '.nv-big', '.nv-sum p',
     '.tc-no', '.tc-desc', '.tc-head', '.dv-title', '.dv-lead', '.dv-text', '.cv-title', '.cv-sub', '.cv-mv', '.cv-bandtx',
     '.stt-blab', '.stt-blabel', '.stt-bval', '.stt-dlab', '.md-cap', '.sp-li span:last-child',
-    '.kp-val', '.bs-cap', '.qt-text', '.qt-by', '.tb-row > span', '.pc-arrow', '.cmp-vs'].join(',');
+    '.kp-val', '.bs-cap', '.qt-text', '.qt-by', '.tb-row > span', '.pc-arrow', '.cmp-vs',
+    '.nl-no', '.nl-head', '.nl-text', '.nl-cap span', '.as-val', '.sp-qtx', '.bd-head',
+    '.ln-head', '.ln-tag', '.ln-text', '.ln-bx', '.ln-bname', '.br-leadtx', '.br-head'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
-    /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row';
+    /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
+    '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 

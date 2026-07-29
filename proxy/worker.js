@@ -126,15 +126,17 @@ const NAVER_USE_DOC =
   'quote(인용): 발언·선언 하나를 크게 | ' +
   'position(포지셔닝): 흐름 속 우리 위치, 3패널 중앙 강조 | ' +
   'checklist(체크리스트): 확인·완료 항목 나열 | ' +
+  'lineup(라인업): 제품·에이전트 구성 — 좌 다이아 그래픽, 우 리스트(dim=후보) | ' +
+  'branch(분기): 하나→여럿 구조(조직·영역 분류) | ' +
   'closing(마무리): 인사+연락처';
 const NAVER_FIELD_DOC =
   'cover:{eyebrow?,title,sub?,band?,meta?:[{k,v}]} | ' +
   'statement:{title,sub?} | ' +
   'toc:{title?,items:[{label,desc?}]} | ' +
   'divider:{ch:1~5,no?:"01",title(영문 대문자),lead,text?} | ' +
-  'section:{title,points?:[{head?,text}],text?,summary?} | ' +
-  'cards:{title,cols?:2~4,cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
-  'split:{title,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat",items?:[str],value?,label?},side?:"left",summary?} | ' +
+  'section:{title,listTitle?,points?:[{head?,text}],text?,aside?:{title,items:[str]},summary?} | ' +
+  'cards:{title,cols?:2~4,variant?:"brand"(사례·기업 카드),banner?:true(상단 컬러 밴드 헤더),cards:[{head,text?,tone?:"on|dim",tag?}],summary?} | ' +
+  'split:{title,listTitle?,text?,points?:[{head?,text}],panel?:{kind:"iso|list|stat|question",items?:[str],value?,label?,text?},side?:"left",summary?} | ' +
   'stats:{title,big?:{value,label},donut?:{pct:0~100,value?,label?},bars?:[{label,pct:0~100,value?,on?:true}],summary?} | ' +
   'media:{title,image?:{label},caption?,summary?} | ' +
   'roadmap:{title,steps:[{when,head,text?,state?:"done|now|next"}],summary?} | ' +
@@ -147,6 +149,8 @@ const NAVER_FIELD_DOC =
   'quote:{text,by?,summary?} | ' +
   'position:{title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
   'checklist:{title,items:[str],summary?} | ' +
+  'lineup:{badge?,title?,items:[{head(영문 대문자),tag?,text,state?:"dim"}],summary?} | ' +
+  'branch:{title,lead?:{label,text},branches:[{label,head,text?}],summary?} | ' +
   'closing:{title,sub?,contacts?:[{k,v}]}';
 const NAVER_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
@@ -157,7 +161,8 @@ const NAVER_SYSTEM =
   '규칙: 1장 cover, 2장 toc(items의 label=각 divider title과 1:1). ' +
   '챕터마다 divider(ch=1부터 등장 순서대로, title=영문 대문자 짧게 예 "WHY NOW", no="01"…) 후 그 챕터 본문 장들. 본문 장에는 ch를 쓰지 않는다(자동 상속). ' +
   'title·lead·summary에서 **단어** 마크업으로 핵심어만 굵게(장당 1~2회, 과용 금지). 이모지 금지. ' +
-  '본문 장(section/cards/split/stats)에는 가능하면 summary(하단 정리 한 문장)를 넣는다. ' +
+  '본문 장은 밀도 있게 — section엔 listTitle+points(3개 내외)+가능하면 aside, split은 question 패널을 문제 제기 장에 적극 활용, 사례·벤치마크 장은 cards(variant brand, banner true). ' +
+  '본문 장(section/cards/split/stats)에는 가능하면 summary("SO WHAT" 정리 문장, 마무리 구절 **굵게**)를 넣는다. ' +
   '수치가 있으면 stats로 시각화(값은 plan의 실제 수치). plan의 구체 정보는 반드시 반영(플레이스홀더 금지). 마지막은 closing. ' +
   '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=10~15장, deep=20~24장, 없으면 6~12장.';
 const PITCH_EDIT_SYSTEM =
