@@ -126,6 +126,8 @@ const NAVER_USE_DOC =
   'quote(인용): 발언·선언 하나를 크게 | ' +
   'position(포지셔닝): 흐름 속 우리 위치, 3패널 중앙 강조 | ' +
   'checklist(체크리스트): 확인·완료 항목 나열 | ' +
+  'highlight(하이라이트): 챕터컬러 풀블리드 강조 장 — 데모·핵심 안내, 챕터 중간 임팩트 | ' +
+  'board(현황 보드): 진행 중 작업 요약 — 좌 리드+틴트 카드 2, 우 보조 리스트 | ' +
   'lineup(라인업): 제품·에이전트 구성 — 좌 다이아 그래픽, 우 리스트(dim=후보) | ' +
   'branch(분기): 하나→여럿 구조(조직·영역 분류) | ' +
   'closing(마무리): 인사+연락처';
@@ -149,6 +151,8 @@ const NAVER_FIELD_DOC =
   'quote:{text,by?,summary?} | ' +
   'position:{title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
   'checklist:{title,items:[str],cols?:1~2,summary?} | ' +
+  'highlight:{title(**굵게**),items:[{head,text?}](2~3개),note?(**강조**),noteLabel?,footnote?} | ' +
+  'board:{title(**굵게**),lead?:{label,text(**강조**)},cards:[{tag,head,text?}](2개),side?:{title,items:[str],foot?:[str]},summary?} | ' +
   'lineup:{title?,badge?,name?,items:[{head(영문 대문자),tag?,text,state?:"dim"}],summary?} | ' +
   'branch:{title,lead?:{label,text},branches:[{label,head,text?}],summary?} | ' +
   'closing:{title,sub?,contacts?:[{k,v}]}';

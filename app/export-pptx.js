@@ -23,12 +23,14 @@
     '.stt-blab', '.stt-blabel', '.stt-bval', '.stt-dlab', '.md-cap', '.sp-li span:last-child',
     '.kp-val', '.bs-cap', '.qt-text', '.qt-by', '.tb-row > span', '.pc-arrow', '.cmp-vs',
     '.nl-no', '.nl-head', '.nl-text', '.nl-cap span', '.as-val', '.sp-qtx', '.bd-head',
-    '.ln-head', '.ln-tag', '.ln-text', '.ln-bx', '.ln-bname', '.br-leadtx', '.br-head'].join(',');
+    '.ln-head', '.ln-tag', '.ln-text', '.ln-bx', '.ln-bname', '.br-leadtx', '.br-head',
+    '.hlx-title', '.hl-no', '.hl-head', '.hl-text', '.hlx-note p', '.hlx-fn', '.bd-lead', '.bd-stit', '.bd-it', '.bd-fi',
+    '.ps-no', '.ps-tag', '.ps-head', '.ps-text', '.ps-cap', '.ck-tx', '.ln-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
     /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
-    '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx';
+    '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 

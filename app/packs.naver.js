@@ -76,6 +76,14 @@
       g = cube(105, 215, 36, 21, 26, col, 1.8) + cube(195, 170, 36, 21, 26, col, 2.2) + cube(285, 125, 36, 21, 26, col, 2.6, true) +
         dashLine(135, 220, 165, 182, col) + dashLine(225, 178, 255, 138, col) +
         '<path d="M312 92 L330 74 M330 74 L316 74 M330 74 L330 88" stroke="' + col + '" stroke-width="2.2" fill="none"/>';
+    } else if (motif === 'orbit') { /* 와이어 구체 3개 상승 궤적(원본 22 간지) */
+      var sph = function (cx, cy, r, fill) {
+        return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (fill ? col : 'none') + '" fill-opacity="' + (fill ? '.9' : '0') + '" stroke="' + col + '" stroke-width="1.6"/>' +
+          '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + r + '" ry="' + (r * .34).toFixed(1) + '" fill="none" stroke="' + (fill ? '#fff' : col) + '" stroke-width="1" opacity="' + (fill ? '.7' : '.6') + '"/>' +
+          '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (r * .34).toFixed(1) + '" ry="' + r + '" fill="none" stroke="' + (fill ? '#fff' : col) + '" stroke-width="1" opacity="' + (fill ? '.7' : '.6') + '"/>' +
+          node(cx, cy, fill ? '#fff' : col, 3);
+      };
+      g = dashLine(50, 272, 340, 52, col) + sph(85, 250, 30, true) + sph(185, 175, 46) + sph(300, 92, 60);
     } else { /* arrow — 채워진 큐브에서 우상단 상승 라인 + 진행방향 화살촉 + 작은 큐브(원본 클로징 모티프) */
       g = cube(120, 215, 46, 27, 34, col, 2.4, true) +
         '<line x1="150" y1="185" x2="296" y2="88" stroke="' + col + '" stroke-width="2.4"/>' +
@@ -86,7 +94,8 @@
     return '<svg class="nv-iso" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">' +
       '<g opacity=".25">' + dashLine(20, 260, 380, 260, col) + dashLine(40, 40, 40, 280, col) + '</g>' + g + '</svg>';
   }
-  var CH_MOTIF = { 1: 'scatter', 2: 'trio', 3: 'stack', 4: 'pair', 5: 'steps' };
+  /* 기본 그래픽 = 원 기반 구체·궤도(어긋남 없는 기하). 큐브 모티프는 motif 필드로 명시 시에만 */
+  var CH_MOTIF = { 1: 'orbit', 2: 'orbit', 3: 'orbit', 4: 'orbit', 5: 'orbit' };
 
   /* 네비 스트립 — 우상단. 챕터 라벨은 덱의 divider 제목에서 파생(렌더 시 주입) */
   function navStrip(chapters, activeCh, pageNo) {
@@ -207,7 +216,7 @@
         '<div class="dv-l"><div class="dv-panel">' + mark(true) +
         '<p class="dv-no"' + de(P + '.no') + '>' + esc(s.no || (s.ch ? '0' + s.ch : '')) + '</p>' +
         '<p class="dv-title"' + de(P + '.title') + '>' + ml(s.title || '') + '</p></div>' +
-        '<div class="dv-gfx">' + iso(CH_MOTIF[s.ch] || 'scatter', c.p) + '</div></div>' +
+        '<div class="dv-gfx">' + iso(s.motif || CH_MOTIF[s.ch] || 'scatter', c.p) + '</div></div>' +
         '<div class="dv-r">' + navStrip(ctx.chapters, s.ch, ctx.no) +
         '<p class="dv-lead"' + de(P + '.lead') + '>' + mb(s.lead || '') + '</p>' +
         (s.text ? '<p class="dv-text"' + de(P + '.text') + '>' + ml(s.text) + '</p>' : '') + '</div></section>';
@@ -341,13 +350,13 @@
       var fanOv = '<svg class="ln-fan" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
         (s.items || []).map(function (_, i) {
           var y = ((i + 0.5) * 100 / fanN).toFixed(1);
-          return '<line x1="47.6" y1="50" x2="53.2" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3" vector-effect="non-scaling-stroke"/>';
+          return '<line x1="46.9" y1="50" x2="53.2" y2="' + y + '" stroke="' + c.p + '" stroke-width="1.3" vector-effect="non-scaling-stroke"/>';
         }).join('') + '</svg>';
       return '<section class="slide ln" data-kind="' + kind(s, 'Lineup') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + (s.title ? headline(s, P) : '') +
         '<div class="ln-cols">' + fanOv + '<div class="ln-gfx">' +
         '<svg class="nv-iso" viewBox="0 0 560 420" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
-        '<polygon points="290,30 500,210 290,390 80,210" fill="' + c.p + '" fill-opacity=".08"/>' +
+        '<polygon points="290,30 500,210 290,390 80,210" fill="' + c.p + '" fill-opacity=".12"/>' +
         '<polygon points="290,72 458,210 290,348 122,210" fill="none" stroke="' + c.p + '" stroke-width="1.4"/>' +
         '<line x1="0" y1="210" x2="552" y2="210" stroke="' + c.p + '" stroke-width="1.3"/>' +
         '<circle cx="552" cy="210" r="7" fill="' + c.p + '"/>' +
@@ -466,19 +475,65 @@
         '<p class="qt-text"' + de(P + '.text') + '>' + mb(s.text || '') + '</p>' +
         (s.by ? '<p class="qt-by"' + de(P + '.by') + '>' + esc(s.by) + '</p>' : '') + '</div></div>' + summary(s, P) + '</section>';
     },
-    /* 포지셔닝 — 3패널 중앙 강조(원본 14 "Web Generator 위치") */
+    /* 포지셔닝 — 파이프라인 3단계, 중앙 단계=챕터컬러 풀 패널 돌출. 원본 14 "DESIGN PRODUCTION LINE" */
     position: function (s, P, ctx) {
       var panels = (s.panels || []).slice(0, 3);
       var cells = panels.map(function (p2, i) {
         var IP = P + '.panels.' + i, on = p2.tone === 'on' || (p2.tone == null && i === 1);
         return '<div class="ps-panel' + (on ? ' on' : '') + '">' +
-          (p2.tag ? '<span class="nv-label' + (on ? ' ch' : '') + '"' + de(IP + '.tag') + '>' + esc(p2.tag) + '</span>' : '') +
-          '<p class="nv-chead"' + de(IP + '.head') + '>' + ml(p2.head || '') + '</p>' +
-          (p2.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(p2.text) + '</p>' : '') + '</div>';
+          '<div class="ps-tagrow"><span class="ps-no"' + de(IP + '.no') + '>' + esc(p2.no || String(i + 1)) + '</span>' +
+          (p2.tag ? '<span class="ps-tag"' + de(IP + '.tag') + '>' + esc(p2.tag) + '</span>' : '') + '</div>' +
+          '<span class="ps-rule"></span>' +
+          '<p class="ps-head"' + de(IP + '.head') + '>' + ml(p2.head || '') + '</p>' +
+          (p2.text ? '<p class="ps-text"' + de(IP + '.text') + '>' + ml(p2.text) + '</p>' : '') + '</div>';
       }).join('');
+      var lineRow = (s.lineLabel || s.caption)
+        ? '<div class="ps-line"><span class="nv-label"' + de(P + '.lineLabel') + '>' + esc(s.lineLabel || '') + '</span><span class="ps-hr"></span>' +
+          (s.caption ? '<span class="ps-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</span>' : '') + '</div>' : '';
       return '<section class="slide ps" data-kind="' + kind(s, 'Position') + '"' + chVars(s) + '>' +
-        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) + lineRow +
         '<div class="ps-cols">' + cells + '</div>' + summary(s, P) + '</section>';
+    },
+    /* 하이라이트 — 챕터컬러 풀블리드: 대형 타이틀+번호 리스트+NOTE. 원본 20 "Live Demo" */
+    highlight: function (s, P, ctx) {
+      var rows = (s.items || []).map(function (p, i) {
+        var IP = P + '.items.' + i;
+        return '<div class="hl-row"><span class="hl-no">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+          '<p class="hl-head"' + de(IP + '.head') + '>' + ml(p.head || '') + '</p>' +
+          (p.text ? '<p class="hl-text"' + de(IP + '.text') + '>' + ml(p.text) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hlx" data-kind="' + kind(s, 'Highlight') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) +
+        '<h1 class="hlx-title"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
+        '<div class="hl-list">' + rows + '</div>' +
+        '<div class="hlx-foot">' + (s.note ? '<div class="hlx-note"><span class="nv-label wh"' + de(P + '.noteLabel') + '>' + esc(s.noteLabel || 'NOTE') + '</span>' +
+          '<p' + de(P + '.note') + '>' + mb(s.note) + '</p></div>' : '<span></span>') +
+        (s.footnote ? '<p class="hlx-fn"' + de(P + '.footnote') + '>' + ml(s.footnote) + '</p>' : '') + '</div></section>';
+    },
+    /* 현황 보드 — 좌 굵은 컬러 룰+라벨+리드+틴트 카드 2개 / 우 보조 리스트. 원본 17 "Running Today" */
+    board: function (s, P, ctx) {
+      var lead = s.lead || {};
+      var cards = (s.cards || []).slice(0, 2).map(function (it, i) {
+        var IP = P + '.cards.' + i;
+        return '<div class="nv-card tile">' +
+          (it.tag ? '<span class="nv-label ch"' + de(IP + '.tag') + '>' + esc(it.tag) + '</span>' : '') +
+          '<p class="nv-chead"' + de(IP + '.head') + '>' + ml(it.head || '') + '</p>' +
+          (it.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div>';
+      }).join('');
+      var side = '';
+      if (s.side) {
+        var sit = (s.side.items || []).map(function (t, i) { return '<p class="bd-it"' + de(P + '.side.items.' + i) + '>' + ml(t) + '</p>'; }).join('');
+        var sft = (s.side.foot || []).map(function (t, i) { return '<p class="bd-fi"' + de(P + '.side.foot.' + i) + '>' + ml(t) + '</p>'; }).join('');
+        side = '<div class="bd-side"><span class="bd-hr"></span>' +
+          (s.side.title ? '<p class="bd-stit"' + de(P + '.side.title') + '>' + esc(s.side.title) + '</p>' : '') + sit +
+          (sft ? '<div class="bd-foot">' + sft + '</div>' : '') + '</div>';
+      }
+      return '<section class="slide bd" data-kind="' + kind(s, 'Board') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        '<div class="bd-cols"><div class="bd-main"><span class="bd-rule2"></span>' +
+        (lead.label ? '<span class="nv-label ch"' + de(P + '.lead.label') + '>' + esc(lead.label) + '</span>' : '') +
+        (lead.text ? '<p class="bd-lead"' + de(P + '.lead.text') + '>' + mb(lead.text) + '</p>' : '') +
+        '<div class="bd-cards">' + cards + '</div></div>' + side + '</div>' + summary(s, P) + '</section>';
     },
     /* 체크리스트 — 2열 그리드, 사각 체크 아이콘(직각 시스템) */
     checklist: function (s, P, ctx) {
@@ -553,7 +608,7 @@
       'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
       'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +
       'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +
-      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row");' +
+      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row");' +
       'for(var q3=0;q3<cd.length;q3++){var el3=cd[q3];if(el3.hasAttribute("data-mvkey"))continue;var ck="c"+q3;el3.setAttribute("data-mvkey",ck);' +
       'var p3=c.p[ck];if(p3)el3.style.transform="translate("+p3[0]+"px,"+p3[1]+"px)";' +
       'var z3=c.z[ck];if(z3!=null){el3.style.zIndex=z3;if(getComputedStyle(el3).position==="static")el3.style.position="relative";}' +
@@ -636,11 +691,13 @@
       /* 로드맵 라인 차트 */
       '.rm-chartwrap{flex:1;display:flex;align-items:center;min-height:0}.rm-chart{width:100%;height:auto;max-height:230px}' +
       '.cd-grid.rmg{flex:none;align-content:start;padding:8px 0 0}' +
+      '.nv-card.rm{background:var(--chbg);padding:18px 22px 24px}.nv-card.rm.dim{background:var(--surf)}' +
       /* 라인업 — 좌 다이아 그래픽+뱃지, 우 언더라인 리스트 */
       '.ln-cols{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4.8%;align-items:stretch;min-height:0;position:relative}' +
       '.ln-fan{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}' +
-      '.ln-gfx{display:flex;flex-direction:column;gap:20px;justify-content:center}.ln-gfx .nv-iso{width:100%;max-height:78%}' +
-      '.ln-badge{display:flex;align-items:center;gap:16px}' +
+      '.ln-gfx{position:relative;display:flex;flex-direction:column;justify-content:center}.ln-gfx .nv-iso{width:100%;max-height:92%}' +
+      /* 뱃지+시스템명 — 다이아 수평 중심선 왼쪽 끝에 겹쳐 앉는다(원본) */
+      '.ln-badge{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;display:flex;align-items:center;gap:16px}' +
       '.ln-bx{background:var(--ch);color:#fff;font-weight:700;font-size:15px;letter-spacing:.06em;padding:15px 17px}' +
       '.ln-bname{font-size:25px;font-weight:700;letter-spacing:.02em;margin:0}' +
       '.ln-list{display:flex;flex-direction:column;justify-content:space-around;gap:0;height:100%}' +
@@ -792,12 +849,13 @@
       '.tl-cell.on .tl-mark{background:var(--ch);border-color:var(--ch)}' +
       /* 프로세스 — 카드 상단 기준 정렬, 화살표는 소제목 라인에 맞춤 */
       '.pc-flow{flex:none;display:flex;align-items:flex-start;gap:18px;margin:auto 0;padding:0 0 70px}' +
-      '.pc-step{flex:1;border-top:2px solid var(--ink);padding-top:16px;display:flex;flex-direction:column;gap:8px}' +
+      '.pc-step{flex:1;border-top:2px solid var(--ink);background:var(--chbg);padding:16px 22px 22px;display:flex;flex-direction:column;gap:8px}' +
       '.pc-step.on{border-top:4px solid var(--ch);padding-top:14px}' +
       '.pc-arrow{font-size:26px;font-weight:200;color:var(--muted);flex:none;margin-top:16px}' +
       /* 비교 — 두 덩어리를 세로 중앙에, 내용 높이만큼만 */
       '.cmp-cols{flex:none;display:grid;grid-template-columns:1fr auto 1fr;gap:34px;align-items:center;margin:auto 0;padding:0 0 70px}' +
-      '.nv-card.cmp{gap:14px}.nv-card.cmp .sp-li{padding:0;background:none;font-size:16px}' +
+      '.nv-card.cmp{gap:14px;background:var(--chbg);padding:22px 26px 28px}.nv-card.cmp.dim{background:var(--surf)}' +
+      '.nv-card.cmp .sp-li{padding:0;background:none;font-size:16px}' +
       '.sp-li.flat{background:none;padding:2px 0}' +
       '.nv-card.cmp .sp-tick{background:var(--ch)}.nv-card.cmp.dim .sp-tick{background:var(--muted)}' +
       '.cmp-vs{align-self:center;font-size:30px;font-weight:200;color:var(--muted)}' +
@@ -806,12 +864,47 @@
       '.qt-bar{flex:none;width:4px;align-self:stretch;background:var(--ch);margin:20px 0}' +
       '.qt-text{font-size:37px;font-weight:200;line-height:1.4;letter-spacing:-.02em;margin:0;max-width:920px}.qt-text b{font-weight:700;color:var(--cht)}' +
       '.qt-by{font-size:17px;font-weight:500;color:var(--muted);margin:18px 0 0}' +
-      /* 포지셔닝 — 중앙 강조 3패널, 세로 중앙·충분한 높이(비어 보임 방지) */
-      '.ps-cols{flex:1;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:26px;align-items:center;align-content:center;padding:16px 0}' +
-      '.ps-panel{background:var(--surf);min-height:264px;padding:32px 32px;display:flex;flex-direction:column;gap:12px;justify-content:center}' +
-      '.ps-panel.on{background:#fff;border:2px solid var(--ch);min-height:300px}' +
-      '.ps-panel.on .nv-chead{font-size:29px;color:var(--cht)}' +
-      '.ps-panel .nv-ctext{font-size:17px}' +
+      /* 포지셔닝 — 원본 14: 라벨+라인+캡션 헤더, 3단계(번호+소라벨/규칙선/대형 2줄 이름/설명), 중앙=챕터컬러 풀 패널 돌출 */
+      '.ps-line{display:flex;align-items:center;gap:18px;margin-top:34px}' +
+      '.ps-hr{flex:1;height:1px;background:var(--rule)}' +
+      '.ps-cap{font-size:15px;font-weight:300;color:var(--muted);letter-spacing:.04em;white-space:nowrap}' +
+      '.ps-cols{flex:none;display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:28px;align-items:center;margin:auto 0;padding:0 0 40px}' +
+      '.ps-panel{display:flex;flex-direction:column;gap:0;padding:0}' +
+      '.ps-tagrow{display:flex;align-items:baseline;gap:12px}' +
+      '.ps-no{font-size:23px;font-weight:700}' +
+      '.ps-tag{font-size:15px;font-weight:700;letter-spacing:.14em}' +
+      '.ps-rule{display:block;height:2px;background:var(--ink);margin:10px 0 18px}' +
+      '.ps-head{font-size:37px;font-weight:300;line-height:1.15;letter-spacing:-.02em;margin:0 0 26px;white-space:pre-wrap}' +
+      '.ps-text{font-size:16px;font-weight:300;color:var(--body);margin:0}' +
+      '.ps-panel.on{background:var(--ch);color:#fff;padding:26px 30px 30px;margin:-24px 0}' +
+      '.ps-panel.on .ps-rule{background:rgba(255,255,255,.75)}' +
+      '.ps-panel.on .ps-head{font-weight:700}' +
+      '.ps-panel.on .ps-text,.ps-panel.on .ps-no,.ps-panel.on .ps-tag{color:#fff}' +
+      /* 하이라이트 — 챕터컬러 풀블리드(원본 20) */
+      '.slide.hlx{background:var(--ch);color:#fff}' +
+      '.slide.hlx .nv-nav{color:rgba(255,255,255,.65)}.slide.hlx .nv-nav-it.on{color:#fff!important}.slide.hlx .nv-nav-pg{color:#fff}' +
+      '.hlx-title{font-size:60px;font-weight:200;line-height:1.14;letter-spacing:-.03em;margin:34px 0 0;max-width:1000px}.hlx-title b{font-weight:700}' +
+      '.hl-list{flex:none;margin:auto 0;padding:0 0 30px;display:flex;flex-direction:column;border-top:1px solid rgba(255,255,255,.65)}' +
+      '.hl-row{display:grid;grid-template-columns:70px 300px 1fr;gap:26px;align-items:center;padding:22px 4px;border-bottom:1px solid rgba(255,255,255,.65)}' +
+      '.hl-no{font-size:16px;font-weight:700;letter-spacing:.12em}' +
+      '.hl-head{font-size:27px;font-weight:700;letter-spacing:-.01em;margin:0}' +
+      '.hl-text{font-size:18px;font-weight:300;margin:0;opacity:.95}' +
+      '.hlx-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:30px}' +
+      '.hlx-note{display:flex;flex-direction:column;gap:8px}' +
+      '.hlx-note p{font-size:20px;font-weight:200;margin:0}.hlx-note b{font-weight:700;color:#fff}' +
+      '.hlx-fn{font-size:14px;font-weight:300;opacity:.85;margin:0;text-align:right;white-space:pre-wrap;letter-spacing:.04em}' +
+      /* 현황 보드(원본 17) */
+      '.bd-cols{flex:1;display:grid;grid-template-columns:1.55fr 1fr;gap:56px;min-height:0;margin-top:6px}' +
+      '.bd-main{display:flex;flex-direction:column}' +
+      '.bd-rule2{display:block;height:3px;background:var(--ch);margin-bottom:18px}' +
+      '.bd-lead{font-size:29px;font-weight:200;line-height:1.35;letter-spacing:-.02em;margin:12px 0 26px}.bd-lead b{font-weight:700}' +
+      '.bd-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:auto}' +
+      '.bd-side{display:flex;flex-direction:column;gap:12px;padding-top:2px}' +
+      '.bd-hr{display:block;height:1px;background:var(--rule)}' +
+      '.bd-stit{font-size:16px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin:10px 0 2px}' +
+      '.bd-it{font-size:16px;font-weight:300;color:var(--muted);margin:0}' +
+      '.bd-foot{margin-top:20px;border-top:1px solid var(--rule);padding-top:16px;display:flex;flex-direction:column;gap:6px}' +
+      '.bd-fi{font-size:17px;font-weight:700;color:var(--ink);margin:0}' +
       /* 체크리스트 — 사각 체크 아이콘 + 넉넉한 행 */
       '.ck-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px 44px;align-content:center;padding:0 0 50px}' +
       '.ck-grid.c1{grid-template-columns:1fr;max-width:900px}' +
@@ -864,7 +957,7 @@
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
       's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
       'var cur=s[n];if(cur){' +
-      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       'var cu=cur.querySelectorAll(".nv-big,.sp-num,.stt-bval");for(var w=0;w<cu.length;w++){(function(el){' +
@@ -916,7 +1009,9 @@
     { type: 'quote', label: '인용', use: '고객·전문가 발언, 선언적 메시지 하나를 크게', needs: ['text'], opt: ['by', 'summary'], cap: { text: '~80자' } },
     { type: 'position', label: '포지셔닝', use: '흐름 속 우리 위치 — 3패널 중앙 강조(전=좌, 우리=중앙, 후=우)', needs: ['title', 'panels'], opt: ['summary'], cap: { panels: '3개' } },
     { type: 'checklist', label: '체크리스트', use: '확인·완료 항목 나열 — 검증 결과, 제공 범위', needs: ['title', 'items'], opt: ['summary'], cap: { items: '4~8개' } },
-    { type: 'lineup', label: '라인업', use: '제품·에이전트 라인업 — 좌 다이아 그래픽+뱃지, 우 리스트(state dim=후보·예정 흐림). 포트폴리오·구성 요소 소개', needs: ['items'], opt: ['title', 'badge', 'summary'], cap: { items: '3~4개' } },
+    { type: 'highlight', label: '하이라이트', use: '챕터컬러 풀블리드 강조 장 — 데모·발표 포인트·핵심 안내를 크게. 챕터 중간의 임팩트 전환', needs: ['title', 'items'], opt: ['note', 'footnote', 'summary'], cap: { items: '2~3개' } },
+    { type: 'board', label: '현황 보드', use: '진행 중 작업 요약 — 좌 리드+틴트 카드 2개, 우 보조 리스트(병행 업무·참고 항목)', needs: ['title', 'cards'], opt: ['lead', 'side', 'summary'], cap: { cards: '2개' } },
+    { type: 'lineup', label: '라인업', use: '제품·에이전트 라인업 — 좌 다이아 그래픽+뱃지, 우 리스트(state dim=후보·예정 흐림). 포트폴리오·구성 요소 소개', needs: ['items'], opt: ['title', 'badge', 'name', 'summary'], cap: { items: '3~4개' } },
     { type: 'branch', label: '분기', use: '하나가 여럿으로 갈라지는 구조 — 좌 리드 문장+커넥터+우 항목들. 조직·영역·대상 분류', needs: ['title', 'branches'], opt: ['lead', 'summary'], cap: { branches: '2~4개' } },
     { type: 'closing', label: '마무리', use: '마지막 장 — 인사+연락처', needs: ['title'], opt: ['sub', 'contacts'], cap: { contacts: '~3개' } },
   ];
@@ -928,7 +1023,7 @@
       { type: 'toc', title: 'CONTENTS', items: [{ label: '첫 번째 주제' }, { label: '두 번째 주제' }, { label: '세 번째 주제' }] },
       { type: 'divider', ch: 1, title: 'WHY NOW', lead: '왜 지금 이 이야기를 하는가 — **핵심 한 문장**' },
       { type: 'cards', title: '핵심 방향', cards: [{ head: '항목', text: '설명을 입력하세요.', tone: 'on' }, { head: '항목', text: '설명을 입력하세요.' }, { head: '항목', text: '설명을 입력하세요.' }] },
-      { type: 'closing', title: 'Thank you', contacts: [{ k: 'EMAIL', v: '' }, { k: 'TEAM', v: '' }] },
+      { type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: '' }, { k: 'NAME', v: '' }] },
     ],
   };
 
@@ -963,12 +1058,19 @@
     quote: { type: 'quote', text: '인용문 또는 **핵심 선언**을 입력하세요', by: '— 이름 · 소속' },
     position: { type: 'position', title: '포지셔닝', panels: [{ tag: 'BEFORE', head: '이전 단계', text: '설명' }, { tag: 'OURS', head: '우리 위치', text: '설명', tone: 'on' }, { tag: 'AFTER', head: '다음 단계', text: '설명' }] },
     checklist: { type: 'checklist', title: '체크리스트', items: ['확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요', '확인 항목을 입력하세요'] },
+    highlight: { type: 'highlight', title: '두 가지를\n**Live Demo**로 보여드립니다',
+      items: [{ head: 'AX Web Generator', text: '기획 · 요구사항 입력 → 웹 생성 → 수정 → Export' }, { head: 'Motion Workflow', text: '실작동 영상 재생' }],
+      note: '완성된 서비스가 아니라, **작동을 확인하는 프로토타입**입니다.', footnote: '3분 이내 · 입력 데이터 고정' },
+    board: { type: 'board', title: 'Running Today.\n**Building Next.**',
+      lead: { label: 'AGENT 제작 · 테스트', text: '반복되는 공정을 대상으로\n**Agent를 만들고 테스트**했습니다' },
+      cards: [{ tag: '01 · PRODUCT / WEB', head: 'AX Web Generator', text: '생성 Flow 작동 확인' }, { tag: '02 · MOTION', head: 'Motion Workflow', text: '반복 편집 공정을 표준 Workflow로 전환' }],
+      side: { title: '병행한 현업 — 최근 6개월', items: ['핵심 상품 UX · 화면 제작 및 오픈', '전사 행사 · 사업 MBM', '영상 콘텐츠 제작'], foot: ['MIDAS WEEK', 'MIDAS ONSITE UX·UI'] } },
     lineup: { type: 'lineup', title: '디자인 에이전트 **라인업**', badge: 'DRS', name: 'DESIGN AGENT',
       items: [{ head: 'WEB GENERATOR', tag: '현재 프로토타입', text: '기획 입력 → 웹 생성 → 수정 · 출력' }, { head: 'MOTION WORKFLOW', tag: '일부 실사용', text: '반복 편집 · 자막 · 버전 · 포맷 제작' }, { head: 'VISUAL GENERATOR', tag: '후보', text: '행사 · 캠페인 · 상품 커뮤니케이션 자산', state: 'dim' }, { head: 'PRESENTATION AGENT', tag: '후보', text: '발표자료 초안 · 정리 · 행사 기준 검수', state: 'dim' }] },
     branch: { type: 'branch', title: '디자인 업무는\n**전사 전 영역**에 걸쳐 있습니다',
       lead: { label: '새로 필요한 것', text: '세 영역이 함께 참조할\n**기준과 자산**' },
       branches: [{ label: 'ExD팀', head: '전사 행사 · 기업 브랜드', text: '전사 브랜드 기준과 제작 방식을 축적' }, { label: '각 사업 추진실', head: '상품 MBM · 행사', text: '사업 특성에 맞춰 커뮤니케이션 자산을 제작' }, { label: '상품개발조직', head: '상품 UI · 사용자 경험', text: '상품 특성에 맞는 컴포넌트와 UI 체계를 운영' }] },
-    closing: { type: 'closing', title: 'Thank you', contacts: [{ k: 'EMAIL', v: '' }, { k: 'TEAM', v: '' }] },
+    closing: { type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: '' }, { k: 'NAME', v: '' }] },
   };
 
   function naverTemplateDeck() {
@@ -1009,6 +1111,8 @@
     'quote:{ch?,text,by?,summary?} | ' +
     'position:{ch?,title,panels:[{tag?,head,text?,tone?:"on"}](3개),summary?} | ' +
     'checklist:{ch?,title,items:[str],cols?:1~2,summary?} | ' +
+    'highlight:{ch?,title(**굵게** 조합),items:[{head,text?}](2~3개),note?(**강조**),noteLabel?,footnote?} | ' +
+    'board:{ch?,title(**굵게** 조합),lead?:{label,text(**강조**)},cards:[{tag,head,text?}](틴트 카드 2개),side?:{title,items:[str],foot?:[str]},summary?} | ' +
     'lineup:{ch?,title?,badge?,name?(뱃지 옆 시스템명),items:[{head(영문 대문자),tag?,text,state?:"dim"(후보·예정)}],summary?} | ' +
     'branch:{ch?,title,lead?:{label,text},branches:[{label,head,text?}],summary?} | ' +
     'closing:{title,sub?,contacts?:[{k,v}]}' +
@@ -1032,7 +1136,7 @@
       slides.push({ type: 'divider', ch: Math.min(si + 1, 5), title: sec.toUpperCase().slice(0, 16), lead: sec });
       slides.push(pick(sec));
     });
-    slides.push({ type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: brief.audience || '' }] });
+    slides.push({ type: 'closing', title: 'Thank you', contacts: [{ k: 'TEAM', v: brief.audience || '' }, { k: 'NAME', v: '' }] });
     return { style: 'naver', slides: slides };
   }
 
