@@ -184,6 +184,9 @@
             if (!payload || payload === '[DONE]') return;
             try {
               var ev = JSON.parse(payload);
+              // 업스트림이 스트림 중간에 에러 이벤트를 보내면 조용히 삼키지 말고 정체를 알린다
+              // (삼키면 빈 텍스트 → BAD_JSON으로 둔갑해 원인 추적이 안 됨)
+              if (ev.type === 'error') { reject(new Error('STREAM_' + ((ev.error && ev.error.type) || 'ERROR'))); return; }
               if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) { full += ev.delta.text; if (onText) { try { onText(full); } catch (e2) {} } }
             } catch (e3) {}
           });

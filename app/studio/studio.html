@@ -1209,9 +1209,15 @@
     });
   }
 
+  // 단일 장 렌더용 복사본 — naver 팩은 챕터 컬러가 "앞 간지"에서 상속되므로
+  // 한 장만 떼어 그리면 기본색(그린)으로 떨어진다. 상속된 ch를 명시 주입해 본판과 색을 맞춘다.
+  function soloSlide(arr, i){ const s=JSON.parse(JSON.stringify(arr[i]));
+    if((data.style||'')==='naver' && !s.ch && s.type!=='cover'){
+      for(let k=i-1;k>=0;k--){ const p=arr[k]; if(p && p.type==='divider' && p.ch){ s.ch=p.ch; break; } } }
+    return s; }
   // 한 장만 가볍게 다시 그림 — 텍스트 blur·툴바 조작 후 좌측 썸네일 즉시 반영(사용자 지시)
   function refreshThumbAt(i){ const t=document.querySelectorAll('#thumbRail .thumb')[i]; if(!t||typeof renderDeckFor!=='function'||!(data.slides&&data.slides[i])) return;
-    const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(data.slides[i]))]); }
+    const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]); }
   function rebuildThumbRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     if(!curMode().slides || typeof renderPptDeck!=='function'){ rail.style.display='none'; return; }
@@ -1222,7 +1228,7 @@
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdup" title="'+tL('복제')+'">⧉</button><button class="tdel" title="'+tL('삭제')+'">✕</button>');
       t.style.width=W+'px';   // 높이는 aspect-ratio 16/9가 결정(비율 정확)
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
-      f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]);
+      f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]);
       f.style.transform='scale('+sc+')';
       t.append(f);
       t.onclick=(e)=>{ if(e.target.closest('.tdel')||e.target.closest('.tdup')) return; setCurThumb(i); scrollToSlide(i); };
@@ -1279,7 +1285,7 @@
     done.forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
-      f.srcdoc=renderDeckFor([JSON.parse(JSON.stringify(s))]); f.style.transform='scale('+sc+')';
+      f.srcdoc=renderDeckFor([soloSlide(done,i)]); f.style.transform='scale('+sc+')';
       t.append(f); rail.append(t);
     });
     // 라이브 중엔 "지금 그리는 장" 1칸을 스켈레톤으로 — 레일이 비어 보이지 않게
@@ -1318,15 +1324,33 @@
     const doc=frame.contentDocument;
     if(!doc || !doc.body){ if(done) done(); return; }
     const root=rootEl||doc.body;   // 스택 재생 시 "방금 추가된 장"만 리빌 — 앞 장들은 그대로 둔다
-    const els=[...root.querySelectorAll('*')].filter(e=>
-      e.children.length===0 && e.textContent && e.textContent.trim().length>1 && e.offsetParent!==null).slice(0,16);
+    // 모든 텍스트 리프를 숨긴다(개수 제한 없음 — 일부만 숨기면 "이미 써진 글자"가 어색하게 남는다).
+    // offsetParent 대신 rect 검사 — SVG 안 글자(차트 라벨·수치)도 포함.
+    // "텍스트+<b>류 인라인"이 섞인 문장(마크업 강조)은 부모를 통째로 한 단위로 —
+    // 리프만 잡으면 <b>만 숨고 나머지 일반 텍스트가 미리 보인다.
+    const INLINE=/^(B|I|EM|STRONG|SPAN|SMALL|U|SUP|SUB)$/;
+    let els=[...root.querySelectorAll('*')].filter(e=>{
+      if(!e.textContent || !e.textContent.trim()) return false;
+      const r=e.getBoundingClientRect(); if(!(r.width>0 && r.height>0)) return false;
+      if(e.children.length===0) return true;
+      const hasDirectText=[...e.childNodes].some(n=>n.nodeType===3 && n.textContent.trim());
+      return hasDirectText && [...e.children].every(c=>INLINE.test(c.tagName));
+    });
+    els=els.filter(e=>!els.some(p=>p!==e && p.contains(e)));   // 부모가 잡혔으면 자식은 제외(이중 처리 방지)
     if(!els.length){ if(done) done(); return; }
+    // 화면 위→아래(같은 줄이면 왼→오른쪽) 순서로 등장 — DOM 순서는 grid/절대배치에서 뒤섞인다
+    els.sort((a,b)=>{ const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+      return (Math.abs(ra.top-rb.top)>8 ? ra.top-rb.top : ra.left-rb.left); });
+    // 요소가 많아도 장 전체 리빌 시간은 일정하게 — 한 개당 간격을 개수로 나눠 가속
+    const stepMs = fast ? Math.max(28, Math.min(110, 1400/els.length))
+                        : Math.max(50, Math.min(270, 3800/els.length));
     els.forEach(e=>{ e.__vis=e.style.visibility; e.__full=e.textContent; e.style.visibility='hidden'; });
     const fr=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
     const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || 1280, sc=fr.width/iw;
     let i=0, typedN=0;
     _revealCleanup=()=>{ clearTimeout(_revealTimer);
-      els.forEach(e=>{ if(e.__full!=null) e.textContent=e.__full; e.style.visibility=e.__vis||''; });
+      // 마크업 섞인 요소는 textContent 복원 금지(굵기 <b>가 날아간다) — 표시만 되살린다
+      els.forEach(e=>{ if(e.__full!=null && e.children.length===0) e.textContent=e.__full; e.style.visibility=e.__vis||''; });
       _revealCleanup=null; };
     function typeText(e, cb){
       const full=e.__full; e.textContent=''; e.style.visibility=e.__vis||'';
@@ -1341,12 +1365,12 @@
                  fr.top-pr.top + (r.top+r.height*0.5)*sc, i%3===0);
       i++;
       const fs=parseFloat((doc.defaultView.getComputedStyle(e).fontSize))||14;
-      if(fs>=24 && typedN<2 && e.__full.trim().length>2){
+      if(fs>=24 && typedN<2 && e.children.length===0 && e.__full.trim().length>2){
         typedN++;
-        _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, fast?100:260); }), fast?100:300);
+        _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, stepMs); }), fast?100:300);
       } else {
         e.style.visibility=e.__vis||'';
-        _revealTimer=setTimeout(step, fast?110:270);
+        _revealTimer=setTimeout(step, stepMs);
       }
     })();
   }
@@ -1446,7 +1470,18 @@
       }
     };
     try{
-      const deck=await LLM.composeDeck(brief, onText);
+      // 일시 오류(스트림 중단·과부하·JSON 깨짐)는 1회 자동 재시도 — 바로 템플릿 폴백하지 않는다
+      let deck=null;
+      for(let att=0; att<2 && !deck; att++){
+        try{
+          if(att>0){
+            console.warn('[live compose 재시도]');
+            _slideQ=[]; _slidePlaying=false; _liveStreamDone=false; _liveDrainCb=null; _livePlayed=[]; _liveShownN=0; n=0;
+            try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
+          }
+          deck=await LLM.composeDeck(brief, onText);
+        }catch(e){ if(att>0) throw e; console.warn('[live compose 1차 실패 → 재시도]', e); }
+      }
       closeGate();
       // 남은 큐를 다 재생할 때까지 대기 — "한 장 한 장 천천히"가 끝나야 완료 처리
       await new Promise(res=>{ _liveStreamDone=true; _liveDrainCb=res; playNextSlide(); });
