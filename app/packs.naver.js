@@ -565,26 +565,12 @@
     },
     /* 클로징 — 좌 글로브 그래픽(눈금 링+점선 원+굵은 아크+지구본+축)+다크 밴드 / 우 대형 인사. 원본 24 */
     closing: function (s, P) {
-      var col = '#00DE5A';
-      var globe = '<svg class="nv-iso cp" viewBox="0 0 440 520" xmlns="http://www.w3.org/2000/svg">' +
-        '<circle cx="220" cy="260" r="185" fill="none" stroke="' + col + '" stroke-width="1" opacity=".28"/>' +
-        (function () { var t = ''; for (var i = 0; i < 40; i++) { var a = i * Math.PI / 20; t += '<line x1="' + (220 + 172 * Math.cos(a)).toFixed(1) + '" y1="' + (260 + 172 * Math.sin(a)).toFixed(1) + '" x2="' + (220 + 185 * Math.cos(a)).toFixed(1) + '" y2="' + (260 + 185 * Math.sin(a)).toFixed(1) + '" stroke="' + col + '" stroke-width="1" opacity=".35"/>'; } return t; })() +
-        '<circle cx="220" cy="260" r="130" fill="none" stroke="' + col + '" stroke-width="1" stroke-dasharray="3 7" opacity=".45"/>' +
-        '<circle cx="220" cy="260" r="95" fill="none" stroke="' + col + '" stroke-width="14" stroke-dasharray="520 78" stroke-linecap="round" transform="rotate(-118 220 260)" opacity=".85"/>' +
-        '<circle cx="220" cy="260" r="66" fill="none" stroke="' + col + '" stroke-width="1.6"/>' +
-        '<ellipse cx="220" cy="260" rx="30" ry="66" fill="none" stroke="' + col + '" stroke-width="1.2" opacity=".7"/>' +
-        '<ellipse cx="220" cy="260" rx="66" ry="21" fill="none" stroke="' + col + '" stroke-width="1.2" opacity=".6"/>' +
-        '<line x1="220" y1="96" x2="220" y2="486" stroke="' + col + '" stroke-width="1.4"/>' +
-        '<polygon points="220,82 212,100 228,100" fill="' + col + '"/>' +
-        '<circle cx="220" cy="492" r="5" fill="' + col + '"/>' +
-        '<line x1="44" y1="260" x2="74" y2="260" stroke="' + col + '" stroke-width="1.2" opacity=".6"/><line x1="366" y1="260" x2="396" y2="260" stroke="' + col + '" stroke-width="1.2" opacity=".6"/>' +
-        '<circle cx="220" cy="260" r="11" fill="' + col + '"/></svg>';
       var metas = (s.contacts || []).map(function (m, i) {
         return '<div class="cv-meta"><span class="nv-label" style="color:rgba(255,255,255,.55)"' + de(P + '.contacts.' + i + '.k') + '>' + esc(m.k || '') + '</span><span class="cv-mv" style="color:#fff"' + de(P + '.contacts.' + i + '.v') + '>' + esc(m.v || '') + '</span></div>';
       }).join('');
       return '<section class="slide cl" data-kind="' + kind(s, 'Closing') + '">' +
-        '<div class="cv-l"><div class="cv-gfx">' + globe + '</div>' +
-        '<div class="cv-band dark">' + mark(true) + metas + '</div></div>' +
+        '<div class="cv-l"><div class="cv-gfx"></div>' +
+        '<div class="cv-band dark">' + mark(true) + '<div class="cv-metas">' + metas + '</div></div></div>' +
         '<div class="cv-r"><div class="cv-top"></div>' +
         '<div class="cv-mid"><h1 class="cv-title"' + de(P + '.title') + '>' + mb(s.title || 'Thank you') + '</h1><span class="cv-bar"></span>' +
         (s.sub ? '<p class="cv-sub"' + de(P + '.sub') + '>' + ml(s.sub) + '</p>' : '') + '</div><div class="cv-foot"></div></div></section>';
@@ -868,6 +854,11 @@
       '.md-cap{font-size:16px;font-weight:300;color:var(--muted);margin:0}' +
       /* 클로징 우측 */
       '.slide.cl .cv-title{font-size:55px}' +
+      /* 클로징 좌하단 — 밴드를 키우고(고정 213px 해제) 마크는 위·연락처 묶음은 아래로, 세트 간 20px 호흡 */
+      '.slide.cl .cv-band{height:auto;min-height:272px;justify-content:flex-start;padding:34px 40px 42px}' +
+      '.slide.cl .cv-band .nv-mark{margin-bottom:auto}' +
+      '.cv-metas{display:flex;flex-direction:column;gap:20px;margin-top:26px}' +
+      '.slide.cl .cv-meta{gap:7px}' +
       /* 단독 대형 수치 */
       '.bs-body{flex:1;display:grid;grid-template-columns:1fr auto;gap:70px;align-items:center;padding:0 0 70px}' +
       '.nv-big.xl{font-size:147px;font-weight:700;letter-spacing:-.035em;line-height:.95;color:var(--cht);margin:0;text-align:right}' +

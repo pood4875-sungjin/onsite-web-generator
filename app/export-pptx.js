@@ -31,7 +31,8 @@
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
     /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
-    '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr';
+    '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
+    /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 
@@ -66,11 +67,30 @@
   }
   function addShapeBox(win, pptx, s, el, origin, slideBg) {
     var cs = win.getComputedStyle(el); var r = rel(el, origin); if (r.w < 3 && r.h < 3) return;   // 한 축만 얇은 것(라인)은 허용
-    var fill = parseColor(cs.backgroundColor), bw = parseFloat(cs.borderTopWidth) || 0, bcol = parseColor(cs.borderTopColor), rad = parseFloat(cs.borderTopLeftRadius) || 0;
-    if (fill.a <= 0.01 && !(bw > 0 && bcol.a > 0)) return;
-    var opts = { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: fill.a > 0.01 ? { color: hex(blend(fill, slideBg)) } : { type: 'none' }, line: (bw > 0 && bcol.a > 0) ? { color: hex(blend(bcol, slideBg)), width: Math.max(0.5, bw * PT) } : { type: 'none' } };
-    if (rad > 0) opts.rectRadius = Math.min(0.2, rad * IN);
-    s.addShape(rad > 0 ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, opts);
+    var fill = parseColor(cs.backgroundColor), rad = parseFloat(cs.borderTopLeftRadius) || 0;
+    var sides = ['Top', 'Right', 'Bottom', 'Left'].map(function (k) {
+      return { w: parseFloat(cs['border' + k + 'Width']) || 0, c: parseColor(cs['border' + k + 'Color']), k: k };
+    }).map(function (b) { if (b.c.a <= 0.01) b.w = 0; return b; });
+    var on = sides.filter(function (b) { return b.w > 0; });
+    if (fill.a <= 0.01 && !on.length) return;
+    var uniform = on.length === 4 && on.every(function (b) { return b.w === on[0].w && hex(b.c) === hex(on[0].c); });
+    if (uniform || !on.length) {
+      var opts = { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: fill.a > 0.01 ? { color: hex(blend(fill, slideBg)) } : { type: 'none' }, line: uniform ? { color: hex(blend(on[0].c, slideBg)), width: Math.max(0.5, on[0].w * PT) } : { type: 'none' } };
+      if (rad > 0) opts.rectRadius = Math.min(0.2, rad * IN);
+      s.addShape(rad > 0 ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, opts);
+      return;
+    }
+    /* 사이드별 보더 — 위계선(카드 border-top, 행 규칙선)은 그 변에만 얇은 선을 그린다.
+       예전엔 borderTop을 4면 테두리로 둘러버려 원본과 다르게 나갔다. */
+    if (fill.a > 0.01) s.addShape(pptx.ShapeType.rect, { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: { color: hex(blend(fill, slideBg)) }, line: { type: 'none' } });
+    on.forEach(function (b) {
+      var o = { fill: { color: hex(blend(b.c, slideBg)) }, line: { type: 'none' } };
+      if (b.k === 'Top') { o.x = r.x; o.y = r.y; o.w = r.w; o.h = b.w; }
+      else if (b.k === 'Bottom') { o.x = r.x; o.y = r.y + r.h - b.w; o.w = r.w; o.h = b.w; }
+      else if (b.k === 'Left') { o.x = r.x; o.y = r.y; o.w = b.w; o.h = r.h; }
+      else { o.x = r.x + r.w - b.w; o.y = r.y; o.w = b.w; o.h = r.h; }
+      s.addShape(pptx.ShapeType.rect, { x: o.x * IN, y: o.y * IN, w: Math.max(o.w, 1) * IN, h: Math.max(o.h, 1) * IN, fill: o.fill, line: o.line });
+    });
   }
 
   /* 배경 래스터화 — 그라디언트·글로우(background-image)는 색만으론 못 살림.
@@ -123,8 +143,9 @@
         var src = el.currentSrc || el.src || ''; if (src.indexOf('data:') !== 0) return;
         try { s.addImage({ data: src, x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN }); } catch (e) {}
       });
-      // 차트(SVG) → PNG로 래스터화해 이미지 개체로. 2배 해상도로 그려 선명도 유지.
-      var svgs = [].slice.call(slide.querySelectorAll('svg.cht'));
+      // SVG 전부 → PNG로 래스터화해 이미지 개체로(차트·나침반·궤도·로드맵 라인·부챗살 등 팩 그래픽 포함).
+      // 특정 클래스만 골라내면 새 팩 그래픽이 조용히 누락된다 — 화면에 보이는 svg는 전부 내보낸다.
+      var svgs = [].slice.call(slide.querySelectorAll('svg'));
       for (var sv = 0; sv < svgs.length; sv++) {
         var el2 = svgs[sv], r2 = rel(el2, origin); if (r2.w < 3 || r2.h < 3) continue;
         try {
@@ -150,14 +171,28 @@
           if (png) s.addImage({ data: png, x: r2.x * IN, y: r2.y * IN, w: r2.w * IN, h: r2.h * IN });
         } catch (e) {}
       }
+      // 도넛(conic-gradient) — SVG도 도형도 아니라서 추출에 안 걸린다 → 캔버스로 링을 직접 그려 이미지로
+      [].slice.call(slide.querySelectorAll('.nv-donut')).forEach(function (el) {
+        var r5 = rel(el, origin); if (r5.w < 6) return;
+        var pct = Math.max(0, Math.min(100, parseFloat(el.style.getPropertyValue('--gp')) || 0));
+        var col5 = (el.style.getPropertyValue('--gcol') || '').trim() || '#00DE5A';
+        var hole = el.querySelector('.stt-hole');
+        var holeR = hole ? hole.getBoundingClientRect().width / 2 : r5.w * 0.35;
+        var outerR = r5.w / 2, midR = (outerR + holeR) / 2, thick = outerR - holeR;
+        var c5 = doc.createElement('canvas'); c5.width = r5.w * 2; c5.height = r5.h * 2;
+        var g = c5.getContext('2d'); g.scale(2, 2); g.lineWidth = thick;
+        g.strokeStyle = '#E4E5E7'; g.beginPath(); g.arc(outerR, outerR, midR, 0, Math.PI * 2); g.stroke();
+        g.strokeStyle = col5; g.beginPath(); g.arc(outerR, outerR, midR, -Math.PI / 2, -Math.PI / 2 + pct / 100 * Math.PI * 2); g.stroke();
+        try { s.addImage({ data: c5.toDataURL('image/png'), x: r5.x * IN, y: r5.y * IN, w: r5.w * IN, h: r5.h * IN }); } catch (e) {}
+      });
       [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
       // 체크 아이콘 — 원(도형)은 위에서 나갔고, ::after 체크는 텍스트 '✓'로 얹는다(가상요소는 직렬화 불가)
       [].slice.call(slide.querySelectorAll('.p-tick')).forEach(function (el) {
         var r3 = rel(el, origin); if (r3.w < 3) return;
         s.addText('✓', { x: r3.x * IN, y: r3.y * IN, w: r3.w * IN, h: r3.h * IN, align: 'center', valign: 'middle', color: 'FFFFFF', bold: true, fontSize: Math.max(8, r3.h * 0.5 * PT), margin: 0 });
       });
-      // 표·목차 행 밑줄 — border-bottom은 도형 추출에 안 걸려서 얇은 선으로 직접
-      [].slice.call(slide.querySelectorAll('.t-row, .tc-row')).forEach(function (el) {
+      // 표 행 밑줄(pitch .t-row — SHAPE_SEL 밖) — 얇은 선으로 직접. 나머지 행 규칙선은 addShapeBox의 사이드별 보더가 처리
+      [].slice.call(slide.querySelectorAll('.t-row')).forEach(function (el) {
         var cs3 = win.getComputedStyle(el); var bw3 = parseFloat(cs3.borderBottomWidth) || 0; var bc3 = parseColor(cs3.borderBottomColor);
         if (bw3 <= 0 || bc3.a <= 0.01) return; var r4 = rel(el, origin);
         s.addShape(pptx.ShapeType.rect, { x: r4.x * IN, y: (r4.y + r4.h - bw3) * IN, w: r4.w * IN, h: Math.max(bw3, 1) * IN, fill: { color: hex(blend(bc3, slideBg)) }, line: { type: 'none' } });
