@@ -232,7 +232,8 @@
         '챕터마다 divider(ch=1부터 순서대로, title=영문 대문자 짧게, no="01"…) — lead 한 줄로 끝내지 말고 text(2~3문장)나 items(넘버 리스트 2~3개)로 채울 것. ' +
         '챕터 컬러 규칙(엄수): 컬러는 divider의 ch가 정하고 하위 본문 장 전체가 같은 컬러를 자동 상속 — 본문 장에 ch 금지(교차 금지). ' +
         '수치는 stats로 시각화(값은 plan의 실제 수치, 지어내기 금지). 마지막 closing. ' +
-        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';
+        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
+        '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처(footnote), 추정은 표기.';
       var ntxt = await messages({ system: nsys, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
       var nd = parseDeck(ntxt, 'naver'); nd.style = 'naver'; return nd;
     }
@@ -246,7 +247,8 @@
         '규칙: 1장 statement(pos bottom). 2장 toc(items=섹션 제목들). ' +
         '각 섹션 시작마다 divider(no "01"…, title=toc 항목과 동일, v는 1→2→3 순환). ' +
         '수치는 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). 마지막 closing. ' +
-        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함).';
+        '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
+        '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처(footnote), 추정은 표기.';
       var htxt = await messages({ system: hsys, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
       var hd = parseDeck(htxt, 'honors'); hd.style = 'honors'; return hd;
     }

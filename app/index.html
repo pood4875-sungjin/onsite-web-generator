@@ -480,6 +480,8 @@
       const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
       let t=''; const N=Math.min(doc.numPages,30);
       for(let i=1;i<=N;i++){ const pg=await doc.getPage(i); const tc=await pg.getTextContent(); t+=tc.items.map(x=>x.str).join(' ')+'\n'; }
+      // 이미지형(스캔·도판) PDF는 글자가 안 뽑힌다 — 조용히 빈 브리프로 가면 "3장 덱" 같은 이상 결과가 됨
+      if(t.replace(/\s/g,'').length<80) throw new Error(_L('이 PDF는 이미지형이라 내용을 읽을 수 없어요. 원본 문서(txt·md·docx)로 첨부해주세요.'));
       return t;
     }
     if(ext==='docx'){
