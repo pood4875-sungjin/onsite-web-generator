@@ -992,7 +992,7 @@
       '.ms-phead{font-size:19px;font-weight:700;letter-spacing:-.02em}' +
       '.ms-ptext{font-size:13px;font-weight:400;color:var(--body);line-height:1.5}.ms-ptext b{color:var(--cht);font-weight:700}' +
       '.ms-cap{font-size:13px;font-weight:700;color:var(--cht);letter-spacing:.06em;flex:none}' +
-      '.ms-chart{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:4px 0 12px}' +
+      '.ms-chart{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:4px 0 12px;overflow:hidden}' +
       '.ms-glines{position:absolute;inset:0;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}' +
       '.ms-glines i{border-left:1px solid var(--rule)}' +
       '.ms-bar{position:relative;z-index:1;border-radius:0px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;animation:vfu .5s both}' +
