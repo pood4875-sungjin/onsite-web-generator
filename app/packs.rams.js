@@ -33,7 +33,7 @@
       g += '<line x1="' + (160 + a[0]) + '" y1="' + (230 - a[1]) + '" x2="' + (160 + b[0]) + '" y2="' + (230 - b[1]) + '" stroke="#43434A" stroke-width="0.8" opacity=".5"/>';
       g += '<line x1="' + (160 + c2[0]) + '" y1="' + (230 - c2[1]) + '" x2="' + (160 + d[0]) + '" y2="' + (230 - d[1]) + '" stroke="#43434A" stroke-width="0.8" opacity=".5"/>';
     }
-    return '<svg class="rs-cube" viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg">' + g +
+    return '<svg class="rs-cube" viewBox="-56 -18 432 376" xmlns="http://www.w3.org/2000/svg">' + g +
       cubeEdges(160, 230, 40, 40, 0, 160, '#8A8A90', 1.1, '.8') +
       '<circle cx="160" cy="70" r="3" fill="#8A8A90"/><circle cx="299" cy="150" r="3" fill="#8A8A90"/><circle cx="21" cy="150" r="3" fill="#8A8A90"/>' +
       cubeEdges(160, 205, 90, 90, 30, 60, ACC, 2, '1') + '</svg>';
@@ -45,7 +45,7 @@
       g += '<line x1="' + (200 + a[0]) + '" y1="' + (250 - a[1]) + '" x2="' + (200 + b[0]) + '" y2="' + (250 - b[1]) + '" stroke="#43434A" stroke-width="0.8" opacity=".45"/>';
       g += '<line x1="' + (200 + c2[0]) + '" y1="' + (250 - c2[1]) + '" x2="' + (200 + d[0]) + '" y2="' + (250 - d[1]) + '" stroke="#43434A" stroke-width="0.8" opacity=".45"/>';
     }
-    return '<svg class="rs-cube" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg">' + g +
+    return '<svg class="rs-cube" viewBox="-51 -38 502 351" xmlns="http://www.w3.org/2000/svg">' + g +
       cubeEdges(140, 240, 20, 120, 0, 90, '#6A6A70', 1, '.7') +
       cubeEdges(255, 245, 110, 30, 0, 130, '#8A8A90', 1.1, '.85') +
       cubeEdges(255, 228, 150, 70, 40, 50, ACC, 2, '1') + '</svg>';
@@ -155,8 +155,8 @@
           return '<span class="rs-chip' + (i === 0 ? ' acc' : '') + '"' + de(P + '.panel.items.' + i) + '>' + esc(t) + '</span>';
         }).join('');
         panel = '<div class="rs-card pn dk"><span class="rs-tag mut"' + de(P + '.panel.label') + '>' + esc(s.panel.label || '') + '</span>' +
-          (chips ? '<div class="rs-chips">' + chips + '</div>' : '') +
-          (s.panel.text ? '<span class="rs-pntx"' + de(P + '.panel.text') + '>' + mb(s.panel.text) + '</span>' : '') + '</div>';
+          '<div class="rs-cdbody">' + (chips ? '<div class="rs-chips">' + chips + '</div>' : '') +
+          (s.panel.text ? '<span class="rs-pntx"' + de(P + '.panel.text') + '>' + mb(s.panel.text) + '</span>' : '') + '</div></div>';
       }
       var n = ((s.cards || []).length || 3);
       return '<section class="slide rs cd" data-kind="' + kind(s, 'Cards') + '">' + runhead(s, P, ctx) + headline(s, P) +
@@ -491,7 +491,7 @@
       '.rs-card{background:var(--card);border-radius:19px;padding:21px 27px;display:flex;flex-direction:column;justify-content:flex-start;gap:14px;min-height:0}' +
       /* 이미지 없는 카드의 빈 벽 방지 — 태그는 위, 본문은 세로 중앙(위아래 여백 균등 흡수) */
       '.rs-card>.rs-cdbody{margin:auto 0}' +
-      '.rs-card.pn,.rs-card.stc,.rs-card.rm,.rs-card.dn,.rs-card.bar,.rs-card.tbl{justify-content:space-between}' +
+      '.rs-card.stc,.rs-card.rm,.rs-card.dn,.rs-card.bar{justify-content:space-between}' +
       '.rs-card.bds .rs-bdrows{margin:auto 0}' +
       '.rs-card.dk{background:var(--ink);color:#F5F5F3}.rs-card.dim{background:var(--soft);color:var(--muted)}' +
       '.rs-cdbody{display:flex;flex-direction:column;gap:10px}' +
@@ -552,11 +552,11 @@
       '.rs-rtext{flex:1;font-size:20px;font-weight:300;color:var(--muted)}' +
       '.rs-body{flex:1;font-size:23px;font-weight:300;line-height:1.75;color:var(--body);max-width:900px}' +
       /* 카드 패널(칩) */
-      '.rs-card.pn{justify-content:space-between}' +
+      '.rs-card.pn .rs-cdbody{gap:19px}' +
       '.rs-chips{display:flex;flex-wrap:wrap;gap:9px}' +
       '.rs-chip{padding:11px 21px;border-radius:999px;background:var(--dcard);color:#F5F5F3;font-size:21px;font-weight:400}' +
       '.rs-chip.acc{background:var(--acc);color:#fff;font-weight:500}' +
-      '.rs-pntx{font-size:19px;font-weight:300;line-height:1.55;color:#8A8A8E}.rs-pntx b{font-weight:600;color:#F5F5F3}' +
+      '.rs-pntx{font-size:21px;font-weight:300;line-height:1.55;color:#8A8A8E}.rs-pntx b{font-weight:600;color:#F5F5F3}' +
       /* 좌우 반반 */
       '.slide.sp{flex-direction:row;padding:0;gap:0}' +
       '.rs-half{flex:1;padding:53px 59px 53px 75px;display:flex;flex-direction:column;gap:32px;background:var(--paper)}' +
@@ -622,8 +622,8 @@
       '.rs-bsnum{font-size:120px;font-weight:300;letter-spacing:-.05em;color:var(--acc);text-align:right;font-variant-numeric:tabular-nums}' +
       '.rs-kpval{font-size:47px;font-weight:300;letter-spacing:-.04em}.rs-kpval.acc{color:var(--acc)}' +
       /* 표 */
-      '.rs-card.tbl{flex:1;min-height:0;padding:9px 35px;justify-content:stretch}' +
-      '.rs-tbrow{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--tbc),1fr);gap:19px;align-items:center;padding:8px 0;border-top:1px solid var(--rule);font-size:18px;font-weight:400}' +
+      '.rs-card.tbl{flex:0 1 auto;min-height:0;margin:auto 0;padding:9px 35px;justify-content:flex-start}' +
+      '.rs-tbrow{flex:0 1 auto;min-height:0;display:grid;grid-template-columns:repeat(var(--tbc),1fr);gap:19px;align-items:center;padding:23px 0;border-top:1px solid var(--rule);font-size:18px;font-weight:400}' +
       '.rs-tbrow.hd{flex:0 0 auto;padding:12px 0 10px}' +
       '.rs-tbrow:first-child{border-top:0}' +
       '.rs-tbrow.hd{font-size:14px;font-weight:600;color:var(--label);letter-spacing:.04em}' +
@@ -644,11 +644,11 @@
       '.rs-qtx{font-size:37px;font-weight:300;line-height:1.5;letter-spacing:-.02em}.rs-qtx b{font-weight:600}' +
       '.rs-qby{font-size:17px;color:var(--label)}' +
       /* 체크리스트 */
-      '.rs-cklist{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px}' +
-      '.rs-cklist.two{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr}' +
-      '.rs-card.ck{flex:1;flex-direction:row;align-items:center;gap:17px;padding:15px 27px;justify-content:flex-start}' +
+      '.rs-cklist{flex:0 1 auto;min-height:0;margin:auto 0;display:flex;flex-direction:column;gap:9px}' +
+      '.rs-cklist.two{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:auto}' +
+      '.rs-card.ck{flex:0 0 auto;flex-direction:row;align-items:center;gap:17px;padding:23px 27px;justify-content:flex-start}' +
       '.rs-ckic{width:27px;height:27px;flex:none;border-radius:999px;background:var(--acc);display:grid;place-items:center}' +
-      '.rs-cktx{font-size:20px;font-weight:400}' +
+      '.rs-cktx{font-size:23px;font-weight:400}' +
       /* 라인업 */
       '.rs-lntop{display:flex;justify-content:space-between;align-items:center;gap:10px}' +
       '.rs-lnkick{font-size:15px;font-weight:500;color:var(--label)}' +
