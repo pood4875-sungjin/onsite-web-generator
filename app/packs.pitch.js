@@ -10,6 +10,9 @@
 (function () {
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
+  /* 이중 번호 방어 — 번호는 렌더러가 자동 부여하므로, AI가 head/label에 또 쓴 번호를 걷어낸다
+     (순수 숫자면 제거, "01. 제목"형 선행 번호는 프리픽스만 제거) */
+  function noNum(t) { t = String(t == null ? '' : t); var m = t.trim(); return /^\d{1,2}\s*[.)·:]?$/.test(m) ? '' : t.replace(/^\s*\d{1,2}\s*[.)·:]\s+/, ''); }
   function de(path) { return ' data-edit="' + path + '"'; }
   function kind(s, fb) { return esc(String(s.title || fb || s.type || 'Slide').replace(/\n/g, ' ')); }
   function bgClass(s) { var b = s.bg || 'white'; return ' bg-' + (({ white: 1, grey: 1, green: 1, dark: 1 })[b] ? b : 'white'); }
@@ -105,7 +108,7 @@
         }
         if (variant === 'card' || variant === 'person') inner += media(it.image || {}, IP + '.image', variant === 'person' ? 'sq' : 'card');
         if (variant === 'icon') inner += '<span class="p-tick lg"></span>';
-        inner += '<p class="g-head"' + de(IP + '.head') + '>' + esc(it.head || '') + '</p>';
+        inner += '<p class="g-head"' + de(IP + '.head') + '>' + esc(noNum(it.head) || '') + '</p>';
         if (it.role) inner += '<p class="g-role"' + de(IP + '.role') + '>' + esc(it.role) + '</p>';
         if (it.text) inner += '<p class="g-text"' + de(IP + '.text') + '>' + ml(it.text) + '</p>';
         return '<div class="g-cell ' + variant + '">' + inner + '</div>';
@@ -139,7 +142,7 @@
         var RP = P + '.rows.' + i;
         return '<div class="l-cardrow' + (i === acc ? ' on' : '') + '">' +
           '<span class="l-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
-          '<p class="l-body"><span' + de(RP + '.label') + '>' + esc(r.label || '') + '</span>' +
+          '<p class="l-body"><span' + de(RP + '.label') + '>' + esc(noNum(r.label) || '') + '</span>' +
           (r.sub ? ' <b' + de(RP + '.sub') + '>' + esc(r.sub) + '</b>' : '') + '</p></div>';
       }).join('');
       var img = s.image ? '<div class="l-media">' + media(s.image, P + '.image', 'full') + '</div>' : '';
@@ -195,6 +198,33 @@
       return '<section class="slide ps' + bgClass(s) + '" data-kind="' + kind(s, 'Process') + '">' +
         headBlock(s, P) + '<div class="ps-flow">' + cells + '</div></section>';
     },
+    /* 마일스톤(간트) — 단계 카드 2~3 + 월축 계단 바(짙은→옅은 톤). 전 팩 공통 계약 */
+    milestone: function (s, P, ctx) {
+      var N = (s.axis || []).length || 5;
+      var phases = (s.phases || []).map(function (p, i) {
+        var IP = P + '.phases.' + i;
+        return '<div class="ms-phase' + (p.on ? ' on' : '') + '"><span class="ms-ptag"' + de(IP + '.tag') + '>' + esc(p.tag || '') + '</span>' +
+          '<span class="ms-phead"' + de(IP + '.head') + '>' + esc(p.head || '') + '</span>' +
+          (p.text ? '<span class="ms-ptext"' + de(IP + '.text') + '>' + ml(p.text).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>') + '</span>' : '') + '</div>';
+      }).join('');
+      var barsArr = s.bars || [];
+      var bars = barsArr.map(function (b, i) {
+        var IP = P + '.bars.' + i;
+        var st = Math.max(1, Math.min(N, +b.start || i + 1)), sp = Math.max(1, Math.min(N - st + 1, +b.span || 2));
+        var n = barsArr.length, pct = n > 1 ? Math.round(88 - 68 * i / (n - 1)) : 88;
+        return '<div class="ms-bar" style="margin-left:' + ((st - 1) / N * 100).toFixed(2) + '%;width:' + (sp / N * 100).toFixed(2) + '%;background:color-mix(in srgb, var(--pg) ' + pct + '%, #fff);animation-delay:' + (0.1 + i * 0.12).toFixed(2) + 's">' +
+          '<b' + de(IP + '.label') + '>' + esc(b.label || '') + '</b>' +
+          (b.sub ? '<span' + de(IP + '.sub') + '>' + esc(b.sub) + '</span>' : '') + '</div>';
+      }).join('');
+      var gl = '<div class="ms-glines">' + new Array(N + 1).join('<i></i>') + '</div>';
+      var ax = '<div class="ms-axis">' + (s.axis || []).map(function (a, i) { return '<span' + de(P + '.axis.' + i) + '>' + esc(a) + '</span>'; }).join('') + '</div>';
+      return '<section class="slide ms' + bgClass(s) + '" data-kind="' + kind(s, 'Milestone') + '">' +
+        headBlock(s, P) +
+        (phases ? '<div class="ms-phases">' + phases + '</div>' : '') +
+        (s.caption ? '<span class="ms-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</span>' : '') +
+        '<div class="ms-chart">' + gl + bars + '</div>' + ax +
+        (s.note ? '<p class="ms-note"' + de(P + '.note') + '>' + ml(s.note).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>') + '</p>' : '') + '</section>';
+    },
     timeline: function (s, P) {
       var items = s.items || [];
       var nodes = items.map(function (it, i) {
@@ -202,7 +232,7 @@
         return '<div class="tl-node ' + (up ? 'up' : 'dn') + '" style="left:' + (items.length > 1 ? (i / (items.length - 1)) * 100 : 50) + '%">' +
           '<span class="tl-dot"></span><span class="tl-lead"></span>' +
           '<div class="tl-cal"><p class="tl-when"' + de(IP + '.when') + '>' + esc(it.when || '') + '</p>' +
-          '<p class="p-c-head"' + de(IP + '.head') + '>' + esc(it.head || '') + '</p>' +
+          '<p class="p-c-head"' + de(IP + '.head') + '>' + esc(noNum(it.head) || '') + '</p>' +
           (it.text ? '<p class="p-c-text"' + de(IP + '.text') + '>' + ml(it.text) + '</p>' : '') + '</div></div>';
       }).join('');
       return '<section class="slide tl' + bgClass(s) + '" data-kind="' + kind(s, 'Timeline') + '">' +
@@ -525,6 +555,22 @@
       '.vbtn:hover{background:rgba(255,255,255,.24)}.vbtn:disabled{opacity:.3;cursor:default}' +
       '.vcount{min-width:52px;text-align:center;font-variant-numeric:tabular-nums;opacity:.9}' +
       /* 발표 모션 — 장 자체는 즉시 표시, 내용 요소만 순차 등장(요소는 opacity만 — 블록 _pos 오프셋 보존) */
+            '.ms-phases{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:13px;flex:none}' +
+      '.ms-phase{background:var(--grey);border-radius:12px;padding:15px 19px;display:flex;flex-direction:column;gap:6px}' +
+      '.ms-ptag{align-self:flex-start;font-size:12px;font-weight:700;padding:4px 10px;background:color-mix(in srgb, var(--pg) 14%, #fff);color:var(--pg);border-radius:0px}' +
+      '.ms-phase.on .ms-ptag{background:var(--ink);color:#fff}' +
+      '.ms-phead{font-size:19px;font-weight:700;letter-spacing:-.02em}' +
+      '.ms-ptext{font-size:13px;font-weight:400;color:#77787A;line-height:1.5}.ms-ptext b{color:var(--pg);font-weight:700}' +
+      '.ms-cap{font-size:13px;font-weight:700;color:var(--pg);letter-spacing:.06em;flex:none}' +
+      '.ms-chart{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:4px 0 12px}' +
+      '.ms-glines{position:absolute;inset:0;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}' +
+      '.ms-glines i{border-left:1px solid var(--line)}' +
+      '.ms-bar{position:relative;z-index:1;border-radius:4px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;animation:vfu .5s both}' +
+      '.ms-bar b{font-size:15.5px;font-weight:700;letter-spacing:-.01em}' +
+      '.ms-bar span{font-size:13px;opacity:.62}' +
+      '.ms-axis{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;border-top:1px solid var(--line);padding-top:8px}' +
+      '.ms-axis span{font-size:13px;color:#77787A;text-align:center}' +
+      '.ms-note{flex:none;font-size:17px;font-weight:400;border-left:3px solid var(--pg);padding:9px 0 9px 16px}.ms-note b{font-weight:700;color:var(--pg)}' +
       '@keyframes vfu{from{opacity:0}to{opacity:1}}' +
       'body.pfs .vbar{display:none!important}';
     var vjs =
@@ -595,6 +641,7 @@
     { type: 'process', label: '프로세스', use: '입력→처리→출력처럼 단계 흐름을 가로 화살표로 보여줄 때 — 동작 방식, 절차, 파이프라인. accent=강조 스텝 인덱스, 스텝 tag=배지(무료/유료 등)', needs: ['steps'], opt: ['title', 'accent'], cap: { steps: '3~5개, head ~14자 · text ~40자' } },
     { type: 'table', label: '표', use: '거래처·계약처럼 열이 정해진 데이터를 나열할 때', needs: ['columns', 'rows'], opt: ['title', 'text'], cap: { rows: '~5행', columns: '3열' } },
     { type: 'pricing', label: '요금 티어', use: '플랜·가격을 2~3개 비교할 때', needs: ['tiers'], opt: ['title'], cap: { tiers: '2~3개', features: '4개' } },
+    { type: 'milestone', label: '마일스톤', use: '기간 계획을 간트 바로 — 상단 단계 카드+월축 계단 바(현재→미래로 옅어짐). 일정·완료 기준 중심일 때 로드맵 대신', needs: ['title', 'bars', 'axis'], opt: ['phases', 'caption', 'note'], cap: { bars: '3~5개', axis: '4~6개' } },
     { type: 'timeline', label: '타임라인', use: '로드맵, 도입 절차, 연혁처럼 시간 순서가 핵심일 때', needs: ['items'], opt: ['title'], cap: { items: '3~6개' } },
     { type: 'chart', label: '차트', use: '추이·비교·구성비를 그래프로 보여줄 때 (막대·라인·에어리어·도넛)', needs: ['chart'], opt: ['title', 'note'], cap: { series: '1~2계열', categories: '3~7개' } },
     { type: 'matrix', label: '2×2 매트릭스', use: '경쟁 지형, 포지셔닝처럼 두 축으로 자리를 잡아 보여줄 때', needs: ['points'], opt: ['title', 'axisX', 'axisY'], cap: { points: '3~6개' } },
@@ -626,6 +673,12 @@
     process: { type: 'process', bg: 'white', title: '동작 방식', accent: 1, steps: [{ who: '입력', head: '단계 1', text: '설명' }, { who: '처리', head: '단계 2', text: '설명', tag: '핵심' }, { who: '출력', head: '단계 3', text: '설명' }] },
     table: { type: 'table', bg: 'white', title: '표', columns: ['항목', '값', '비고'], rows: [{ cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }] },
     pricing: { type: 'pricing', bg: 'white', title: '요금제', tiers: [{ name: 'TIER 1', price: '$00', per: 'per month', features: ['기능', '기능'] }, { name: 'TIER 2', price: '$00', per: 'per month', features: ['기능', '기능'] }] },
+    milestone: { type: 'milestone', title: '현재부터 2027 상반기까지 세 단계로 진행합니다',
+      phases: [{ tag: '현재', head: '생성기 고도화', text: '**제작 완료** · 고도화 진행', on: true }, { tag: '2026 하반기', head: 'Design Pack 탑재', text: '시범 적용 · 전사 확산' }, { tag: '2027 상반기', head: '전사 AI Production', text: '공유 · 활용 구조 완성' }],
+      caption: '2026 하반기 월별 완료 기준',
+      bars: [{ label: 'MVP + Design Pack v1 구축', sub: '8월 — 기준 · 자산 최초 정의', start: 1, span: 2 }, { label: '실무 파일럿 시작', sub: '9월 — 실무 적용 개시', start: 2, span: 2 }, { label: '실제 프로젝트 적용 · 품질 검증', sub: '10월 — 품질 기준 검증', start: 3, span: 2 }, { label: 'v2 + 2차 착수', sub: '11월 — 확장 단계', start: 4, span: 2 }],
+      axis: ['8월', '9월', '10월', '11월', '12월'],
+      note: '다음 단계 진행을 위해 **자산화 서버 구축** 검토가 필요합니다.' },
     timeline: { type: 'timeline', bg: 'grey', title: '로드맵', items: [{ when: '2026 Q1', head: '단계', text: '설명' }, { when: '2026 Q2', head: '단계', text: '설명' }, { when: '2026 Q3', head: '단계', text: '설명' }] },
     chart: { type: 'chart', bg: 'white', title: '추이', chart: { type: 'bar', categories: ['1', '2', '3', '4'], series: [{ name: '값', values: [2, 4, 6, 9] }] } },
     matrix: { type: 'matrix', bg: 'grey', title: '포지셔닝', axisX: '가로축', axisY: '세로축', points: [{ x: 70, y: 75, label: '우리' }, { x: 35, y: 40, label: '경쟁사' }] },
@@ -660,6 +713,7 @@
     'process:{eyebrow?,title,steps:[{who?,head,text?,tag?}],accent?:강조인덱스,bg?} | ' +
     'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
     'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
+    'milestone:{title,phases?:[{tag:"현재|2026 하반기"류,head,text?(**강조**),on?:true(현재)}](2~3 상단 단계 카드),caption?("월별 완료 기준"류),bars:[{label,sub?("8월 — 기준"류),start:시작 칸 1~축개수,span:칸 수}](3~5개 시간순 계단),axis:[월·분기 라벨 4~6개],note?(**강조**)} | ' +
     'timeline:{title,items:[{when,head,text}],bg?} | ' +
     'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn|gauge|ring",categories:[str],series:[{name,values:[숫자]}],max?:숫자(gauge·ring 상한),emphasis?:인덱스,format?:{prefix,suffix}},bg?} | ' +
     'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +

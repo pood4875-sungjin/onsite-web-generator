@@ -44,7 +44,8 @@ const SYSTEM =
   '첫 3장 안에 "왜 지금 이 이야기인가"가 나오고, 마지막에는 다음 행동을 명시한다. ' +
   '연속 3장 같은 타입·골격 반복 금지 — 풀블리드·타입온리·데이터 장을 섞어 리듬을 만들고, 밀도 높은 장 뒤엔 숨 쉬는 장을 둔다. ' +
   '수치·인용에는 출처를 붙이고(footnote 등), 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
-  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다.';
+  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
+  '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
 
 /* Pitch(Creatable) 팩 — 레이아웃 카탈로그("언제 쓰나")를 기준으로 AI가 장표 타입을 고른다.
    app/packs.pitch.js의 PITCH_CATALOG·FIELD_DOC과 동일 계약. 팩이 늘면 여기도 팩별 스키마가 붙는다. */
@@ -59,6 +60,7 @@ const PITCH_USE_DOC =
   'table(표): 거래처·계약 등 열이 정해진 데이터 | ' +
   'pricing(요금 티어): 플랜 2~3개 비교 | ' +
   'timeline(타임라인): 로드맵·절차·연혁 | ' +
+  'milestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바, 일정·완료 기준 중심일 때 | ' +
   'chart(차트): 추이=area/line, 항목 비교=bar, 구성비=donut/pie, 규모 비교=bubble, 포함 관계=concentric, 전환 퍼널=pyramid, 겹침=venn, 목표 대비 달성·점수=gauge(max 필수), 진행률·완료율 %=ring | ' +
   'matrix(2×2): 포지셔닝·경쟁 지형 | ' +
   'gallery(목업): 제품 화면 2~3개 | ' +
@@ -74,6 +76,7 @@ const PITCH_FIELD_DOC =
   'table:{eyebrow?,title,text?,columns:[str],rows:[{cells:[str]}],bg?} | ' +
   'pricing:{title,tiers:[{name,price,per,features:[str],featured?:true}],bg?} | ' +
   'timeline:{title,items:[{when,head,text}],bg?} | ' +
+  'milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | ' +
   'chart:{eyebrow?,title,note?,chart:{type:"bar|area|line|donut|pie|bubble|concentric|arc|pyramid|venn|gauge|ring",categories:[str],series:[{name:str,values:[숫자]}],max?:숫자(gauge·ring 상한),emphasis?:정수,format?:{prefix,suffix}},bg?} | ' +
   'matrix:{title,axisX,axisY,points:[{x:0~100,y:0~100,label}],bg?} | ' +
   'gallery:{title,items:[{head?,text?,image?:{label:str}}],bg?} | ' +
@@ -94,7 +97,8 @@ const PITCH_SYSTEM =
   '첫 3장 안에 "왜 지금 이 이야기인가"가 나오고, 마지막에는 다음 행동을 명시한다. ' +
   '연속 3장 같은 타입·골격 반복 금지 — 풀블리드·타입온리·데이터 장을 섞어 리듬을 만들고, 밀도 높은 장 뒤엔 숨 쉬는 장을 둔다. ' +
   '수치·인용에는 출처를 붙이고(footnote 등), 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
-  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다.';
+  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
+  '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
 /* honors 팩(MIDAS Honors) — pitch 레이아웃 + toc(목차)·divider(간지) */
 const HONORS_USE_DOC = PITCH_USE_DOC + ' | ' +
   'toc(목차): 표지 바로 다음 장, 발표 전체 목차 | ' +
@@ -119,10 +123,11 @@ const HONORS_SYSTEM =
   '첫 3장 안에 "왜 지금 이 이야기인가"가 나오고, 마지막에는 다음 행동을 명시한다. ' +
   '연속 3장 같은 타입·골격 반복 금지 — 풀블리드·타입온리·데이터 장을 섞어 리듬을 만들고, 밀도 높은 장 뒤엔 숨 쉬는 장을 둔다. ' +
   '수치·인용에는 출처를 붙이고(footnote 등), 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
-  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다.';
+  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
+  '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
 /* rams 팩(Rams Report) — naver와 동일 타입 어휘, 웜그레이·라운드 카드·버밀리언 단일 액센트. packs.rams.js와 동기 */
-const RAMS_USE_DOC = "cover(표지): 첫 장 — 로고·날짜·대형 3톤 타이틀·아이소 큐브 그래픽\nstatement(대형 선언): 표지 다음 선언·전환 — 대형 타이틀+본문+비교 카드 2개(흰/다크)\ntoc(목차): 표지·선언 다음 장. 카드 행 리스트(divider 제목과 1:1 일치)\ndivider(간지): 챕터 시작 전환 장 — 다크/오렌지 풀블리드 자동 교대(bg로 지정 가능), 큐브 진행 인디케이터\nsection(본문 넘버 행): 핵심 항목 3~4개 — 대형 번호+굵은 소제목+흐린 설명 규칙선 행\ncards(N열 카드): 동급 항목 2~4개 — 흰 라운드 카드. panel 주면 우측 다크 패널(라벨+칩 목록+마무리)\nsplit(좌우 대비): 반반 대비(라이트 vs 다크) — 활용/설계, 남/우리 구도\nstats(수치): 도넛(다크 카드)+게이지 카드 행 — 진행률·지표 비교\nmedia(이미지 증빙): 스펙 시트(좌 라벨+행, 중간 다크 강조)+우 이미지 슬롯 — 데모·프로토타입 증빙\nroadmap(로드맵): 월별 진행 바+Now/Next/Then 카드 — 단계별 계획\nbigstat(단독 대형 수치): 숫자 하나로 임팩트 — 좌 설명/우 초대형 액센트 숫자\nkpi(수치 그리드): 지표 2~4개 카드 요약(tone:on=다크 강조)\ntable(표): 열 고정 데이터 나열\ntimeline(타임라인): 기간 진행 바 열(on=현재 액센트) — 연혁·월별 마일스톤\nprocess(프로세스): 단계 카드 3~4개, 담당 구간=액센트 풀 카드(accent 인덱스)\ncompare(비교): Before(옅음)/After(다크) 패널+옵션 이미지 — 전환 효과\nquote(인용): 발언·선언 하나를 크게\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 액센트 카드\nchecklist(체크리스트): 확인·완료 항목(액센트 체크 원). 4개 이하 1열·많으면 2열 자동\nlineup(라인업): 제품·에이전트 구성 2×2 카드 — 첫 카드 다크+액센트 뱃지, state:dim=후보\nbranch(분기/조직): 좌 다크 리드 카드+우 카드 행(이름·역할·설명) — 조직·영역 분류\nhighlight(하이라이트/데모): 오렌지 풀블리드+재생 행 — 라이브 데모·핵심 안내 임팩트 장\nboard(현황 보드): 진행 중 작업 요약 — 카드 2+다크 사이드(리스트+뱃지 칩)\nclosing(마무리): 마지막 장 — 다크, 다음 행동(Next)+연락 메타+큐브 군집";
-const RAMS_FIELD_DOC = "cover:{label?(로고 옆 이름),date?,eyebrow?(\"PROLOGUE\"류),title(3톤: **굵게**·__회색 흐림__, \\n 2~3줄),band?(하단 좌 비유 문구, **강조**),docLabel?(하단 우)} | statement:{title(**굵게** 조합),sub?,cols?:[{tag,text(\"A → **B**\" 비교)}](2개 — 둘째=다크 카드)} | toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄, **강조**),pages?:\"04—08\"}]} | divider:{no?:\"01\",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**),bg?:\"dark|accent\"(생략 시 자동 교대)} | section:{title,points:[{head,text}](3~4개),tag?(러닝헤드 보조),note?(마무리, **강조**=액센트)} | cards:{title,cards:[{head,text?,tag?,tone?:\"dark\"}](2~4개),panel?:{label,items:[짧은 칩 문자열],text?(**강조**)},note?} | split:{left:{kicker,title(**굵게**),items:[str],foot?},right:{kicker,title(**굵게**),items:[str],foot?}} — 좌 라이트/우 다크 대비 | stats:{title,donut?:{pct:0~100,value?,caption?,label?},bars?:[{label,pct:0~100,value?,on?:true(다크 강조 행),text?}],note?} | media:{title,specs:[{label,text,on?:true(다크 강조 행)}],image?:{label},caption?} | roadmap:{title,months?:[{when,text}](4개 진행 바),steps:[{when:\"Now|Next|Then\",head,items:[str],state?:\"now|later\"}](3개),note?} | bigstat:{title,value,caption?(**강조**),note?} | kpi:{title,items:[{value,label,desc?,tone?:\"on\"}](2~4개),note?} | table:{title,columns:[str],rows:[{cells:[str]}],note?} | timeline:{title,items:[{when,head,text?,on?:true}](3~5개),note?} | process:{title,steps:[{tag:\"1 · 기획\"류,head(\\n 2줄 가능·**굵게**),text?}](3~4개),accent?:강조 인덱스(기본 중앙),note?} | compare:{title,items:[{head:\"Before|After\",items:[str]}](2개),image?:{label},caption?,note?} | quote:{text(**강조**),by?} | position:{title,panels:[{tag,head(**굵게**),text?}](3개),accent?,note?} | checklist:{title,items:[str],cols?:1~2,note?} | lineup:{title,items:[{tag(분야),head(이름),text,badge?(상태 라벨),state?:\"dim\"(후보)}](4개 — 첫 항목=현재·다크),note?} | branch:{title,lead?:{label,text(**굵게**),foot?},branches:[{label(조직명),head(역할),text}](3개),note?} | highlight:{title(**굵게**),items:[{no?,head,text?}](2~3개 재생 행),note?(**강조**),footnote?(우하단 2줄)} | board:{title(**굵게**),cards:[{tag:\"01 · 분야\",head,text?}](2개),side?:{title,items:[str],pills?:[str]},note?} | closing:{label?,title(마지막 줄 **굵게**),sub?(**강조**=액센트),nextLabel?,contacts?:[{k?,v}](우하단 2줄)}\n규칙: 액센트는 오렌지 하나 — 강조 남발 금지(장당 **강조** 1~2회). 간지 bg는 자동 교대(다크→오렌지). title은 의미 단위 \\n 줄바꿈. 이모지 금지.";
+const RAMS_USE_DOC = "cover(표지): 첫 장 — 로고·날짜·대형 3톤 타이틀·아이소 큐브 그래픽\nstatement(대형 선언): 표지 다음 선언·전환 — 대형 타이틀+본문+비교 카드 2개(흰/다크)\ntoc(목차): 표지·선언 다음 장. 카드 행 리스트(divider 제목과 1:1 일치)\ndivider(간지): 챕터 시작 전환 장 — 다크/오렌지 풀블리드 자동 교대(bg로 지정 가능), 큐브 진행 인디케이터\nsection(본문 넘버 행): 핵심 항목 3~4개 — 대형 번호+굵은 소제목+흐린 설명 규칙선 행\ncards(N열 카드): 동급 항목 2~4개 — 흰 라운드 카드. panel 주면 우측 다크 패널(라벨+칩 목록+마무리)\nsplit(좌우 대비): 반반 대비(라이트 vs 다크) — 활용/설계, 남/우리 구도\nstats(수치): 도넛(다크 카드)+게이지 카드 행 — 진행률·지표 비교\nmedia(이미지 증빙): 스펙 시트(좌 라벨+행, 중간 다크 강조)+우 이미지 슬롯 — 데모·프로토타입 증빙\nroadmap(로드맵): 월별 진행 바+Now/Next/Then 카드 — 단계별 계획\nbigstat(단독 대형 수치): 숫자 하나로 임팩트 — 좌 설명/우 초대형 액센트 숫자\nkpi(수치 그리드): 지표 2~4개 카드 요약(tone:on=다크 강조)\ntable(표): 열 고정 데이터 나열\ntimeline(타임라인): 기간 진행 바 열(on=현재 액센트) — 연혁·월별 마일스톤\nmilestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바, 일정·완료 기준 중심일 때\nprocess(프로세스): 단계 카드 3~4개, 담당 구간=액센트 풀 카드(accent 인덱스)\ncompare(비교): Before(옅음)/After(다크) 패널+옵션 이미지 — 전환 효과\nquote(인용): 발언·선언 하나를 크게\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 액센트 카드\nchecklist(체크리스트): 확인·완료 항목(액센트 체크 원). 4개 이하 1열·많으면 2열 자동\nlineup(라인업): 제품·에이전트 구성 2×2 카드 — 첫 카드 다크+액센트 뱃지, state:dim=후보\nbranch(분기/조직): 좌 다크 리드 카드+우 카드 행(이름·역할·설명) — 조직·영역 분류\nhighlight(하이라이트/데모): 오렌지 풀블리드+재생 행 — 라이브 데모·핵심 안내 임팩트 장\nboard(현황 보드): 진행 중 작업 요약 — 카드 2+다크 사이드(리스트+뱃지 칩)\nclosing(마무리): 마지막 장 — 다크, 다음 행동(Next)+연락 메타+큐브 군집";
+const RAMS_FIELD_DOC = "cover:{label?(로고 옆 이름),date?,eyebrow?(\"PROLOGUE\"류),title(3톤: **굵게**·__회색 흐림__, \\n 2~3줄),band?(하단 좌 비유 문구, **강조**),docLabel?(하단 우)} | statement:{title(**굵게** 조합),sub?,cols?:[{tag,text(\"A → **B**\" 비교)}](2개 — 둘째=다크 카드)} | toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄, **강조**),pages?:\"04—08\"}]} | divider:{no?:\"01\",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**),bg?:\"dark|accent\"(생략 시 자동 교대)} | section:{title,points:[{head,text}](3~4개),tag?(러닝헤드 보조),note?(마무리, **강조**=액센트)} | cards:{title,cards:[{head,text?,tag?,tone?:\"dark\"}](2~4개),panel?:{label,items:[짧은 칩 문자열],text?(**강조**)},note?} | split:{left:{kicker,title(**굵게**),items:[str],foot?},right:{kicker,title(**굵게**),items:[str],foot?}} — 좌 라이트/우 다크 대비 | stats:{title,donut?:{pct:0~100,value?,caption?,label?},bars?:[{label,pct:0~100,value?,on?:true(다크 강조 행),text?}],note?} | media:{title,specs:[{label,text,on?:true(다크 강조 행)}],image?:{label},caption?} | roadmap:{title,months?:[{when,text}](4개 진행 바),steps:[{when:\"Now|Next|Then\",head,items:[str],state?:\"now|later\"}](3개),note?} | bigstat:{title,value,caption?(**강조**),note?} | kpi:{title,items:[{value,label,desc?,tone?:\"on\"}](2~4개),note?} | table:{title,columns:[str],rows:[{cells:[str]}],note?} | timeline:{title,items:[{when,head,text?,on?:true}](3~5개),note?} | milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | process:{title,steps:[{tag:\"1 · 기획\"류,head(\\n 2줄 가능·**굵게**),text?}](3~4개),accent?:강조 인덱스(기본 중앙),note?} | compare:{title,items:[{head:\"Before|After\",items:[str]}](2개),image?:{label},caption?,note?} | quote:{text(**강조**),by?} | position:{title,panels:[{tag,head(**굵게**),text?}](3개),accent?,note?} | checklist:{title,items:[str],cols?:1~2,note?} | lineup:{title,items:[{tag(분야),head(이름),text,badge?(상태 라벨),state?:\"dim\"(후보)}](4개 — 첫 항목=현재·다크),note?} | branch:{title,lead?:{label,text(**굵게**),foot?},branches:[{label(조직명),head(역할),text}](3개),note?} | highlight:{title(**굵게**),items:[{no?,head,text?}](2~3개 재생 행),note?(**강조**),footnote?(우하단 2줄)} | board:{title(**굵게**),cards:[{tag:\"01 · 분야\",head,text?}](2개),side?:{title,items:[str],pills?:[str]},note?} | closing:{label?,title(마지막 줄 **굵게**),sub?(**강조**=액센트),nextLabel?,contacts?:[{k?,v}](우하단 2줄)}\n규칙: 넘버는 자동 부여 — head에 번호 금지. 액센트는 오렌지 하나 — 강조 남발 금지(장당 **강조** 1~2회). 간지 bg는 자동 교대(다크→오렌지). title은 의미 단위 \\n 줄바꿈. 이모지 금지.";
 const RAMS_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
@@ -139,7 +144,8 @@ const RAMS_SYSTEM =
   '첫 3장 안에 "왜 지금 이 이야기인가"가 나오고, 마지막에는 다음 행동을 명시한다. ' +
   '연속 3장 같은 타입·골격 반복 금지 — 풀블리드·타입온리·데이터 장을 섞어 리듬을 만들고, 밀도 높은 장 뒤엔 숨 쉬는 장을 둔다. ' +
   '수치·인용에는 출처를 붙이고, 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
-  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다.';
+  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
+  '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
 
 /* naver 팩(Design AX Line) — 독자 타입 체계: 직각·라인·챕터 컬러 보고서. packs.naver.js CATALOG와 동기 */
 const NAVER_USE_DOC =
@@ -157,6 +163,7 @@ const NAVER_USE_DOC =
   'kpi(수치 그리드): 지표 2~4개 요약 | ' +
   'table(표): 열 고정 데이터 나열 | ' +
   'timeline(타임라인): 연혁·마일스톤(on=현재) | ' +
+  'milestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바, 일정·완료 기준 중심일 때 | ' +
   'process(프로세스): 입력→처리→출력 단계 화살표 | ' +
   'compare(비교): 전/후·A vs B 두 패널 | ' +
   'quote(인용): 발언·선언 하나를 크게 | ' +
@@ -182,6 +189,7 @@ const NAVER_FIELD_DOC =
   'kpi:{title,cols?:2~4,items:[{value,label,desc?,tone?:"on"}],summary?} | ' +
   'table:{title,columns:[str],rows:[{cells:[str]}],summary?} | ' +
   'timeline:{title,items:[{when,head,text?,on?:true}],summary?} | ' +
+  'milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | ' +
   'process:{title,steps:[{head,text?,tag?}],accent?:강조인덱스,summary?} | ' +
   'compare:{title,items:[{head,points:[str],tone?:"on|dim"}](2개),summary?} | ' +
   'quote:{text,by?,summary?} | ' +
@@ -211,7 +219,8 @@ const NAVER_SYSTEM =
   '첫 3장 안에 "왜 지금 이 이야기인가"가 나오고, 마지막에는 다음 행동을 명시한다. ' +
   '연속 3장 같은 타입·골격 반복 금지 — 풀블리드·타입온리·데이터 장을 섞어 리듬을 만들고, 밀도 높은 장 뒤엔 숨 쉬는 장을 둔다. ' +
   '수치·인용에는 출처를 붙이고(footnote 등), 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
-  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다.';
+  '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
+  '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
 const PITCH_EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +

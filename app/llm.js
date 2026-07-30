@@ -135,11 +135,11 @@
 
   // 응답 텍스트에서 JSON 덱 추출+검증. 실패 시 throw → 호출측 결정론 폴백.
   // pitch 팩 허용 타입 — packs.pitch.js CATALOG와 동일 목록
-  var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, process: 1, table: 1, pricing: 1, timeline: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
+  var PITCH_ALLOWED = { statement: 1, quote: 1, split: 1, grid: 1, stats: 1, bigstat: 1, list: 1, process: 1, table: 1, pricing: 1, timeline: 1, milestone: 1, chart: 1, matrix: 1, gallery: 1, closing: 1 };
   // honors 팩 = pitch 타입 + toc(목차)·divider(간지)
   var HONORS_ALLOWED = Object.assign({ toc: 1, divider: 1 }, PITCH_ALLOWED);
   // naver 팩(Design AX Line) — 독자 타입 체계 (packs.naver.js CATALOG와 동일 목록)
-  var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, bigstat: 1, kpi: 1, table: 1, timeline: 1, process: 1, compare: 1, quote: 1, position: 1, checklist: 1, lineup: 1, branch: 1, highlight: 1, board: 1, closing: 1 };
+  var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, bigstat: 1, kpi: 1, table: 1, timeline: 1, milestone: 1, process: 1, compare: 1, quote: 1, position: 1, checklist: 1, lineup: 1, branch: 1, highlight: 1, board: 1, closing: 1 };
   // rams 팩 — naver와 동일 타입 어휘(스타일만 다름)
   function allowedFor(pack) { return pack === 'rams' ? NAVER_ALLOWED : pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {

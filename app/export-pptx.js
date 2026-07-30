@@ -34,14 +34,16 @@
     '.rs-mlab', '.rs-mtx', '.rs-mhead', '.rs-rmhead', '.rs-rmitems span', '.rs-bscap', '.rs-bsnum', '.rs-kpval', '.rs-tbrow > span',
     '.rs-pchead', '.rs-cmrows span', '.rs-qtx', '.rs-qby', '.rs-cktx', '.rs-lnkick', '.rs-badge', '.rs-lnhead',
     '.rs-brltx', '.rs-brfoot', '.rs-brname', '.rs-brhead', '.rs-brtext', '.rs-hlno', '.rs-hlhead', '.rs-hlsub', '.rs-hlfoot span', '.rs-hlfn',
-    '.rs-bdhead', '.rs-bdrows span', '.rs-cltitle', '.rs-clsub', '.rs-clmeta span', '.rs-imgph span'].join(',');
+    '.rs-bdhead', '.rs-bdrows span', '.rs-cltitle', '.rs-clsub', '.rs-clmeta span', '.rs-imgph span',
+    /* 마일스톤(전 팩 공통) */ '.ms-ptag', '.ms-phead', '.ms-ptext', '.ms-cap', '.ms-bar b', '.ms-bar span', '.ms-axis span', '.ms-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
     /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
-    /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half';
+    /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
+    /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 

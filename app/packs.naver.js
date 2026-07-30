@@ -17,6 +17,9 @@
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
   /* 마크업 → 웨이트 대비: **굵게**(700) / __흐리게__(200 회색 — 표지 3톤 타이포용) */
   function mb(s) { return ml(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/__([^_]+)__/g, '<span class="mut">$1</span>'); }
+  /* 이중 번호 방어 — 번호는 렌더러가 자동 부여하므로, AI가 head/label에 또 쓴 번호를 걷어낸다
+     (순수 숫자면 제거, "01. 제목"형 선행 번호는 프리픽스만 제거) */
+  function noNum(t) { t = String(t == null ? '' : t); var m = t.trim(); return /^\d{1,2}\s*[.)·:]?$/.test(m) ? '' : t.replace(/^\s*\d{1,2}\s*[.)·:]\s+/, ''); }
   function de(path) { return ' data-edit="' + path + '"'; }
   function kind(s, fb) { return esc(String(s.title || fb || s.type || 'Slide').replace(/\n/g, ' ').replace(/\*\*/g, '')); }
 
@@ -118,7 +121,7 @@
   /* 넘버 리스트 행 — 01(챕터컬러) + 굵은 소제목 + 설명 나란히. 원본 05/06 */
   function numRow(p, IP, i) {
     var no = '<span class="nl-no">' + (i < 9 ? '0' : '') + (i + 1) + '</span>';
-    if (p.head) return '<div class="nl-row">' + no + '<p class="nl-head"' + de(IP + '.head') + '>' + ml(p.head) + '</p><p class="nl-text"' + de(IP + '.text') + '>' + ml(p.text || '') + '</p></div>';
+    if (noNum(p.head)) return '<div class="nl-row">' + no + '<p class="nl-head"' + de(IP + '.head') + '>' + ml(noNum(p.head)) + '</p><p class="nl-text"' + de(IP + '.text') + '>' + ml(p.text || '') + '</p></div>';
     return '<div class="nl-row">' + no + '<p class="nl-text" style="grid-column:2/-1"' + de(IP + '.text') + '>' + ml(p.text || '') + '</p></div>';
   }
   function listCap(txt, path) { return txt ? '<div class="nl-cap"><span' + de(path) + '>' + esc(txt) + '</span></div>' : ''; }
@@ -233,7 +236,7 @@
         /* 넘버 리스트(원본 09 "ONE COMPANY") — 01 컬러 넘버 + 굵은 소제목 + 흐린 설명, 규칙선 행 */
         (s.items && s.items.length ? '<div class="dv-list">' + s.items.map(function (it, i) {
           return '<div class="dv-item"><span class="dv-ino">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
-            '<span class="dv-ihead"' + de(P + '.items.' + i + '.head') + '>' + esc(it.head || '') + '</span>' +
+            '<span class="dv-ihead"' + de(P + '.items.' + i + '.head') + '>' + esc(noNum(it.head) || '') + '</span>' +
             '<span class="dv-itext"' + de(P + '.items.' + i + '.text') + '>' + mb(it.text || '') + '</span></div>';
         }).join('') + '</div>' : '') +
         (s.note ? '<p class="dv-note"' + de(P + '.note') + '>' + mb(s.note) + '</p>' : '') +
@@ -451,6 +454,33 @@
         '<div class="tb-wrap" style="--tbc:' + Math.max(cols.length, 2) + '">' + head + rows + '</div>' + summary(s, P) + '</section>';
     },
     /* 타임라인 — 가로 축선 + 45° 마커(라인차트 마커 규칙) */
+    /* 마일스톤(간트) — 단계 카드 2~3 + 월축 계단 바(짙은→옅은 톤). 전 팩 공통 계약 */
+    milestone: function (s, P, ctx) {
+      var N = (s.axis || []).length || 5;
+      var phases = (s.phases || []).map(function (p, i) {
+        var IP = P + '.phases.' + i;
+        return '<div class="ms-phase' + (p.on ? ' on' : '') + '"><span class="ms-ptag"' + de(IP + '.tag') + '>' + esc(p.tag || '') + '</span>' +
+          '<span class="ms-phead"' + de(IP + '.head') + '>' + esc(p.head || '') + '</span>' +
+          (p.text ? '<span class="ms-ptext"' + de(IP + '.text') + '>' + mb(p.text) + '</span>' : '') + '</div>';
+      }).join('');
+      var barsArr = s.bars || [];
+      var bars = barsArr.map(function (b, i) {
+        var IP = P + '.bars.' + i;
+        var st = Math.max(1, Math.min(N, +b.start || i + 1)), sp = Math.max(1, Math.min(N - st + 1, +b.span || 2));
+        var n = barsArr.length, pct = n > 1 ? Math.round(88 - 68 * i / (n - 1)) : 88;
+        return '<div class="ms-bar" style="margin-left:' + ((st - 1) / N * 100).toFixed(2) + '%;width:' + (sp / N * 100).toFixed(2) + '%;background:color-mix(in srgb, var(--ch) ' + pct + '%, #fff);animation-delay:' + (0.1 + i * 0.12).toFixed(2) + 's">' +
+          '<b' + de(IP + '.label') + '>' + esc(b.label || '') + '</b>' +
+          (b.sub ? '<span' + de(IP + '.sub') + '>' + esc(b.sub) + '</span>' : '') + '</div>';
+      }).join('');
+      var gl = '<div class="ms-glines">' + new Array(N + 1).join('<i></i>') + '</div>';
+      var ax = '<div class="ms-axis">' + (s.axis || []).map(function (a, i) { return '<span' + de(P + '.axis.' + i) + '>' + esc(a) + '</span>'; }).join('') + '</div>';
+      return '<section class="slide ms" data-kind="' + kind(s, 'Milestone') + '"' + chVars(s) + '>' +
+        navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
+        (phases ? '<div class="ms-phases">' + phases + '</div>' : '') +
+        (s.caption ? '<span class="ms-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</span>' : '') +
+        '<div class="ms-chart">' + gl + bars + '</div>' + ax +
+        (s.note ? '<p class="ms-note"' + de(P + '.note') + '>' + mb(s.note) + '</p>' : '') + '</section>';
+    },
     timeline: function (s, P, ctx) {
       var items = s.items || [];
       var cells = items.map(function (it, i) {
@@ -620,7 +650,7 @@
       'var ta=c.a?c.a[rel]:0;if(ta)ed[e2].style.textAlign=ta==="c"?"center":ta==="r"?"right":"left";' +
       'var fz=c.fs[rel];if(fz)ed[e2].style.fontSize=fz+"px";' +
       'var tw=c.w[rel];if(tw){ed[e2].style.maxWidth="none";ed[e2].style.width=tw+"px";}}' +
-      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row,.dv-item");' +
+      'var cd=s.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.nv-panel,.sp-li,.stt-bar,.tc-row,.cv-meta,.pc-step,.tl-cell,.ps-panel,.tb-row,.dv-item,.ms-bar,.ms-phase");' +
       'for(var q3=0;q3<cd.length;q3++){var el3=cd[q3];if(el3.hasAttribute("data-mvkey"))continue;var ck="c"+q3;el3.setAttribute("data-mvkey",ck);' +
       'var p3=c.p[ck];if(p3)el3.style.transform="translate("+p3[0]+"px,"+p3[1]+"px)";' +
       'var z3=c.z[ck];if(z3!=null){el3.style.zIndex=z3;if(getComputedStyle(el3).position==="static")el3.style.position="relative";}' +
@@ -661,7 +691,7 @@
       /* 헤드라인 블록 — 원본: 네비 아래 큰 여백(100→52), 바는 헤드라인 위 절대배치(140×4→93×3), 강조어=700+챕터컬러 */
       '.nv-hlblk{position:relative;margin-top:46px;flex:none}' +
       '.nv-hlbar{position:absolute;left:0;top:-21px;width:93px;height:3px;background:var(--ch)}' +
-      '.nv-hl{font-size:40px;font-weight:200;line-height:1.26;letter-spacing:-.025em;margin:0;max-width:1060px}' +
+      '.nv-hl{font-size:45px;font-weight:200;line-height:1.26;letter-spacing:-.025em;margin:0;max-width:1060px}' +
       '.nv-hl b{font-weight:700;color:var(--cht)}' +
       /* SO WHAT 정리 블록 — 라벨(챕터컬러)+문장(마무리 **굵게**는 잉크) */
       '.nv-sum{margin-top:auto;display:flex;flex-direction:column;gap:9px;flex:none}' +
@@ -955,6 +985,22 @@
       '.ck-icon{flex:none;width:26px;height:26px;background:var(--ch);position:relative}' +
       '.ck-icon::after{content:"";position:absolute;left:50%;top:47%;width:7px;height:13px;border:2.5px solid #fff;border-top:0;border-left:0;transform:translate(-50%,-55%) rotate(45deg)}' +
       /* 발표 뷰어 등장 모션 */
+            '.ms-phases{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:13px;flex:none}' +
+      '.ms-phase{background:var(--chbg);border-radius:0px;padding:15px 19px;display:flex;flex-direction:column;gap:6px}' +
+      '.ms-ptag{align-self:flex-start;font-size:12px;font-weight:700;padding:4px 10px;background:#fff;color:var(--cht);letter-spacing:.06em}' +
+      '.ms-phase.on .ms-ptag{background:var(--ink);color:#fff}' +
+      '.ms-phead{font-size:19px;font-weight:700;letter-spacing:-.02em}' +
+      '.ms-ptext{font-size:13px;font-weight:400;color:var(--body);line-height:1.5}.ms-ptext b{color:var(--cht);font-weight:700}' +
+      '.ms-cap{font-size:13px;font-weight:700;color:var(--cht);letter-spacing:.06em;flex:none}' +
+      '.ms-chart{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:space-evenly;padding:4px 0 12px}' +
+      '.ms-glines{position:absolute;inset:0;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}' +
+      '.ms-glines i{border-left:1px solid var(--rule)}' +
+      '.ms-bar{position:relative;z-index:1;border-radius:0px;padding:9px 16px;display:flex;flex-direction:column;gap:2px;animation:vfu .5s both}' +
+      '.ms-bar b{font-size:15.5px;font-weight:700;letter-spacing:-.01em}' +
+      '.ms-bar span{font-size:13px;opacity:.62}' +
+      '.ms-axis{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;border-top:1px solid var(--rule);padding-top:8px}' +
+      '.ms-axis span{font-size:13px;color:var(--body);text-align:center}' +
+      '.ms-note{flex:none;font-size:17px;font-weight:400;border-left:3px solid var(--cht);padding:9px 0 9px 16px}.ms-note b{font-weight:700;color:var(--cht)}' +
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
 
@@ -1000,7 +1046,7 @@
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
       's.forEach(function(x,k){x.classList.toggle("cur",k===n)});' +
       'var cur=s[n];if(cur){' +
-      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart,.dv-item");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
+      'var us=cur.querySelectorAll(".nv-card,.nv-row,.nl-row,.as-row,.ln-row,.br-row,.hl-row,.ck-li,.bd-side,.tc-row,.sp-li,.stt-bar,.nv-panel,.nv-donut,.stt-big,.cv-meta,.nv-iso,.pc-step,.tl-cell,.ps-panel,.tb-row,.bs-body,.qt-body,.rm-chart,.dv-item,.ms-bar,.ms-phase");var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vfu .5s both";u.style.animationDelay=Math.min(140+(q2++)*90,900)+"ms";}' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       'var cu=cur.querySelectorAll(".nv-big,.sp-num,.stt-bval");for(var w=0;w<cu.length;w++){(function(el){' +
@@ -1046,6 +1092,7 @@
     { type: 'bigstat', label: '단독 대형 수치', use: '숫자 하나로 임팩트 — 성장률·규모·달성률', needs: ['title', 'value'], opt: ['caption', 'summary'], cap: { value: '~6자' } },
     { type: 'kpi', label: '수치 그리드', use: 'KPI 2~4개를 한 화면에 — 지표 요약. tone:on=강조', needs: ['title', 'items'], opt: ['cols', 'summary'], cap: { items: '2~4개' } },
     { type: 'table', label: '표', use: '열이 정해진 데이터 나열 — 거래·비교표·현황', needs: ['title', 'columns', 'rows'], opt: ['summary'], cap: { rows: '~5행', columns: '3~4열' } },
+    { type: 'milestone', label: '마일스톤', use: '기간 계획을 간트 바로 — 상단 단계 카드+월축 계단 바(현재→미래로 옅어짐). 일정·완료 기준 중심일 때 로드맵 대신', needs: ['title', 'bars', 'axis'], opt: ['phases', 'caption', 'note'], cap: { bars: '3~5개', axis: '4~6개' } },
     { type: 'timeline', label: '타임라인', use: '시간 순서가 핵심일 때 — 연혁·마일스톤. on:true=현재 시점 강조', needs: ['title', 'items'], opt: ['summary'], cap: { items: '3~5개' } },
     { type: 'process', label: '프로세스', use: '입력→처리→출력 단계 흐름을 화살표로. accent=강조 스텝 인덱스', needs: ['title', 'steps'], opt: ['accent', 'summary'], cap: { steps: '3~4개' } },
     { type: 'compare', label: '비교', use: '전/후, A vs B 두 축 비교 — items 2개(기본: 첫째 dim, 둘째 챕터 강조)', needs: ['title', 'items'], opt: ['summary'], cap: { items: '2개, points 각 2~4개' } },
@@ -1102,6 +1149,12 @@
     bigstat: { type: 'bigstat', title: '단독 대형 수치', value: '+32%', caption: '지표에 대한 **핵심 설명**을 입력하세요' },
     kpi: { type: 'kpi', title: '수치 그리드', items: [{ value: '00', label: '지표', tone: 'on' }, { value: '00', label: '지표' }, { value: '00', label: '지표' }] },
     table: { type: 'table', title: '표', columns: ['항목', '내용', '비고'], rows: [{ cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }, { cells: ['내용', '내용', '내용'] }] },
+    milestone: { type: 'milestone', title: '현재부터 2027 상반기까지 세 단계로 진행합니다',
+      phases: [{ tag: '현재', head: '생성기 고도화', text: '**제작 완료** · 고도화 진행', on: true }, { tag: '2026 하반기', head: 'Design Pack 탑재', text: '시범 적용 · 전사 확산' }, { tag: '2027 상반기', head: '전사 AI Production', text: '공유 · 활용 구조 완성' }],
+      caption: '2026 하반기 월별 완료 기준',
+      bars: [{ label: 'MVP + Design Pack v1 구축', sub: '8월 — 기준 · 자산 최초 정의', start: 1, span: 2 }, { label: '실무 파일럿 시작', sub: '9월 — 실무 적용 개시', start: 2, span: 2 }, { label: '실제 프로젝트 적용 · 품질 검증', sub: '10월 — 품질 기준 검증', start: 3, span: 2 }, { label: 'v2 + 2차 착수', sub: '11월 — 확장 단계', start: 4, span: 2 }],
+      axis: ['8월', '9월', '10월', '11월', '12월'],
+      note: '다음 단계 진행을 위해 **자산화 서버 구축** 검토가 필요합니다.' },
     timeline: { type: 'timeline', title: '타임라인', items: [{ when: '2026 Q1', head: '단계', text: '설명' }, { when: '2026 Q2', head: '단계', text: '설명', on: true }, { when: '2026 Q3', head: '단계', text: '설명' }] },
     process: { type: 'process', title: '프로세스', accent: 1, steps: [{ head: '입력', text: '설명' }, { head: '처리', text: '설명', tag: '핵심' }, { head: '출력', text: '설명' }] },
     compare: { type: 'compare', title: '비교', items: [{ head: '이전', points: ['항목', '항목'], tone: 'dim' }, { head: '이후', points: ['항목', '항목'], tone: 'on' }] },
@@ -1155,6 +1208,7 @@
     'bigstat:{ch?,title,value,caption?,summary?} | ' +
     'kpi:{ch?,title,cols?:2~4,items:[{value,label,desc?,tone?:"on"}],summary?} | ' +
     'table:{ch?,title,columns:[str],rows:[{cells:[str]}],summary?} | ' +
+    'milestone:{title,phases?:[{tag:"현재|2026 하반기"류,head,text?(**강조**),on?:true(현재)}](2~3 상단 단계 카드),caption?("월별 완료 기준"류),bars:[{label,sub?("8월 — 기준"류),start:시작 칸 1~축개수,span:칸 수}](3~5개 시간순 계단),axis:[월·분기 라벨 4~6개],note?(**강조**)} | ' +
     'timeline:{ch?,title,items:[{when,head,text?,on?:true}],summary?} | ' +
     'process:{ch?,title,steps:[{head,text?,tag?}],accent?:강조인덱스,summary?} | ' +
     'compare:{ch?,title,items:[{head,points:[str],tone?:"on|dim"}](2개),summary?} | ' +
