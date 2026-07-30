@@ -26,13 +26,22 @@
     '.ln-head', '.ln-tag', '.ln-text', '.ln-bx', '.ln-bname', '.br-leadtx', '.br-head',
     '.hlx-title', '.hl-no', '.hl-head', '.hl-text', '.hlx-note p', '.hlx-fn', '.bd-lead', '.bd-stit', '.bd-it', '.bd-fi',
     '.ps-no', '.ps-tag', '.ps-head', '.ps-text', '.ps-cap', '.ck-tx', '.ln-note',
-    '.dv-ino', '.dv-ihead', '.dv-itext', '.dv-note', '.rm-lbl', '.cd-fn', '.sp-qm b'].join(',');
+    '.dv-ino', '.dv-ihead', '.dv-itext', '.dv-note', '.rm-lbl', '.cd-fn', '.sp-qm b',
+    /* rams 팩(Rams Report) */ '.rs-hl', '.rs-note', '.rs-tag', '.rs-runl', '.rs-runr', '.rs-cvtitle', '.rs-eyebrow', '.rs-cvdate', '.rs-cvfoot span', '.rs-logo em',
+    '.rs-sttitle', '.rs-stsub', '.rs-sttx', '.rs-tchead', '.rs-tno', '.rs-tlabel', '.rs-tdesc', '.rs-tpages', '.rs-dvtitle', '.rs-dvlead',
+    '.rs-no', '.rs-rhead', '.rs-rtext', '.rs-body', '.rs-cdhead', '.rs-cdtext', '.rs-chip', '.rs-pntx', '.rs-hhl', '.rs-srow', '.rs-hfoot',
+    '.rs-bhead', '.rs-bval', '.rs-btext', '.rs-hole b', '.rs-hole i', '.rs-hole em', '.rs-spec i', '.rs-spec span', '.rs-cap',
+    '.rs-mlab', '.rs-mtx', '.rs-mhead', '.rs-rmhead', '.rs-rmitems span', '.rs-bscap', '.rs-bsnum', '.rs-kpval', '.rs-tbrow > span',
+    '.rs-pchead', '.rs-cmrows span', '.rs-qtx', '.rs-qby', '.rs-cktx', '.rs-lnkick', '.rs-badge', '.rs-lnhead',
+    '.rs-brltx', '.rs-brfoot', '.rs-brname', '.rs-brhead', '.rs-brtext', '.rs-hlno', '.rs-hlhead', '.rs-hlsub', '.rs-hlfoot span', '.rs-hlfn',
+    '.rs-bdhead', '.rs-bdrows span', '.rs-cltitle', '.rs-clsub', '.rs-clmeta span', '.rs-imgph span'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
     /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
-    /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot';
+    /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
+    /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
 
@@ -76,6 +85,8 @@
     var uniform = on.length === 4 && on.every(function (b) { return b.w === on[0].w && hex(b.c) === hex(on[0].c); });
     if (uniform || !on.length) {
       var opts = { x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, fill: fill.a > 0.01 ? { color: hex(blend(fill, slideBg)) } : { type: 'none' }, line: uniform ? { color: hex(blend(on[0].c, slideBg)), width: Math.max(0.5, on[0].w * PT) } : { type: 'none' } };
+      // 라운드가 짧은 변의 절반 이상(원·필)이면 타원으로 — roundRect 상한(0.2in)에 눌려 각져 보이는 문제
+      if (rad >= Math.min(r.w, r.h) / 2 - 0.5) { s.addShape(pptx.ShapeType.ellipse, opts); return; }
       if (rad > 0) opts.rectRadius = Math.min(0.2, rad * IN);
       s.addShape(rad > 0 ? pptx.ShapeType.roundRect : pptx.ShapeType.rect, opts);
       return;
@@ -172,16 +183,17 @@
         } catch (e) {}
       }
       // 도넛(conic-gradient) — SVG도 도형도 아니라서 추출에 안 걸린다 → 캔버스로 링을 직접 그려 이미지로
-      [].slice.call(slide.querySelectorAll('.nv-donut')).forEach(function (el) {
+      [].slice.call(slide.querySelectorAll('.nv-donut, .rs-donut')).forEach(function (el) {
         var r5 = rel(el, origin); if (r5.w < 6) return;
         var pct = Math.max(0, Math.min(100, parseFloat(el.style.getPropertyValue('--gp')) || 0));
         var col5 = (el.style.getPropertyValue('--gcol') || '').trim() || '#00DE5A';
-        var hole = el.querySelector('.stt-hole');
+        var hole = el.querySelector('.stt-hole, .rs-hole');
         var holeR = hole ? hole.getBoundingClientRect().width / 2 : r5.w * 0.35;
         var outerR = r5.w / 2, midR = (outerR + holeR) / 2, thick = outerR - holeR;
         var c5 = doc.createElement('canvas'); c5.width = r5.w * 2; c5.height = r5.h * 2;
         var g = c5.getContext('2d'); g.scale(2, 2); g.lineWidth = thick;
-        g.strokeStyle = '#E4E5E7'; g.beginPath(); g.arc(outerR, outerR, midR, 0, Math.PI * 2); g.stroke();
+        var trk = (el.style.getPropertyValue('--gtrack') || '').trim() || '#E4E5E7';
+        g.strokeStyle = trk; g.beginPath(); g.arc(outerR, outerR, midR, 0, Math.PI * 2); g.stroke();
         g.strokeStyle = col5; g.beginPath(); g.arc(outerR, outerR, midR, -Math.PI / 2, -Math.PI / 2 + pct / 100 * Math.PI * 2); g.stroke();
         try { s.addImage({ data: c5.toDataURL('image/png'), x: r5.x * IN, y: r5.y * IN, w: r5.w * IN, h: r5.h * IN }); } catch (e) {}
       });
