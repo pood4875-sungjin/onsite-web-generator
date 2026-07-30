@@ -42,6 +42,14 @@
     '.pg-rmhead', '.pg-rmlist li', '.pg-bsval', '.pg-bscap', '.pg-stephead', '.pg-steptx', '.pg-cmp ul li', '.pg-qmark', '.pg-qtx',
     '.pg-hlrow .no', '.pg-hlrow .h', '.pg-hlrow .t', '.pg-hlfn', '.pg-hltitle', '.pg-bdtitle', '.pg-side li', '.pg-side .pl span', '.pg-leadbox .tx',
     '.pg-cltitle', '.pg-clsub', '.pg-clfoot .big', '.pg-clfoot .ct i', '.pg-key.tb .mi b', '.pg-key.tb .mi i', '.pg-imgph span',
+    /* sfmi 팩(SFMI Report) */ '.sf-runl i', '.sf-runr', '.sf-hl', '.sf-sub', '.sf-body', '.sf-lab', '.sf-ftx', '.sf-cap', '.sf-hfoot',
+    '.sf-cvlogo i', '.sf-cvlogo em', '.sf-cvpg', '.sf-cvtitle', '.sf-cvlead', '.sf-cvfoot span', '.sf-cvfoot .ct i', '.sf-cltitle',
+    '.sf-stlead', '.sf-sttitle', '.sf-sttx', '.sf-tctitle', '.sf-tochead i', '.sf-tocrow span', '.sf-dvno b', '.sf-dvno i', '.sf-dvlead', '.sf-dvtx',
+    '.sf-numc i', '.sf-numhead', '.sf-numtx', '.sf-crc .hd', '.sf-crc .tg', '.sf-crctx', '.sf-list li span', '.sf-ring .lb', '.sf-ring .tx',
+    '.sf-srow .k', '.sf-srow .t', '.sf-chev .mi b', '.sf-chev .mi i', '.sf-rmhead', '.sf-rmlist li', '.sf-bscrc .v', '.sf-bscap',
+    '.sf-kpc i', '.sf-kp .lb', '.sf-kp .ds', '.sf-tbrow > span', '.sf-trow > span', '.sf-pcc .hd', '.sf-pcc .tx', '.sf-pctx', '.sf-arr',
+    '.sf-cmpc ul li', '.sf-qtx', '.sf-lnc .hd', '.sf-lnbadge', '.sf-venn .hd', '.sf-venn .tx', '.sf-needbox .tx',
+    '.sf-hltitle', '.sf-hlrow .no', '.sf-hlrow .h', '.sf-hlrow .t', '.sf-hlfn', '.sf-botitle', '.sf-bocrc .hd', '.sf-boside li', '.sf-boside .pl span', '.sf-imgph span',
     /* 마일스톤(전 팩 공통) */ '.ms-ptag', '.ms-phead', '.ms-ptext', '.ms-cap', '.ms-bar b', '.ms-bar span', '.ms-axis span', '.ms-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
@@ -50,6 +58,7 @@
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
     /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
+    /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
