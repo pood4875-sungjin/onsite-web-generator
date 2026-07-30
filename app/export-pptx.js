@@ -71,6 +71,17 @@
     var r = rel(el, origin); if (r.w < 2 || r.h < 2) return;
     var fs = parseFloat(cs.fontSize) || 16;
     var col = blend(parseColor(cs.color), slideBg);
+    /* 투명 글자 = 그라데이션 클립 텍스트(-webkit-background-clip:text) 또는 아웃라인 스트로크.
+       PPT 텍스트는 그라데이션 채우기가 없다 → 그라데이션 중간 스톱 색(또는 스트로크 색)의
+       단색 텍스트로 근사해 "보이고 편집 가능한" 글자로 내보낸다. */
+    if (parseColor(cs.color).a <= 0.01) {
+      var bclip = cs.webkitBackgroundClip || cs.backgroundClip || '';
+      var stops = bclip === 'text' ? String(cs.backgroundImage || '').match(/rgba?\([^)]+\)/g) : null;
+      var strokeW = parseFloat(cs.webkitTextStrokeWidth) || 0;
+      if (stops && stops.length) col = blend(parseColor(stops[Math.floor(stops.length / 2)]), slideBg);
+      else if (strokeW > 0) col = blend(parseColor(cs.webkitTextStrokeColor || ''), slideBg);
+      else return;   // 진짜 투명(장식)은 스킵
+    }
     var lh = cs.lineHeight, lsm = (lh && lh !== 'normal') ? Math.max(0.6, parseFloat(lh) / fs) : null;
     var ls = (cs.letterSpacing && cs.letterSpacing !== 'normal') ? parseFloat(cs.letterSpacing) * PT : 0;
     var align = cs.textAlign === 'right' ? 'right' : cs.textAlign === 'center' ? 'center' : 'left';
