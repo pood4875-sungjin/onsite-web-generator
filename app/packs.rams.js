@@ -68,8 +68,23 @@
     return '<div class="rs-run' + (dark ? ' dk' : '') + '"><span class="rs-runl"' + de(P + '.kicker') + '>' + esc(left) + '</span>' +
       '<span class="rs-runr"><b>' + pg + '</b>/' + (ctx ? ctx.total : '') + '</span></div>';
   }
+  /* 타이틀 강약 폴백 — 문장형 title에 **가 없으면 꼬리를 자동 볼드(하우스 스타일: 라이트 도입 + 굵은 핵심).
+     멀티라인=마지막 줄 전체, 한 줄=뒤쪽 40% 어절. AI가 넣은 **는 그대로 존중 */
+  function emph(t) {
+    t = String(t == null ? '' : t);
+    if (!t || t.indexOf('**') !== -1) return t;
+    var lines = t.split('\n');
+    if (lines.length > 1) {
+      lines[lines.length - 1] = '**' + lines[lines.length - 1] + '**';
+      return lines.join('\n');
+    }
+    var ws = t.split(' ');
+    if (ws.length < 3) return t;
+    var k = Math.max(1, Math.ceil(ws.length * 0.4));
+    return ws.slice(0, ws.length - k).join(' ') + ' **' + ws.slice(ws.length - k).join(' ') + '**';
+  }
   function headline(s, P, big) {
-    return '<h2 class="rs-hl' + (big ? ' lg' : '') + '"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>';
+    return '<h2 class="rs-hl' + (big ? ' lg' : '') + '"' + de(P + '.title') + '>' + mb(emph(s.title || '')) + '</h2>';
   }
   /* 하단 마무리 문장 — **강조**=액센트 600 (원본 SO WHAT 대응) */
   function note(s, P) {
@@ -105,7 +120,7 @@
           '<span class="rs-sttx"' + de(IP + '.text') + '>' + mb(c.text || '') + '</span></div>';
       }).join('');
       return '<section class="slide rs st" data-kind="' + kind(s, 'Statement') + '">' + runhead({ kicker: s.kicker != null ? s.kicker : 'Statement' }, P, ctx) +
-        '<div class="rs-stmid"><h1 class="rs-sttitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
+        '<div class="rs-stmid"><h1 class="rs-sttitle"' + de(P + '.title') + '>' + mb(emph(s.title || '')) + '</h1>' +
         (s.sub ? '<p class="rs-stsub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div>' +
         (cols ? '<div class="rs-stcols">' + cols + '</div>' : '') + '</section>';
     },
@@ -149,18 +164,9 @@
           '<div class="rs-cdbody"><span class="rs-cdhead"' + de(IP + '.head') + '>' + esc(noNum(it.head) || '') + '</span>' +
           (it.text ? '<span class="rs-cdtext"' + de(IP + '.text') + '>' + mb(it.text) + '</span>' : '') + '</div></div>';
       }).join('');
-      var panel = '';
-      if (s.panel) {
-        var chips = (s.panel.items || []).map(function (t, i) {
-          return '<span class="rs-chip' + (i === 0 ? ' acc' : '') + '"' + de(P + '.panel.items.' + i) + '>' + esc(t) + '</span>';
-        }).join('');
-        panel = '<div class="rs-card pn dk"><span class="rs-tag mut"' + de(P + '.panel.label') + '>' + esc(s.panel.label || '') + '</span>' +
-          '<div class="rs-cdbody">' + (chips ? '<div class="rs-chips">' + chips + '</div>' : '') +
-          (s.panel.text ? '<span class="rs-pntx"' + de(P + '.panel.text') + '>' + mb(s.panel.text) + '</span>' : '') + '</div></div>';
-      }
       var n = ((s.cards || []).length || 3);
       return '<section class="slide rs cd" data-kind="' + kind(s, 'Cards') + '">' + runhead(s, P, ctx) + headline(s, P) +
-        '<div class="rs-grid c' + Math.min(n, 4) + (s.panel ? ' hasp' : '') + '">' + cells + panel + '</div>' + note(s, P) + '</section>';
+        '<div class="rs-grid c' + Math.min(n, 4) + '">' + cells + '</div>' + note(s, P) + '</section>';
     },
     /* 좌우 반반 대비 — 라이트/다크 하프 (활용 vs 설계). 원본 08 */
     split: function (s, P, ctx) {
@@ -552,11 +558,9 @@
       '.rs-rtext{flex:1;font-size:20px;font-weight:300;color:var(--muted)}' +
       '.rs-body{flex:1;font-size:23px;font-weight:300;line-height:1.75;color:var(--body);max-width:900px}' +
       /* 카드 패널(칩) */
-      '.rs-card.pn .rs-cdbody{gap:19px}' +
       '.rs-chips{display:flex;flex-wrap:wrap;gap:9px}' +
       '.rs-chip{padding:11px 21px;border-radius:999px;background:var(--dcard);color:#F5F5F3;font-size:21px;font-weight:400}' +
       '.rs-chip.acc{background:var(--acc);color:#fff;font-weight:500}' +
-      '.rs-pntx{font-size:21px;font-weight:300;line-height:1.55;color:#8A8A8E}.rs-pntx b{font-weight:600;color:#F5F5F3}' +
       /* 좌우 반반 */
       '.slide.sp{flex-direction:row;padding:0;gap:0}' +
       '.rs-half{flex:1;padding:53px 59px 53px 75px;display:flex;flex-direction:column;gap:32px;background:var(--paper)}' +
@@ -792,7 +796,7 @@
     { type: 'toc', label: '목차', use: '표지·선언 다음 장. 카드 행 리스트(divider 제목과 1:1 일치)', needs: ['items'], opt: ['title'], cap: { items: '3~5개' } },
     { type: 'divider', label: '간지', use: '챕터 시작 전환 장 — 다크/오렌지 풀블리드 자동 교대(bg로 지정 가능), 큐브 진행 인디케이터', needs: ['title', 'lead'], opt: ['no', 'bg'], cap: { title: '영문 2줄 ~16자', lead: '~60자' } },
     { type: 'section', label: '본문 넘버 행', use: '핵심 항목 3~4개 — 대형 번호+굵은 소제목+흐린 설명 규칙선 행', needs: ['title', 'points'], opt: ['tag', 'note'], cap: { points: '3~4개' } },
-    { type: 'cards', label: 'N열 카드', use: '동급 항목 2~4개 — 흰 라운드 카드. panel 주면 우측 다크 패널(라벨+칩 목록+마무리)', needs: ['title', 'cards'], opt: ['tag', 'panel', 'note'], cap: { cards: '2~4개' } },
+    { type: 'cards', label: 'N열 카드', use: '동급 항목 2~4개 — 흰 라운드 카드(번호 자동)', needs: ['title', 'cards'], opt: ['tag', 'note'], cap: { cards: '2~4개' } },
     { type: 'split', label: '좌우 대비', use: '반반 대비(라이트 vs 다크) — 활용/설계, 남/우리 구도', needs: ['left', 'right'], opt: [] },
     { type: 'stats', label: '수치', use: '도넛(다크 카드)+게이지 카드 행 — 진행률·지표 비교', needs: ['title'], opt: ['donut', 'bars', 'note'] },
     { type: 'media', label: '이미지 증빙', use: '스펙 시트(좌 라벨+행, 중간 다크 강조)+우 이미지 슬롯 — 데모·프로토타입 증빙', needs: ['title', 'specs'], opt: ['image', 'caption', 'tag'] },
@@ -820,7 +824,7 @@
     toc: { type: 'toc', title: '보고 순서', items: [{ label: 'Why Now', desc: '누구나 만드는 시대, 차이는 **기준**에서 생깁니다', pages: '04—08' }, { label: 'Where We Stand', desc: 'AI가 함께 참조할 **기준**이 필요합니다', pages: '09—11' }, { label: "What's Next", desc: '효과가 확인된 단계부터 **넓혀갑니다**', pages: '12—14' }] },
     divider: { type: 'divider', title: 'Everyone\n**Can Build**', lead: '생성은 누구나 가능해졌지만, **퀄리티는 같지 않습니다**' },
     section: { type: 'section', title: '기준과 자산이 일원화되지 않으면\nAI 환경에서 **드러나는 네 가지**', points: [{ head: '기준의 분산', text: '기준이 조직별로 나뉘어 있어 서로 다를 수 있음' }, { head: '자산의 분산', text: '검증된 자산이 각 조직에 남아 생성에 바로 적용하지 못함' }, { head: '검수의 속도', text: '생성 결과는 늘어나지만 검수는 사람이 건건이 수행' }], note: '모두 **기준을 한곳에 모아 시스템에 담으면** 해결됩니다.' },
-    cards: { type: 'cards', title: "'만드는 것'은 이제\n**누구나 할 수 있는 일**이 되었습니다", cards: [{ head: '진입장벽 하락', text: '전문 도구를 익히지 않아도 결과가 나옵니다' }, { head: '경계 축소', text: '기획 · 제작 · 개발의 구분이 통합됩니다' }, { head: '결과물 증가', text: '만드는 속도와 양이 동시에 상승합니다' }], panel: { label: '자연어로 생성되는 것', items: ['UI', '이미지', '영상', '코드'], text: '생성은 누구나 가능해졌지만,\n**퀄리티는 모두 같지 않습니다.**' } },
+    cards: { type: 'cards', title: "'만드는 것'은 이제\n**누구나 할 수 있는 일**이 되었습니다", cards: [{ head: '진입장벽 하락', text: '전문 도구를 익히지 않아도 결과가 나옵니다' }, { head: '경계 축소', text: '기획 · 제작 · 개발의 구분이 통합됩니다' }, { head: '결과물 증가', text: '만드는 속도와 양이 동시에 상승합니다' }], note: '생성은 누구나 가능해졌지만, **퀄리티는 모두 같지 않습니다.**' },
     split: { type: 'split', left: { kicker: '활용', title: 'AI 기반 기술은\n**활용합니다**', items: ['기반 AI 모델', '생성 기술과 API', '기존 제작 도구'], foot: '누구나 같은 것을 쓸 수 있는 영역' }, right: { kicker: '설계 — 우리만의 기준', title: '퀄리티 차이는\n**직접 설계합니다**', items: ['회사의 품질 기준', '조합 · 검수 · 승인 규칙', '사용 결과의 축적 · 학습'], foot: '퀄리티와 일관성이 결정되는 영역' } },
     stats: { type: 'stats', title: '현재 수준', donut: { pct: 30, value: '30%', caption: '자체 평가', label: '전체 진척' }, bars: [{ label: '플랫폼 · 플로우', pct: 65 }, { label: '품질 체계', pct: 20, on: true, text: '결과 퀄리티가 결정되는 영역 — 가장 많은 시간이 필요합니다' }, { label: '실업무 검증', pct: 10 }] },
     media: { type: 'media', title: 'Proof 01\n**작동 증빙**', specs: [{ label: 'Input', text: '기획 · 요구사항' }, { label: '핵심', text: '생성 — 조립 · 수정 · 출력', on: true }, { label: 'Output', text: '수정 가능한 결과물' }], image: { label: '실제 화면 캡처를 여기에 놓으세요' }, caption: '2026. 07 기준 프로토타입 캡처' },
@@ -856,7 +860,7 @@
     'toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄, **강조**),pages?:"04—08"}]} | ' +
     'divider:{no?:"01",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**),bg?:"dark|accent"(생략 시 자동 교대)} | ' +
     'section:{title,points:[{head,text}](3~4개),tag?(러닝헤드 보조),note?(마무리, **강조**=액센트)} | ' +
-    'cards:{title,cards:[{head,text?,tag?,tone?:"dark"}](2~4개),panel?:{label,items:[짧은 칩 문자열],text?(**강조**)},note?} | ' +
+    'cards:{title,cards:[{head,text?,tag?,tone?:"dark"}](2~4개),note?} | ' +
     'split:{left:{kicker,title(**굵게**),items:[str],foot?},right:{kicker,title(**굵게**),items:[str],foot?}} — 좌 라이트/우 다크 대비 | ' +
     'stats:{title,donut?:{pct:0~100,value?,caption?,label?},bars?:[{label,pct:0~100,value?,on?:true(다크 강조 행),text?}],note?} | ' +
     'media:{title,specs:[{label,text,on?:true(다크 강조 행)}],image?:{label},caption?} | ' +

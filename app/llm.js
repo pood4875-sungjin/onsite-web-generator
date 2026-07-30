@@ -230,7 +230,7 @@
         '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.RAMS_SCHEMA_DOC + '\n' +
         '각 타입의 필드: ' + window.RAMS_FIELD_DOC + '\n' +
         '규칙: 1장 cover. 2장 statement 또는 toc. toc items=divider title과 1:1. ' +
-        '챕터마다 divider(영문 2줄 제목, bg는 자동 교대 — 지정 생략). 본문 장은 밀도 있게(points 3~4·panel·note 적극). ' +
+        '챕터마다 divider(영문 2줄 제목, bg는 자동 교대 — 지정 생략). 본문 장은 밀도 있게(points 3~4·note 적극). ' +
         '수치는 stats/kpi로(값은 plan의 실제 수치, 지어내기 금지). 마무리 문장(note)에 **강조** 1회. 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
