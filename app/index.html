@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -599,7 +599,8 @@
         [['pitch', window.PITCH_STYLE, window.renderPitchDeck, window.PITCH_DEFAULT_DECK],
          ['honors', window.HONORS_STYLE, window.renderHonorsDeck, window.HONORS_DEFAULT_DECK],
          ['naver', window.NAVER_STYLE, window.renderNaverDeck, window.NAVER_DEFAULT_DECK],
-         ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
+         ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK],
+         ['pastel', window.PASTEL_STYLE, window.renderPastelDeck, window.PASTEL_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
           try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
@@ -637,8 +638,8 @@
   function recStyles(kind, plan){
     const t=(plan||'').toLowerCase();
     if(kind==='ppt'){
-      if(/보고|실적|경영|분기|계획|전략|시스템|프로세스/.test(t)) return ['naver','rams','honors'];
-      if(/세미나|행사|마케팅|mbm|고객|초청/.test(t)) return ['honors','pitch','rams'];
+      if(/보고|실적|경영|분기|계획|전략|시스템|프로세스/.test(t)) return ['naver','pastel','rams'];
+      if(/세미나|행사|마케팅|mbm|고객|초청/.test(t)) return ['honors','pastel','pitch'];
       return ['pitch','honors','rams'];
     }
     if(kind==='single'||kind==='multi'){
@@ -790,7 +791,7 @@
     if(S.kind==='ppt'){
       const outlineFromPlan = plan.split('\n').map(s=>s.replace(/^[\s•\-*·]*\d*[.)]?\s*/,'').trim()).filter(s=>s && s.length<=40).slice(0,8);
       // pitch·honors = 별도 팩(레이아웃 체계가 다름). packKind가 있으면 그 팩의 compose/template 경로
-      const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : '';
+      const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : S.pptStyle==='pastel' ? 'pastel' : '';
       const isPitch = !!packKind;
       const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind };
       const hasBrief=!!plan;
@@ -810,6 +811,7 @@
       // 내용 없이 시작하면 전 타입 쇼케이스 덱 — 템플릿을 한 장씩 보며 골라 쓰게
       if(!deck){
         if(packKind==='rams') deck = (hasBrief && window.ramsComposeDeck) ? ramsComposeDeck(brief) : ramsTemplateDeck();
+        if(packKind==='pastel') deck = (hasBrief && window.pastelComposeDeck) ? pastelComposeDeck(brief) : pastelTemplateDeck();
         else if(packKind==='naver') deck = (hasBrief && window.naverComposeDeck) ? naverComposeDeck(brief)
                  : (window.naverTemplateDeck ? naverTemplateDeck() : JSON.parse(JSON.stringify(window.NAVER_DEFAULT_DECK||{slides:[]})));
         else if(packKind==='honors') deck = (hasBrief && window.honorsComposeDeck) ? honorsComposeDeck(brief)

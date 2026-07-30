@@ -34,8 +34,10 @@
 <script src="packs.honors.js"></script>
 <script src="packs.naver.js"></script>
 <script src="packs.rams.js"></script>
+<script src="packs.pastel.js"></script>
 <script>
   var PACKS = [
+    { id: 'pastel', label: 'Pastel Gradient', deck: function(){ return pastelTemplateDeck(); }, render: function(d){ return renderPastelDeck(d); }, src: '/_src-pastel/' + encodeURIComponent('디자인AX 보고 - Pastel.dc.html') },
     { id: 'rams', label: 'Rams Report', deck: function(){ return ramsTemplateDeck(); }, render: function(d){ return renderRamsDeck(d); }, src: '/_src-rams/' + encodeURIComponent('Rams Report Template.dc.html') },
     { id: 'naver', label: 'Design AX Line', deck: function(){ return naverTemplateDeck(); }, render: function(d){ return renderNaverDeck(d); }, src: '/_src-naver/' + encodeURIComponent('네이버 스타일_02.dc.html') },
     { id: 'honors', label: 'MIDAS Honors', deck: function(){ return honorsTemplateDeck(); }, render: function(d){ return renderHonorsDeck(d); }, src: '' },

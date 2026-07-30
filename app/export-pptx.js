@@ -35,6 +35,13 @@
     '.rs-pchead', '.rs-cmrows span', '.rs-qtx', '.rs-qby', '.rs-cktx', '.rs-lnkick', '.rs-badge', '.rs-lnhead',
     '.rs-brltx', '.rs-brfoot', '.rs-brname', '.rs-brhead', '.rs-brtext', '.rs-hlno', '.rs-hlhead', '.rs-hlsub', '.rs-hlfoot span', '.rs-hlfn',
     '.rs-bdhead', '.rs-bdrows span', '.rs-cltitle', '.rs-clsub', '.rs-clmeta span', '.rs-imgph span',
+    /* pastel 팩(Pastel Gradient) */ '.pg-runl', '.pg-runr', '.pg-hl', '.pg-sub', '.pg-body', '.pg-lab', '.pg-klab', '.pg-ktx', '.pg-cap', '.pg-foot',
+    '.pg-cvnum', '.pg-cvtitle', '.pg-cvlead', '.pg-cvfoot span', '.pg-sttitle', '.pg-stsub', '.pg-sttx', '.pg-tocno', '.pg-tocdesc', '.pg-tocpg',
+    '.pg-dvtitle', '.pg-dvlead', '.pg-numno', '.pg-numhead', '.pg-numtx', '.pg-list li span', '.pg-cellhead', '.pg-celltx', '.pg-badge', '.pg-kpval',
+    '.pg-bignum', '.pg-bigcap', '.pg-brow .l', '.pg-brow .v', '.pg-brow .tx', '.pg-srow .k', '.pg-srow .t', '.pg-trow > span', '.pg-tbrow > span',
+    '.pg-rmhead', '.pg-rmlist li', '.pg-bsval', '.pg-bscap', '.pg-stephead', '.pg-steptx', '.pg-cmp ul li', '.pg-qmark', '.pg-qtx',
+    '.pg-hlrow .no', '.pg-hlrow .h', '.pg-hlrow .t', '.pg-hlfn', '.pg-hltitle', '.pg-bdtitle', '.pg-side li', '.pg-side .pl span', '.pg-leadbox .tx',
+    '.pg-cltitle', '.pg-clsub', '.pg-clfoot .big', '.pg-clfoot .ct i', '.pg-key.tb .mi b', '.pg-key.tb .mi i', '.pg-imgph span',
     /* 마일스톤(전 팩 공통) */ '.ms-ptag', '.ms-phead', '.ms-ptext', '.ms-cap', '.ms-bar b', '.ms-bar span', '.ms-axis span', '.ms-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
@@ -43,6 +50,7 @@
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
     /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
+    /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
@@ -199,7 +207,30 @@
         g.strokeStyle = col5; g.beginPath(); g.arc(outerR, outerR, midR, -Math.PI / 2, -Math.PI / 2 + pct / 100 * Math.PI * 2); g.stroke();
         try { s.addImage({ data: c5.toDataURL('image/png'), x: r5.x * IN, y: r5.y * IN, w: r5.w * IN, h: r5.h * IN }); } catch (e) {}
       });
-      [].slice.call(slide.querySelectorAll(SHAPE_SEL)).forEach(function (el) { addShapeBox(win, pptx, s, el, origin, slideBg); });
+      /* 그라데이션 배경 요소(pastel 셀·키밴드·5색 바 등) — backgroundColor가 없어 addShapeBox가 못 낸다.
+         자식을 잠시 숨기고 그 요소만 래스터 → 배경 이미지로. 텍스트는 아래 TEXT 패스가 개체로 얹는다. */
+      var shapeEls = [].slice.call(slide.querySelectorAll(SHAPE_SEL));
+      for (var ge = 0; ge < shapeEls.length; ge++) {
+        var gel = shapeEls[ge], gcs = win.getComputedStyle(gel);
+        if (!gcs.backgroundImage || gcs.backgroundImage.indexOf('gradient') < 0 || !win.html2canvas) continue;
+        var gr = rel(gel, origin); if (gr.w < 3 || gr.h < 3) continue;
+        var gkids = [].slice.call(gel.children), gprev = gkids.map(function (k) { return k.style.visibility; });
+        gkids.forEach(function (k) { k.style.visibility = 'hidden'; });
+        try {
+          var gcv = await win.html2canvas(gel, { backgroundColor: null, scale: 1, logging: false });
+          s.addImage({ data: gcv.toDataURL('image/png'), x: gr.x * IN, y: gr.y * IN, w: gr.w * IN, h: gr.h * IN });
+        } catch (e) {}
+        finally { gkids.forEach(function (k, j) { k.style.visibility = gprev[j]; }); }
+      }
+      shapeEls.forEach(function (el) {
+        var cs4 = win.getComputedStyle(el);
+        if (cs4.backgroundImage && cs4.backgroundImage.indexOf('gradient') >= 0) {
+          /* 그라데이션은 위에서 이미지로 나감 — 보더만 남았으면 보더용으로 계속 */
+          var hasB = ['Top', 'Right', 'Bottom', 'Left'].some(function (k) { return (parseFloat(cs4['border' + k + 'Width']) || 0) > 0; });
+          if (!hasB) return;
+        }
+        addShapeBox(win, pptx, s, el, origin, slideBg);
+      });
       // 체크 아이콘 — 원(도형)은 위에서 나갔고, ::after 체크는 텍스트 '✓'로 얹는다(가상요소는 직렬화 불가)
       [].slice.call(slide.querySelectorAll('.p-tick')).forEach(function (el) {
         var r3 = rel(el, origin); if (r3.w < 3) return;

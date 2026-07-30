@@ -6,7 +6,7 @@
 <title>팩 템플릿 미리보기 · MIDAS DRS</title>
 <script>
 /* 팩 스크립트 로드 — 캐시버스터 */
-['bundle.js','charts.js','packs.ppt.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','charts.js','packs.ppt.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <style>
   :root{--bg:#0b0e16;--panel:#151827;--tx:#fff;--tx2:rgba(255,255,255,.6)}
@@ -38,6 +38,7 @@
   /* 팩별 템플릿 덱 + 렌더러 매핑 — 새 PPT 팩 추가 시 여기 한 줄 */
   var PACKS = [
     { id:'rams',   name:'Rams Report',     deck:function(){ return ramsTemplateDeck(); },   render:function(d){ return renderRamsDeck(d); } },
+    { id:'pastel', name:'Pastel Gradient', deck:function(){ return pastelTemplateDeck(); }, render:function(d){ return renderPastelDeck(d); } },
     { id:'naver',  name:'Design AX Line',  deck:function(){ return naverTemplateDeck(); },  render:function(d){ return renderNaverDeck(d); } },
     { id:'honors', name:'MIDAS Honors',    deck:function(){ return honorsTemplateDeck(); }, render:function(d){ return renderHonorsDeck(d); } },
     { id:'pitch',  name:'Creatable Pitch', deck:function(){ return pitchTemplateDeck(); },  render:function(d){ return renderPitchDeck(d); } },
