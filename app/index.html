@@ -446,6 +446,25 @@
     b.onclick=(e)=>{ e.stopPropagation(); try{ openTplPreview(getHtml(),title); }catch(err){} };
     c.querySelector('.sw').append(b);
   }
+  /* 미리보기용 쇼케이스 덱 — 템플릿 전 타입을 실제 발표 구성으로 재배열:
+     표지→선언→목차→ [간지+본문 유형들]×4챕터(챕터 컬러 변화 시연) →엔딩 */
+  function showcaseDeck(tfn){
+    const d=tfn(); const sl=d.slides;
+    const by=t=>sl.filter(s=>s.type===t);
+    const HEAD=['cover','statement','toc'], SKIP=HEAD.concat(['divider','closing']);
+    const body=sl.filter(s=>!SKIP.includes(s.type));
+    const div0=by('divider')[0];
+    const CH_TITLES=['Why\nNow','The\nSystem','In\nProgress',"What's\nNext"];   // 플레인 — 팩별 강약은 각 팩 emph가 처리(naver는 마크업 미지원)
+    const out=HEAD.flatMap(t=>by(t));
+    const per=Math.ceil(body.length/4);
+    for(let i=0;i<4;i++){
+      const chunk=body.slice(i*per,(i+1)*per); if(!chunk.length) break;
+      if(div0){ const dv=JSON.parse(JSON.stringify(div0)); dv.title=CH_TITLES[i]; dv.no='0'+(i+1); dv.ch=i+1; out.push(dv); }
+      out.push(...chunk);
+    }
+    out.push(...by('closing'));
+    return { slides: out, style: d.style };
+  }
   // 히어로→챗 핸드오프: 전환 직후 처음 몇 줄은 .rise(크게 솟아오름)로 등장
   let _riseN=0;
   function riseRow(r){ if(_riseN>0){ r.classList.add('rise'); _riseN--; } return r; }
@@ -645,16 +664,16 @@
           sz.append(c);
         });
         // Creatable Pitch·MIDAS Honors — 별도 디자인 시스템 팩. 같은 줄에서 나란히 고른다.
-        [['pitch', window.PITCH_STYLE, window.renderPitchDeck, window.PITCH_DEFAULT_DECK],
-         ['honors', window.HONORS_STYLE, window.renderHonorsDeck, window.HONORS_DEFAULT_DECK],
-         ['naver', window.NAVER_STYLE, window.renderNaverDeck, window.NAVER_DEFAULT_DECK],
-         ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK],
-         ['pastel', window.PASTEL_STYLE, window.renderPastelDeck, window.PASTEL_DEFAULT_DECK],
-         ['sfmi', window.SFMI_STYLE, window.renderSfmiDeck, window.SFMI_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
+        [['pitch', window.PITCH_STYLE, window.renderPitchDeck, window.PITCH_DEFAULT_DECK, window.pitchTemplateDeck],
+         ['honors', window.HONORS_STYLE, window.renderHonorsDeck, window.HONORS_DEFAULT_DECK, window.honorsTemplateDeck],
+         ['naver', window.NAVER_STYLE, window.renderNaverDeck, window.NAVER_DEFAULT_DECK, window.naverTemplateDeck],
+         ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK, window.ramsTemplateDeck],
+         ['pastel', window.PASTEL_STYLE, window.renderPastelDeck, window.PASTEL_DEFAULT_DECK, window.pastelTemplateDeck],
+         ['sfmi', window.SFMI_STYLE, window.renderSfmiDeck, window.SFMI_DEFAULT_DECK, window.sfmiTemplateDeck]].forEach(([pid, ps, rfn, dd, tfn])=>{
           if(!PPT_VISIBLE.includes(pid)) return;
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(dd),ps.name); }catch(e){}
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(tfn?showcaseDeck(tfn):dd),ps.name); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(pid, ps.name); };
           sz.append(c);
         });
