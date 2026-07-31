@@ -142,6 +142,17 @@
   .sc .sw .fallback{position:absolute;inset:0}
   .sc .cap{padding:9px 11px;font-size:12px;font-weight:var(--fw-med);text-align:left;border-top:1px solid var(--hairline)}
   .sc .rec{position:absolute;top:8px;right:8px;z-index:2;font-size:10.5px;font-weight:600;color:#fff;padding:3px 8px;border-radius:var(--r-pill);background:var(--point);box-shadow:0 4px 12px rgba(108,43,255,.4)}
+  /* 템플릿 미리보기 — 카드 호버 시 🔍 버튼 + 풀스크린 오버레이 */
+  .tpv-btn{position:absolute;left:8px;bottom:8px;z-index:3;font-size:11px;font-weight:600;color:#fff;padding:5px 10px;border:0;border-radius:var(--r-pill);background:rgba(12,14,20,.72);backdrop-filter:blur(6px);cursor:pointer;opacity:0;transition:opacity .15s}
+  .sc:hover .tpv-btn{opacity:1}
+  .tpv-btn:hover{background:rgba(12,14,20,.9)}
+  #tplPv{position:fixed;inset:0;z-index:120;background:rgba(8,10,16,.78);backdrop-filter:blur(8px);display:none;flex-direction:column;padding:28px clamp(16px,6vw,90px)}
+  #tplPv.on{display:flex}
+  #tplPv .tpv-head{display:flex;justify-content:space-between;align-items:center;color:#fff;padding:0 2px 12px}
+  #tplPv .tpv-head b{font-size:15px;font-weight:600}
+  #tplPv .tpv-x{border:0;background:rgba(255,255,255,.14);color:#fff;width:32px;height:32px;border-radius:999px;font-size:14px;cursor:pointer}
+  #tplPv .tpv-x:hover{background:rgba(255,255,255,.3)}
+  #tplPv iframe{flex:1;min-height:0;width:100%;border:0;border-radius:14px;background:#fff}
 
   /* 풀페이지 스타일 선택(#sscreen) — 챗 임베드(.styles)와 같은 .sc 카드를 크게 */
   .scards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;max-width:1180px;width:100%;text-align:left;
@@ -399,6 +410,42 @@
   /* ---- 챗 프리미티브 ---- */
   const msgs=document.getElementById('cmsgs');
   function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+  /* 썸네일 iframe을 카드 폭에 맞춰 축소 — 덱/페이지는 1280px 기준 렌더.
+     (정의 누락으로 원본 크기 그대로 붙어 표지 좌상단만 보이던 문제 수리)
+     PPT 덱은 .ppt-stack 상단 패딩 24px을 걷어 표지 첫 장이 꽉 차게. */
+  function fitThumb(sw,f,off){
+    function fit(){
+      const W=sw.clientWidth; if(!W){ requestAnimationFrame(fit); return; }
+      const sc=W/1280;
+      f.style.width='1280px'; f.style.height=Math.ceil(sw.clientHeight/sc)+'px';
+      f.style.transform='scale('+sc+') translateY(-'+(off||0)+'px)';
+    }
+    requestAnimationFrame(fit);
+    f.addEventListener('load',fit);
+    window.addEventListener('resize',fit);
+  }
+  /* 템플릿 미리보기 오버레이 — 스타일 카드의 🔍 버튼. 인앱 오버레이(팝업 금지) */
+  function openTplPreview(html,title){
+    let ov=document.getElementById('tplPv');
+    if(!ov){
+      ov=el('div','',''); ov.id='tplPv';
+      ov.innerHTML='<div class="tpv-head"><b></b><button class="tpv-x">✕</button></div><iframe></iframe>';
+      ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('on'); });
+      ov.querySelector('.tpv-x').onclick=()=>ov.classList.remove('on');
+      document.body.append(ov);
+    }
+    ov.querySelector('.tpv-head b').textContent=title||'';
+    const fr=ov.querySelector('iframe');
+    const zfit=()=>{ try{ const d=fr.contentDocument; if(d&&d.body) d.body.style.zoom=Math.min(1, fr.clientWidth/1328); }catch(e){} };
+    fr.onload=zfit; window.addEventListener('resize',zfit);
+    fr.srcdoc=html;
+    ov.classList.add('on');
+  }
+  function pvBtn(c,getHtml,title){
+    const b=el('button','tpv-btn','🔍 '+_L('미리보기'));
+    b.onclick=(e)=>{ e.stopPropagation(); try{ openTplPreview(getHtml(),title); }catch(err){} };
+    c.querySelector('.sw').append(b);
+  }
   // 히어로→챗 핸드오프: 전환 직후 처음 몇 줄은 .rise(크게 솟아오름)로 등장
   let _riseN=0;
   function riseRow(r){ if(_riseN>0){ r.classList.add('rise'); _riseN--; } return r; }
@@ -591,7 +638,7 @@
         (window.PPT_STYLES||[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
-          try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>renderPptDeck(deck),s.name); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(s.id, s.name); };
           sz.append(c);
         });
@@ -604,7 +651,7 @@
          ['sfmi', window.SFMI_STYLE, window.renderSfmiDeck, window.SFMI_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(dd),ps.name); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(pid, ps.name); };
           sz.append(c);
         });
@@ -628,7 +675,7 @@
         STYLES.forEach(p=>{
           if(skip(p.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${p.swatch}"></div>${p.id===recStyle?`<span class="rec">${_L('추천')}</span>`:''}</div><div class="cap">${_L(p.name)}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); }catch(e){}
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=styleThumb(p.id); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f); pvBtn(c,()=>styleThumb(p.id),_L(p.name)); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(p.id, _L(p.name)); };
           sz.append(c);
         });
