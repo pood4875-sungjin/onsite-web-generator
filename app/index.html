@@ -635,7 +635,9 @@
       const skip=(id)=> only && !only.has(id);
       const pick=(id,name)=>{ S.styleName=name; onPick(id,name); };
       if(kind==='ppt'){
-        (window.PPT_STYLES||[]).forEach(s=>{
+        // 노출 팩 화이트리스트(2026-07-31 사용자 지시) — 구 팩·pitch·honors는 잠시 가림. 되살리려면 여기에 추가
+        const PPT_VISIBLE=['naver','rams','pastel','sfmi'];
+        (PPT_VISIBLE.includes('ppt')?(window.PPT_STYLES||[]):[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
           try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>renderPptDeck(deck),s.name); }catch(e){}
@@ -649,6 +651,7 @@
          ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK],
          ['pastel', window.PASTEL_STYLE, window.renderPastelDeck, window.PASTEL_DEFAULT_DECK],
          ['sfmi', window.SFMI_STYLE, window.renderSfmiDeck, window.SFMI_DEFAULT_DECK]].forEach(([pid, ps, rfn, dd])=>{
+          if(!PPT_VISIBLE.includes(pid)) return;
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
           try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(dd),ps.name); }catch(e){}
@@ -687,8 +690,8 @@
     const t=(plan||'').toLowerCase();
     if(kind==='ppt'){
       if(/보고|실적|경영|분기|계획|전략|시스템|프로세스/.test(t)) return ['naver','pastel','sfmi'];
-      if(/세미나|행사|마케팅|mbm|고객|초청/.test(t)) return ['honors','pastel','pitch'];
-      return ['pitch','honors','rams'];
+      if(/세미나|행사|마케팅|mbm|고객|초청/.test(t)) return ['pastel','sfmi','naver'];
+      return ['naver','rams','pastel'];
     }
     if(kind==='single'||kind==='multi'){
       if(/다크|테크|개발|ai|글로우|스타트업/.test(t)) return ['aether','saturn','midas'];
