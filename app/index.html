@@ -991,6 +991,17 @@
   /* ---- 음성 입력 (Web Speech API) — 브라우저 내장 STT, 서버·키 불필요.
      클릭=녹음 시작(빨간 펄스), 말하는 동안 실시간으로 입력창에 받아적고, 다시 클릭=종료.
      미지원 브라우저(파폭 등)는 버튼 자동 숨김. localhost·https에서만 동작. ---- */
+  function micToast(btn,msg){
+    const t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;z-index:99;background:#14181B;color:#fff;font-size:13px;padding:9px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .2s';
+    document.body.appendChild(t);
+    const r=btn.getBoundingClientRect();
+    t.style.left=Math.max(8,r.left+r.width/2-t.offsetWidth/2)+'px';
+    t.style.top=(r.top-t.offsetHeight-10)+'px';
+    requestAnimationFrame(()=>t.style.opacity='1');
+    setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),250); },2600);
+  }
   function wireSpeech(btn, target){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SR){ btn.hidden=true; return; }
@@ -1000,14 +1011,24 @@
       if(active){ try{rec.stop();}catch(e){} return; }
       rec=new SR();
       rec.lang=({ko:'ko-KR',en:'en-US',ja:'ja-JP',zh:'zh-CN'})[(window.I18N?I18N.getLang():'ko')]||'ko-KR';
-      rec.interimResults=true; rec.continuous=true;
+      /* continuous=false — 말을 멈추면 브라우저가 알아서 종료하고 최종 문장이 입력창에 확정된다.
+         이어 말하려면 다시 누르면 기존 텍스트 뒤에 붙는다. */
+      rec.interimResults=true; rec.continuous=false;
       base=target.value ? target.value.replace(/\s+$/,'')+' ' : '';
       rec.onresult=(e)=>{ let t=''; for(let ri=0; ri<e.results.length; ri++) t+=e.results[ri][0].transcript;
         target.value=base+t; target.dispatchEvent(new Event('input')); };
       rec.onend=()=>{ active=false; btn.classList.remove('rec'); target.focus(); };
-      rec.onerror=()=>{ active=false; btn.classList.remove('rec'); };
+      rec.onerror=(e)=>{
+        active=false; btn.classList.remove('rec');
+        const code=e&&e.error;
+        if(code==='not-allowed'||code==='service-not-allowed') micToast(btn,_L('마이크 권한을 허용해주세요 (주소창 오른쪽 🎤 아이콘)'));
+        else if(code==='network') micToast(btn,_L('음성 인식 서버에 연결하지 못했어요. 네트워크를 확인해주세요'));
+        else if(code==='audio-capture') micToast(btn,_L('마이크를 찾을 수 없어요. 연결 상태를 확인해주세요'));
+        else if(code!=='no-speech'&&code!=='aborted') micToast(btn,_L('음성 인식에 실패했어요. Chrome/Edge에서 다시 시도해주세요'));
+      };
       active=true; btn.classList.add('rec');
-      try{ rec.start(); }catch(e){ active=false; btn.classList.remove('rec'); }
+      try{ rec.start(); micToast(btn,_L('듣고 있어요 — 말씀이 끝나면 자동으로 입력돼요')); }
+      catch(e){ active=false; btn.classList.remove('rec'); micToast(btn,_L('음성 인식을 시작하지 못했어요')); }
     });
   }
   wireSpeech(document.getElementById('hmic'), hinput);
