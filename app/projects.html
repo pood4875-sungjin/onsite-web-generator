@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js','packs.sfmi.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -86,7 +86,8 @@
   // 템플릿 탭과 동일한 필터 리스트/카테고리
   const FILTERS=[['all','전체'],['website','웹사이트'],['landing','랜딩페이지'],['edm','이메일'],['ppt','PPT']];
   const CAT_LABEL={ website:'웹사이트', landing:'랜딩페이지', edm:'이메일', ppt:'PPT' };
-  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : (p.stylePack==='ppt'||p.stylePack==='pitch'||p.stylePack==='honors')?'ppt' : p.kind==='multi'?'website':'landing';
+  const PPT_PACKS=new Set(['ppt','pitch','honors','naver','rams','pastel','sfmi']);
+  const catOfProject=(p)=> p.stylePack==='edm'?'edm' : PPT_PACKS.has(p.stylePack)?'ppt' : p.kind==='multi'?'website':'landing';
   let filter='all';
 
   function renderForStyle(sp, pg){ const d=pg.data||{};
@@ -98,9 +99,11 @@
     if(sp==='honors'&&window.renderHonorsDeck) return renderHonorsDeck(d);
     if(sp==='naver'&&window.renderNaverDeck) return renderNaverDeck(d);
     if(sp==='rams'&&window.renderRamsDeck) return renderRamsDeck(d);
+    if(sp==='pastel'&&window.renderPastelDeck) return renderPastelDeck(d);
+    if(sp==='sfmi'&&window.renderSfmiDeck) return renderSfmiDeck(d);
     if(sp==='pitch'&&window.renderPitchDeck) return renderPitchDeck(d);
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
-  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='naver'&&window.NAVER_STYLE)return NAVER_STYLE.name; if(sp==='rams'&&window.RAMS_STYLE)return RAMS_STYLE.name; if(sp==='pastel'&&window.PASTEL_STYLE)return PASTEL_STYLE.name; if(sp==='sfmi'&&window.SFMI_STYLE)return SFMI_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function thumbnail(project){
     const wrap=document.createElement('div'); wrap.className='thumb';
     const isMulti=project.kind==='multi';
