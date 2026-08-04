@@ -171,6 +171,19 @@
   /* ---- 홈 히어로 — Genspark식 센터 진입 (타이틀+큰 입력창+샘플) ---- */
   .hero{position:fixed;inset:0;z-index:7;background:var(--canvas);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
   .hero[hidden]{display:none}
+  /* 히어로 탑바 — 좌 워드마크 · 우 언어 스위처 (Figma 79-8487) */
+  .htop{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px 30px}
+  .hlogo{font-weight:800;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+  .hlang{position:relative}
+  .hlangbtn{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--hairline-strong);border-radius:var(--r-pill);background:var(--card,#fff);color:var(--body);cursor:pointer;font-family:inherit;transition:var(--dur) var(--ease)}
+  .hlangbtn:hover{border-color:var(--body-mid)}
+  .hlangbtn b{font-size:11.5px;font-weight:700;letter-spacing:.06em}
+  .hlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:132px;background:var(--card,#fff);border:1px solid var(--hairline-strong);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.12);padding:5px;z-index:30;display:flex;flex-direction:column}
+  .hlangmenu button{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 11px;border:0;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--body);cursor:pointer;text-align:left}
+  .hlangmenu button:hover{background:var(--brand-weak)}
+  .hlangmenu button.on{font-weight:700;color:var(--ink)}
+  .hlangmenu button i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--mute)}
+  #hgreet{cursor:pointer}
   /* 타이틀 한 줄 + 타이핑 연출 — min-height로 타이핑 중 레이아웃 점프 방지 */
   .hero h1{font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
     font-size:clamp(30px, 5.4vw, 54px);font-weight:600;letter-spacing:-.02em;line-height:1.28;margin:0;color:var(--ink);white-space:nowrap;min-height:1.28em;
@@ -274,7 +287,17 @@
 
 <!-- 홈 히어로 — 센터 타이틀 + 큰 입력창 + 샘플 (Genspark 홈 패턴). 첫 전송 시 챗으로 전환 -->
 <div class="hero" id="hero">
-  <h1><span id="htype"></span><i class="caret"></i></h1>
+  <div class="htop">
+    <span class="hlogo">MIDAS GROUP</span>
+    <div class="hlang">
+      <button class="hlangbtn" id="hlangBtn" title="Language" aria-haspopup="true">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
+        <b id="hlangCur">KO</b>
+      </button>
+      <div class="hlangmenu" id="hlangMenu" hidden></div>
+    </div>
+  </div>
+  <h1 id="hgreet" data-i18n-title="클릭해서 내 이름 설정" title="클릭해서 내 이름 설정"><span id="htype"></span><i class="caret"></i></h1>
   <p class="hsub" data-i18n="PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요">PPT · 랜딩페이지 · 웹사이트 · 이메일을 대화만으로 만들어드려요</p>
   <div class="hbox">
     <textarea id="hinput" rows="2" data-i18n-placeholder="만들고 싶은 것을 자유롭게 적어보세요" placeholder="만들고 싶은 것을 자유롭게 적어보세요"></textarea>
@@ -297,12 +320,12 @@
       <textarea id="cinput" rows="1"></textarea>
       <div class="cbrow">
         <button class="attbtn" id="cattach" data-i18n-title="파일 첨부" title="파일 첨부"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-        <span class="atthint" id="atthint" data-i18n="기획서가 있다면 txt · md · pdf · docx로 첨부하세요">기획서가 있다면 txt · md · pdf · docx로 첨부하세요</span>
+        <span class="atthint" id="atthint" data-i18n="기획서가 있다면 pptx · docx · pdf · txt로 첨부하세요">기획서가 있다면 pptx · docx · pdf · txt로 첨부하세요</span>
         <button class="attbtn micbtn" id="cmic" data-i18n-title="음성으로 입력" title="음성으로 입력"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><path d="M12 18v4"/></svg></button>
         <button class="sendbtn" id="csend" data-i18n-title="보내기" title="보내기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
       </div>
     </div>
-    <input type="file" id="cfile" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.pdf,.docx" hidden>
+    <input type="file" id="cfile" multiple accept=".txt,.md,.markdown,.csv,.json,.html,.htm,.pdf,.docx,.pptx" hidden>
     <button class="ds-btn primary gencta" id="genCta" data-i18n="✨ 생성하기" hidden>✨ 생성하기</button>
   </div>
 </div>
@@ -346,12 +369,12 @@
     {id:'ppt', cls:'ppt', kt:'PPT', kd:'발표 장표 · 16:9 슬라이드',
       th:'<div class="thumb tb-ppt"><div class="gw gw-ppt"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar cc w50"></span><span class="gwbar cc w50"></span></div></div>'},
   ];
-  const PPT_LENGTHS=[['short','5–8장 · 짧은 발표'],['std','10–15장 · 표준 발표'],['deep','20장+ · 심층 자료']];
+  const PPT_LENGTHS=[['short','⚡ 5–8장 · 짧은 발표'],['std','📊 10–15장 · 표준 발표'],['deep','📚 20장+ · 심층 자료']];
   // 종류별 기본 질문 — AI 되묻기 질문 뒤에 "같은 카드 페이저"로 이어붙는다 (종류마다 물을 게 다름)
   const FIXED_QS={
     ppt:[{key:'__len', q:'분량은 어느 정도로 할까요?', opts:PPT_LENGTHS.map(([id,label])=>({id,label}))}],
-    single:[{key:'goal', q:'방문자가 페이지에서 어떤 행동을 하면 좋을까요?', opts:['문의 남기기','참가·가입 신청','자료 다운로드','제품 둘러보기']}],
-    multi:[{key:'goal', q:'사이트의 가장 중요한 목표는 무엇인가요?', opts:['제품 소개와 도입 문의','행사·이벤트 안내','채용·회사 소개','고객 지원·문서 제공']}],
+    single:[{key:'goal', q:'방문자가 페이지에서 어떤 행동을 하면 좋을까요?', opts:['💬 문의 남기기','📝 참가·가입 신청','⬇️ 자료 다운로드','🔍 제품 둘러보기']}],
+    multi:[{key:'goal', q:'사이트의 가장 중요한 목표는 무엇인가요?', opts:['🤝 제품 소개와 도입 문의','🎪 행사·이벤트 안내','👥 채용·회사 소개','📚 고객 지원·문서 제공']}],
   };
   const BRIEF_PROMPT={
     single:'어떤 페이지인지 자유롭게 알려주세요.\n제품·서비스가 무엇인지, 누구를 위한 것인지, 핵심 기능이나 자랑할 수치, 방문자가 했으면 하는 행동까지 적을수록 초안이 정확해져요.',
@@ -555,6 +578,22 @@
       const r=await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});
       return r.value;
     }
+    if(ext==='pptx'){
+      // pptx = zip + slide XML. JSZip으로 열어 ppt/slides/slideN.xml의 <a:t> 텍스트를 장 순서대로 추출
+      await loadScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+      const zip=await window.JSZip.loadAsync(await f.arrayBuffer());
+      const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))
+        .sort((a,b)=>parseInt(a.match(/\d+/)[0],10)-parseInt(b.match(/\d+/)[0],10));
+      let t='';
+      for(const n of names.slice(0,60)){
+        const xml=await zip.files[n].async('string');
+        const runs=[...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map(m=>m[1]
+          .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#(\d+);/g,(_,d)=>String.fromCharCode(d)));
+        if(runs.length) t+='[Slide '+n.match(/\d+/)[0]+']\n'+runs.join('\n')+'\n\n';
+      }
+      if(t.replace(/\s/g,'').length<20) throw new Error(_L('이 PPT에서 텍스트를 찾지 못했어요. 내용이 이미지로만 된 파일일 수 있어요.'));
+      return t;
+    }
     throw new Error(_L('지원하지 않는 형식이에요')+' (.'+ext+')');
   }
   cattach.onclick=()=>cfile.click();
@@ -614,7 +653,7 @@
         const grid=el('div','oc-grid');
         extra=el('input','ds-input oc-extra'); extra.placeholder=_L('추가 세부 정보 (선택 사항)');
         (q.opts||[]).map(o=> typeof o==='string' ? {id:o,label:o} : o).concat([{id:'__etc',label:_L('기타')}]).forEach(o=>{
-          const b=el('button','oc-opt',o.label); b.__opt=o;
+          const b=el('button','oc-opt',_L(o.label)); b.__opt=o;
           b.onclick=()=>{
             if(q.multi){ b.classList.toggle('on'); if(o.id==='__etc' && b.classList.contains('on')) extra.focus(); }
             else { grid.querySelectorAll('.oc-opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); if(o.id==='__etc') extra.focus(); }
@@ -635,7 +674,7 @@
         }
         if(qi>=questions.length-1){
           off(w);
-          me(answers.length ? answers.map(x=>'Q: '+x.q+'\nA: '+x.a).join('\n\n') : _L('건너뛸게요'));
+          me(answers.length ? answers.map(x=>'Q: '+_L(x.q)+'\nA: '+_L(x.a)).join('\n\n') : _L('건너뛸게요'));
           res(answers); return;
         }
         qi++;
@@ -650,6 +689,14 @@
 
   /* 스타일/템플릿 카드 — 기본 미선택, 카드 클릭 = 선택 완료(다음 버튼 없음).
      컨테이너·콜백 주입형. only=Set(팩 id) 주면 그 팩만 그림(3개 추천용). */
+  // 썸네일·미리보기 로컬라이징 — 덱/데이터 클론의 문자열 값에 _L 적용(MAP에 있는 문구만 번역됨)
+  function locWalk(d){
+    try{
+      d=JSON.parse(JSON.stringify(d));
+      (function w(o){ for(const k in o){ const v=o[k]; if(typeof v==='string') o[k]=_L(v); else if(v&&typeof v==='object') w(v); } })(d);
+      return d;
+    }catch(e){ return d; }
+  }
   function buildStyleCards(kind, sz, onPick, only){
       const skip=(id)=> only && !only.has(id);
       const pick=(id,name)=>{ S.styleName=name; onPick(id,name); };
@@ -673,9 +720,9 @@
          ['machine', window.MACHINE_STYLE, window.renderMachineDeck, window.MACHINE_DEFAULT_DECK, window.machineTemplateDeck]].forEach(([pid, ps, rfn, dd, tfn])=>{
           if(!PPT_VISIBLE.includes(pid)) return;
           if(!ps || skip(pid)) return;
-          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${ps.name}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(dd):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(tfn?showcaseDeck(tfn):dd),ps.name); }catch(e){}
-          c.onclick=()=>{ c.classList.add('sel'); pick(pid, ps.name); };
+          const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${_L(ps.name)}</div>`);
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(locWalk(dd)):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(locWalk(tfn?showcaseDeck(tfn):dd)),_L(ps.name)); }catch(e){}
+          c.onclick=()=>{ c.classList.add('sel'); pick(pid, _L(ps.name)); };
           sz.append(c);
         });
       } else if(kind==='edm'){
@@ -1037,11 +1084,51 @@
   wireSpeech(document.getElementById('hmic'), hinput);
   wireSpeech(document.getElementById('cmic'), cinput);
 
-  // 타이틀 타이핑 연출 — 진입 시 한 글자씩. 모션 축소 설정이면 즉시 전체 표시
+  // 타이틀 타이핑 연출 — 이름 인사(있으면 2줄) + 한 글자씩. 모션 축소 설정이면 즉시 전체 표시
+  let _heroTypeTimer=null;
+  function heroGreeting(){
+    let name=''; try{ name=(localStorage.getItem('midas-username')||'').trim(); }catch(e){}
+    const lang=(window.I18N?I18N.getLang():'ko');
+    if(name){
+      if(lang==='en') return 'Hi '+name+',\nwhat would you like to create today?';
+      if(lang==='ja') return name+'さん、こんにちは\n今日は何を作りたいですか？';
+      if(lang==='zh') return name+'，你好\n今天想做点什么？';
+      return name+'님, 안녕하세요\n오늘은 무엇을 만들고 싶으신가요?';
+    }
+    return _L('무엇을 만들고 싶으신가요?');
+  }
+  function typeHero(){
+    const ht=document.getElementById('htype'), full=heroGreeting();
+    const paint=s=>{ ht.innerHTML=s.replace(/\n/g,'<br>'); };
+    if(_heroTypeTimer) clearInterval(_heroTypeTimer);
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ paint(full); return; }
+    let i=0; _heroTypeTimer=setInterval(()=>{ paint(full.slice(0,++i)); if(i>=full.length) clearInterval(_heroTypeTimer); }, 62);
+  }
+  typeHero();
+  // 타이틀 클릭 → 내 이름 설정 (인사말에 반영)
+  document.getElementById('hgreet').onclick=async ()=>{
+    let cur=''; try{ cur=localStorage.getItem('midas-username')||''; }catch(e){}
+    const v=await uiPrompt(_L('인사말에 쓸 이름을 알려주세요'), {value:cur, placeholder:_L('예: 채현'), okText:_L('저장')});
+    if(v===null) return;
+    try{ v.trim() ? localStorage.setItem('midas-username', v.trim()) : localStorage.removeItem('midas-username'); }catch(e){}
+    typeHero();
+  };
+  // 언어 스위처 — 우상단 pill. 전환 시 리로드(i18n 계약)
   (function(){
-    const ht=document.getElementById('htype'), full=_L('무엇을 만들고 싶으신가요?');
-    if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ ht.textContent=full; return; }
-    let i=0; const tm=setInterval(()=>{ ht.textContent=full.slice(0,++i); if(i>=full.length) clearInterval(tm); }, 62);
+    const btn=document.getElementById('hlangBtn'), menu=document.getElementById('hlangMenu'), cur=document.getElementById('hlangCur');
+    if(!btn || !window.I18N) return;
+    const now=I18N.getLang();
+    cur.textContent=(I18N.LANGS.find(l=>l[0]===now)||I18N.LANGS[0])[2];
+    I18N.LANGS.forEach(l=>{
+      const b=document.createElement('button');
+      b.innerHTML='<span>'+l[1]+'</span><i>'+l[2]+'</i>';
+      if(l[0]===now) b.classList.add('on');
+      b.onclick=()=>{ I18N.setLang(l[0]); location.reload(); };
+      menu.appendChild(b);
+    });
+    btn.onclick=e=>{ e.stopPropagation(); menu.hidden=!menu.hidden; };
+    // 바깥 클릭 닫기 — 캡처 페이즈 pointerdown(다른 핸들러의 stopPropagation에 안 막힘)
+    document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.hlang')) menu.hidden=true; }, true);
   })();
 
   async function flow0(){
@@ -1106,8 +1193,26 @@
       }
     }
 
-    // 스타일: 내용 키워드로 3개 추천, '다른 스타일 보기'로 전체 (선택은 카드 클릭 한 번)
-    bot(_L(S.kind==='edm'?'템플릿을 골라주세요.':'내용에 어울리는 스타일을 추천해요. 마음에 드는 걸 골라주세요!'));
+    // 스타일: 요약 멘트 → 추천 멘트 → 팩 리스트 (선택은 카드 클릭 한 번)
+    if(S.kind==='edm'){ bot(_L('템플릿을 골라주세요.')); }
+    else{
+      // "「이름」 랜딩페이지를 만드시려는 거군요!" — 질문이 끝났다는 신호 + 이해했다는 확인
+      const rc=(function(){
+        const lang=(window.I18N?I18N.getLang():'ko');
+        const nm=(S.name||S.product||'').trim();
+        const K={ppt:{ko:'발표자료(PPT)',en:'a presentation deck',ja:'プレゼン資料',zh:'演示文稿'},
+                 single:{ko:'랜딩페이지',en:'a landing page',ja:'ランディングページ',zh:'落地页'},
+                 multi:{ko:'웹사이트',en:'a website',ja:'ウェブサイト',zh:'网站'}}[S.kind];
+        if(!K) return '';
+        const k=K[lang]||K.ko;
+        if(lang==='en') return nm?('So you\'re making '+k+' for "'+nm+'" — got it!'):('So you\'re making '+k+' — got it!');
+        if(lang==='ja') return nm?('「'+nm+'」の'+k+'を作られるんですね！'):(k+'を作られるんですね！');
+        if(lang==='zh') return nm?('您要为「'+nm+'」制作'+k+'，明白了！'):('您要制作'+k+'，明白了！');
+        return nm?('「'+nm+'」 '+k+'를 만드시려는 거군요!'):(k+'를 만드시려는 거군요!');
+      })();
+      if(rc){ bot(rc); await new Promise(r=>setTimeout(r,420)); }
+      bot(_L('내용에 어울리는 디자인 스타일을 추천해드릴게요! 마음에 드는 걸 골라주세요.'));
+    }
     const st=await askStyleChat(S.kind, recStyles(S.kind, S.plan));
     if(S.kind==='ppt') S.pptStyle=st||'ax';
     else if(S.kind!=='edm') S.stylePack=st||'aether';

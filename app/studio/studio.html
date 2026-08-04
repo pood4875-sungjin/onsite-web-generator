@@ -188,6 +188,25 @@
   @keyframes et-shimmer{to{background-position:-220% 0}}
   @keyframes et-caret{50%{opacity:0}}
   .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
+  /* 콘텐츠 언어 스위처 — 누르면 UI+출력물이 그 언어로 */
+  #stLangBtn b{font-size:11px;font-weight:700;letter-spacing:.05em}
+  .stlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:136px;background:var(--surf);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.16);padding:5px;z-index:60;display:flex;flex-direction:column}
+  .stlangmenu button{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 11px;border:0;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--tx);cursor:pointer;text-align:left}
+  .stlangmenu button:hover{background:var(--line)}
+  .stlangmenu button.on{font-weight:700}
+  .stlangmenu button i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--tx2)}
+  .stlangmenu .note{font-size:11px;color:var(--tx2);padding:7px 11px 5px;border-top:1px solid var(--line);margin-top:3px}
+  /* 링크 만들기 — 시안(V3-05)의 다크 필 강조 버튼 + 결과 모달 */
+  .dl.dark{background:#14161f;color:#fff;border-color:#14161f;font-weight:600}
+  .dl.dark:disabled{opacity:.6}
+  .linkmodal{position:fixed;inset:0;z-index:200;background:rgba(10,12,20,.45);backdrop-filter:blur(4px);display:grid;place-items:center}
+  .linkmodal[hidden]{display:none}
+  .lm-card{width:min(460px,92vw);background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px}
+  .lm-card b.t{font-size:15px}
+  .lm-url{display:flex;gap:8px}
+  .lm-url input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--tx);background:var(--bg,transparent);font-family:inherit}
+  .lm-row{display:flex;gap:8px;justify-content:flex-end}
+  .lm-note{font-size:11.5px;color:var(--tx2)}
   .dl:hover{background:rgba(255,255,255,.1)}
   .dl.on{background:var(--grad-cta);color:#fff;border-color:transparent}
   .pvbox.editing{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:-2px}
@@ -435,8 +454,13 @@
       </div>
       <div style="display:flex;align-items:center;gap:6px">
         <button class="dl" id="histBtn" data-i18n-title="되돌리기" title="되돌리기" style="display:none">↺</button>
+        <div class="stlang" style="position:relative;display:inline-flex">
+          <button class="dl" id="stLangBtn" title="Language"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg><b id="stLangCur">KO</b></button>
+          <div class="stlangmenu" id="stLangMenu" hidden></div>
+        </div>
         <button class="dl" id="editBtn" data-i18n-title="텍스트·이미지 편집" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
         <button class="dl" id="previewBtn" data-i18n-title="생성된 페이지를 새 창에서 미리보기" title="생성된 페이지를 새 창에서 미리보기" data-i18n="미리보기">미리보기</button>
+        <button class="dl dark" id="linkBtn" style="display:none" data-i18n-title="접속 가능한 공유 링크를 만들어요" title="접속 가능한 공유 링크를 만들어요" data-i18n="링크 만들기">링크 만들기</button>
         <button class="dl" id="save" data-i18n="저장">저장</button>
         <button class="dl" id="expBtn">JSON</button>
         <button class="dl" id="dl">HTML</button>
@@ -824,6 +848,40 @@
       },120); },{passive:true});
     }
   });
+  /* ---- 콘텐츠 언어 스위처 — UI 언어 + 생성된 출력물(덱/사이트)을 함께 그 언어로 ---- */
+  (function(){
+    const btn=document.getElementById('stLangBtn'), menu=document.getElementById('stLangMenu'), cur=document.getElementById('stLangCur');
+    if(!btn||!window.I18N) return;
+    const now=I18N.getLang();
+    cur.textContent=(I18N.LANGS.find(l=>l[0]===now)||I18N.LANGS[0])[2];
+    I18N.LANGS.forEach(l=>{
+      const b=document.createElement('button');
+      b.innerHTML='<span>'+l[1]+'</span><i>'+l[2]+'</i>';
+      if(l[0]===now) b.classList.add('on');
+      b.onclick=async e=>{ e.stopPropagation(); menu.hidden=true; if(l[0]===I18N.getLang()) return; await switchContentLang(l[0]); };
+      menu.appendChild(b);
+    });
+    const nt=document.createElement('div'); nt.className='note'; nt.textContent=tL('화면과 콘텐츠가 함께 바뀝니다'); menu.appendChild(nt);
+    btn.onclick=e=>{ e.stopPropagation(); menu.hidden=!menu.hidden; };
+    document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.stlang')) menu.hidden=true; }, true);
+    async function switchContentLang(to){
+      btn.disabled=true; const oldHtml=btn.innerHTML; btn.innerHTML='🌐 …';
+      // 생성된 출력물이 있으면 콘텐츠도 번역 — 실패해도 UI 전환은 진행(콘텐츠는 원문 유지)
+      try{
+        if(window.LLM && LLM.aiAvailable() && LLM.translatePayload){
+          if(curMode().slides && data.slides && data.slides.length){
+            const out=await LLM.translatePayload({ slides: data.slides }, to);
+            if(out && Array.isArray(out.slides) && out.slides.length===data.slides.length){ data.slides=out.slides; persist(); }
+          } else if(!curMode().editOnly && data && (data.tagline||data.productName)){
+            const out=await LLM.translatePayload(data, to);
+            if(out && typeof out==='object' && (out.tagline||out.productName)){ Object.keys(data).forEach(k=>{ delete data[k]; }); Object.assign(data, out); persist(); }
+          }
+        }
+      }catch(e){ console.warn('[translate 실패 — UI만 전환]', e); }
+      I18N.setLang(to); location.reload();
+    }
+  })();
+
   editBtn.onclick=()=>{
     if(!generated){ editBtn.textContent=tL('먼저 생성하세요'); setTimeout(()=>editBtn.textContent=tL('편집'),1200); return; }
     editMode=!editMode;
@@ -1142,6 +1200,8 @@
     }
     d.append(el('div','',`<span style="color:var(--tx2);font-size:13px">${tL('우측 편집 버튼으로 텍스트·이미지·섹션 순서를 바꿀 수 있어요.')}</span>`));
     d.append(nextBtn(tL('↺ 새로 만들기'), reset));
+    // 웹/랜딩: 자연어 수정 채팅 활성화 (eDM·PPT는 editOnly라 여기 안 옴)
+    setTimeout(initWebChat, 0);
     return d;
   }
 
@@ -1534,6 +1594,50 @@
       mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat();
     }
+  }
+
+  /* ---- 웹/랜딩 내용수정 채팅 — PPT 챗 UI 재사용, LLM.editSite로 사이트 콘텐츠 패치 ---- */
+  let _webChatOn=false;
+  function initWebChat(){
+    if(_webChatOn) return; if(curMode().editOnly) return;
+    if(!(window.LLM && LLM.aiAvailable() && LLM.editSite)) return;
+    const box=document.getElementById('pptChat'), inp=document.getElementById('pptcInp');
+    const send=document.getElementById('pptcSend'), undoB=document.getElementById('pptcUndo');
+    if(!box) return;
+    _webChatOn=true; box.style.display='';
+    inp.placeholder=tL('예: 히어로 문구를 더 임팩트 있게');
+    addBot(tL('✏️ 말만 하면 고쳐드려요 — 문구·수치·기능 카드·페이지 문구까지. 🎨 디자인(색·글꼴·배치)은 스타일 팩이 자동 관리하고, 직접 고치려면 우측 편집 버튼을 쓰세요.'));
+    const chips=[ '히어로 문구를 더 임팩트 있게', '기능 카드를 더 구체적으로', 'CTA 버튼 문구를 바꿔줘', '전체 톤을 더 신뢰감 있게' ];
+    const cbox=document.getElementById('pptcChips'); cbox.innerHTML='';
+    chips.forEach(c=>{ const b=el('button','pptc-chip',tL(c)); b.onclick=()=>{ inp.value=tL(c); doSend(); }; cbox.append(b); });
+    const _webUndo=[];
+    function syncU(){ undoB.style.display=_webUndo.length?'':'none'; }
+    function swapData(next){ Object.keys(data).forEach(k=>{ delete data[k]; }); Object.assign(data, next); }
+    async function doSend(){
+      const t=inp.value.trim(); if(!t || send.disabled) return;
+      meBubble(t); inp.value=''; send.disabled=true;
+      const wk=workingBubble();
+      const snap=JSON.stringify(data);
+      const t0=Date.now();
+      try{
+        const res=await LLM.editSite(data, t);
+        LLM.recordDur('edit', Date.now()-t0);
+        wk.done();
+        if(res.site){
+          _webUndo.push(snap); if(_webUndo.length>20)_webUndo.shift();
+          swapData(res.site);   // data 참조를 유지한 채 내용만 교체 — 다른 클로저가 data를 물고 있음
+          persist(); render(); syncU();
+          botBubble((res.message||tL('수정했어요.'))+' '+tL('(↺로 되돌릴 수 있어요)'));
+        } else {
+          botBubble(res.message||tL('요청을 이해하지 못했어요. 페이지 내용 수정을 말씀해주세요.'));
+        }
+      }catch(e){ wk.done(); botBubble(tL('수정에 실패했어요. 잠시 후 다시 시도해주세요.')+' ('+(e&&e.message||'')+')'); }
+      finally{ send.disabled=false; scroll(); }
+    }
+    send.onclick=doSend;
+    inp.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return; if(e.key==='Enter'){ e.preventDefault(); doSend(); } };
+    undoB.onclick=()=>{ const s=_webUndo.pop(); if(!s) return; swapData(JSON.parse(s)); persist(); render(); syncU(); botBubble(tL('마지막 수정을 되돌렸어요.')); scroll(); };
+    syncU();
   }
 
   /* ---- PPT 내용수정 채팅 — 내용·구조(추가/분할/삭제/순서) AI 수정. 디자인만 안내로 리다이렉트 ---- */
@@ -2497,6 +2601,43 @@
     /* 웹사이트·랜딩·eDM: PPT와 같은 방식 — 흩어져 있던 JSON·HTML 버튼을
        "내보내기" 하나로 합치고, 형식은 모달에서 고른다. */
     ['pptxBtn','expBtn','dl'].forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display='none'; });
+    /* 웹/랜딩: "링크 만들기" — 페이지 HTML을 워커에 발행해 접속 가능한 공유 URL 생성 (시안 V3-05) */
+    if(!curMode().editOnly){
+      const lb=document.getElementById('linkBtn');
+      lb.style.display='';
+      lb.onclick=async ()=>{
+        if(!generated){ await uiAlert(tL('먼저 페이지를 생성해주세요.')); return; }
+        const base=(window.LLM && LLM.proxyUrl && LLM.proxyUrl())||'';
+        if(!base){ await uiAlert(tL('공유 서버 주소가 설정되지 않았어요.')); return; }
+        const o=lb.textContent; lb.disabled=true; lb.textContent=tL('링크 만드는 중…');
+        try{
+          const r=await fetch(base+'/publish',{ method:'POST', headers:{'content-type':'application/json'},
+            body: JSON.stringify({ html: pageHtml(), title: (project&&project.name)||'' }) });
+          const j=await r.json().catch(()=>null);
+          if(!r.ok || !j || !j.url) throw new Error((j&&(j.message||j.error))||('HTTP '+r.status));
+          showLinkModal(j.url, j.expiresDays||90);
+        }catch(e){ await uiAlert(tL('링크 생성에 실패했어요.')+' '+(e&&e.message||'')); }
+        finally{ lb.disabled=false; lb.textContent=o; }
+      };
+    }
+    function showLinkModal(u, days){
+      let m=document.getElementById('linkModal');
+      if(!m){
+        m=document.createElement('div'); m.className='linkmodal'; m.id='linkModal';
+        m.innerHTML='<div class="lm-card"><b class="t">🔗 '+tL('링크가 만들어졌어요!')+'</b>'+
+          '<div class="lm-url"><input id="lmUrl" readonly><button class="dl" id="lmCopy">'+tL('복사')+'</button></div>'+
+          '<span class="lm-note">'+tL('이 주소만 있으면 누구나 볼 수 있어요.')+' ('+tL('보관')+' '+days+tL('일')+')</span>'+
+          '<div class="lm-row"><button class="dl" id="lmClose">'+tL('닫기')+'</button><button class="dl dark" id="lmOpen">'+tL('새 창에서 열기')+'</button></div></div>';
+        document.body.append(m);
+        m.addEventListener('click',e=>{ if(e.target===m) m.hidden=true; });
+        m.querySelector('#lmClose').onclick=()=>{ m.hidden=true; };
+      }
+      const inp=m.querySelector('#lmUrl'); inp.value=u;
+      m.querySelector('#lmOpen').onclick=()=>{ window.open(u,'_blank'); };
+      const cp=m.querySelector('#lmCopy');
+      cp.onclick=async ()=>{ try{ await navigator.clipboard.writeText(u); cp.textContent=tL('복사됨 ✓'); setTimeout(()=>cp.textContent=tL('복사'),1400); }catch(e){ inp.select(); document.execCommand('copy'); } };
+      m.hidden=false; setTimeout(()=>{ inp.select(); },60);
+    }
     const xb=document.getElementById('exportBtn'), modal=document.getElementById('expModal');
     const grid=modal.querySelector('.expm-grid'), scope=modal.querySelector('.expm-range');
     const goBtn=document.getElementById('expmGo');

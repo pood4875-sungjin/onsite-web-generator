@@ -18,3 +18,8 @@ AI_GATEWAY = "webgen"
 [[kv_namespaces]]
 binding = "RATE_KV"
 id = "96139687e5e44434813b6ffd1dc6d7a4"
+
+# 공유 링크(웹 스튜디오 "링크 만들기") 저장소 — 페이지 HTML을 90일 보관.
+[[kv_namespaces]]
+binding = "PUB"
+id = "2dc2940a9b354b608bae56140e8ff094"

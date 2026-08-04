@@ -348,7 +348,33 @@ const INTAKE_SYSTEM =
   '- multi=복수 응답이 자연스러운 질문이면 true(예: 강조하고 싶은 내용, 포함할 요소). 하나만 고르는 게 맞으면 false(예: 청중, 목적, 톤).\n' +
   '  예: 청중 질문이면 ["대학생·취준생","주니어 디자이너","실무 디자이너","리더·경영진"]처럼 브리프 주제에 맞춘 구체 선택지.\n' +
   '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름). 분량도 묻지 마라(따로 고름).\n' +
-  '- q·opts는 {LANG}, q는 정중한 한 문장. key는 영문 스네이크(예: target_audience).';
+  '- q·opts는 {LANG}, q는 정중한 한 문장. key는 영문 스네이크(예: target_audience). opts 각 항목은 내용과 어울리는 이모지 1개로 시작한다(예: "📈 매출 성장").';
+
+/* 출력물 로컬라이징 — 덱/사이트 JSON의 텍스트 값만 목표 언어로. 구조·시스템 값은 불변 */
+const TRANSLATE_SYSTEM =
+  '너는 전문 로컬라이저다. 받은 JSON 안의 사용자 노출 텍스트 값을 전부 {TO}로 번역해, 완전히 같은 구조의 JSON으로 돌려준다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지. 형식: {"payload":{...입력과 같은 구조...}}\n' +
+  '규칙:\n' +
+  '- 키 이름·배열 길이·객체 구조·숫자·불리언·null은 절대 바꾸지 않는다. 문자열 값만 번역한다.\n' +
+  '- 텍스트 안의 마크업(**굵게**, __딤__)과 줄바꿈(\\n), "A → B" 화살표는 자리를 살려 그대로 유지한다.\n' +
+  '- 브랜드·제품·고유명사(MIDAS, ONSITE 등)는 번역하지 않는다.\n' +
+  '- type·id·kind·variants·stylePack·tone·state(on 등) 같은 시스템 열거값은 절대 번역하지 않는다.\n' +
+  '- 이미 전부 영문 대문자인 짧은 디자인 라벨("01 — WHY NOW", "BEFORE", "NOW" 류 kicker·tag·label)은 영문 그대로 둔다.\n' +
+  '- 번역 톤: 발표·마케팅 문맥에 맞는 자연스러운 {TO}. 직역투 금지. 길이는 원문과 비슷하게(레이아웃 유지).';
+
+/* 웹/랜딩 자연어 수정 — 사이트 콘텐츠 JSON을 지시대로 고쳐 전체를 돌려준다.
+   디자인(색·폰트·배치) 지시는 콘텐츠를 건드리지 않고 message로 안내(스타일 팩 소관). */
+const WEB_EDIT_SYSTEM =
+  '너는 웹 콘텐츠 편집자다. 현재 사이트 콘텐츠 JSON과 사용자 지시를 받아, 지시대로 수정한 결과를 돌려준다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"site":{...수정된 전체 사이트 JSON...},"message":"무엇을 어떻게 바꿨는지 {LANG} 한두 문장"}\n' +
+  '규칙:\n' +
+  '- site는 입력 JSON과 같은 구조·같은 필드 구성을 유지하고, 지시에 해당하는 부분만 바꾼다. 나머지 필드는 값 그대로 복사한다.\n' +
+  '- 필드 참고: productName(제품명), tagline(히어로 타이틀), subcopy(히어로 설명), primaryCta(대표 버튼), features[](기능 카드 {title,desc}), stats[](수치 {value,label}), bannerText/bannerCta(하단 배너), footerLinks[], footerCopyright, pages[](하위 페이지 — 같은 구조 반복), variants(섹션 표현 변형), 유형별 필드(overview·featureRows·faq·form·agenda·speakers·posts·docs·steps·testimonials 등).\n' +
+  '- 콘텐츠(문구·수치·항목 추가/삭제/순서·페이지 문구)만 수정한다. 색·글꼴·배치 같은 디자인 지시면 site를 그대로 두고 message에 "디자인은 스타일 팩이 자동 관리해요"라고 안내한다.\n' +
+  '- 항목을 추가할 땐 이웃 항목과 같은 구조로. 근거 없는 수치 창작 금지 — 지시나 기존 값에 근거해서만.\n' +
+  '- 지시가 특정 페이지를 가리키면(예: "요금 페이지") pages[]에서 그 페이지를 찾아 수정한다.\n' +
+  '- message는 {LANG}로, 무엇을 했는지 구체적으로(예: "hero 영역의 타이틀을 더 임팩트 있게 바꿨어요!").';
 
 /* 내용 수정(채팅) — 전체 slides 교체 계약. 내용·구조(추가/분할/삭제/순서) 전부 허용, 디자인만 거절 */
 const EDIT_SYSTEM =
@@ -371,7 +397,32 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
     const route = url.pathname;
-    const ROUTES = ['/compose', '/edit', '/compose-web', '/intake'];
+    const ROUTES = ['/compose', '/edit', '/compose-web', '/edit-web', '/translate', '/intake'];
+
+    // ---- 공유 링크 조회 — GET /p/:id (스튜디오 "링크 만들기"로 발행된 페이지 서빙) ----
+    if (req.method === 'GET' && /^\/p\/[A-Za-z0-9]{6,12}$/.test(route)) {
+      let html = null;
+      try { html = await env.PUB.get('p:' + route.slice(3)); } catch (e) {}
+      if (!html) return new Response('<!doctype html><meta charset="utf-8"><title>Not found</title><body style="font-family:system-ui;display:grid;place-items:center;height:100vh;margin:0"><p>이 링크는 만료됐거나 존재하지 않아요.</p>', { status: 404, headers: { 'content-type': 'text/html; charset=utf-8' } });
+      return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', 'x-robots-tag': 'noindex' } });
+    }
+
+    // ---- 공유 링크 발행 — POST /publish {html,title} → {url} (LLM 미사용 — 일일 제한 제외) ----
+    if (req.method === 'POST' && route === '/publish') {
+      let pb;
+      try { pb = await req.json(); } catch (e) { return json({ error: 'BAD_REQUEST' }, 400); }
+      const html = typeof pb.html === 'string' ? pb.html : '';
+      if (!html || html.length < 40) return json({ error: 'EMPTY_HTML' }, 400);
+      if (html.length > 5 * 1024 * 1024) return json({ error: 'TOO_LARGE', message: '페이지가 5MB를 넘어 링크를 만들 수 없어요. 큰 이미지를 줄여주세요.' }, 413);
+      const abc = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      let id = '';
+      const rnd = crypto.getRandomValues(new Uint8Array(8));
+      for (let i = 0; i < 8; i++) id += abc[rnd[i] % abc.length];
+      try { await env.PUB.put('p:' + id, html, { expirationTtl: 60 * 60 * 24 * 90 }); }
+      catch (e) { return json({ error: 'STORE_FAIL' }, 500); }
+      return json({ id, url: url.origin + '/p/' + id, expiresDays: 90 });
+    }
+
     if (req.method !== 'POST' || ROUTES.indexOf(route) < 0) return json({ error: 'NOT_FOUND' }, 404);
 
     // ---- IP당 일일 제한 (KV) ----
@@ -400,6 +451,9 @@ export default {
       };
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = clip(body.pack, 10) === 'machine' ? MACHINE_SYSTEM : clip(body.pack, 10) === 'sfmi' ? SFMI_SYSTEM : clip(body.pack, 10) === 'pastel' ? PASTEL_SYSTEM : clip(body.pack, 10) === 'rams' ? RAMS_SYSTEM : clip(body.pack, 10) === 'naver' ? NAVER_SYSTEM : clip(body.pack, 10) === 'honors' ? HONORS_SYSTEM : clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
+      // 덱 콘텐츠 언어 — UI 언어를 따른다(영어 시연 등). ko면 기존 시스템의 한국어 지시 그대로.
+      const deckLang = clip(body.lang, 5) || 'ko';
+      if (deckLang !== 'ko') system += '\n[출력 언어 — 최우선 규칙] 위 지시의 "한국어"와 무관하게, 모든 슬라이드 텍스트(제목·본문·리스트·캡션·note·인용)를 ' + uiLangName(deckLang) + '로 작성한다. 브랜드·고유명사는 원문 유지. 영문 챕터 라벨(label·tag 대문자류)은 그대로 영문.';
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
       const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
@@ -418,6 +472,20 @@ export default {
       if (!safe.plan && !safe.product && !safe.name) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = WEB_SYSTEM;
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2) + '\n(올해 연도: ' + new Date().getFullYear() + ')';
+    } else if (route === '/translate') {
+      // 출력물 로컬라이징 — 덱({slides})이든 사이트든 JSON 구조 그대로, 텍스트 값만 목표 언어로
+      const payload = body.payload && typeof body.payload === 'object' ? body.payload : null;
+      const to = clip(body.to, 5) || 'en';
+      if (!payload) return json({ error: 'BAD_REQUEST' }, 400);
+      system = TRANSLATE_SYSTEM.split('{TO}').join(uiLangName(to));
+      userMsg = 'JSON:\n' + clip(JSON.stringify(payload), 26000);
+    } else if (route === '/edit-web') {
+      // 웹/랜딩 자연어 수정 — 현재 사이트 콘텐츠 JSON 전체를 받아 지시대로 고친 전체를 돌려받는다(PPT /edit와 같은 계약)
+      const site = body.site && typeof body.site === 'object' ? body.site : null;
+      const instruction = clip(body.instruction, 800);
+      if (!site || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
+      system = WEB_EDIT_SYSTEM.replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
+      userMsg = '현재 사이트 콘텐츠:\n' + clip(JSON.stringify(site), 26000) + '\n\n사용자 지시:\n' + instruction;
     } else { // /edit
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
