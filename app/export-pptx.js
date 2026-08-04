@@ -62,7 +62,7 @@
     '.nx-dktitle', '.nx-dksub', '.nx-sprow .rl', '.nx-sprow .tx', '.nx-ba .cp', '.nx-ba li',
     '.nx-dmtitle', '.nx-dmcol .hd i', '.nx-dmcol .hd b', '.nx-dmcol .tx',
     '.nx-pgl .cp', '.nx-pgl .big b', '.nx-pgl .big i', '.nx-prow .tt', '.nx-prow .pc', '.nx-prow .cp', '.nx-prow .cp2',
-    '.nx-rm .cp', '.nx-rm .tt', '.nx-rm li', '.nx-tlc b', '.nx-tlc span', '.ms-m', '.ms-lab', '.ms-bar i', '.ms-phase b', '.ms-phase span',
+    '.nx-rm .cp', '.nx-rm .tt', '.nx-rm li', '.nx-tlc b', '.nx-tlc span', '.nx-chk b', '.nx-chk span', '.ms-m', '.ms-lab', '.ms-bar i', '.ms-phase b', '.ms-phase span',
     /* 마일스톤(전 팩 공통) */ '.ms-ptag', '.ms-phead', '.ms-ptext', '.ms-cap', '.ms-bar b', '.ms-bar span', '.ms-axis span', '.ms-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +

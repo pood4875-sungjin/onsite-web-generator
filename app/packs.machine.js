@@ -260,6 +260,23 @@
         '<span class="big"><b' + de(P + '.big') + '>' + esc(String(s.big != null ? s.big : 0)) + '</b><i>%</i></span></div>' +
         '<div class="nx-pgr">' + rows + '</div></div></section>';
     },
+    /* 차트 — 추이·비교 그래프. 그리기는 공통 자산(window.Charts)에 위임, 색은 machine 토큰 상속 */
+    chart: function (s, P, ctx) {
+      var dk = !!s.dark;
+      var ch = (s.chart && window.Charts && window.Charts.render) ? window.Charts.render(s.chart, { path: P + '.chart' }) : '';
+      var side = (s.stats || []).slice(0, 3).map(function (k, i) {
+        var IP = P + '.stats.' + i;
+        return '<div class="nx-chk' + (k.on ? ' on' : '') + '"><b' + de(IP + '.value') + '>' + esc(k.value || '') + '</b><span' + de(IP + '.label') + '>' + mb(k.label || '') + '</span></div>';
+      }).join('');
+      return '<section class="slide nx chx' + (dk ? ' dk2' : '') + '" data-kind="' + kind(s, 'Chart') + '">' +
+        runhead(s, P, ctx, dk ? 'dk' : '') +
+        (dk ? '<h2 class="nx-dktitle"' + de(P + '.title') + '>' + mb(emph(s.title || '')) + '</h2>' +
+          (s.sub ? '<p class="nx-dksub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '')
+          : headline(s, P) + sub(s, P)) +
+        '<div class="nx-chgrid' + (side ? '' : ' solo') + '"><div class="nx-chbox">' + ch + '</div>' +
+        (side ? '<div class="nx-chside">' + side + '</div>' : '') + '</div>' +
+        footline(s, P, dk) + '</section>';
+    },
     /* 로드맵 — NOW/NEXT/THEN 3열 + 하단 타임라인 바. 원본 18 */
     roadmap: function (s, P, ctx) {
       var cols = (s.items || []).slice(0, 3).map(function (it, i) {
@@ -529,13 +546,29 @@
     '.ms-phases{display:grid;grid-auto-flow:column;gap:26px;margin-top:18px}',
     '.ms-phase b{font-size:12px;color:' + GREEN + ';font-weight:800}',
     '.ms-phase span{display:block;font-size:11.5px;color:#6D6F74;margin-top:3px}',
+    /* 차트 (chx) — 그리기는 charts.js, 색은 토큰 오버라이드로 그린 상속 */
+    '.slide.nx.chx.dk2{background:#14181F;color:#fff}',
+    '.nx-chgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:center;margin-top:14px}',
+    '.nx-chgrid.solo{grid-template-columns:1fr}',
+    '.nx-chbox{height:100%;max-height:420px;display:grid;place-items:center;min-width:0;' +
+    '--pg:' + GREEN + ';--pg2:#69DB7C;--pg3:#A6ADB4;--pg4:#4B5158;--pblue:#2F9E44;--ink:#14181F;--grey:#EDEFF2;--line:#fff;--font:"Pretendard",system-ui,sans-serif}',
+    '.nx-chbox svg{max-width:100%;max-height:100%;overflow:visible}',
+    '.nx-chbox .cht-v{font-size:26px;font-weight:700}.nx-chbox .cht-c{font-size:17px;font-weight:500}',
+    '.slide.nx.chx.dk2 .nx-chbox{--ink:#fff;--grey:#262B33;--line:#14181F;--pg3:#6D6F74;--pg4:#575C64}',
+    '.nx-chside{display:flex;flex-direction:column;gap:20px}',
+    '.nx-chk{border-top:1.5px solid #E4E6E8;padding-top:13px;display:flex;flex-direction:column;gap:5px}',
+    '.nx-chk b{font-size:46px;font-weight:800;letter-spacing:-.02em;color:#14181F;line-height:1}',
+    '.nx-chk.on b{color:#2F9E44}',
+    '.nx-chk span{font-size:16.5px;color:#6D6F74;font-weight:500;line-height:1.45}',
+    '.slide.nx.chx.dk2 .nx-chk{border-color:rgba(255,255,255,.14)}',
+    '.slide.nx.chx.dk2 .nx-chk b{color:#fff}.slide.nx.chx.dk2 .nx-chk.on b{color:' + GREEN + '}',
     /* 편집 훅 */
     '[data-edit]{cursor:default}'
   ].join('\n');
 
   /* ---- 상태 재적용 스크립트 (공통 계약) ---- */
   var MV_SEL = '[data-edit], .nx-photo, .nx-qbar, .nx-track, .nx-dash';
-  var UNIT_SEL = '.nx-2col,.nx-stcol,.nx-tocrow,.nx-ref,.nx-lc,.nx-bn,.nx-ag,.nx-pc,.nx-dhmini,.nx-sprow,.nx-ba,.nx-dmcol,.nx-prow,.nx-rm,.nx-tlc,.nx-qlist li,.ms-bar,.ms-phase';
+  var UNIT_SEL = '.nx-2col,.nx-stcol,.nx-tocrow,.nx-ref,.nx-lc,.nx-bn,.nx-ag,.nx-pc,.nx-dhmini,.nx-sprow,.nx-ba,.nx-dmcol,.nx-prow,.nx-rm,.nx-tlc,.nx-qlist li,.ms-bar,.ms-phase,.nx-chbox,.nx-chk';
   function stateScript(slides) {
     var st = slides.map(function (s) { return { _pos: s._pos || null, _hide: s._hide || null, _fmt: s._fmt || null, _z: s._z || null, _ta: s._ta || null, _fs: s._fs || null, _tw: s._tw || null }; });
     var js = '(function(){var ST=' + JSON.stringify(st) + ';var SEL=' + JSON.stringify(MV_SEL) + ';' +
@@ -576,9 +609,11 @@
     }).join('');
   }
 
+  function chcss() { return (window.Charts && window.Charts.css) ? window.Charts.css() : ''; }
+
   function renderMachineDeck(data) {
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' + CSS + '</style></head><body>' +
+    return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
   }
 
@@ -597,7 +632,7 @@
       'if(e.key==="ArrowLeft"||e.key==="PageUp")show(i-1);if(e.key==="Home")show(0);if(e.key==="End")show(n-1);});' +
       'addEventListener("click",function(e){if(e.clientX>innerWidth/2)show(i+1);else show(i-1);});' +
       'addEventListener("resize",fit);fit();show(0);})();';
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' + CSS +
+    return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS +
       '\nhtml,body{background:#0A0D12;height:100%;overflow:hidden}' +
       '.ppt-stack{position:absolute;left:50%;top:50%;margin:-360px 0 0 -640px;width:1280px;height:720px;padding:0;gap:0;transform-origin:center center}' +
       '.ppt-stack > .slide{display:none}' +
@@ -626,7 +661,8 @@
     { type: 'progress', label: '진행률(다크)', use: '현황 보고. bigLabel·big(%) + rows[]{label,pct,cap,cap2,on(하이라이트)}' },
     { type: 'roadmap', label: '로드맵 3열', use: 'items[3]{tag(NOW·NEXT·THEN),title,items[](**=그린)} + timeline[]{label(월),text,dim}' },
     { type: 'closing', label: '엔딩(다크 포토)', use: '마무리. title(__딤·**볼드)·band·note(**=그린)·noteR(우측 2줄)' },
-    { type: 'milestone', label: '밀스톤 간트', use: '일정. months[]·rows[]{label,start,len,tag,on}·phases[]{label,text}' }
+    { type: 'milestone', label: '밀스톤 간트', use: '일정. months[]·rows[]{label,start,len,tag,on}·phases[]{label,text}' },
+    { type: 'chart', label: '차트(추이·비교)', use: '우상향 추이·값 비교를 그래프로. chart{type:area|line|bar|donut|gauge|ring,categories,series} + stats[≤3] 우측 KPI + dark 다크 변형' }
   ];
 
   /* ---- 원본 19장 그대로 (기본 덱) ---- */
@@ -728,6 +764,10 @@
     rows: [ { label: 'Prototype', start: 0, len: 1.5, tag: '안정화', on: true }, { label: '2차 Agent', start: 1, len: 2, tag: '선정·착수' }, { label: '테스트베드', start: 2, len: 1.5 }, { label: '실전 적용', start: 3, len: 2, tag: '프로젝트' } ],
     phases: [ { label: '8월', text: 'Design Pack 안정화' }, { label: '10월', text: '테스트베드' }, { label: '11월', text: '실제 적용' } ],
     note: '효과가 확인된 단계부터 **넓혀갑니다**' };
+  STARTERS.chart = { type: 'chart', kicker: 'DATA', title: '지표는 **우상향**하고 있습니다',
+    chart: { type: 'area', categories: ['1월', '2월', '3월', '4월', '5월'], series: [{ name: '누적', values: [12, 19, 27, 38, 52] }] },
+    stats: [ { value: '52', label: '누적 지표', on: true }, { value: '+33%', label: '월 평균 성장' } ],
+    note: '핵심 지표가 **꾸준히 상승**하고 있습니다' };
 
   var SCHEMA_DOC = CATALOG.map(function (c) { return '- ' + c.type + ' (' + c.label + '): ' + c.use; }).join('\n');
   var FIELD_DOC =
@@ -747,7 +787,8 @@
     'beforeafter: cols[2]{tag,items[]}\n' +
     'progress: bigLabel,big(숫자),rows[≤4]{label,pct(0-100),cap,cap2(그린 캡션),on(하이라이트 박스)}\n' +
     'roadmap: items[3]{tag,title,items[]}, timeline[]{label(월),text,dim}\n' +
-    'milestone: months[],rows[]{label,start,len,tag,on},phases[]{label,text}';
+    'milestone: months[],rows[]{label,start,len,tag,on},phases[]{label,text}\n' +
+    'chart: chart{type:"area|line|bar|donut|gauge|ring",categories:[문자열],series:[{name,values:[숫자]}],max?(gauge·ring 상한),format?:{prefix,suffix}}, stats[≤3]{value,label,on(그린 강조)}, dark(true=다크 지면)';
 
   function machineTemplateDeck() {
     var slides = CATALOG.map(function (c) { return JSON.parse(JSON.stringify(STARTERS[c.type])); });

@@ -212,12 +212,12 @@
   function lineLike(sp, P, fill) {
     var d = size(sp, 800, 340), v = vals(sp), cats = sp.categories || [];
     var max = Math.max.apply(null, v.concat([1])), min = Math.min.apply(null, v.concat([0]));
-    var padB = cats.length ? 40 : 10, padT = 34, base = d.h - padB, plot = base - padT;
-    var n = v.length || 1, step = n > 1 ? d.w / (n - 1) : d.w;
-    var pts = v.map(function (val, i) { return [i * step, base - ((val - min) / (max - min || 1)) * plot]; });
+    var padB = cats.length ? 40 : 10, padT = 34, padX = 46, base = d.h - padB, plot = base - padT;
+    var n = v.length || 1, step = n > 1 ? (d.w - padX * 2) / (n - 1) : d.w;
+    var pts = v.map(function (val, i) { return [padX + i * step, base - ((val - min) / (max - min || 1)) * plot]; });
     var poly = pts.map(function (p) { return p[0] + ' ' + p[1]; }).join(' L ');
     var stroke = '<path d="M ' + poly + '" fill="none" stroke="var(--pg,#39B966)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>';
-    var areaP = fill ? '<path d="M 0 ' + base + ' L ' + poly + ' L ' + (pts[pts.length - 1] || [0, 0])[0] + ' ' + base + ' Z" fill="url(#chGrad)"/>' : '';
+    var areaP = fill ? '<path d="M ' + padX + ' ' + base + ' L ' + poly + ' L ' + (pts[pts.length - 1] || [0, 0])[0] + ' ' + base + ' Z" fill="url(#chGrad)"/>' : '';
     var defs = fill ? '<defs><linearGradient id="chGrad" x1="0" y1="0" x2="0" y2="1">' +
       '<stop offset="0%" stop-color="var(--pg2,#52B788)" stop-opacity=".55"/><stop offset="100%" stop-color="var(--pg,#39B966)" stop-opacity=".05"/></linearGradient></defs>' : '';
     var dots = pts.map(function (p, i) {

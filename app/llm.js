@@ -141,7 +141,7 @@
   // naver 팩(Design AX Line) — 독자 타입 체계 (packs.naver.js CATALOG와 동일 목록)
   var NAVER_ALLOWED = { cover: 1, statement: 1, toc: 1, divider: 1, section: 1, cards: 1, split: 1, stats: 1, media: 1, roadmap: 1, bigstat: 1, kpi: 1, table: 1, timeline: 1, milestone: 1, process: 1, compare: 1, quote: 1, position: 1, checklist: 1, lineup: 1, branch: 1, highlight: 1, board: 1, closing: 1 };
   // machine 팩(AX Machine) — 독자 타입 체계 (packs.machine.js CATALOG와 동일 목록)
-  var MACHINE_ALLOWED = { cover: 1, statement: 1, toc: 1, twocol: 1, quote: 1, refcards: 1, linecards: 1, bignum: 1, agenda: 1, process: 1, darkhero: 1, spec: 1, beforeafter: 1, demo: 1, progress: 1, roadmap: 1, closing: 1, milestone: 1 };
+  var MACHINE_ALLOWED = { cover: 1, statement: 1, toc: 1, twocol: 1, quote: 1, refcards: 1, linecards: 1, bignum: 1, agenda: 1, process: 1, darkhero: 1, spec: 1, beforeafter: 1, demo: 1, progress: 1, roadmap: 1, closing: 1, milestone: 1, chart: 1 };
   // rams 팩 — naver와 동일 타입 어휘(스타일만 다름)
   function allowedFor(pack) { return pack === 'machine' ? MACHINE_ALLOWED : pack === 'sfmi' ? NAVER_ALLOWED : pack === 'pastel' ? NAVER_ALLOWED : pack === 'rams' ? NAVER_ALLOWED : pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
