@@ -50,6 +50,19 @@
     '.sf-kpc i', '.sf-kp .lb', '.sf-kp .ds', '.sf-tbrow > span', '.sf-trow > span', '.sf-pcc .hd', '.sf-pcc .tx', '.sf-pctx', '.sf-arr',
     '.sf-cmpc ul li', '.sf-qtx', '.sf-lnc .hd', '.sf-lnbadge', '.sf-venn .hd', '.sf-venn .tx', '.sf-needbox .tx',
     '.sf-hltitle', '.sf-hlrow .no', '.sf-hlrow .h', '.sf-hlrow .t', '.sf-hlfn', '.sf-botitle', '.sf-bocrc .hd', '.sf-boside li', '.sf-boside .pl span', '.sf-imgph span',
+    /* machine 팩(AX Machine, nx-) — 러닝헤더·타이틀·리스트·카드·게이지 텍스트 */
+    '.nx-runl', '.nx-runr', '.nx-hl', '.nx-sub', '.nx-foot .nx-ftx', '.nx-foot .nx-ftr',
+    '.nx-cvtitle', '.nx-cvlead span', '.nx-cvfoot span', '.nx-cltitle', '.nx-clfoot .l', '.nx-clfoot .r',
+    '.nx-sttitle', '.nx-stcol .tg', '.nx-stcol .tx', '.nx-tctitle', '.nx-tocrow .no', '.nx-tocrow .ch', '.nx-tocrow .ds', '.nx-tocrow .pg',
+    '.nx-2col .hd', '.nx-2col li i', '.nx-2col li span', '.nx-qlist .hd', '.nx-qlist li', '.nx-qtx',
+    '.nx-ref .tt', '.nx-ref .cp', '.nx-ref .ds', '.nx-src', '.nx-lc .cp', '.nx-lc .tt', '.nx-lc .ds', '.nx-band .bt', '.nx-band .bx',
+    '.nx-bn .no', '.nx-bn .tt', '.nx-bn .ds', '.nx-ag .cp', '.nx-ag .tt', '.nx-ag .stt', '.nx-ag .ds',
+    '.nx-prlab .cp', '.nx-prlab .cr', '.nx-pc .cp', '.nx-pc .tt', '.nx-pc .ds',
+    '.nx-dhtitle', '.nx-dhl .cp', '.nx-dhl .ld', '.nx-dhmini .cp', '.nx-dhmini .tt', '.nx-dhmini .ds', '.nx-dhr .cp', '.nx-dhr li',
+    '.nx-dktitle', '.nx-dksub', '.nx-sprow .rl', '.nx-sprow .tx', '.nx-ba .cp', '.nx-ba li',
+    '.nx-dmtitle', '.nx-dmcol .hd i', '.nx-dmcol .hd b', '.nx-dmcol .tx',
+    '.nx-pgl .cp', '.nx-pgl .big b', '.nx-pgl .big i', '.nx-prow .tt', '.nx-prow .pc', '.nx-prow .cp', '.nx-prow .cp2',
+    '.nx-rm .cp', '.nx-rm .tt', '.nx-rm li', '.nx-tlc b', '.nx-tlc span', '.ms-m', '.ms-lab', '.ms-bar i', '.ms-phase b', '.ms-phase span',
     /* 마일스톤(전 팩 공통) */ '.ms-ptag', '.ms-phead', '.ms-ptext', '.ms-cap', '.ms-bar b', '.ms-bar span', '.ms-axis span', '.ms-note'].join(',');
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
@@ -57,6 +70,7 @@
     /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
+    /* machine 팩 — 사진·셰이드·라인·바·밴드·게이지 */ '.nx-photo, .nx-shade, .nx-dash, .nx-run, .nx-2col li, .nx-qbar, .nx-ref .ln, .nx-lc .ln, .nx-band, .nx-bn .ln, .nx-ag .ln, .nx-pc.on, .nx-prlab .ln, .nx-dhl .ln, .nx-sprow, .nx-ba .ln, .nx-dmcol .ln, .nx-track, .nx-fill, .nx-prow.on, .nx-rm .ln, .nx-tl, .nx-foot, .nx-toclist, .nx-tocrow, .nx-clfoot, ' +
     /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
     /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
