@@ -271,6 +271,13 @@
     /* [시연 잠금] GNB 브랜드·히어로 서브타이틀(eyebrow)은 무조건 고정 문구 — 생성·번역·편집값보다 우선 */
     d.productName = 'MIDAS GEN NX Seminar 2026';
     d.eyebrow = 'MIDAS GEN NX Seminar 2026';
+    /* [시연 잠금] 히어로 타이틀 — 생성마다 바뀌지 않게 언어별 고정(첫 줄 라이트·둘째 줄 볼드는 mixT가 처리) */
+    d.tagline = ({
+      ko: '구조설계의 진화\n차세대 구조설계 워크플로우를 만나보세요',
+      en: 'Structural design, evolved\nMeet the Next Generation of Structural Design Workflow',
+      ja: '構造設計の進化\n次世代の構造設計ワークフローへ',
+      zh: '结构设计，全面进化\n遇见新一代结构设计工作流',
+    })[LANG];
     // 템플릿 고정 라벨 — 산출물 언어(_clang)를 따른다. 데이터가 아니라 번역 파이프라인을 안 타므로 팩이 직접 처리.
     var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
     var TT = {

@@ -336,6 +336,14 @@
     var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
+    /* [시연 잠금] GNB·히어로 타이틀 고정 — 누가 언제 뽑아도 동일(생성·번역·편집값보다 우선) */
+    d.navTitle = 'MIDAS GEN NX Seminar 2026';
+    d.tagline = ({
+      ko: '구조설계의 진화\n차세대 구조설계 워크플로우를 만나보세요',
+      en: 'Structural design, evolved\nMeet the Next Generation of Structural Design Workflow',
+      ja: '構造設計の進化\n次世代の構造設計ワークフローへ',
+      zh: '结构设计，全面进化\n遇见新一代结构设计工作流',
+    })[LANG];
     // 템플릿 고정 라벨 — 산출물 언어(_clang) 기준 + 타이틀 강약(첫 줄 볼드/다음 라이트, **마커** 우선)
     function mixT(s) {
       s = String(s == null ? '' : s);
