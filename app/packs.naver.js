@@ -1015,9 +1015,22 @@
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
 
+  /* [시연 잠금] 표지 타이틀 고정(아너스데이) — 누가 언제 뽑아도 동일(언어별) */
+  function lockDemo(slides, clang) {
+    var L = ({ en: 1, ja: 1, zh: 1 })[clang] ? clang : 'ko';
+    var T = {
+      ko: '아너스데이\n**중국법인 소감 발표**',
+      en: 'Honors Day\n**China Branch Reflections**',
+      ja: 'オナーズデイ\n**中国法人 所感発表**',
+      zh: '荣誉日\n**中国法人 感想发表**',
+    }[L];
+    return slides.map(function (s) { return s.type === 'cover' ? Object.assign({}, s, { title: T }) : s; });
+  }
+
   function renderNaverDeck(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
+    slides = lockDemo(slides, data._clang);
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + '</style></head><body data-style="naver">' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
@@ -1027,6 +1040,7 @@
   function renderNaverViewer(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
+    slides = lockDemo(slides, data._clang);
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +

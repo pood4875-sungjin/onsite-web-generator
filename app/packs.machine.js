@@ -624,6 +624,23 @@
     return '<script>' + js + '<\/script>';
   }
 
+  /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
+  function lockDemo(slides, clang) {
+    var L = ({ en: 1, ja: 1, zh: 1 })[clang] ? clang : 'ko';
+    var CV = {
+      ko: { t: '**MIDAS GEN NX**\n__차세대__\n**구조설계 플랫폼**', b: '모델링부터 **API 자동화**까지, 하나의 플랫폼', c: '**차세대 구조설계를**\n__직접 경험하세요__\n**MIDAS GEN NX**' },
+      en: { t: '**MIDAS GEN NX**\n__The Next Generation__\n**Structural Design Platform**', b: 'One platform, from modelling to **API automation**', c: '**Experience the Next Generation**\n__of Structural Design__\n**MIDAS GEN NX**' },
+      ja: { t: '**MIDAS GEN NX**\n__次世代の__\n**構造設計プラットフォーム**', b: 'モデリングから**API自動化**まで、ひとつのプラットフォーム', c: '**次世代の構造設計を**\n__この目で__\n**MIDAS GEN NX**' },
+      zh: { t: '**MIDAS GEN NX**\n__新一代__\n**结构设计平台**', b: '从建模到**API自动化**，一个平台', c: '**亲身体验**\n__新一代结构设计__\n**MIDAS GEN NX**' },
+    }[L];
+    return slides.map(function (s) {
+      if (s.type === 'cover') return Object.assign({}, s, { title: CV.t, band: CV.b });
+      if (s.type === 'statement') return Object.assign({}, s, { title: 'MIDAS GEN NX × API × AI' });
+      if (s.type === 'closing') return Object.assign({}, s, { title: CV.c });
+      return s;
+    });
+  }
+
   /* ---- 덱 렌더 ---- */
   function renderSlides(slides) {
     var chapters = [];
@@ -644,6 +661,7 @@
 
   function renderMachineDeck(data) {
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
+    slides = lockDemo(slides, data._clang);
     return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
   }
@@ -651,6 +669,7 @@
   /* ---- 발표 뷰어 ---- */
   function renderMachineViewer(data) {
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
+    slides = lockDemo(slides, data._clang);
     var vjs = '(function(){var i=0;var sl=document.querySelectorAll(".ppt-stack > .slide");var n=sl.length;' +
       'function fit(){var w=innerWidth,h=innerHeight;var k=Math.min(w/1280,h/720);document.querySelector(".ppt-stack").style.transform="scale("+k+")";}' +
       'function show(x){i=Math.max(0,Math.min(n-1,x));for(var a=0;a<n;a++){sl[a].style.display=a===i?"flex":"none";}' +
