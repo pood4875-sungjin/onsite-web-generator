@@ -473,8 +473,11 @@
       txt = await messages({ system: tsys, user: 'JSON:\n' + JSON.stringify(payload), maxTokens: 8000 });
     }
     var out = _repairParse(String(txt || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim());
-    if (!out || !out.payload || typeof out.payload !== 'object') throw new Error('BAD_TRANSLATE_JSON');
-    return out.payload;
+    if (!out || typeof out !== 'object') throw new Error('BAD_TRANSLATE_JSON');
+    // 모델이 {"payload":{...}} 래핑을 생략하고 내용을 바로 뱉는 경우 수용(haiku가 래핑 지시를 무시 — "translation failed" 진범)
+    var pl = out.payload && typeof out.payload === 'object' ? out.payload : out;
+    if (!pl || typeof pl !== 'object' || !Object.keys(pl).length) throw new Error('BAD_TRANSLATE_JSON');
+    return pl;
   }
 
   /* 인테이크 되묻기 — 브리프에서 이름/제품명 추출 + 부족 정보 질문 0~2개.
