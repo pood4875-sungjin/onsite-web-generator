@@ -224,7 +224,7 @@
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
       '<nav class="mb-nav"><div class="wrap"><span class="mb-brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
       '<button class="mb-navcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></nav>' +
-      '<header class="mb-hero"><img class="bgimg" loading="lazy" alt="" src="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1600&h=800&q=78&auto=format&fit=crop" onerror="this.remove()"><div class="bgart"></div><div class="bgcable"></div><div class="wrap">' +
+      '<header class="mb-hero"><img class="bgimg" loading="lazy" alt="" data-img="hero" src="' + esc((shared.images && shared.images.hero) || 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1600&h=800&q=78&auto=format&fit=crop') + '" onerror="this.remove()"><div class="bgart"></div><div class="bgcable"></div><div class="wrap">' +
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<button class="mb-hcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></header>' +

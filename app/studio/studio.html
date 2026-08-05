@@ -209,6 +209,13 @@
   .lm-url input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--tx);background:var(--bg,transparent);font-family:inherit}
   .lm-row{display:flex;gap:8px;justify-content:flex-end}
   .lm-note{font-size:11.5px;color:var(--tx2)}
+  /* 이미지 피커 */
+  .ip-tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .ip-tab{border:1px solid var(--line);background:none;color:var(--tx2);border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .ip-tab.on{background:var(--tx);color:var(--surf);border-color:var(--tx)}
+  .ip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:320px;overflow:auto}
+  .ip-grid img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+  .ip-grid img:hover{transform:scale(1.03);box-shadow:0 8px 22px rgba(10,12,20,.25)}
   .dl:hover{background:rgba(255,255,255,.1)}
   .dl.on{background:var(--grad-cta);color:#fff;border-color:transparent}
   .pvbox.editing{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:-2px}
@@ -745,16 +752,58 @@
     for(let i=0;i<p.length-1;i++){ const k=/^\d+$/.test(p[i])?+p[i]:p[i]; const nextIsIdx=/^\d+$/.test(p[i+1]); if(o[k]==null) o[k]=nextIsIdx?[]:{}; o=o[k]; }
     const last=p[p.length-1]; o[/^\d+$/.test(last)?+last:last]=val;
   }
-  function pickImage(key){
+  function applyImage(key, src){
+    data.images=data.images||{}; data.images[key]=src; persist();
+    const doc=frame.contentDocument, slot=doc&&doc.querySelector('[data-img="'+key+'"]');
+    // 이미 <img>면 src만 교체(깜빡임 없음). placeholder 등 그 외엔 팩별 마크업으로 전체 리렌더.
+    if(slot && slot.tagName==='IMG'){ slot.src=src; if(isRawPack()){ persistRawEdits(doc); persist(); } }
+    else if(!isRawPack()){ render(); }
+  }
+  function uploadImage(key){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
     inp.onchange=()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
-      const rd=new FileReader(); rd.onload=()=>{ data.images=data.images||{}; data.images[key]=rd.result; persist();
-        const doc=frame.contentDocument, slot=doc&&doc.querySelector('[data-img="'+key+'"]');
-        // 이미 <img>면 src만 교체(깜빡임 없음). placeholder 등 그 외엔 팩별 마크업으로 전체 리렌더.
-        if(slot && slot.tagName==='IMG'){ slot.src=rd.result; if(isRawPack()){ persistRawEdits(doc); persist(); } }
-        else if(!isRawPack()){ render(); }
-      }; rd.readAsDataURL(f); };
+      const rd=new FileReader(); rd.onload=()=>{ applyImage(key, rd.result); }; rd.readAsDataURL(f); };
     inp.click();
+  }
+  /* 이미지 피커 — Unsplash 큐레이션(키 불필요 직링크, 카테고리 탭) + 파일 업로드 + URL 입력.
+     그리드 항목은 onerror 시 자동 제거 — 죽은 링크는 아예 안 보인다 */
+  const IMGLIB={
+    '행사': ['1540575467063-178a50c2df87','1505373877841-8d25f7d46678','1511578314322-379afb476865','1475721027785-f74eccf877e2','1587825140708-dfaf72ae4b04','1531058020387-3be344556be6'],
+    '비즈니스': ['1497366216548-37526070297c','1522071820081-009f0129c71c','1551434678-e076c223a692','1556761175-b413da4baf72','1454165804606-c3d57bc86b40','1521737604893-d14cc237f11d'],
+    '테크': ['1518770660439-4636190af475','1526374965328-7f61d4dc18c5','1550751827-4bd374c3f58b','1519389950473-47ba0277781c','1531297484001-80022131f5a1','1488590528505-98d2b5aba04b'],
+    '건설·현장': ['1541888946425-d81bb19240f5','1504307651254-35680f356dfd','1503387762-592deb58ef4e','1581094794329-c8112a89af12','1487958449943-2429e8be8625','1429497419816-9ca5cfb4571a'],
+    '사람': ['1573496359142-b8d87734a5a2','1560250097-0b93528c311a','1552058544-f2b08422138a','1544005313-94ddf0286df2','1507003211169-0a1dd7228f2d','1519085360753-af0119f7cbe7'],
+    '추상': ['1557672172-298e090bd0f1','1550859492-d5da9d8e45f3','1618005182384-a83a8bd57fbe','1620641788421-7a1c342ea42e','1558591710-4b4a1ae0f04d','1579546929518-9e396f3cc809'],
+  };
+  function pickImage(key){
+    let m=document.getElementById('imgPicker');
+    if(m) m.remove();
+    m=document.createElement('div'); m.className='linkmodal'; m.id='imgPicker';
+    const cats=Object.keys(IMGLIB);
+    m.innerHTML='<div class="lm-card" style="width:min(720px,94vw)"><b class="t">🖼 '+tL('이미지 바꾸기')+'</b>'+
+      '<div class="ip-tabs">'+cats.map((c,i)=>'<button class="ip-tab'+(i?'':' on')+'" data-c="'+c+'">'+tL(c)+'</button>').join('')+'</div>'+
+      '<div class="ip-grid" id="ipGrid"></div>'+
+      '<div class="lm-url"><input id="ipUrl" placeholder="https:// '+tL('이미지 주소를 직접 붙여넣어도 돼요')+'"><button class="dl" id="ipUrlGo">'+tL('적용')+'</button></div>'+
+      '<div class="lm-row"><button class="dl" id="ipUpload">📁 '+tL('내 파일 올리기')+'</button><button class="dl" id="ipClose">'+tL('닫기')+'</button></div></div>';
+    document.body.append(m);
+    const grid=m.querySelector('#ipGrid');
+    function paint(cat){
+      grid.innerHTML='';
+      (IMGLIB[cat]||[]).forEach(id=>{
+        const url='https://images.unsplash.com/photo-'+id+'?w=1200&q=80&auto=format&fit=crop';
+        const im=document.createElement('img');
+        im.src='https://images.unsplash.com/photo-'+id+'?w=300&h=200&q=60&auto=format&fit=crop';
+        im.loading='lazy'; im.onerror=()=>im.remove();
+        im.onclick=()=>{ applyImage(key, url); m.remove(); };
+        grid.append(im);
+      });
+    }
+    paint(cats[0]);
+    m.querySelectorAll('.ip-tab').forEach(b=>{ b.onclick=()=>{ m.querySelectorAll('.ip-tab').forEach(x=>x.classList.toggle('on',x===b)); paint(b.getAttribute('data-c')); }; });
+    m.querySelector('#ipUpload').onclick=()=>{ m.remove(); uploadImage(key); };
+    m.querySelector('#ipUrlGo').onclick=()=>{ const u=m.querySelector('#ipUrl').value.trim(); if(u){ applyImage(key, u); m.remove(); } };
+    m.querySelector('#ipClose').onclick=()=>m.remove();
+    m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
   }
   const SECLABEL={hero:'히어로',features:'기능',metrics:'지표',banner:'배너'};
   // 스타일별 섹션 스펙 (darkglow=gnb/footer 고정, KRDS=nav/footer 고정)

@@ -51,9 +51,11 @@
   function stockUrl(key, w, h) {
     return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
   }
-  function photo(mode, key, w, h) {
-    return '<div class="ax-ph ph ' + (mode || '') + '"><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
-      (key ? '<img class="ai" loading="lazy" alt="" src="' + stockUrl(key, w, h) + '" onerror="this.remove()">' : '') + '</div>';
+  var IMGS = {};   // renderAxdayPage 진입 시 shared.images로 채움 — 편집(피커)에서 바꾼 이미지 우선
+  function photo(mode, key, w, h, slot) {
+    var src = (slot && IMGS[slot]) || (key ? stockUrl(key, w, h) : '');
+    return '<div class="ax-ph ph ' + (mode || '') + '"' + (slot ? ' data-img="' + slot + '"' : '') + '><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
+      (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="this.remove()">' : '') + '</div>';
   }
 
   function css() {
@@ -166,6 +168,7 @@
 
   window.renderAxdayPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
+    IMGS = shared.images || {};
     var d = {};
     for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
     var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
@@ -176,7 +179,7 @@
       var P = 'features.' + i;
       var chips = (f.chips || (DEMO.features[i] && DEMO.features[i].chips) || []).slice(0, 4).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('');
       var IMGK = ['crowd', 'stage', 'venue'][i] || 'crowd';
-      return '<div class="ax-card rv">' + photo(i === 1 ? 'dark' : i === 2 ? '' : 'cool', IMGK, 800, 480) +
+      return '<div class="ax-card rv">' + photo(i === 1 ? 'dark' : i === 2 ? '' : 'cool', IMGK, 800, 480, 'feature.' + i) +
         '<div class="bd"><span class="cap">' + esc(f.tag || (DEMO.features[i] && DEMO.features[i].tag) || 'POINT 0' + (i + 1)) + '</span>' +
         '<h3 class="ct"' + de(P + '.title') + '>' + esc(f.title || '') + '</h3>' +
         '<p class="ds"' + de(P + '.desc') + '>' + ml(f.desc || '') + '</p>' +
@@ -184,7 +187,7 @@
     }).join('');
     var sess = ses.map(function (s, i) {
       var P = 'sessions.' + i;
-      return '<div class="ax-s rv">' + photo(i === 2 ? 'cool' : 'dark', ['stage', 'mic', 'crowd'][i] || 'stage', 700, 900) + '<span class="plus">+</span>' +
+      return '<div class="ax-s rv">' + photo(i === 2 ? 'cool' : 'dark', ['stage', 'mic', 'crowd'][i] || 'stage', 700, 900, 'session.' + i) + '<span class="plus">+</span>' +
         '<span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
         '<h3 class="st"' + de(P + '.title') + '>' + ml(s.title || '') + '</h3>' +
         '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
@@ -210,7 +213,7 @@
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
       '<h1 class="ax-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1></div>' +
-      '<div class="ph-wide">' + photo('', 'hall', 1600, 620) + '</div></header>' +
+      '<div class="ph-wide">' + photo('', 'hall', 1600, 620, 'hero') + '</div></header>' +
       '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
       '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
       '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
