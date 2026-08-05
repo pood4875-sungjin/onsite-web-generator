@@ -415,9 +415,9 @@
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
   // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
   async function translatePayload(payload, to) {
-    if (payload && Array.isArray(payload.slides) && payload.slides.length > 6) {
+    if (payload && Array.isArray(payload.slides) && payload.slides.length > 3) {
       var chunks = [];
-      for (var ci = 0; ci < payload.slides.length; ci += 6) chunks.push(payload.slides.slice(ci, ci + 6));
+      for (var ci = 0; ci < payload.slides.length; ci += 3) chunks.push(payload.slides.slice(ci, ci + 3));   // 3장 청크 — 병렬 폭을 키워 체감 시간 단축
       // 청크 병렬 번역 — 순차 대기로 늦던 언어 전환을 동시 호출로 단축
       var parts = await Promise.all(chunks.map(function (c) { return _translateOne(_noHeavy({ slides: c }), to); }));
       var outAll = [];

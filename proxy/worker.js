@@ -547,7 +547,8 @@ export default {
       if (deckLang !== 'ko') system += '\n[출력 언어 — 최우선 규칙] 위 지시의 "한국어"와 무관하게, 모든 슬라이드 텍스트(제목·본문·리스트·캡션·note·인용)를 ' + uiLangName(deckLang) + '로 작성한다. 브랜드·고유명사는 원문 유지. 영문 챕터 라벨(label·tag 대문자류)은 그대로 영문.';
       userMsg = '브리프:\n' + JSON.stringify(safe, null, 2);
     } else if (route === '/intake') {
-      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
+      // 질문 추출은 요지만 있으면 됨 — 첨부 전문(16k)을 다 보내면 20초+ 걸리던 것을 앞 4k로 컷
+      const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 4000), lang: clip(body.lang, 5) || 'ko' };
       if (!safe.plan) return json({ error: 'EMPTY_BRIEF' }, 400);
       system = INTAKE_SYSTEM.replace(/\{LANG\}/g, uiLangName(safe.lang));
       userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan +
@@ -603,10 +604,12 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: route === '/intake' ? 800 : MAX_TOKENS,   // 인테이크는 선택지 포함 800, 나머지는 상한 공용
+        // 인테이크(질문 추출)·번역은 기계적 작업 — 빠른 모델로 체감 지연 단축. 덱/사이트 생성·수정은 상위 모델 유지.
+        model: (route === '/intake' || route === '/translate') ? 'claude-haiku-4-5' : MODEL,
+        max_tokens: route === '/intake' ? 800 : route === '/translate' ? 8000 : MAX_TOKENS,
         // 사고(thinking) 끔 — 문서 첨부 브리프에서 모델이 사고에 출력 예산을 다 써서
         // 덱 JSON이 빈손/3장 잘림으로 나오던 실사고. 덱 설계는 사고 없이 충분하다.
-        thinking: { type: 'disabled' },
+        ...(route === '/intake' || route === '/translate' ? {} : { thinking: { type: 'disabled' } }),
         system: system,
         messages: [{ role: 'user', content: userMsg }],
         // 생성 스트리밍 — 클라이언트가 슬라이드 제목을 실시간 표시("기다리는 맛"). compose 계열만.
