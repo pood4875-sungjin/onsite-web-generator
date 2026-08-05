@@ -310,7 +310,7 @@ const NAVER_SYSTEM =
   '형식: {"slides":[ ... ]}\n' +
   '[템플릿 고정 모드] 정확히 아래 10장을 이 순서·이 타입으로 만든다. 타입·순서·장수 변경 절대 금지 — 각 장의 텍스트 필드만 브리프·첨부 내용으로 새로 쓴다:\n' +
   '1) cover — {label(상단좌 영문 시스템명),date("2026 · 08" 형식),eyebrow:"PROLOGUE",title(2줄 \\n, 3톤: 첫 줄 보통+둘째 줄 **굵게**+꼬리 __회색 흐림__),band(비유 한 줄 2행 \\n, 둘째 행 **강조**),docLabel(하단좌 보고명),team(하단우 팀명)}\n' +
-  '2) statement — {title(영문 대형 2줄 \\n, 둘째 줄 **굵게**),sub(국문 2문장 \\n),cols 정확히 2개:[{tag(영문 라벨),text("A → **B**" 전환)}]}\n' +
+  '2) statement — {title(영문 대형 2줄 \\n, 둘째 줄 **굵게**),sub(2문장 \\n — lang 언어로),cols 정확히 2개:[{tag(영문 라벨),text("A → **B**" 전환)}]}\n' +
   '3) section — 결론 요약: {title(2줄 \\n, 둘째 줄에 **핵심 강조**),text(리드 한 문장 — **강조** 1회),listTitle(좌 리스트 제목),points 3개:[{text}],listTitle2(우 리스트 제목),points2 3개:[{text}]}\n' +
   '4) toc — {title(영문 짧게, 예 "PGWO Flow"류 흐름명),items 정확히 5개:[{no,label(영문 대문자 한 단어),desc(한 줄),pages:"05 – 06" 형식}]}\n' +
   '5) divider — {ch:1,no:"01",title(영문 대문자 2줄 \\n, 예 "WHERE\\nIT HURTS"),lead(질문형 핵심 문장, **강조**),items 1~2개:[{head,text}]}\n' +

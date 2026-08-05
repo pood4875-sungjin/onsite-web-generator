@@ -119,7 +119,7 @@
       /* 아이브로 = 오렌지 소제(타이틀과 강약 대비 — 사용자 피드백) */
       '.ax-eb{font-size:19px;font-weight:800;letter-spacing:-.01em;color:' + ORANGE + '}',
       /* 타이틀 강약 의무 — 베이스 라이트 300, <b>=900 (첫 줄 볼드/다음 줄 라이트, 사용자 레퍼런스) */
-      '.ax-ht{margin-top:16px;font-size:82px;font-weight:300;letter-spacing:-.02em;line-height:1.08;word-break:keep-all}',
+      '.ax-ht{margin-top:16px;font-size:68px;font-weight:300;letter-spacing:-.02em;line-height:1.12;word-break:keep-all;text-wrap:balance}',
       '.ax-ht b{font-weight:700}',
       '.ax-hsub{margin:26px auto 0;font-size:19px;line-height:1.6;color:#4B5563;max-width:600px;word-break:keep-all}',
       '.ax-hero .ph-wide{margin-top:56px;height:460px;border-radius:0}',
