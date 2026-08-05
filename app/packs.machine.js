@@ -213,7 +213,8 @@
         var IP = P + '.rows.' + i;
         return '<div class="nx-shrow' + (i === 0 ? ' on' : '') + '"><i' + de(IP + '.tag') + '>' + esc(r.tag || '') + '</i><span' + de(IP + '.text') + '>' + mb(r.text || '') + '</span></div>';
       }).join('');
-      var img = String(s.img || 'gennx-1.jpg').replace(/[^a-zA-Z0-9._-]/g, '');
+      /* 과거 fixBrand 오염("MIDAS GEN NX-1.jpg") 자가치유 → gennx-1.jpg */
+      var img = String(s.img || 'gennx-1.jpg').replace(/MIDAS\s*GEN\s*NX(?=-\d)/i, 'gennx').replace(/[^a-zA-Z0-9._-]/g, '');
       return '<section class="slide nx sh" data-kind="' + kind(s, 'Product') + '">' + runhead(s, P, ctx) + headline(s, P) +
         '<div class="nx-shgrid"><div class="nx-shrows">' + rows + '</div>' +
         '<figure class="nx-shimg"><img loading="lazy" alt="" src="' + aurl(img) + '" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + PROD + 'bg/' + img + '\';}else{this.closest(\'figure\').style.display=\'none\';}">' +
@@ -615,7 +616,8 @@
       'if(r.width&&(r.right>sr.right-8||r.bottom>sr.bottom-4)){var fs=parseFloat(getComputedStyle(el).fontSize);if(fs>11)el.style.fontSize=Math.max(11,fs*Math.min((sr.right-8-r.left)/r.width,(sr.bottom-4-r.top)/r.height))+"px";}}};' +
       'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
       // 커버 타이틀 과장문 방어 — 슬라이드 하단 침범 시 폰트 단계 축소
-      'document.querySelectorAll(".nx-cvtitle").forEach(function(t){var sl=t.closest(".slide");if(!sl)return;' +
+      // 뷰어는 시작 시 전 장 display:none → rect 0으로 오판해 최소치까지 줄어들던 버그: 숨김 장은 건너뜀
+      'document.querySelectorAll(".nx-cvtitle").forEach(function(t){var sl=t.closest(".slide");if(!sl||!sl.getBoundingClientRect().height)return;' +
       'var fs=parseFloat(getComputedStyle(t).fontSize);var guard=0;' +
       'while(guard++<12&&fs>26&&t.getBoundingClientRect().bottom>sl.getBoundingClientRect().bottom-70){fs-=4;t.style.fontSize=fs+"px";}});' +
       '})();';

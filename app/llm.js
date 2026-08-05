@@ -551,13 +551,17 @@
   }
   // 검증+정규화: 문자열 필드는 문자열로, 배열 필드는 유효 항목만. 비었으면 null 유지.
   // 제품명 표기 규칙 — 'GEN NX'는 항상 'MIDAS GEN NX'(사용자 지정 공식 표기). 생성·수정·번역 산출물 공통.
+  var _FB_SKIP = { img: 1, image: 1, images: 1, src: 1, icon: 1, bg: 1, photo: 1, hero: 1 };   // 파일명·자산 필드는 표기 교정 제외(gennx-1.jpg 오염 방지)
   function _fixBrand(v) {
     if (!v || typeof v !== 'object') return v;
     Object.keys(v).forEach(function (k) {
-      if (typeof v[k] === 'string') v[k] = v[k]
-        .replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX')
-        .replace(/신[제재]경화/g, '신해경화')
-        .replace(/뤄장린|뤄강린|라장린/g, '라강림');
+      if (typeof v[k] === 'string') {
+        if (_FB_SKIP[k] || /\.(jpe?g|png|webp|svg|gif)(\?|#|$)/i.test(v[k]) || /^(data:|https?:\/\/|file:)/i.test(v[k])) return;
+        v[k] = v[k]
+          .replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX')
+          .replace(/신[제재]경화/g, '신해경화')
+          .replace(/뤄장린|뤄강린|라장린/g, '라강림');
+      }
       else _fixBrand(v[k]);
     });
     return v;
