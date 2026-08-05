@@ -626,7 +626,17 @@
 
   /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
   function lockDemo(slides, clang) {
-    var L = ({ en: 1, ja: 1, zh: 1 })[clang] ? clang : 'ko';
+    // _clang 기록이 없는 덱(구버전 저장분)은 내용 문자 "비율"로 언어 추론 — EN 덱에 남는 한국어 인명 몇 자에 속지 않게
+    var L = ({ en: 1, ja: 1, zh: 1, ko: 1 })[clang] ? clang : (function (o) {
+      var t = ''; try { t = JSON.stringify(o); } catch (e) {}
+      var ko = (t.match(/[가-힣]/g) || []).length, ja = (t.match(/[\u3040-\u30ff]/g) || []).length,
+          zh = (t.match(/[\u4e00-\u9fff]/g) || []).length, la = (t.match(/[A-Za-z]/g) || []).length;
+      if (la < 30 && ko + ja + zh < 5) return 'ko';
+      if (ja > 10 && ja >= ko) return 'ja';
+      if (ko > la * 0.15) return 'ko';
+      if (zh > 10 && zh > la * 0.15) return 'zh';
+      return 'en';
+    })(slides);
     var CV = {
       ko: { t: '**MIDAS GEN NX**\n__차세대__\n**구조설계 플랫폼**', b: '모델링부터 **API 자동화**까지, 하나의 플랫폼', c: '**차세대 구조설계를**\n__직접 경험하세요__\n**MIDAS GEN NX**' },
       en: { t: '**MIDAS GEN NX**\n__The Next Generation__\n**Structural Design Platform**', b: 'One platform, from modelling to **API automation**', c: '**Experience the Next Generation**\n__of Structural Design__\n**MIDAS GEN NX**' },

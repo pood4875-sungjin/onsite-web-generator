@@ -718,7 +718,8 @@
   // 슬라이드 덱 렌더 — 팩에 따라 렌더러가 갈린다(썸네일 레일·내보내기 공용)
   function renderDeckFor(slides){
     const sp = project ? project.stylePack : (pack && pack.id);
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '' };
+    // _clang 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로 떨어져 리스트/본문 언어가 어긋난다
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '', _clang: data._clang };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
     if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='rams' && typeof renderRamsDeck==='function') return renderRamsDeck(payload);
