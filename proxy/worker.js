@@ -318,6 +318,9 @@ const WEB_SYSTEM =
   '  eventPlace(장소, 줄바꿈 \\n 허용), deadline(신청 마감 시각 ISO8601, 예 2026-09-10T18:00:00+09:00 — 근거 있을 때만),\n' +
   '  faq(브리프 근거 3~5개, 근거 없으면 행사 성격에 맞는 예시 2~3개+assumed에 "faq"),\n' +
   '  ctaTitle/ctaSub(신청 유도 카피)를 채운다. 행사 아닌 일반 제품 페이지면 sessions=[]·eventDate=null·eventPlace=null·deadline=null·faq=[].\n' +
+  '- 세미나·행사·프로모션 랜딩의 productName(상단 서브텍스트·GNB에 노출)은 제품명 그대로가 아니라 브랜드+행사 성격+연도의 행사·캠페인명으로 짓는다.\n' +
+  '  예: "MIDAS Global Promotion 2026", "Civil NX Seminar 2026". 제품명 자체는 tagline·subcopy 본문에서 언급한다.\n' +
+  '- MIDAS 제품명 표기: GEN NX는 항상 "MIDAS GEN NX"로 쓴다.\n' +
   '- pages = 사이트의 메인홈 외 하위 페이지(IA). kind=multi이고 브리프에 메뉴·페이지 구성(IA)이 드러날 때만 채운다.\n' +
   '  브리프에 IA 언급이 없거나 kind=single이면 반드시 빈 배열 []. 지어내지 마라.\n' +
   '  name=메뉴에 걸릴 이름(2~8자), type=성격이 가장 가까운 것, tagline/subcopy=그 페이지 히어로 문구,\n' +
