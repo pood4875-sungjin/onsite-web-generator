@@ -96,8 +96,10 @@
       (noNum(p.head) ? '<span class="rs-rhead"' + de(IP + '.head') + '>' + esc(noNum(p.head)) + '</span>' : '') +
       '<span class="rs-rtext"' + de(IP + '.text') + '>' + mb(p.text || '') + '</span></div>';
   }
+  var CLANG = 'ko';   /* 산출물 언어(data._clang) — renderRamsDeck/Viewer에서 갱신 */
+  function lf(ko, en, ja, zh) { return CLANG === 'ko' ? ko : CLANG === 'ja' ? (ja || en) : CLANG === 'zh' ? (zh || en) : en; }
   function imgPh(label, P) {
-    return '<div class="rs-imgph" data-img="slot"><span>' + esc(label || '이미지를 여기에 놓으세요') + '</span></div>';
+    return '<div class="rs-imgph" data-img="slot"><span>' + esc(label || lf('이미지를 여기에 놓으세요', 'Drop an image here', '画像をここに', '将图片拖到此处')) + '</span></div>';
   }
 
   /* ---- 타입 렌더러 ---- */
@@ -134,7 +136,7 @@
           (it.pages ? '<span class="rs-tpages"' + de(IP + '.pages') + '>' + esc(it.pages) + '</span>' : '') + '</div>';
       }).join('');
       return '<section class="slide rs tc" data-kind="' + kind(s, 'Contents') + '">' + runhead({ kicker: s.kicker != null ? s.kicker : 'Contents' }, P, ctx) +
-        '<p class="rs-tchead"' + de(P + '.title') + '>' + ml(s.title || '보고 순서') + '</p>' +
+        '<p class="rs-tchead"' + de(P + '.title') + '>' + ml(s.title || lf('보고 순서', 'Contents', '目次', '目录')) + '</p>' +
         '<div class="rs-tlist">' + rows + '</div></section>';
     },
     /* 간지 — 다크/액센트 풀블리드 교대 + 대형 2줄 + 서브 + 큐브 진행 인디케이터. 원본 04·09·12·16·22 */
@@ -722,6 +724,7 @@
 
   function renderRamsDeck(data) {
     data = data || {};
+    CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
@@ -730,6 +733,7 @@
   /* ---- 발표 뷰어 ---- */
   function renderRamsViewer(data, opts) {
     data = data || {}; opts = opts || {};
+    CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +

@@ -158,7 +158,7 @@ const RAMS_SYSTEM =
   '[템플릿 고정] 정확히 아래 10장, 이 순서·타입 그대로. 텍스트만 채운다. 제품 내용은 아래 공식 정보만 사용(지어내기 금지):\n' +
   '1) cover — {label,date,eyebrow("PROLOGUE"류),title("MIDAS GEN NX" 포함 2~3줄 \\n·40자 이내, **굵게**+__흐림__ 3톤),band(가치 한 줄,**강조**),docLabel}\n' +
   '2) statement — {title("GEN NX × API × AI"류 영문 대형 2줄),sub,cols 2개:[{tag,text("복잡한 해석 → **더 빠르게**"류)}]}\n' +
-  '3) toc — {items 4개:[{no,label(영문 챕터),desc,pages}]}\n' +
+  '3) toc — {title(필수·빈 값 금지 — lang 언어의 짧은 목차 타이틀, EN이면 "Contents"류),items 4개:[{no,label(영문 챕터),desc,pages}]}\n' +
   '4) divider — {no:"01",title(영문 2줄, 둘째 줄 **굵게**),lead(**강조**)}\n' +
   '5) section — 핵심 기능: {title,points 4개:[{head,text}] — 설계기준 대응·고급 특수해석·4K 작업환경·API 자동화(공식 정보),note(**강조**)}\n' +
   '6) media — 제품 화면: {title,specs 3~4개:[{label(짧은 영문),text,on:true 1개}] — 시공단계·시간이력·비선형·Grasshopper,image:{label:"GEN NX Live Screen"},caption}\n' +
