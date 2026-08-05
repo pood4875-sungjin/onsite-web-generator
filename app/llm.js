@@ -403,7 +403,20 @@
   }
 
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
+  // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
   async function translatePayload(payload, to) {
+    if (payload && Array.isArray(payload.slides) && payload.slides.length > 8) {
+      var outAll = [];
+      for (var ci = 0; ci < payload.slides.length; ci += 8) {
+        var part = await translatePayload({ slides: payload.slides.slice(ci, ci + 8) }, to);
+        if (!part || !Array.isArray(part.slides)) throw new Error('BAD_TRANSLATE_CHUNK');
+        outAll = outAll.concat(part.slides);
+      }
+      return { slides: outAll };
+    }
+    return _translateOne(payload, to);
+  }
+  async function _translateOne(payload, to) {
     var txt;
     if (usingProxy()) {
       var r = await fetch(proxyUrl() + '/translate', {

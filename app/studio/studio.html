@@ -197,6 +197,7 @@
   .stlangmenu button.on{font-weight:700}
   .stlangmenu button i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--tx2)}
   .stlangmenu .note{font-size:11px;color:var(--tx2);padding:7px 11px 5px;border-top:1px solid var(--line);margin-top:3px}
+  @keyframes stlspin{to{transform:rotate(360deg)}}
   /* 링크 만들기 — 시안(V3-05)의 다크 필 강조 버튼 + 결과 모달 */
   .dl.dark{background:#14161f;color:#fff;border-color:#14161f;font-weight:600}
   .dl.dark:disabled{opacity:.6}
@@ -544,6 +545,15 @@
   function addBot(txt){const r=el('div','row');r.append(el('div','bub bot',txt));msgs.append(r);}
   function addMe(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
   function saveChat(){ if(!project||!pageRef) return; pageRef.chat={log:chatLog, idx, generated, ...(aiMissing&&aiMissing.size?{aiDraft:[...aiMissing]}:{})}; upsertProject(project); }
+  /* 저장된 봇 발화 재생 로컬라이즈 — 원문(KO) 저장분을 현재 UI 언어로. 통짜 등재 우선, 조립형은 패턴 역변환 */
+  function locChat(t){
+    t=String(t||'');
+    const d=tL(t); if(d!==t) return d;
+    let m=t.match(/^✅ 완성! (\d+)장을 만들었어요\. 슬라이드 텍스트를 클릭하면 바로 고칠 수 있어요\.$/);
+    if(m) return '✅ '+tL('완성!')+' '+m[1]+tL('장을 만들었어요. 슬라이드 텍스트를 클릭하면 바로 고칠 수 있어요.');
+    m=t.match(/^🪄 (.+)$/); if(m && tL(m[1])!==m[1]) return '🪄 '+tL(m[1]);
+    return t;
+  }
   function botBubble(txt){ addBot(txt); chatLog.push({r:'bot',t:txt}); saveChat(); }
   function meBubble(txt){ addMe(txt); chatLog.push({r:'me',t:txt}); saveChat(); }
   function scroll(){msgs.scrollTo({top:msgs.scrollHeight,behavior:'smooth'});}
@@ -867,6 +877,14 @@
     document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.stlang')) menu.hidden=true; }, true);
     async function switchContentLang(to){
       btn.disabled=true; const oldHtml=btn.innerHTML; btn.innerHTML='🌐 …';
+      // 번역은 수십 초 걸릴 수 있다 — 무반응처럼 보이지 않게 풀스크린 진행 오버레이
+      const name=(I18N.LANGS.find(x=>x[0]===to)||[])[1]||to;
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;z-index:400;background:rgba(10,12,20,.55);backdrop-filter:blur(4px);display:grid;place-items:center';
+      ov.innerHTML='<div style="background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:22px 30px;display:flex;align-items:center;gap:12px;font-size:14px;color:var(--tx)">'
+        +'<span style="width:18px;height:18px;border:2.5px solid var(--line);border-top-color:#6c2bff;border-radius:50%;animation:stlspin .8s linear infinite"></span>'
+        +tL('화면과 콘텐츠를 번역하는 중…')+' → '+name+'</div>';
+      document.body.append(ov);
       // 생성된 출력물이 있으면 콘텐츠도 번역 — 실패해도 UI 전환은 진행(콘텐츠는 원문 유지)
       try{
         if(window.LLM && LLM.aiAvailable() && LLM.translatePayload){
@@ -1933,7 +1951,6 @@
         // 글자 크기 — 14·16·20·24·28·32·40 사다리, 범위 밖은 ±4. 현재값 표시
         { const curFs=(data.slides[_selSi]._fs||{})[rel]||Math.round(parseFloat(W.getComputedStyle(only).fontSize))||16;
           const bm=tbBtn('A−',false,'font-size:11px',()=>setFs(only,stepFs(curFs,-1))); bm.title=tL('글자 작게'); utb.append(bm);
-          const lab=doc.createElement('span'); lab.textContent=curFs; lab.style.cssText='min-width:20px;text-align:center;font-size:11px;opacity:.75;align-self:center'; utb.append(lab);
           const bp=tbBtn('A+',false,'font-size:13px',()=>setFs(only,stepFs(curFs,1))); bp.title=tL('글자 크게'); utb.append(bp); }
         // 텍스트 폭 — 80px 스텝으로 좁게/넓게(어색한 줄바꿈 해소용 좌우 자유도)
         { const sl0=only.closest('.slide'); const k0=sl0?(sl0.getBoundingClientRect().width/(sl0.offsetWidth||1)):1;
@@ -2505,7 +2522,7 @@
     if(pageRef.chat && pageRef.chat.aiDraft && pageRef.chat.aiDraft.length){
       // AI 초안 후속질문 — 초안은 이미 렌더됨(generated). 못 채운 스텝만 이어서 질문.
       chatLog = pageRef.chat.log.slice(); generated = true;
-      chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
+      chatLog.forEach(m => m.r==='bot' ? addBot(locChat(m.t)) : addMe(m.t));
       aiMissing = new Set(pageRef.chat.aiDraft);
       idx = 0; while(effSkip(STEPS[idx])) idx++;
       const step = STEPS[idx] || 'done';
@@ -2520,7 +2537,7 @@
     } else if(pageRef.chat && pageRef.chat.log && pageRef.chat.log.length){
       // 저장된 대화 복원 → 나갔다 와도 대화 살아있음
       chatLog = pageRef.chat.log.slice(); idx = pageRef.chat.idx||0; generated = !!pageRef.chat.generated;
-      chatLog.forEach(m => m.r==='bot' ? addBot(m.t) : addMe(m.t));
+      chatLog.forEach(m => m.r==='bot' ? addBot(locChat(m.t)) : addMe(m.t));
       const step = STEPS[idx] || 'done';
       // 콘텐츠가 이미 있으면(외부 주입·이전 초안) 인테이크 재개 대신 편집 모드로
       const hasBody = !!((data.features&&data.features.length) || (data.stats&&data.stats.length) || data.bannerText);
@@ -2571,6 +2588,8 @@
   // PPT: 내보내기 = 단일 버튼 + 형식 모달(PPTX/PDF/HTML) — 젠스파크식
   if(curMode().exportFmt.indexOf('pptx')>=0){
     ['pptxBtn','expBtn','dl'].forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display='none'; });
+    // PPT는 항상 편집 상태(텍스트 클릭 즉시 수정)+자동 저장 — 편집 토글·저장 버튼 불필요
+    ['editBtn','save'].forEach(id=>{ const b=document.getElementById(id); if(b) b.style.display='none'; });
     const xb=document.getElementById('exportBtn'), modal=document.getElementById('expModal');
     const rangeIn=document.getElementById('expmRange'), goBtn=document.getElementById('expmGo');
     let _expFmt='pptx';

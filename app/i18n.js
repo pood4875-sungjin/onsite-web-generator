@@ -629,6 +629,7 @@
     '핵심 메시지를 정리하고 있어요…': ['Distilling the key messages…', 'キーメッセージを整理中…', '正在提炼核心信息…'],
     '핵심 카피': ['Key copy', 'キーコピー', '核心文案'],
     '화면과 콘텐츠가 함께 바뀝니다': ['UI and content change together', '画面とコンテンツが一緒に切り替わります', '界面与内容将一并切换'],
+    '화면과 콘텐츠를 번역하는 중…': ['Translating UI and content…', '画面とコンテンツを翻訳中…', '正在翻译界面与内容…'],
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }
