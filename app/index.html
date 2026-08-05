@@ -745,7 +745,7 @@
       const pick=(id,name)=>{ S.styleName=name; onPick(id,name); };
       if(kind==='ppt'){
         // 노출 팩 화이트리스트(2026-07-31 사용자 지시) — 구 팩·pitch·honors는 잠시 가림. 되살리려면 여기에 추가
-        const PPT_VISIBLE=['naver','rams','pastel'];   // [시연] 3종 노출 — naver는 10장 템플릿 잠금, 전체 복원 시 +'sfmi','machine'
+        const PPT_VISIBLE=['naver','rams','machine'];   // [시연] 3종 노출 — naver는 10장 템플릿 잠금, 전체 복원 시 +'sfmi','machine'
         (PPT_VISIBLE.includes('ppt')?(window.PPT_STYLES||[]):[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
