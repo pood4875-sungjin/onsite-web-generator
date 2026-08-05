@@ -419,15 +419,33 @@
       var chunks = [];
       for (var ci = 0; ci < payload.slides.length; ci += 6) chunks.push(payload.slides.slice(ci, ci + 6));
       // 청크 병렬 번역 — 순차 대기로 늦던 언어 전환을 동시 호출로 단축
-      var parts = await Promise.all(chunks.map(function (c) { return translatePayload({ slides: c }, to); }));
+      var parts = await Promise.all(chunks.map(function (c) { return _translateOne(_noHeavy({ slides: c }), to); }));
       var outAll = [];
       for (var pi = 0; pi < parts.length; pi++) {
         if (!parts[pi] || !Array.isArray(parts[pi].slides)) throw new Error('BAD_TRANSLATE_CHUNK');
-        outAll = outAll.concat(parts[pi].slides);
+        outAll = outAll.concat(_mergeBack(chunks[pi], parts[pi].slides));
       }
-      return { slides: outAll };
+      return _fixBrand({ slides: outAll });
     }
-    return _fixBrand(await _translateOne(payload, to));
+    var tr1 = await _translateOne(_noHeavy(payload), to);
+    return _fixBrand(_mergeBack(payload, tr1));
+  }
+  /* 번역 페이로드 다이어트 — 데이터URI(피커 업로드 이미지)·images 맵은 번역 대상이 아닌데
+     프롬프트에 실리면 토큰 초과로 통째로 실패한다("Content translation failed"의 주범). */
+  function _noHeavy(v) {
+    if (Array.isArray(v)) return v.map(_noHeavy);
+    if (v && typeof v === 'object') { var o = {}; for (var k in v) { if (k === 'images') continue; var s = _noHeavy(v[k]); if (s !== undefined) o[k] = s; } return o; }
+    if (typeof v === 'string' && (v.slice(0, 5) === 'data:' || v.length > 4000)) return undefined;
+    return v;
+  }
+  function _mergeBack(orig, tr) {
+    if (Array.isArray(orig) && Array.isArray(tr)) return orig.map(function (x, i) { return i < tr.length ? _mergeBack(x, tr[i]) : x; });
+    if (orig && typeof orig === 'object' && tr && typeof tr === 'object' && !Array.isArray(orig)) {
+      var o = Object.assign({}, orig);
+      for (var k in tr) if (tr[k] !== undefined) o[k] = _mergeBack(orig[k], tr[k]);
+      return o;
+    }
+    return tr === undefined ? orig : tr;
   }
   async function _translateOne(payload, to) {
     var txt;
@@ -536,7 +554,9 @@
   function _fixBrand(v) {
     if (!v || typeof v !== 'object') return v;
     Object.keys(v).forEach(function (k) {
-      if (typeof v[k] === 'string') v[k] = v[k].replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX');
+      if (typeof v[k] === 'string') v[k] = v[k]
+        .replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX')
+        .replace(/신[제재]경화/g, '신해경화');
       else _fixBrand(v[k]);
     });
     return v;

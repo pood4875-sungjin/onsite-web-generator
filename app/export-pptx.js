@@ -223,11 +223,20 @@
       var s = pptx.addSlide(); s.background = { color: hex(slideBg) };
       if (win.html2canvas) { var bgData = await slideBgImage(win, slide); if (bgData) s.background = { data: bgData }; }
       // 슬라이드 이미지(.s-img 등 data-URI <img>) → 편집 가능한 이미지 개체로
-      [].slice.call(slide.querySelectorAll('img')).forEach(function (el) {
-        var r = rel(el, origin); if (r.w < 3 || r.h < 3) return;
-        var src = el.currentSrc || el.src || ''; if (src.indexOf('data:') !== 0) return;
-        try { s.addImage({ data: src, x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN }); } catch (e) {}
-      });
+      var imgEls = [].slice.call(slide.querySelectorAll('img'));
+      for (var im = 0; im < imgEls.length; im++) {
+        var iel = imgEls[im], r = rel(iel, origin); if (r.w < 3 || r.h < 3) continue;
+        var src = iel.currentSrc || iel.src || '';
+        if (src.indexOf('data:') !== 0 && /^https?:/.test(src)) {
+          // 외부 사진(건축 이미지 등) — CORS 허용 소스는 데이터로 변환해 싣는다. 실패 시 스킵
+          try {
+            var rsp = await win.fetch(src, { mode: 'cors' }); var bl2 = await rsp.blob();
+            src = await new Promise(function (res3, rej3) { var fr2 = new FileReader(); fr2.onload = function () { res3(fr2.result); }; fr2.onerror = rej3; fr2.readAsDataURL(bl2); });
+          } catch (e) { continue; }
+        }
+        if (String(src).indexOf('data:') !== 0) continue;
+        try { s.addImage({ data: src, x: r.x * IN, y: r.y * IN, w: r.w * IN, h: r.h * IN, sizing: { type: 'crop', w: r.w * IN, h: r.h * IN } }); } catch (e) {}
+      }
       // SVG 전부 → PNG로 래스터화해 이미지 개체로(차트·나침반·궤도·로드맵 라인·부챗살 등 팩 그래픽 포함).
       // 특정 클래스만 골라내면 새 팩 그래픽이 조용히 누락된다 — 화면에 보이는 svg는 전부 내보낸다.
       var svgs = [].slice.call(slide.querySelectorAll('svg'));

@@ -128,7 +128,7 @@ const HONORS_SYSTEM =
 /* rams 팩(Rams Report) — naver와 동일 타입 어휘, 웜그레이·라운드 카드·버밀리언 단일 액센트. packs.rams.js와 동기 */
 const RAMS_USE_DOC = "cover(표지): 첫 장 — 로고·날짜·대형 3톤 타이틀·아이소 큐브 그래픽\nstatement(대형 선언): 표지 다음 선언·전환 — 대형 타이틀+본문+비교 카드 2개(흰/다크)\ntoc(목차): 표지·선언 다음 장. 카드 행 리스트(divider 제목과 1:1 일치)\ndivider(간지): 챕터 시작 전환 장 — 다크/오렌지 풀블리드 자동 교대(bg로 지정 가능), 큐브 진행 인디케이터\nsection(본문 넘버 행): 핵심 항목 3~4개 — 대형 번호+굵은 소제목+흐린 설명 규칙선 행\ncards(N열 카드): 동급 항목 2~4개 — 흰 라운드 카드(번호 자동)\nsplit(좌우 대비): 반반 대비(라이트 vs 다크) — 활용/설계, 남/우리 구도\nstats(수치): 도넛(다크 카드)+게이지 카드 행 — 진행률·지표 비교\nmedia(이미지 증빙): 스펙 시트(좌 라벨+행, 중간 다크 강조)+우 이미지 슬롯 — 데모·프로토타입 증빙\nroadmap(로드맵): 월별 진행 바+Now/Next/Then 카드 — 단계별 계획\nbigstat(단독 대형 수치): 숫자 하나로 임팩트 — 좌 설명/우 초대형 액센트 숫자\nkpi(수치 그리드): 지표 2~4개 카드 요약(tone:on=다크 강조)\ntable(표): 열 고정 데이터 나열\ntimeline(타임라인): 기간 진행 바 열(on=현재 액센트) — 연혁·월별 마일스톤\nmilestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바, 일정·완료 기준 중심일 때\nprocess(프로세스): 단계 카드 3~4개, 담당 구간=액센트 풀 카드(accent 인덱스)\ncompare(비교): Before(옅음)/After(다크) 패널+옵션 이미지 — 전환 효과\nquote(인용): 발언·선언 하나를 크게\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 액센트 카드\nchecklist(체크리스트): 확인·완료 항목(액센트 체크 원). 4개 이하 1열·많으면 2열 자동\nlineup(라인업): 제품·에이전트 구성 2×2 카드 — 첫 카드 다크+액센트 뱃지, state:dim=후보\nbranch(분기/조직): 좌 다크 리드 카드+우 카드 행(이름·역할·설명) — 조직·영역 분류\nhighlight(하이라이트/데모): 오렌지 풀블리드+재생 행 — 라이브 데모·핵심 안내 임팩트 장\nboard(현황 보드): 진행 중 작업 요약 — 카드 2+다크 사이드(리스트+뱃지 칩)\nclosing(마무리): 마지막 장 — 다크, 다음 행동(Next)+연락 메타+큐브 군집";
 const RAMS_FIELD_DOC = "cover:{label?(로고 옆 이름),date?,eyebrow?(\"PROLOGUE\"류),title(3톤: **굵게**·__회색 흐림__, \\n 2~3줄),band?(하단 좌 비유 문구, **강조**),docLabel?(하단 우)} | statement:{title(**굵게** 조합),sub?,cols?:[{tag,text(\"A → **B**\" 비교)}](2개 — 둘째=다크 카드)} | toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄, **강조**),pages?:\"04—08\"}]} | divider:{no?:\"01\",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**),bg?:\"dark|accent\"(생략 시 자동 교대)} | section:{title,points:[{head,text}](3~4개),tag?(러닝헤드 보조),note?(마무리, **강조**=액센트)} | cards:{title,cards:[{head,text?,tag?,tone?:\"dark\"}](2~4개),note?} | split:{left:{kicker,title(**굵게**),items:[str],foot?},right:{kicker,title(**굵게**),items:[str],foot?}} — 좌 라이트/우 다크 대비 | stats:{title,donut?:{pct:0~100,value?,caption?,label?},bars?:[{label,pct:0~100,value?,on?:true(다크 강조 행),text?}],note?} | media:{title,specs:[{label,text,on?:true(다크 강조 행)}],image?:{label},caption?} | roadmap:{title,months?:[{when,text}](4개 진행 바),steps:[{when:\"Now|Next|Then\",head,items:[str],state?:\"now|later\"}](3개),note?} | bigstat:{title,value,caption?(**강조**),note?} | kpi:{title,items:[{value,label,desc?,tone?:\"on\"}](2~4개),note?} | table:{title,columns:[str],rows:[{cells:[str]}],note?} | timeline:{title,items:[{when,head,text?,on?:true}](3~5개),note?} | milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | process:{title,steps:[{tag:\"1 · 기획\"류,head(\\n 2줄 가능·**굵게**),text?}](3~4개),accent?:강조 인덱스(기본 중앙),note?} | compare:{title,items:[{head:\"Before|After\",items:[str]}](2개),image?:{label},caption?,note?} | quote:{text(**강조**),by?} | position:{title,panels:[{tag,head(**굵게**),text?}](3개),accent?,note?} | checklist:{title,items:[str],cols?:1~2,note?} | lineup:{title,items:[{tag(분야),head(이름),text,badge?(상태 라벨),state?:\"dim\"(후보)}](4개 — 첫 항목=현재·다크),note?} | branch:{title,lead?:{label,text(**굵게**),foot?},branches:[{label(조직명),head(역할),text}](3개),note?} | highlight:{title(**굵게**),items:[{no?,head,text?}](2~3개 재생 행),note?(**강조**),footnote?(우하단 2줄)} | board:{title(**굵게**),cards:[{tag:\"01 · 분야\",head,text?}](2개),side?:{title,items:[str],pills?:[str]},note?} | closing:{label?,title(마지막 줄 **굵게**),sub?(**강조**=액센트),nextLabel?,contacts?:[{k?,v}](우하단 2줄)}\n규칙: 넘버는 자동 부여 — head에 번호 금지. 액센트는 오렌지 하나 — 강조 남발 금지(장당 **강조** 1~2회). 간지 bg는 자동 교대(다크→오렌지). title은 의미 단위 \\n 줄바꿈. 이모지 금지.";
-const RAMS_SYSTEM =
+const RAMS_SYSTEM_FREE =   // [시연 잠금 해제 시 복귀용] 자유 구성 원본
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
   '형식: {"slides":[ ... ]}\n' +
@@ -150,6 +150,25 @@ const RAMS_SYSTEM =
 
 /* pastel 팩(Pastel Gradient) — naver와 동일 타입 어휘, 화이트·챕터 그라데이션·키밴드. packs.pastel.js와 동기 */
 const PASTEL_USE_DOC = "cover(표지): 첫 장 — 그라데이션 대형 번호·Archivo 타이틀·5색 바\nstatement(대형 선언): 표지 다음 선언 — 대형 영문+그라데이션 키워드+비교 카드 2\ntoc(목차): 보고 순서 — 챕터별 그라데이션 컬럼(번호·영문 라벨·메시지)\ndivider(간지): 챕터 시작 — 풀블리드 챕터 그라데이션+대형 타이틀\nsection(본문 표준): 핵심 논점 3~4개 — 대형 번호+보더탑 소제목+설명\ncards(N열 카드): 동급 항목 2~4개 — 그라데이션 톤 사다리 셀\nsplit(좌우 대비): 흐린 리스트 vs 강조 리스트(활용 vs 설계 대비)\nstats(수치): 대형 그라데이션 %+진행바 — 진척도·달성률\nmedia(스펙 rows): 구조·사양 행(라벨+내용, 핵심 행 그라데이션 강조)+이미지 슬롯\nroadmap(로드맵): 단계 계획 — Now/Next/Then 3열+월별 타임라인 밴드\nbigstat(대형 수치): 수치 하나로 임팩트 — 그라데이션 클립 숫자\nkpi(KPI 셀): 지표 2~4개 — 값+라벨 그라데이션 셀\ntable(표): 열이 정해진 데이터 — 보더바텀 rows\ntimeline(타임라인): 시간순 이벤트 — when+제목+설명 행\nmilestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바. 일정·완료 기준 중심일 때\nprocess(프로세스): 단계 흐름 3~4개 — 중앙(또는 지정) 그라데이션 강조\ncompare(비교): Before/After — 보더 vs 그라데이션 카드\nquote(질문/인용): 핵심 질문·인용 — 풀블리드 그라데이션 Q 패널\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 그라데이션 카드\nchecklist(체크리스트): 확인·항목 목록 — 대시바+보더바텀 rows. 5개 초과 시 2열\nlineup(라인업): 제품·계획 라인업 4개 — 진행=그라데이션·후보=보더\nbranch(갈래): 조직·영역 3갈래+공통 리드 박스\nhighlight(하이라이트): 데모·발표 안내 — 풀블리드 그라데이션+대형 타이틀+단계 행\nboard(현황 보드): 진행 현황 — 2톤 대형 타이틀+카드 2+사이드 리스트\nclosing(엔딩): 마지막 장 — dim+강조 대형 타이틀+다음 행동+5색 바";
+/* [시연 고정] rams(Structure style) — 10장 스켈레톤 잠금. 다양 구성(도식·그래프·건축 이미지 포함), 텍스트만 채움. */
+const RAMS_SYSTEM =
+  '너는 시니어 발표 기획자다. 브리프로 프레젠테이션 슬라이드 덱을 만든다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ]}\n' +
+  '[템플릿 고정 모드] 정확히 아래 10장을 이 순서·이 타입으로. 타입·순서·장수 변경 금지 — 텍스트 필드만 브리프·첨부로 채운다:\n' +
+  '1) cover — {label,date,eyebrow("PROLOGUE"류),title(3톤 2~3줄 \\n: **굵게**+__회색 흐림__),band(비유 한 줄,**강조**),docLabel}\n' +
+  '2) statement — {title(**굵게** 조합 2줄),sub,cols 2개:[{tag,text("A → **B**")}]}\n' +
+  '3) toc — {items 4~5개:[{no,label(영문 챕터명),desc(**강조** 1회),pages}]}\n' +
+  '4) divider — {no:"01",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(**강조**)}\n' +
+  '5) section — {title,points 3~4개:[{head,text}],note(**강조** 1회)}\n' +
+  '6) media — {title,specs 3~4개:[{label(짧은 영문),text,on:true 1개},...],image:{label:"Architecture reference"},caption} — 건축 이미지 장\n' +
+  '7) divider — {no:"02",title(영문 2줄),lead(**강조**)}\n' +
+  '8) stats — {title,donut:{pct,value?,caption?,label?},bars 3개:[{label,pct,value?,on:true 1개}],note(SO WHAT,**강조**)} — 수치는 브리프 근거 우선, 없으면 목표치 라벨\n' +
+  '9) process — {title,steps 3~4개:[{tag:"1 · 기획"류,head,text?}],accent?,note}\n' +
+  '10) closing — {label?,title(마지막 줄 **굵게**),sub?(**강조**),nextLabel?,contacts?:[{k?,v}]}\n' +
+  '각 타입의 필드: ' + RAMS_FIELD_DOC + '\n' +
+  '규칙: 브리프·첨부([첨부 문서])가 1차 소스, 플레이스홀더 금지. **굵게** 장당 1~2회, 이모지 금지, 번호 자동 부여(재기입 금지), 의미 단위 \\n 줄바꿈. length와 무관하게 정확히 10장. 언어는 lang.';
+
 const PASTEL_FIELD_DOC = "cover:{label?(좌상 로고명),date?,eyebrow?(하단 영문 밴드),title(**강조**=500, \\n 2~3줄),band?(리드 문장, **강조**),docLabel?} | statement:{title(영문 대형, **키워드**=그라데이션),sub?(**강조**),cols?:[{tag,text(\"A **→ B**\")}](2개)} | toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄 메시지, **강조**, \\n 가능),pages?:\"04 — 07\"}](3~5개)} | divider:{no?:\"01\",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**)} | section:{title,points:[{no?,head,text}](3~4개),tag?,sub?,note?(키밴드 문장, **강조**)} | cards:{title,cards:[{head,text?,tag?,tone?:\"dark\"(강조 셀)}](2~4개),sub?,note?} | split:{title?,left:{kicker,items:[str],foot?},right:{kicker,items:[str],foot?},note?} — 좌 흐림/우 강조 | stats:{title,donut?:{pct:0~100,label?,caption?},bars?:[{label,pct:0~100,value?,on?:true(강조 행),text?}],sub?,note?} | media:{title,specs:[{label(짧은 영문),text,on?:true(그라데이션 강조 행)}](3~5개),image?:{label},caption?,sub?,note?} | roadmap:{title,steps:[{when:\"Now|Next|Then\",head,items:[str],state?:\"now\"}](3개),months?:[{when:\"8월\",text}](4~5개 하단 밴드),sub?,note?} | bigstat:{title,value,caption?(**강조**),note?} | kpi:{title,items:[{value,label,desc?,tone?:\"on\"}](2~4개),sub?,note?} | table:{title,columns:[str],rows:[{cells:[str]}],sub?,note?} | timeline:{title,items:[{when,head,text?,on?:true}](3~5개),sub?,note?} | milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | process:{title,steps:[{tag:\"1단계 · 기획\"류,head(\\n 2줄 가능),text?}](3~4개),accent?,sub?,note?} | compare:{title,items:[{head:\"Before|After\",items:[str]}](2개),sub?,note?} | quote:{text(질문·인용, **강조**, \\n),by?} | position:{title,panels:[{tag,head(**굵게**),text?}](3개),accent?,note?} | checklist:{title,items:[str],cols?:1~2,sub?,note?} | lineup:{title,items:[{tag(분야),head(이름),text,badge?(상태),state?:\"dim\"(후보)}](4개),sub?,note?} | branch:{title,branches:[{label(조직명),head(역할),text}](3개),lead?:{label,text(**굵게**)},sub?,note?} | highlight:{title(영문 대형 \\n, **강조**),items:[{no?,head,text?}](2~3개),footnote?} | board:{title(2톤: __흐림__+**강조**),cards:[{tag:\"01 · 분야\",head,text?}](2개),side?:{title,items:[str],pills?:[str]},note?} | closing:{label?,title(2톤: __흐림__ 줄+**강조** 줄),sub?,nextLabel?(**강조**),contacts?:[{v}](우하단 2줄)}\n규칙: note=하단 키밴드 문장(장당 1개, **강조** 1회) — 본문 장엔 적극 넣는다. 챕터 컬러는 간지 순서 자동(블루→틸→그린→코랄→딥블루). title은 의미 단위 \\n 줄바꿈. 이모지 금지.";
 const PASTEL_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
@@ -295,11 +314,11 @@ const NAVER_SYSTEM =
   '3) section — 결론 요약: {title(2줄 \\n, 둘째 줄에 **핵심 강조**),text(리드 한 문장 — **강조** 1회),listTitle(좌 리스트 제목),points 3개:[{text}],listTitle2(우 리스트 제목),points2 3개:[{text}]}\n' +
   '4) toc — {title(영문 짧게, 예 "PGWO Flow"류 흐름명),items 정확히 5개:[{no,label(영문 대문자 한 단어),desc(한 줄),pages:"05 – 06" 형식}]}\n' +
   '5) divider — {ch:1,no:"01",title(영문 대문자 2줄 \\n, 예 "WHERE\\nIT HURTS"),lead(질문형 핵심 문장, **강조**),items 1~2개:[{head,text}]}\n' +
-  '6) table — 1챕터 본문: {title(2줄 \\n, **강조** 1회),columns 2개(좌=현상, 우=문제/결과),rows 정확히 5개:[{cells:[좌,우]}]}\n' +
+  '6) table — 1챕터 본문: {title(2줄 \\n, **강조** 1회),columns 2개(브리프 성격에 맞는 대비 축 — 예: 현상/문제, 발표자/핵심 메시지, 이전/이후),rows 4~5개:[{cells:[좌,우]}]}\n' +
   '7) divider — {ch:2,no:"02",title(영문 대문자 2줄, 예 "WHAT\\nWE GAIN"),lead(**강조**),items 2개:[{head,text}]}\n' +
-  '8) table — 2챕터 본문: {title(2줄 \\n, **강조**),columns:["AS-IS","TO-BE"],rows 정확히 4개:[{cells:[AS-IS 문구,TO-BE 문구(**강조** 가능)]}]}\n' +
-  '9) cards — 사용자 가치: {cols:5,cards 정확히 5개:[{tag(대상 역할 부제),head(대상명),text(얻는 가치 1~2문장 + 산출물 나열)}]} — banner·variant 쓰지 않음\n' +
-  '10) divider — {ch:3,no:"03",title(영문 대문자 2줄, 예 "WHAT\\nCHANGES"),lead(**강조**),items 2개:[{head,text}]}\n' +
+  '8) process — 방법·사이클 도식: {title(2줄 \\n, **강조**),steps 정확히 4개:[{tag(영문 또는 한 글자 키워드),head(단계명 \\n 가능),text(한 줄)}],accent:2} — 브리프의 방법론·흐름을 4단계로 분해\n' +
+  '9) cards — 핵심 항목 카드: {cols:4~5,cards 4~5개:[{tag(부제 — 역할·발표자·주제 등 브리프에 맞게),head(이름/항목명),text(1~2문장)}]} — banner·variant 쓰지 않음\n' +
+  '10) stats — 성과·기대 지표 그래프: {title(2줄 \\n, **강조**),donut:{pct(0~100),label},bars 3개:[{label,pct,value?,on?:true(1개만)}],summary(SO WHAT 한 문장, **강조**)} — 수치는 브리프 근거 우선, 없으면 목표치임이 드러나는 라벨(목표·Target)로\n' +
   '각 타입의 필드: ' + NAVER_FIELD_DOC + '\n' +
   '규칙: 브리프·첨부([첨부 문서])가 1차 소스 — 실제 내용으로 채우고 플레이스홀더 금지. ' +
   '챕터 컬러는 divider의 ch가 정한다(1·2·3 고정). 본문 장에 ch 금지. ' +
@@ -361,7 +380,7 @@ const WEB_SYSTEM =
   '- features는 정확히 3개(제목 2~6단어+한 줄 설명). stats는 3개.\n' +
   '- footerLinks는 이용약관·개인정보처리방침 등 표준 3개 기본, footerCopyright는 "© 연도 제품명" 형태.\n' +
   '- 문구는 lang 값의 언어로(ko=한국어, en=영어). 톤은 간결·자신감, 과장 금지.\n' +
-  '- tagline은 12자 내외 한 줄, subcopy는 1~2문장.';
+  '- tagline은 두 줄 구성(\\n으로 분리): 첫 줄=가벼운 도입구, 둘째 줄=핵심 메시지(화면에서 볼드로 강조됨). 각 줄 6~14자(영문 3~6단어). subcopy는 1~2문장.';
 
 /* 인테이크 되묻기 — 브리프를 읽고 "생성 품질에 정말 필요한데 빠진 정보"만 0~2개 질문.
    이름/제품명도 브리프에서 추출(따로 폼으로 안 물음). 질문 없으면 빈 배열. */

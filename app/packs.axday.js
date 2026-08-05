@@ -10,7 +10,7 @@
   var ORANGE = '#FF5500', BLUE = '#00A3FE', INK = '#030712';
 
   var DEMO = {
-    productName: 'AX DAY',
+    productName: 'MIDAS GEN NX Seminar 2026',
     eyebrow: '채용, 에이전트로 완성하다',
     tagline: 'AX DAY',
     subcopy: '채용 에이전트로 완전히 달라질 HR의 변화, AX DAY에서 확인하세요!\nAI 에이전트 시대, HR의 업무 방식도 이제 달라져야 합니다.',
@@ -42,7 +42,7 @@
 
   // 영문 폴백 데모 — _clang이 ko가 아니면 누락 필드가 이걸로 채워진다(KO 예시 누수 방지). ja/zh도 EN 폴백(데이터 번역은 번역 버튼 소관).
   var DEMO_EN = {
-    productName: 'AX DAY',
+    productName: 'MIDAS GEN NX Seminar 2026',
     eyebrow: 'Hiring, completed by agents',
     tagline: 'AX DAY',
     subcopy: 'See how HR changes with hiring agents — at AX DAY!\nIn the age of AI agents, the way HR works must change too.',
@@ -94,8 +94,9 @@
   // 히어로 기본 = 첨부 원본 교량(mbm과 공유, bg/mbm-hero.jpg) — currentScript 기준 절대경로
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
   var BRIDGE = BASE + 'bg/mbm-hero.jpg';
+  var DUBAI = BASE + 'bg/dubai-hero.jpg';   // [시연 고정] 히어로 기본 = 사용자 첨부 두바이 원본(shutterstock_2780488677)
   function photo(mode, key, w, h, slot) {
-    var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE :
+    var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE : key === 'dubai' ? DUBAI :
       key ? (PIN_MID && key !== 'arch' ? 'https://images.unsplash.com/photo-' + PIN_MID[(_pinI++) % PIN_MID.length] + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop' : stockUrl(key, w, h)) : '');
     return '<div class="ax-ph ph ' + (mode || '') + '"' + (slot ? ' data-img="' + slot + '"' : '') + '><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
       (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="if(!this.dataset.f&&/bg\\/mbm-hero/.test(this.src)){this.dataset.f=1;this.src=\'https://midas-drs.pages.dev/app/bg/mbm-hero.jpg\';}else{this.remove();}">' : '') + '</div>';
@@ -112,6 +113,7 @@
       '.ax-nav .wrap{display:flex;align-items:center;justify-content:center;gap:34px;height:60px;font-size:14.5px;color:#6B7280}',
       '.ax-nav .brand{position:absolute;left:30px;font-weight:900;font-size:19px;color:' + INK + '}',
       '.ax-nav .on{color:' + INK + ';font-weight:700}',
+      '.ax-navcta{position:absolute;right:30px;background:' + INK + ';color:#fff;font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:999px;white-space:nowrap}',
       /* hero */
       '.ax-hero{padding:84px 0 0;text-align:center}',
       /* 아이브로 = 오렌지 소제(타이틀과 강약 대비 — 사용자 피드백) */
@@ -279,11 +281,19 @@
       s = String(s == null ? '' : s);
       if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
       var lines = esc(s).split('\n');
-      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? ln : '<b>' + ln + '</b>'; }).join('<br>');
       var w = lines[0].split(' ');
-      if (w.length < 2) return '<b>' + lines[0] + '</b>';
-      var n = Math.max(1, Math.round(w.length * 0.4));
-      return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+      if (w.length < 2) {
+      var ln0 = lines[0];
+      if (ln0.length < 4) return '<b>' + ln0 + '</b>';
+      var n2 = Math.max(1, Math.round(ln0.length * 0.4));
+      var head = ln0.slice(0, Math.min(ln0.length - 1, n2 + 2));
+      var pi = Math.max(head.lastIndexOf('、'), head.lastIndexOf('，'), head.lastIndexOf('。'), head.lastIndexOf(','));
+      if (pi > 0) n2 = pi + 1;
+      return ln0.slice(0, n2) + '<b>' + ln0.slice(n2) + '</b>';
+    }
+      var n = Math.max(1, Math.round(w.length * 0.5));
+      return w.slice(0, n).join(' ') + ' <b>' + w.slice(n).join(' ') + '</b>';
     }
     var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 3);
     var ses = (shared.sessions && shared.sessions.length ? shared.sessions
@@ -325,13 +335,13 @@
         '<style>body,button,input,textarea{font-family:"Pretendard Variable",Pretendard,"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '",-apple-system,sans-serif}</style>' : '') +
       '<style>' + css() + '</style></head><body data-pack="axday">' +
       '<nav class="ax-nav"><div class="wrap"><span class="brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
-      (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + ['#about', '#program', '#info', '#faq'][i % 4] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') +
-      '<a class="on" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
+      (d.navLinks || []).map(function (l, i) { return { l: l, i: i }; }).filter(function (x) { return String(x.l || '').trim(); }).slice(0, 4).map(function (x, j) { return '<a href="' + ['#about', '#program', '#info', '#faq'][j % 4] + '"' + de('navLinks.' + x.i) + '>' + esc(x.l) + '</a>'; }).join('') +
+      '<a class="ax-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
       '<h1 class="ax-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ax-hsub"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p></div>' +
-      '<div class="ph-wide">' + photo('', 'arch', 1600, 620, 'hero') + '</div></header>' +
+      '<div class="ph-wide">' + photo('', 'dubai', 1600, 620, 'hero') + '</div></header>' +
       _axBody(shared, d, TT, cards, sess, qs) +
       '<section class="ax-cta" id="apply"><div class="wrap"><h2 class="tt rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<button class="pill-dark rv"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +

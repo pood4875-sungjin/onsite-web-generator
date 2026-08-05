@@ -341,11 +341,19 @@
       s = String(s == null ? '' : s);
       if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
       var lines = esc(s).split('\n');
-      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? ln : '<b>' + ln + '</b>'; }).join('<br>');
       var w = lines[0].split(' ');
-      if (w.length < 2) return '<b>' + lines[0] + '</b>';
-      var n = Math.max(1, Math.round(w.length * 0.4));
-      return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+      if (w.length < 2) {
+      var ln0 = lines[0];
+      if (ln0.length < 4) return '<b>' + ln0 + '</b>';
+      var n2 = Math.max(1, Math.round(ln0.length * 0.4));
+      var head = ln0.slice(0, Math.min(ln0.length - 1, n2 + 2));
+      var pi = Math.max(head.lastIndexOf('、'), head.lastIndexOf('，'), head.lastIndexOf('。'), head.lastIndexOf(','));
+      if (pi > 0) n2 = pi + 1;
+      return ln0.slice(0, n2) + '<b>' + ln0.slice(n2) + '</b>';
+    }
+      var n = Math.max(1, Math.round(w.length * 0.5));
+      return w.slice(0, n).join(' ') + ' <b>' + w.slice(n).join(' ') + '</b>';
     }
     var TT = {
       ko: { why: '하루면 충분한 이유', sv: '일정 및 장소', faq: '자주 묻는 질문', cd: '신청 마감까지', dt: '일시', pl: '장소' },

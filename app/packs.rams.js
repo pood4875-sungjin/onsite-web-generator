@@ -214,7 +214,8 @@
       }).join('');
       return '<section class="slide rs md" data-kind="' + kind(s, 'Media') + '">' + runhead(s, P, ctx) + headline(s, P) +
         '<div class="rs-mdcols"><div class="rs-specs">' + rows + '</div>' +
-        '<div class="rs-mdimg">' + imgPh(s.image && s.image.label, P) +
+        '<div class="rs-mdimg"><div class="rs-imgwrap">' + imgPh(s.image && s.image.label, P) +
+        '<img class="rs-mdphoto" loading="lazy" alt="" src="https://images.unsplash.com/photo-1617761141732-d481912af1a9?w=1000&h=1200&q=78&auto=format&fit=crop" onerror="this.remove()"></div>' +
         (s.caption ? '<span class="rs-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</span>' : '') + '</div></div></section>';
     },
     /* 로드맵 — 상단 월별 진행 바 + Now/Next/Then 카드. 원본 23 */
@@ -605,6 +606,8 @@
       '.rs-spec.on span{font-size:19px;font-weight:500}.rs-spec.on span b{font-weight:600}' +
       '.rs-mdimg{display:flex;flex-direction:column;gap:8px;min-height:0}' +
       '.rs-imgph{flex:1;min-height:0;border:1.5px dashed #C9C7C1;border-radius:19px;background:var(--soft);display:grid;place-items:center}' +
+      '.rs-imgwrap{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}' +
+      '.rs-mdphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:19px}' +
       '.rs-imgph span{font-size:14px;color:var(--faint)}' +
       '.rs-cap{font-size:14px;color:var(--faint);text-align:right}' +
       /* 로드맵·타임라인 */
