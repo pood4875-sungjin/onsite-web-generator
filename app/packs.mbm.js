@@ -14,8 +14,10 @@
     { cap: 'PREDICTION', bg: '#F0F7F7', g1: '#007DA0', g2: '#00BDDE', tint: '#39BFD8' },
     { cap: 'FEEDBACK',   bg: '#EBF2E6', g1: '#54BA0A', g2: '#6BE016', tint: '#7BCE4A' },
   ];
-  /* 기본 실사 — 전수 눈검증 완료(사장교/현장/대시보드/문서). 죽은 링크는 onerror로 제거되고 모형 폴백 */
-  var IMG_HERO = 'https://images.unsplash.com/photo-1768039354480-ea18815b6275?w=1920&q=80&auto=format&fit=crop';
+  /* 기본 실사 — 히어로는 사용자 첨부 원본(Figma 239:107443 → bg/mbm-hero.jpg), 챕터는 눈검증 큐레이션.
+     죽은 링크는 onerror로 제거되고 모형 폴백 */
+  var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
+  var IMG_HERO = BASE + 'bg/mbm-hero.jpg';
   var IMG_FEAT = [
     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1100&q=78&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1100&q=78&auto=format&fit=crop',
@@ -28,6 +30,7 @@
     tagline: '실시간 데이터 기반\n가시설 현장 안전 예측 솔루션',
     subcopy: '굴착 현장의 실시간 계측 데이터를 분석해 가시설의 거동과 위험을 예측하고,\n이상 징후 알림과 최적 보완설계로 안전한 현장 대응을 지원합니다.',
     primaryCta: '세미나 신청하기',
+    navTitle: 'Civil NX Seminar 2026',
     navLinks: ['소개', '프로그램', '일정·장소', 'FAQ'],
     features: [
       { title: '본사는 현장을 우선순위별로 한눈에,\n현장은 대시보드로 위험에 더 빠르게 대응합니다.', desc: '전국 현장의 계측 상태와 위험도를 한 화면에서 확인합니다. 이상 센서는 즉시 알림으로 받아봅니다. 현장별 점검 리스트가 자동으로 만들어집니다.' },
@@ -95,15 +98,16 @@
       /* GNB — Figma MainHome-GNB 실측: h72 · bg #FAFCFE · 로고 좌 · 다크 버튼 #515866 우 */
       '.mb-nav{position:sticky;top:0;z-index:50;background:rgba(250,252,254,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(10,11,11,.06)}',
       '.mb-nav .wrap{display:flex;align-items:center;gap:40px;height:72px}',
-      '.mb-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap}',
-      '.mb-logo i{width:28px;height:28px;border-radius:7px;background:#0A0B0B;color:#fff;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:15px}',
+      /* GNB 타이틀 — 로고 심볼 없이 영문 워드마크만 (사용자 지정) */
+      '.mb-logo{font-weight:700;font-size:20px;letter-spacing:-.02em;white-space:nowrap;color:#0A0B0B}',
       '.mb-menu{display:flex;gap:34px;font-size:15.5px;font-weight:600;color:#3E4450;margin-left:auto}',
       '.mb-menu a{transition:color .15s}.mb-menu a:hover{color:#006BDE}',
       '.mb-navcta{display:inline-block;background:#515866;color:#fff;font-size:15px;font-weight:600;padding:12px 22px;border-radius:8px;cursor:pointer;border:0;font-family:inherit;white-space:nowrap}',
       /* hero — Figma 실측: 블루 #006BDE→#1E90F0 + 우측 사장교 실사, 화이트 CTA. h726 */
       '.mb-hero{position:relative;min-height:726px;display:flex;align-items:flex-start;overflow:hidden;background:linear-gradient(90deg,#006BDE 0%,#1E90F0 100%)}',
-      '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 8%}',
-      '.mb-hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,#006BDE 0%,rgba(4,110,224,.94) 36%,rgba(12,126,233,.6) 60%,rgba(24,145,241,.08) 100%)}',
+      '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:74% 50%}',
+      /* 첨부 원본에 좌측 블루가 이미 있음 — 오버레이는 좁은 화면 가독성 보강용으로만 얇게 */
+      '.mb-hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,107,222,.55) 0%,rgba(0,107,222,.22) 38%,rgba(0,107,222,0) 62%)}',
       '.mb-hero .wrap{position:relative;z-index:2;padding-top:168px;padding-bottom:150px}',
       '.mb-ht{font-size:72px;line-height:1.29;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
       '.mb-hs{margin-top:18px;font-size:20px;line-height:1.5;color:#EAF3FD;max-width:660px}',
@@ -264,11 +268,10 @@
       'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
       'q("[data-cd=m]").textContent=String(m).padStart(2,"0");q("[data-cd=s]").textContent=String(s2).padStart(2,"0");};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
       '})();<\/script>';
-    var initial = esc((String(d.productName || 'M').trim().charAt(0) || 'M').toUpperCase());
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
-      '<nav class="mb-nav"><div class="wrap"><span class="mb-logo"><i>' + initial + '</i><span' + de('productName') + '>' + esc(d.productName) + '</span></span>' +
+      '<nav class="mb-nav"><div class="wrap"><span class="mb-logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<div class="mb-menu">' + menu + '</div>' +
       '<a class="mb-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="mb-hero"><img class="bgimg" alt="" data-img="hero" src="' + esc(imgs.hero || IMG_HERO) + '" onerror="this.remove()"><div class="shade"></div><div class="wrap">' +
@@ -307,7 +310,7 @@
       '<label class="agr"><input type="checkbox" required><span' + de('formAgree') + '>' + esc(d.formAgree) + '</span></label>' +
       '<button class="sbm" type="submit"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></form>' +
       '</div></div></section>' +
-      '<footer class="mb-foot"><div class="wrap"><span class="mb-logo" style="color:#fff"><i style="background:#fff;color:#0A0B0B">' + initial + '</i>' + esc(d.productName) + '</span>' +
+      '<footer class="mb-foot"><div class="wrap"><span class="mb-logo" style="color:#fff"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<div class="lks">' + (d.footerLinks || []).map(function (l, i) { return '<a' + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div>' +
       '<span class="cp"' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span></div></footer>' +
       fnjs + mot + '</body></html>';
