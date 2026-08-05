@@ -415,12 +415,15 @@
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
   // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
   async function translatePayload(payload, to) {
-    if (payload && Array.isArray(payload.slides) && payload.slides.length > 8) {
+    if (payload && Array.isArray(payload.slides) && payload.slides.length > 6) {
+      var chunks = [];
+      for (var ci = 0; ci < payload.slides.length; ci += 6) chunks.push(payload.slides.slice(ci, ci + 6));
+      // 청크 병렬 번역 — 순차 대기로 늦던 언어 전환을 동시 호출로 단축
+      var parts = await Promise.all(chunks.map(function (c) { return translatePayload({ slides: c }, to); }));
       var outAll = [];
-      for (var ci = 0; ci < payload.slides.length; ci += 8) {
-        var part = await translatePayload({ slides: payload.slides.slice(ci, ci + 8) }, to);
-        if (!part || !Array.isArray(part.slides)) throw new Error('BAD_TRANSLATE_CHUNK');
-        outAll = outAll.concat(part.slides);
+      for (var pi = 0; pi < parts.length; pi++) {
+        if (!parts[pi] || !Array.isArray(parts[pi].slides)) throw new Error('BAD_TRANSLATE_CHUNK');
+        outAll = outAll.concat(parts[pi].slides);
       }
       return { slides: outAll };
     }
