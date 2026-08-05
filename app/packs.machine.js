@@ -25,7 +25,10 @@
   }
 
   var GREEN = '#FF5500'   /* [시연] 포인트 = 주황 */, INK = '#14181F';
+  var PROD = 'https://midas-drs.pages.dev/app/';
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
+  /* file:// 스튜디오는 srcdoc iframe에서 로컬 이미지 로드가 막힐 수 있어 프로드 자산으로 강제 */
+  if (!BASE || BASE.indexOf('file:') === 0) BASE = PROD;
   function aurl(f) { return BASE + 'bg/' + f; }
 
   /* ---- 공통 조각 ---- */
@@ -213,7 +216,7 @@
       var img = String(s.img || 'gennx-1.jpg').replace(/[^a-zA-Z0-9._-]/g, '');
       return '<section class="slide nx sh" data-kind="' + kind(s, 'Product') + '">' + runhead(s, P, ctx) + headline(s, P) +
         '<div class="nx-shgrid"><div class="nx-shrows">' + rows + '</div>' +
-        '<figure class="nx-shimg"><img loading="lazy" alt="" src="' + aurl(img) + '" onerror="this.closest(\'figure\').style.display=\'none\'">' +
+        '<figure class="nx-shimg"><img loading="lazy" alt="" src="' + aurl(img) + '" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + PROD + 'bg/' + img + '\';}else{this.closest(\'figure\').style.display=\'none\';}">' +
         (s.caption ? '<figcaption' + de(P + '.caption') + '>' + esc(s.caption) + '</figcaption>' : '') + '</figure></div>' + footline(s, P) + '</section>';
     },
     spec: function (s, P, ctx) {
@@ -390,7 +393,7 @@
     '.nx-shimg figcaption{margin-top:10px;font-size:12.5px;color:#8A8F98}',
     '.nx-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,13,18,.92) 0%,rgba(10,13,18,.55) 46%,rgba(10,13,18,.28) 100%);z-index:-1}',
     '.nx-shade.cl{background:linear-gradient(180deg,rgba(10,13,18,.62) 0%,rgba(10,13,18,.4) 45%,rgba(10,13,18,.86) 100%)}',
-    '.nx-cvtitle{font-size:54px;line-height:1.18;font-weight:300;letter-spacing:-.02em;color:#E7E9EC}.nx-cvtitle b{font-weight:800;color:#fff}.nx-cvtitle .mut{color:rgba(231,233,236,.34);font-weight:300}',
+    '.nx-cvtitle{font-size:64px;line-height:1.16;font-weight:300;letter-spacing:-.02em;color:#E7E9EC}.nx-cvtitle b{font-weight:800;color:#fff}.nx-cvtitle .mut{color:rgba(231,233,236,.34);font-weight:300}',
     '.nx-cvlead{display:flex;align-items:center;gap:22px;margin-top:34px}.nx-cvlead span{font-size:15.5px;letter-spacing:.06em;color:#C9CDD2}.nx-cvlead b{color:#fff;font-weight:700}',
     '.nx-cvfoot{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.22em;color:#8B9097;text-transform:uppercase}',
     '.nx-cltitle{font-size:58px;line-height:1.3;font-weight:300;color:rgba(231,233,236,.42)}.nx-cltitle b{font-weight:800;color:#fff}',
@@ -432,7 +435,7 @@
     '.nx-qbar{width:4px;background:' + GREEN + ';height:100%;min-height:190px;margin-top:14px}',
     '.nx-qtx{font-size:32px;line-height:1.5;font-weight:300;margin-top:8px}.nx-qtx b{color:' + GREEN + ';font-weight:800}',
     /* 레퍼런스 카드 */
-    '.nx-refgrid{display:grid;gap:52px;margin-top:52px}.nx-refgrid.n3{grid-template-columns:repeat(3,1fr)}.nx-refgrid.n2{grid-template-columns:repeat(2,1fr)}.nx-refgrid.n4{grid-template-columns:repeat(4,1fr)}',
+    '.nx-refgrid{display:grid;gap:52px;margin:auto 0}.nx-refgrid.n3{grid-template-columns:repeat(3,1fr)}.nx-refgrid.n2{grid-template-columns:repeat(2,1fr)}.nx-refgrid.n4{grid-template-columns:repeat(4,1fr)}',
     '.nx-ref .ln{display:block;height:3.5px;background:' + GREEN + '}',
     '.nx-ref .tt{display:block;font-size:26px;margin-top:20px;letter-spacing:-.01em}',
     '.nx-ref .cp{display:block;font-size:11.5px;font-weight:800;letter-spacing:.16em;color:' + GREEN + ';margin-top:10px;text-transform:uppercase}',
@@ -452,11 +455,11 @@
 
   CSS += [
     '',
-    '.nx-bngrid{display:grid;grid-template-columns:repeat(4,1fr);gap:44px;margin-top:56px}',
-    '.nx-bn .no{font-size:50px;font-weight:200;color:' + GREEN + ';letter-spacing:-.02em}',
+    '.nx-bngrid{display:grid;grid-template-columns:repeat(4,1fr);gap:44px;margin:auto 0}',
+    '.nx-bn .no{font-size:58px;font-weight:200;color:' + GREEN + ';letter-spacing:-.02em}',
     '.nx-bn .ln{display:block;height:1.5px;background:#14181F;margin:16px 0 14px}',
-    '.nx-bn .tt{display:block;font-size:19.5px}',
-    '.nx-bn .ds{font-size:14.5px;line-height:1.7;color:#6D6F74;margin-top:8px}',
+    '.nx-bn .tt{display:block;font-size:21px}',
+    '.nx-bn .ds{font-size:15.5px;line-height:1.7;color:#6D6F74;margin-top:8px}',
     /* 어젠다 상태 카드 */
     '.nx-aggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;margin-top:52px}',
     '.nx-ag .ln{display:block;height:1.5px;background:#C6C9CD}',

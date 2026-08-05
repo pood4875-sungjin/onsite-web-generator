@@ -220,8 +220,8 @@ const MACHINE_SYSTEM =
   '4) twocol — 왜 지금: {title,cols 2개:[{tag,tone,items 3~4}] — 좌=설계 환경의 변화, 우=GEN NX의 접근}\n' +
   '5) shot — 고급 해석: {title(**강조**),sub,img:"gennx-1.jpg",rows 3~4개:[{tag(짧은 영문),text}] — 시공단계·시간이력·비선형·좌굴(공식 정보),caption(화면 설명 한 줄)}\n' +
   '6) shot — API·자동화: {title(**강조**),sub,img:"gennx-4.jpg",rows 3~4개:[{tag,text}] — Excel·Python 자동화·Grasshopper 플러그인·MIDAS Pro(예정),caption}\n' +
-  '7) bignum — 핵심 가치 4: {items 4개:[{no,title,desc}] — 설계기준 대응·고급 해석·4K 작업환경·API 확장}\n' +
-  '8) refcards — 적용 사례: {items 3개:[{title(프로젝트명 영문),tag(해석 키워드 대문자),desc(공식 사례 설명 요약)}],source:"midasuser.com — GEN NX Application Cases"}\n' +
+  '7) bignum — 핵심 가치 4: {kicker,title(필수·빈 값 금지, **강조** 포함 한 줄),items 4개:[{no,title,desc}] — 설계기준 대응·고급 해석·4K 작업환경·API 확장}\n' +
+  '8) refcards — 적용 사례: {kicker,title(필수·빈 값 금지, **강조** 포함 한 줄),sub,items 3개:[{title(프로젝트명 영문),tag(해석 키워드 대문자),desc(공식 사례 설명 요약)}],source:"midasuser.com — GEN NX Application Cases"} — 프로젝트명은 아래 공식 사례 또는 첨부 문서에 있는 것만, 창작 금지\n' +
   '9) beforeafter — {title,cols 2개:[{tag:"BEFORE|AFTER",items 4개}] — 단절된 도구·반복 입력 vs 하나의 플랫폼·자동화}\n' +
   '10) closing — {title(마지막 줄 **볼드**),band(참석 유도 한 줄),label(행사명),date(첨부의 일시·장소)}\n' +
   '각 타입의 필드: ' + MACHINE_FIELD_DOC + ' | shot:{title,sub?,img("gennx-1.jpg"|"gennx-3.jpg"|"gennx-4.jpg"|"gennx-s1.jpg"),rows:[{tag,text}],caption?}\n' +
