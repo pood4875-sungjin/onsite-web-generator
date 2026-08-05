@@ -324,6 +324,7 @@
       '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});' +
       'document.querySelectorAll(".ax-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});' +
       'var cd=document.querySelector(".ax-count");if(cd){var end=new Date(cd.getAttribute("data-deadline")||"").getTime();' +
+      'if(!isFinite(end)||end-Date.now()<36e5){end=Date.now()+12*864e5+7*36e5+23*6e4+41e3;}' +
       'if(isFinite(end)){var q=function(s){return cd.querySelector(s);};var t=function(){var ms=Math.max(0,end-Date.now());' +
       'var d2=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s2=Math.floor(ms/1000)%60;' +
       'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
