@@ -745,7 +745,7 @@
       const pick=(id,name)=>{ S.styleName=name; onPick(id,name); };
       if(kind==='ppt'){
         // 노출 팩 화이트리스트(2026-07-31 사용자 지시) — 구 팩·pitch·honors는 잠시 가림. 되살리려면 여기에 추가
-        const PPT_VISIBLE=['naver'];   // [시연 고정] PPT = Design AX Line 단독 — 해제 시 ['naver','rams','pastel','sfmi','machine']
+        const PPT_VISIBLE=['naver','rams','pastel'];   // [시연] 3종 노출 — naver는 10장 템플릿 잠금, 전체 복원 시 +'sfmi','machine'
         (PPT_VISIBLE.includes('ppt')?(window.PPT_STYLES||[]):[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
@@ -807,7 +807,7 @@
   // 내용 키워드 기반 스타일 3개 추천 — 로컬 규칙. null이면 전체 표시(edm 등)
   function recStyles(kind, plan){
     const t=(plan||'').toLowerCase();
-    if(kind==='ppt') return ['naver'];   // [시연 고정] PPT 추천 = Design AX Line 단독
+    if(kind==='ppt') return null;   // [시연] 3종(PPT_VISIBLE) 전부 표시 — '다른 스타일 보기' 없음
     if(kind==='single'||kind==='multi') return null;   // 웹 = 3종 전부 표시('다른 스타일 보기' 없음)
     return null;
   }
