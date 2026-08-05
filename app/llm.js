@@ -209,23 +209,33 @@
     // 프록시 모드: 서버가 프롬프트 조립·모델 고정·일일 제한 적용. 키 불필요.
     if (usingProxy()) {
       var wantStream = typeof onText === 'function';
-      var pres = await fetch(proxyUrl() + '/compose', {
-        method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '', lang: _ol, stream: wantStream }),
-      });
-      if (!pres.ok) { var pj = null; try { pj = await pres.json(); } catch (e) {} throw new Error(_proxyErrMsg(pj, pres.status)); }
-      var ptext;
-      var ctype = (pres.headers.get('content-type') || '');
-      if (wantStream && ctype.indexOf('event-stream') >= 0 && pres.body) {
-        ptext = await _readSse(pres.body, onText);
-      } else {
-        var pj2 = null; try { pj2 = await pres.json(); } catch (e) {}
-        ptext = pj2 && pj2.text;
+      var _attempt = async function (useStream) {
+        var pres = await fetch(proxyUrl() + '/compose', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '', lang: _ol, stream: useStream }),
+        });
+        if (!pres.ok) { var pj = null; try { pj = await pres.json(); } catch (e) {} throw new Error(_proxyErrMsg(pj, pres.status)); }
+        var ptext;
+        var ctype = (pres.headers.get('content-type') || '');
+        if (useStream && ctype.indexOf('event-stream') >= 0 && pres.body) {
+          ptext = await _readSse(pres.body, onText);
+        } else {
+          var pj2 = null; try { pj2 = await pres.json(); } catch (e) {}
+          ptext = pj2 && pj2.text;
+        }
+        var pdeck = parseDeck(ptext, brief.pack);
+        pdeck.style = brief.style || pdeck.style || 'ax';
+        pdeck.accent = pdeck.accent || 'blue';
+        return pdeck;
+      };
+      try { return await _attempt(wantStream); }
+      catch (e) {
+        // 스트림이 서버 배포·네트워크 순단으로 중간에 끊기면 잘린 JSON → 실패.
+        // 비스트림으로 1회 재시도 — 라이브 연출만 포기하고 생성은 살린다.
+        if (!wantStream) throw e;
+        console.warn('[ai] compose 스트림 실패 → 비스트림 재시도', e);
+        return await _attempt(false);
       }
-      var pdeck = parseDeck(ptext, brief.pack);
-      pdeck.style = brief.style || pdeck.style || 'ax';
-      pdeck.accent = pdeck.accent || 'blue';
-      return pdeck;
     }
     // BYOK 직접 호출 — machine 팩(AX Machine): 다크·그린·영문 빅타이포
     if (brief.pack === 'machine' && window.MACHINE_SCHEMA_DOC) {
@@ -491,17 +501,27 @@
     var txt;
     if (usingProxy()) {
       var wantStream = typeof onText === 'function';
-      payload.stream = wantStream;
-      var r = await fetch(proxyUrl() + '/compose-web', {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
-      });
-      if (!r.ok) { var j = null; try { j = await r.json(); } catch (e) {} throw new Error(_proxyErrMsg(j, r.status)); }
-      var ct = (r.headers.get('content-type') || '');
-      if (wantStream && ct.indexOf('event-stream') >= 0 && r.body) {
-        txt = await _readSse(r.body, onText);
-      } else {
-        var j2 = null; try { j2 = await r.json(); } catch (e) {}
-        txt = j2 && j2.text;
+      var _attemptW = async function (useStream) {
+        payload.stream = useStream;
+        var r = await fetch(proxyUrl() + '/compose-web', {
+          method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+        });
+        if (!r.ok) { var j = null; try { j = await r.json(); } catch (e) {} throw new Error(_proxyErrMsg(j, r.status)); }
+        var ct = (r.headers.get('content-type') || '');
+        var t;
+        if (useStream && ct.indexOf('event-stream') >= 0 && r.body) {
+          t = await _readSse(r.body, onText);
+        } else {
+          var j2 = null; try { j2 = await r.json(); } catch (e) {}
+          t = j2 && j2.text;
+        }
+        return _parseSite(t);   // 파싱까지 시도 안에서 — 잘린 스트림(BAD_JSON)도 재시도 대상
+      };
+      try { return await _attemptW(wantStream); }
+      catch (e) {
+        if (!wantStream) throw e;
+        console.warn('[ai] compose-web 스트림 실패 → 비스트림 재시도', e);
+        return await _attemptW(false);
       }
     } else {
       txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000 });
