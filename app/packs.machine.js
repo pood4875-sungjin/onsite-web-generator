@@ -24,7 +24,7 @@
     return ws.slice(0, ws.length - k).join(' ') + ' **' + ws.slice(ws.length - k).join(' ') + '**';
   }
 
-  var GREEN = '#40C057', INK = '#14181F';
+  var GREEN = '#FF5500'   /* [시연] 포인트 = 주황 */, INK = '#14181F';
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
   function aurl(f) { return BASE + 'bg/' + f; }
 
@@ -384,7 +384,7 @@
     '.nx-shrow i{font-style:normal;font-size:12.5px;font-weight:700;letter-spacing:.08em;color:#8A8F98;text-transform:uppercase}',
     '.nx-shrow span{font-size:16.5px;line-height:1.5;color:#30343B}',
     '.nx-shrow.on{background:#0B0E16;border-radius:14px;padding:19px 22px;border-bottom:0;margin-bottom:6px}',
-    '.nx-shrow.on i{color:#00DE5A}.nx-shrow.on span{color:#fff;font-weight:600}',
+    '.nx-shrow.on i{color:#FF5500}.nx-shrow.on span{color:#fff;font-weight:600}',
     '.nx-shimg{margin:0;display:flex;flex-direction:column;min-height:0}',
     '.nx-shimg img{flex:1;min-height:0;width:100%;object-fit:cover;border-radius:16px;background:#0B0E16}',
     '.nx-shimg figcaption{margin-top:10px;font-size:12.5px;color:#8A8F98}',
@@ -535,7 +535,7 @@
     '.nx-fill{display:block;height:100%;background:' + GREEN + ';border-radius:3px}',
     '.nx-prow .cp{font-size:12.5px;color:#6D6F74;margin-top:8px}',
     '.nx-prow .cp2{font-size:12.5px;color:' + GREEN + ';font-weight:700;margin-top:4px}',
-    '.nx-prow.on{background:#182924;border:1px solid rgba(64,192,87,.45);border-radius:4px;padding:16px 20px;margin:8px 0}',
+    '.nx-prow.on{background:#182924;border:1px solid rgba(255,85,0,.45);border-radius:4px;padding:16px 20px;margin:8px 0}',
     '.nx-prow.on .tt{font-size:18.5px}',
     /* 로드맵 */
     '.nx-rmgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:52px;margin-top:48px}',
