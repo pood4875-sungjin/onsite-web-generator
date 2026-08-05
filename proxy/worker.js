@@ -356,7 +356,9 @@ const INTAKE_SYSTEM =
   '- multi=복수 응답이 자연스러운 질문이면 true(예: 강조하고 싶은 내용, 포함할 요소). 하나만 고르는 게 맞으면 false(예: 청중, 목적, 톤).\n' +
   '  예: 청중 질문이면 ["대학생·취준생","주니어 디자이너","실무 디자이너","리더·경영진"]처럼 브리프 주제에 맞춘 구체 선택지.\n' +
   '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름). 분량도 묻지 마라(따로 고름).\n' +
-  '- q·opts는 {LANG}, q는 정중한 한 문장. key는 영문 스네이크(예: target_audience). opts 각 항목은 내용과 어울리는 이모지 1개로 시작한다(예: "📈 매출 성장").';
+  '- q는 정중한 한 문장. key는 영문 스네이크(예: target_audience). opts 각 항목은 내용과 어울리는 이모지 1개로 시작한다(예: "📈 매출 성장").\n' +
+  '[언어 — 최우선 규칙] q와 opts의 모든 항목·name·product까지, 사용자에게 보이는 모든 문자열을 {LANG}로 작성한다.\n' +
+  '브리프나 첨부 문서가 다른 언어로 쓰여 있어도 예외 없이 {LANG}로 쓴다(내용은 문서에서, 표기는 {LANG}). 브랜드·고유명사만 원문 유지.';
 
 /* 출력물 로컬라이징 — 덱/사이트 JSON의 텍스트 값만 목표 언어로. 구조·시스템 값은 불변 */
 const TRANSLATE_SYSTEM =
@@ -466,8 +468,10 @@ export default {
     } else if (route === '/intake') {
       const safe = { kind: clip(body.kind, 10), plan: clip(body.plan, 16000), lang: clip(body.lang, 5) || 'ko' };
       if (!safe.plan) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = INTAKE_SYSTEM.replace('{LANG}', uiLangName(safe.lang));
-      userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan;
+      system = INTAKE_SYSTEM.replace(/\{LANG\}/g, uiLangName(safe.lang));
+      userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan +
+        // 시스템 지시만으론 브리프 언어(예: 한국어 첨부)에 끌려감 — 유저 메시지 끝에도 못박는다(최근성)
+        (safe.lang !== 'ko' ? '\n\n[OUTPUT LANGUAGE] The brief above may be in Korean, but you MUST write q and EVERY item in opts in ' + uiLangName(safe.lang) + '. Do not output Korean in q or opts.' : '');
     } else if (route === '/compose-web') {
       const safe = {
         product: clip(body.product, 100),
