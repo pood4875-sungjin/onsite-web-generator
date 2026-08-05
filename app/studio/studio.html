@@ -625,6 +625,7 @@
   // 팩별 출력 — KRDS는 계약 렌더(renderKrdsPage), 그 외는 darkglow(renderComposed)
   function renderWith(d, pt, vol, nav, mot){
     const rd = Object.assign({}, d, nav?{nav}:{}, {pageType: d.pageType || pt});   // 팩이 PAGE_TYPES 구성표를 찾는 키
+    if (window.LLM && LLM.fixBrand) LLM.fixBrand(rd);   // 제품명 표기 자가치유 — 과거 저장분의 'GEN NX'도 렌더 시 'MIDAS GEN NX'로
     if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='saturn' && typeof renderSaturnPage==='function') return renderSaturnPage(rd, {volume:vol, motion:mot});

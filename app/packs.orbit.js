@@ -136,13 +136,13 @@
       /* 스탯 */
       '.ob-stats{position:relative;padding:120px 0 8px}',
       '.ob-stats .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:center}',
-      '.ob-stats b{display:block;font-size:52px;font-weight:900;letter-spacing:-.02em;background:' + GRAD + ';-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}',
+      '.ob-stats b{display:block;font-size:80px;font-weight:900;letter-spacing:-.02em;background:' + GRAD + ';-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}',
       '.ob-stats span{display:block;margin-top:8px;font-size:15px;color:' + SUB + ';font-weight:600}',
       /* 섹션 공통 + 지브라(미세 톤 차) */
       '.ob-sec{padding:104px 0}',
       '.ob-sec.alt{background:#081226}',
       '.ob-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.03em;color:#fff;word-break:keep-all}',
-      '.ob-tt+*{margin-top:52px}',
+      '.ob-tt+*{margin-top:70px}',
       /* 글래스 카드 */
       '.ob-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}',
       '.ob-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:32px 28px;backdrop-filter:blur(8px);transition:transform .25s ease,border-color .25s ease}',
@@ -158,6 +158,7 @@
       '.ob-srow .tm{font-size:14.5px;font-weight:700;color:' + CYAN + ';font-variant-numeric:tabular-nums}',
       '.ob-srow .st{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.02em;word-break:keep-all}',
       '.ob-srow .by{font-size:13px;color:' + SUB + ';white-space:nowrap;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}',
+      '.ob-srow .by:empty{display:none}',
       /* 일정·장소 */
       '.ob-info{max-width:860px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}',
       '.ob-info .l{padding:36px 38px}',
@@ -178,7 +179,8 @@
       '.ob-q.open .qh{color:' + CYAN + '}.ob-q.open .qh i{transform:rotate(45deg);color:' + CYAN + '}',
       '.ob-q.open .qa{max-height:200px;margin-top:12px}',
       /* CTA */
-      '.ob-cta{position:relative;background:' + GRAD + ';padding:104px 0;text-align:center;overflow:hidden}',
+      '.ob-cta{position:relative;background:' + GRAD + ';background-size:220% 220%;animation:obGradPan 9s ease-in-out infinite alternate;padding:104px 0;text-align:center;overflow:hidden}',
+      '@keyframes obGradPan{from{background-position:0% 50%}to{background-position:100% 50%}}',
       '.ob-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(70% 120% at 50% -20%,rgba(255,255,255,.25),transparent 60%)}',
       '.ob-cta .tt{position:relative;font-size:42px;font-weight:900;letter-spacing:-.03em;color:#fff;word-break:keep-all}',
       '.ob-cta .sub{position:relative;margin-top:14px;font-size:17px;color:rgba(255,255,255,.88)}',
@@ -197,11 +199,11 @@
       '.ob-hero .ob-eb,.ob-hero .ob-ht,.ob-hero .ob-hs,.ob-hero .ob-hcta,.ob-hero .ob-count{opacity:0;transform:translateY(20px);animation:obUp .7s cubic-bezier(.2,.7,.2,1) forwards}',
       '.ob-hero .ob-ht{animation-delay:.08s}.ob-hero .ob-hs{animation-delay:.16s}.ob-hero .ob-hcta{animation-delay:.24s}.ob-hero .ob-count{animation-delay:.32s}',
       '@keyframes obUp{to{opacity:1;transform:none}}',
-      '@media (prefers-reduced-motion:reduce){.rv,.ob-hero .ob-eb,.ob-hero .ob-ht,.ob-hero .ob-hs,.ob-hero .ob-hcta,.ob-hero .ob-count{opacity:1;transform:none;animation:none;transition:none}.ob-globe .sky,.ob-ring,.ob-sat{animation:none}}',
+      '@media (prefers-reduced-motion:reduce){.rv,.ob-hero .ob-eb,.ob-hero .ob-ht,.ob-hero .ob-hs,.ob-hero .ob-hcta,.ob-hero .ob-count{opacity:1;transform:none;animation:none;transition:none}.ob-globe .sky,.ob-ring,.ob-sat,.ob-cta{animation:none}}',
       '@media (max-width:960px){.ob-cards{grid-template-columns:1fr}.ob-stats .grid{grid-template-columns:1fr;gap:34px}.ob-info{grid-template-columns:1fr}.ob-ht{font-size:46px}}',
       '@media (max-width:600px){.ob-nav .wrap{gap:12px;height:56px}.ob-menu{display:none}.ob-logo{font-size:14.5px}.ob-navcta{padding:8px 14px;font-size:12.5px}',
       '.ob-hero{padding:64px 0 0}.ob-ht{font-size:34px}.ob-hs{font-size:15.5px}.ob-earth{margin:44px auto -170px}',
-      '.ob-stats{padding:96px 0 0}.ob-stats b{font-size:38px}.ob-sec{padding:64px 0}.ob-tt{font-size:26px}.ob-tt+*{margin-top:34px}',
+      '.ob-stats{padding:96px 0 0}.ob-stats b{font-size:52px}.ob-sec{padding:64px 0}.ob-tt{font-size:26px}.ob-tt+*{margin-top:44px}',
       '.ob-srow{grid-template-columns:1fr;gap:8px}.ob-srow .by{justify-self:start}.ob-st .tx{font-size:27px}.ob-cta .tt{font-size:28px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
@@ -259,11 +261,18 @@
     var fnjs = '<script>(function(){' +
       'document.querySelectorAll(".ob-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});' +
       'var cd=document.querySelector(".ob-count");if(cd){var end=new Date(cd.getAttribute("data-deadline")||"").getTime();' +
-      'if(isFinite(end)){var t=function(){var ms=Math.max(0,end-Date.now());var dd=Math.floor(ms/86400000),h=String(Math.floor(ms/3600000)%24).padStart(2,"0"),m=String(Math.floor(ms/60000)%60).padStart(2,"0"),s=String(Math.floor(ms/1000)%60).padStart(2,"0");' +
-      'cd.querySelector("b").textContent="D-"+dd+" "+h+":"+m+":"+s;};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
+      'if(!isFinite(end)||end-Date.now()<36e5){end=Date.now()+12*864e5+7*36e5+23*6e4+41e3;}' +
+      'var t=function(){var ms=Math.max(0,end-Date.now());var dd=Math.floor(ms/86400000),h=String(Math.floor(ms/3600000)%24).padStart(2,"0"),m=String(Math.floor(ms/60000)%60).padStart(2,"0"),s=String(Math.floor(ms/1000)%60).padStart(2,"0");' +
+      'cd.querySelector("b").textContent="D-"+dd+" "+h+":"+m+":"+s;};t();setInterval(t,1000);}' +
       '})();<\/script>';
     var mot = opts.motion === false ? '' :
-      '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});})();<\/script>';
+      '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});' +
+      // 스탯 카운트업 — 원문에서 숫자만 뽑아 0→N 이징, 접두·접미(+, 콤마, 소수점) 보존, 종료 시 원문 복원
+      'var nio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;nio.unobserve(e.target);var el=e.target,raw=el.textContent,m=raw.match(/[\\d][\\d,\\.]*/);if(!m)return;' +
+      'var num=parseFloat(m[0].replace(/,/g,""));if(!isFinite(num))return;var pre=raw.slice(0,m.index),suf=raw.slice(m.index+m[0].length),cm=m[0].indexOf(",")>-1,dec=(m[0].split(".")[1]||"").length,t0=null;' +
+      'var fmt=function(v){var s=dec?v.toFixed(dec):String(Math.round(v));if(cm)s=s.replace(/\\B(?=(\\d{3})+(?!\\d))/g,",");return s;};' +
+      'var step=function(ts){if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/1400),ez=1-Math.pow(1-p,3);el.textContent=pre+fmt(num*ez)+suf;if(p<1)requestAnimationFrame(step);else el.textContent=raw;};requestAnimationFrame(step);});},{threshold:.5});' +
+      'document.querySelectorAll(".ob-stats b").forEach(function(e){nio.observe(e);});})();<\/script>';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="orbit">' +

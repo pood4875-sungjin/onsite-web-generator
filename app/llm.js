@@ -409,7 +409,7 @@
     }
     var out = _repairParse(String(txt || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim());
     if (!out) throw new Error('BAD_EDIT_JSON');
-    return { site: out.site && typeof out.site === 'object' ? out.site : null, message: out.message || '' };
+    return { site: out.site && typeof out.site === 'object' ? _fixBrand(out.site) : null, message: out.message || '' };
   }
 
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
@@ -424,7 +424,7 @@
       }
       return { slides: outAll };
     }
-    return _translateOne(payload, to);
+    return _fixBrand(await _translateOne(payload, to));
   }
   async function _translateOne(payload, to) {
     var txt;
@@ -529,6 +529,16 @@
     return _parseSite(txt);
   }
   // 검증+정규화: 문자열 필드는 문자열로, 배열 필드는 유효 항목만. 비었으면 null 유지.
+  // 제품명 표기 규칙 — 'GEN NX'는 항상 'MIDAS GEN NX'(사용자 지정 공식 표기). 생성·수정·번역 산출물 공통.
+  function _fixBrand(v) {
+    if (!v || typeof v !== 'object') return v;
+    Object.keys(v).forEach(function (k) {
+      if (typeof v[k] === 'string') v[k] = v[k].replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX');
+      else _fixBrand(v[k]);
+    });
+    return v;
+  }
+
   function _parseSite(txt) {
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), j = s.lastIndexOf('}');
@@ -583,7 +593,7 @@
     // 임의로 채운(브리프 근거 없는) 필드명 — 스튜디오 안내용
     out.assumed = (Array.isArray(o.assumed) ? o.assumed : []).map(function (x) { return str(x); }).filter(Boolean);
     if (!out.productName && !out.tagline && !out.features) throw new Error('EMPTY_DRAFT');
-    return out;
+    return _fixBrand(out);
   }
 
   function _parseEdit(txt, pack, orig) {
@@ -641,7 +651,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
-    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck,
+    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();
