@@ -1,10 +1,11 @@
 /* packs.mbm.js — "세미나 집객 블루" 랜딩 팩 (MBM). classic <script src>.
-   소스: Figma Y5BuxrmQwXHIDfOgPknPVr 236:54126 (1920×7952) 실측.
-   구성(고정 TEMPLATE): nav → hero(다크 포토+화이트 그라데이션) → 챕터 지그재그 ×3(블루/틸/그린 그라데이션 타이틀)
-   → 다크 선언(2톤) → FAQ 아코디언 → 다크틸 CTA → footer.
-   실측 토큰: 챕터 bg #E4EBF4/#F0F7F7/#EBF2E6 · 타이틀 그라데이션 #165FCE→#448EFE / #007DA0→#00BDDE / #54BA0A→#6BE016
-   · 캡션 #7A808D 24 · 선언 bg #0C0D0D(딤 #6B7280) · CTA #065454→#071E21 · FAQ 카드 #F7F7F8 r8, 열린 Q #1BB9CD
-   · 히어로 타이틀 72/-3.19/128.6% · 카드 r12. 폰트 Pretendard, 큰 마이너스 자간. */
+   소스: Figma Y5BuxrmQwXHIDfOgPknPVr 236:54126 (1920×7952) 실측. v2 = 상단을 Figma 그대로.
+   구성(고정 TEMPLATE): GNB(화이트 #FAFCFE·로고·앵커 메뉴·다크 CTA #515866) → hero(블루 #006BDE→#1E90F0 + 우측 사장교 실사)
+   → 카운트다운 → 챕터 지그재그 ×3(그라데이션 타이틀 + 이미지 비주얼, 실패 시 대시보드 모형 폴백)
+   → 세션(#program) → 일정·장소(#info) → 다크 선언 → FAQ(#faq) → 참가 신청 폼(#apply) → footer.
+   실측 토큰: GNB h72 · 히어로 타이틀 72/-4.4%/129% · 챕터 bg #E4EBF4/#F0F7F7/#EBF2E6
+   · 타이틀 그라데이션 #165FCE→#448EFE / #007DA0→#00BDDE / #54BA0A→#6BE016 · 선언 bg #0C0D0D
+   · CTA #065454→#071E21 · FAQ 열린 Q #1BB9CD · 카드 r12. 폰트 Pretendard, 큰 마이너스 자간. */
 (function () {
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function de(p) { return p ? ' data-edit="' + p + '"' : ''; }
@@ -13,6 +14,13 @@
     { cap: 'PREDICTION', bg: '#F0F7F7', g1: '#007DA0', g2: '#00BDDE', tint: '#39BFD8' },
     { cap: 'FEEDBACK',   bg: '#EBF2E6', g1: '#54BA0A', g2: '#6BE016', tint: '#7BCE4A' },
   ];
+  /* 기본 실사 — 전수 눈검증 완료(사장교/현장/대시보드/문서). 죽은 링크는 onerror로 제거되고 모형 폴백 */
+  var IMG_HERO = 'https://images.unsplash.com/photo-1768039354480-ea18815b6275?w=1920&q=80&auto=format&fit=crop';
+  var IMG_FEAT = [
+    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1100&q=78&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1100&q=78&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1100&q=78&auto=format&fit=crop',
+  ];
 
   /* 데모 기본 콘텐츠 — 시안 원문(ONSITE). AI 초안(compose-web)이 오면 전부 교체된다 */
   var DEMO = {
@@ -20,6 +28,7 @@
     tagline: '실시간 데이터 기반\n가시설 현장 안전 예측 솔루션',
     subcopy: '굴착 현장의 실시간 계측 데이터를 분석해 가시설의 거동과 위험을 예측하고,\n이상 징후 알림과 최적 보완설계로 안전한 현장 대응을 지원합니다.',
     primaryCta: '세미나 신청하기',
+    navLinks: ['소개', '프로그램', '일정·장소', 'FAQ'],
     features: [
       { title: '본사는 현장을 우선순위별로 한눈에,\n현장은 대시보드로 위험에 더 빠르게 대응합니다.', desc: '전국 현장의 계측 상태와 위험도를 한 화면에서 확인합니다. 이상 센서는 즉시 알림으로 받아봅니다. 현장별 점검 리스트가 자동으로 만들어집니다.' },
       { title: '향후 시공단계의 위험을\n선제적으로 예측합니다.', desc: '계측값 패턴으로 가시설 이상 징후를 조기 판단합니다. 최적 보완설계 제시로 리스크를 사전에 제거합니다. 관리기준 초과 전에 골든타임을 확보합니다.' },
@@ -43,8 +52,15 @@
       { q: '예측 결과를 믿어도 되나요?', a: '현장 운영 데이터와 학계 검증을 바탕으로 정확도를 계속 높여가고 있습니다.' },
       { q: '비용이 부담되거나, 우리 현장에 안 맞으면 어쩌죠?', a: '현장 규모와 계측 항목에 맞춰 도입 방안과 견적을 안내해 드립니다. 부담 없이 문의해 주세요.' },
     ],
-    ctaTitle: '현장에 MIDAS ONSITE를\n도입해 보세요',
-    ctaSub: '현장 규모와 계측 항목에 맞춰 도입 방안을 안내해 드립니다.\n부담 없이 문의해 주세요.',
+    ctaTitle: '지금 세미나에\n참가 신청하세요',
+    ctaSub: '좌석이 한정되어 있습니다. 신청 후 참가 안내 메일을 보내드려요.\n현장 규모와 계측 항목에 맞는 상담도 함께 신청할 수 있습니다.',
+    formTitle: '참가 신청',
+    formName: '이름',
+    formCompany: '회사명 / 소속',
+    formEmail: '이메일',
+    formPhone: '연락처',
+    formAgree: '개인정보 수집·이용에 동의합니다',
+    formDone: '신청이 완료되었습니다!\n입력하신 이메일로 참가 안내를 보내드릴게요.',
     footerLinks: ['솔루션', '도입 문의', '회사 소개'],
     footerCopyright: '© 2026 MIDAS IT',
   };
@@ -58,9 +74,10 @@
       return '<li><svg viewBox="0 0 20 20" width="18" height="18"><circle cx="10" cy="10" r="10" fill="currentColor" opacity=".14"/><path d="M6 10.2l2.6 2.6L14 7.4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span' + de(P) + '>' + esc(t.trim()) + '</span></li>';
     }).join('');
   }
-  /* 챕터 비주얼 — 추상 대시보드 모형(팩 그래픽, CSS만) */
-  function visual(c, flip) {
+  /* 챕터 비주얼 — 실사 이미지(피커 슬롯 feature.N) 위, 로드 실패 시 추상 대시보드 모형이 드러남 */
+  function visual(c, flip, imgSrc, slot) {
     return '<div class="mb-vis" style="--tint:' + c.tint + ';--g1:' + c.g1 + ';--g2:' + c.g2 + '">' +
+      (imgSrc ? '<img class="vimg" loading="lazy" alt="" data-img="' + esc(slot) + '" src="' + esc(imgSrc) + '" onerror="this.remove()">' : '') +
       '<div class="mb-win"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>' +
       '<div class="mb-scr">' +
       '<div class="mb-kpis"><div class="k"><i style="height:56%"></i></div><div class="k"><i style="height:78%"></i></div><div class="k on"><i style="height:92%"></i></div><div class="k"><i style="height:64%"></i></div></div>' +
@@ -75,21 +92,22 @@
       'body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:#0A0B0B;background:#fff;-webkit-font-smoothing:antialiased}',
       'img{max-width:100%}ul{list-style:none}a{text-decoration:none;color:inherit}',
       '.wrap{max-width:1372px;margin:0 auto;padding:0 34px}',
-      /* nav */
-      '.mb-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(10,11,11,.07)}',
-      '.mb-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:66px}',
-      '.mb-brand{font-weight:800;font-size:19px;letter-spacing:-.02em}',
-      '.mb-navcta{background:#0A0B0B;color:#fff;font-size:14.5px;font-weight:600;padding:10px 20px;border-radius:999px;cursor:pointer;border:0;font-family:inherit}',
-      /* hero — 다크 포토 무드 + 화이트 그라데이션 하단 */
-      '.mb-hero{position:relative;min-height:760px;display:flex;align-items:flex-start;overflow:hidden;background:linear-gradient(118deg,#0E2A55 0%,#1E56A8 46%,#5D93D9 78%,#BFD7EF 100%)}',
-      '.mb-hero:after{content:"";position:absolute;inset:auto 0 0 0;height:34%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 96%)}',
-      '.mb-hero .bgart{position:absolute;right:-6%;top:-12%;width:58%;height:120%;background:radial-gradient(closest-side,rgba(255,255,255,.34),rgba(255,255,255,0) 70%),linear-gradient(200deg,rgba(255,255,255,.22),rgba(255,255,255,0) 60%);transform:rotate(8deg)}',
-      '.mb-hero .bgcable{position:absolute;right:4%;top:0;width:44%;height:100%;background:repeating-linear-gradient(112deg,rgba(255,255,255,.28) 0 2px,transparent 2px 74px);mask-image:linear-gradient(180deg,#000 55%,transparent 95%);-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 95%)}',
-      '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% 30%;opacity:.5;mix-blend-mode:luminosity}',
-      '.mb-hero .wrap{position:relative;z-index:2;padding-top:132px;padding-bottom:200px}',
-      '.mb-ht{font-size:66px;line-height:1.286;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
-      '.mb-hs{margin-top:26px;font-size:20px;line-height:1.445;color:#E7EDF4;max-width:640px}',
-      '.mb-hcta{display:inline-block;margin-top:38px;background:#fff;color:#4B5563;font-size:17.5px;font-weight:600;padding:15px 30px;border-radius:12px;border:0;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(8,20,40,.22)}',
+      /* GNB — Figma MainHome-GNB 실측: h72 · bg #FAFCFE · 로고 좌 · 다크 버튼 #515866 우 */
+      '.mb-nav{position:sticky;top:0;z-index:50;background:rgba(250,252,254,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(10,11,11,.06)}',
+      '.mb-nav .wrap{display:flex;align-items:center;gap:40px;height:72px}',
+      '.mb-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.01em;white-space:nowrap}',
+      '.mb-logo i{width:28px;height:28px;border-radius:7px;background:#0A0B0B;color:#fff;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:15px}',
+      '.mb-menu{display:flex;gap:34px;font-size:15.5px;font-weight:600;color:#3E4450;margin-left:auto}',
+      '.mb-menu a{transition:color .15s}.mb-menu a:hover{color:#006BDE}',
+      '.mb-navcta{display:inline-block;background:#515866;color:#fff;font-size:15px;font-weight:600;padding:12px 22px;border-radius:8px;cursor:pointer;border:0;font-family:inherit;white-space:nowrap}',
+      /* hero — Figma 실측: 블루 #006BDE→#1E90F0 + 우측 사장교 실사, 화이트 CTA. h726 */
+      '.mb-hero{position:relative;min-height:726px;display:flex;align-items:flex-start;overflow:hidden;background:linear-gradient(90deg,#006BDE 0%,#1E90F0 100%)}',
+      '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 8%}',
+      '.mb-hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,#006BDE 0%,rgba(4,110,224,.94) 36%,rgba(12,126,233,.6) 60%,rgba(24,145,241,.08) 100%)}',
+      '.mb-hero .wrap{position:relative;z-index:2;padding-top:168px;padding-bottom:150px}',
+      '.mb-ht{font-size:72px;line-height:1.29;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
+      '.mb-hs{margin-top:18px;font-size:20px;line-height:1.5;color:#EAF3FD;max-width:660px}',
+      '.mb-hcta{display:inline-block;margin-top:40px;background:#fff;color:#374151;font-size:17.5px;font-weight:600;padding:17px 34px;border-radius:8px;border:0;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(3,40,90,.28)}',
       /* 챕터 */
       '.mb-ch{padding:110px 0 130px}',
       '.mb-ch .cap{display:block;text-align:center;font-size:21px;font-weight:700;letter-spacing:.02em;color:#7A808D}',
@@ -101,7 +119,8 @@
       '.mb-card ul{margin-top:26px;display:flex;flex-direction:column;gap:13px}',
       '.mb-card li{display:flex;gap:10px;align-items:flex-start;font-size:18.5px;line-height:1.5;color:#4B5563;letter-spacing:-.03em}',
       '.mb-card li svg{flex:none;margin-top:3px;color:var(--g1)}',
-      '.mb-vis{border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--tint) 26%,#fff),color-mix(in srgb,var(--tint) 62%,#fff));padding:26px;display:flex;flex-direction:column;min-height:420px;box-shadow:inset 0 0 0 1px rgba(10,11,11,.05)}',
+      '.mb-vis{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--tint) 26%,#fff),color-mix(in srgb,var(--tint) 62%,#fff));padding:26px;display:flex;flex-direction:column;min-height:420px;box-shadow:inset 0 0 0 1px rgba(10,11,11,.05)}',
+      '.mb-vis .vimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}',
       '.mb-win{display:flex;gap:6px;margin-bottom:14px}.mb-win .dot{width:9px;height:9px;border-radius:50%;background:rgba(10,11,11,.18)}',
       '.mb-scr{flex:1;background:rgba(255,255,255,.88);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:16px}',
       '.mb-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;height:96px;align-items:end}',
@@ -128,12 +147,24 @@
       '.mb-q.open{background:#fff;box-shadow:0 12px 34px rgba(15,30,60,.09)}',
       '.mb-q.open .qh{color:#1BB9CD}.mb-q.open .qh i{transform:rotate(45deg);color:#1BB9CD}',
       '.mb-q.open .qa{max-height:220px;margin-top:14px}',
-      /* CTA */
-      '.mb-cta{position:relative;background:linear-gradient(135deg,#065454 0%,#071E21 100%);padding:130px 0;text-align:center;overflow:hidden}',
+      /* 신청 폼 섹션 — 다크틸 그라데이션 위 화이트 폼 카드 */
+      '.mb-cta{position:relative;background:linear-gradient(135deg,#065454 0%,#071E21 100%);padding:120px 0;overflow:hidden}',
       '.mb-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 90% at 80% 10%,rgba(27,185,205,.24),transparent 70%)}',
-      '.mb-cta .tt{position:relative;font-size:50px;line-height:1.286;letter-spacing:-.045em;font-weight:700;color:#fff;text-wrap:balance}',
-      '.mb-cta .sub{position:relative;margin-top:20px;font-size:17.5px;line-height:1.445;color:rgba(255,255,255,.86)}',
-      '.mb-cta .btn{position:relative;display:inline-block;margin-top:36px;background:#fff;color:#4B5563;font-size:17.5px;font-weight:600;padding:15px 32px;border-radius:12px;border:0;cursor:pointer;font-family:inherit}',
+      '.mb-cta .agrid{position:relative;display:grid;grid-template-columns:1fr 520px;gap:64px;align-items:center}',
+      '.mb-cta .tt{font-size:50px;line-height:1.286;letter-spacing:-.045em;font-weight:700;color:#fff;text-wrap:balance}',
+      '.mb-cta .sub{margin-top:20px;font-size:17.5px;line-height:1.55;color:rgba(255,255,255,.86)}',
+      '.mb-form{background:#fff;border-radius:16px;padding:38px 36px;box-shadow:0 30px 80px rgba(0,0,0,.35)}',
+      '.mb-form .ft{display:block;font-size:24px;font-weight:800;letter-spacing:-.03em;color:#0A0B0B}',
+      '.mb-form label{display:block;font-size:13.5px;font-weight:700;color:#6B7280;margin:18px 0 7px}',
+      '.mb-form input[type=text],.mb-form input[type=email],.mb-form input[type=tel]{width:100%;border:1.5px solid #E5E7EB;border-radius:10px;padding:13px 15px;font-size:16px;font-family:inherit;color:#0A0B0B;outline:0;transition:border-color .15s,box-shadow .15s}',
+      '.mb-form input:focus{border-color:#165FCE;box-shadow:0 0 0 3px rgba(22,95,206,.14)}',
+      '.mb-form .agr{display:flex;align-items:flex-start;gap:9px;margin-top:20px;font-size:14px;color:#4B5563;font-weight:500;cursor:pointer}',
+      '.mb-form .agr input{margin-top:2.5px;width:16px;height:16px;accent-color:#165FCE}',
+      '.mb-form .sbm{width:100%;margin-top:22px;background:linear-gradient(93deg,#165FCE,#448EFE);color:#fff;border:0;border-radius:10px;padding:16px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s,box-shadow .2s}',
+      '.mb-form .sbm:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(22,95,206,.35)}',
+      '.mb-form .done{text-align:center;padding:34px 6px}',
+      '.mb-form .done svg{color:#165FCE}',
+      '.mb-form .done p{margin-top:16px;font-size:18px;line-height:1.55;font-weight:600;color:#0A0B0B}',
       /* footer */
       '.mb-foot{background:#0A0B0B;color:#9AA0A6;padding:44px 0}',
       '.mb-foot .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}',
@@ -165,11 +196,14 @@
       '.mb-imap .pin{position:absolute;left:48%;top:38%;width:32px;height:32px;border-radius:50% 50% 50% 0;background:#165FCE;transform:rotate(-45deg);box-shadow:0 10px 24px rgba(22,95,206,.35)}',
       '.mb-imap .pin:after{content:"";position:absolute;inset:9px;border-radius:50%;background:#fff}',
       '.mb-imap .rd{position:absolute;left:0;right:0;top:58%;height:12px;background:rgba(10,11,11,.07);transform:rotate(-6deg)}',
+      /* 앵커 스크롤 — sticky GNB 높이 보정 */
+      '.mb-ch,.mb-ses,.mb-info,.mb-faq,.mb-st,.mb-cta{scroll-margin-top:76px}',
       /* 카드·버튼 호버 */
       '.mb-card,.mb-vis{transition:transform .3s ease,box-shadow .3s ease}',
       '.mb-card:hover{transform:translateY(-4px);box-shadow:0 22px 54px rgba(15,30,60,.1)}',
-      '.mb-hcta,.mb-cta .btn,.mb-navcta{transition:transform .2s ease,box-shadow .2s ease}',
-      '.mb-hcta:hover,.mb-cta .btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(8,20,40,.3)}',
+      '.mb-hcta,.mb-navcta{transition:transform .2s ease,box-shadow .2s ease}',
+      '.mb-hcta:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(8,20,40,.3)}',
+      '.mb-navcta:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(20,26,34,.25)}',
       /* 히어로 진입 스태거 */
       '.mb-hero .mb-ht,.mb-hero .mb-hs,.mb-hero .mb-hcta{opacity:0;transform:translateY(22px);animation:mbUp .8s cubic-bezier(.2,.7,.2,1) forwards}',
       '.mb-hero .mb-hs{animation-delay:.14s}.mb-hero .mb-hcta{animation-delay:.28s}',
@@ -178,7 +212,7 @@
       /* 모션 */
       '.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}',
       '.rv.in{opacity:1;transform:none}',
-      '@media (max-width:960px){.mb-zig,.mb-zig.flip{grid-template-columns:1fr}.mb-ht{font-size:44px}.mb-ch .tt,.mb-faq .tt{font-size:33px}.mb-st .tx{font-size:36px}.mb-cta .tt{font-size:36px}}',
+      '@media (max-width:960px){.mb-menu{display:none}.mb-zig,.mb-zig.flip{grid-template-columns:1fr}.mb-ht{font-size:44px}.mb-ch .tt,.mb-faq .tt{font-size:33px}.mb-st .tx{font-size:36px}.mb-cta .tt{font-size:36px}.mb-cta .agrid{grid-template-columns:1fr;gap:44px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }
@@ -189,6 +223,7 @@
     for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
     var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
     var faq = (shared.faq && shared.faq.length ? shared.faq : DEMO.faq).slice(0, 6);
+    var imgs = shared.images || {};
     var ctaTitle = shared.bannerText && shared.bannerCta ? shared.bannerText : d.ctaTitle;   // 배너 텍스트를 CTA로 쓰는 초안 대응
     var stTx = (function () {   // 선언 2톤 — 마지막 줄을 딤 처리
       var lines = String(d.bannerText || '').split('\n');
@@ -200,8 +235,8 @@
     var chapters = feats.map(function (f, i) {
       var c = CH[i % CH.length], flip = i % 2 === 1, P = 'features.' + i;
       var text = '<div class="mb-card rv" style="--g1:' + c.g1 + '"><h3 class="ct"' + de(P + '.title') + '>' + ml(f.title || '') + '</h3><ul>' + bullets(f.desc, P + '.desc') + '</ul></div>';
-      var vis = '<div class="rv">' + visual(c, flip) + '</div>';
-      return '<section class="mb-ch" style="background:' + c.bg + ';--g1:' + c.g1 + ';--g2:' + c.g2 + '">' +
+      var vis = '<div class="rv">' + visual(c, flip, imgs['feature.' + i] || IMG_FEAT[i % IMG_FEAT.length], 'feature.' + i) + '</div>';
+      return '<section class="mb-ch"' + (i === 0 ? ' id="about"' : '') + ' style="background:' + c.bg + ';--g1:' + c.g1 + ';--g2:' + c.g2 + '">' +
         '<div class="wrap"><span class="cap rv">' + c.cap + '</span>' +
         '<h2 class="tt rv"' + de(P + '.title') + '>' + ml(f.title || '') + '</h2>' +
         '<div class="mb-zig' + (flip ? ' flip' : '') + '">' + (flip ? vis + text : text + vis) + '</div></div></section>';
@@ -210,6 +245,16 @@
       return '<div class="mb-q' + (i === 0 ? ' open' : '') + '"><div class="qh"><span' + de('faq.' + i + '.q') + '>Q. ' + esc(f.q || '') + '</span><i>+</i></div>' +
         '<div class="qa"' + de('faq.' + i + '.a') + '>' + ml(f.a || '') + '</div></div>';
     }).join('');
+    var anchors = ['#about', '#program', '#info', '#faq'];
+    var menu = (d.navLinks || []).slice(0, 4).map(function (l, i) {
+      return '<a href="' + anchors[i % anchors.length] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>';
+    }).join('');
+    /* 폼 제출 — 모션 옵션과 무관한 기능 스크립트 (성공 연출 + FAQ 토글 + 카운트다운은 아래 mot) */
+    var fnjs = '<script>(function(){var f=document.querySelector(".mb-form");if(!f)return;' +
+      'f.addEventListener("submit",function(e){e.preventDefault();' +
+      'var m=(f.getAttribute("data-fdone")||"").replace(/\\n/g,"<br>");' +
+      'f.innerHTML=\'<div class="done"><svg viewBox="0 0 48 48" width="52" height="52"><circle cx="24" cy="24" r="22" fill="currentColor" opacity=".12"/><path d="M14 24.5l7 7L34 18" stroke="currentColor" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><p>\'+m+"</p></div>";});' +
+      '})();<\/script>';
     var mot = opts.motion === false ? '' :
       '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});' +
       'document.querySelectorAll(".mb-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});' +
@@ -219,43 +264,54 @@
       'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
       'q("[data-cd=m]").textContent=String(m).padStart(2,"0");q("[data-cd=s]").textContent=String(s2).padStart(2,"0");};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
       '})();<\/script>';
+    var initial = esc((String(d.productName || 'M').trim().charAt(0) || 'M').toUpperCase());
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
-      '<nav class="mb-nav"><div class="wrap"><span class="mb-brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
-      '<button class="mb-navcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></nav>' +
-      '<header class="mb-hero"><img class="bgimg" loading="lazy" alt="" data-img="hero" src="' + esc((shared.images && shared.images.hero) || 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1600&h=800&q=78&auto=format&fit=crop') + '" onerror="this.remove()"><div class="bgart"></div><div class="bgcable"></div><div class="wrap">' +
+      '<nav class="mb-nav"><div class="wrap"><span class="mb-logo"><i>' + initial + '</i><span' + de('productName') + '>' + esc(d.productName) + '</span></span>' +
+      '<div class="mb-menu">' + menu + '</div>' +
+      '<a class="mb-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
+      '<header class="mb-hero"><img class="bgimg" alt="" data-img="hero" src="' + esc(imgs.hero || IMG_HERO) + '" onerror="this.remove()"><div class="shade"></div><div class="wrap">' +
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
-      '<button class="mb-hcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></header>' +
-      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' \uB9C8\uAC10\uAE4C\uC9C0</span>' +
+      '<a class="mb-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>' +
+      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' 마감까지</span>' +
       '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
       chapters +
-      '<section class="mb-ses"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' +
+      '<section class="mb-ses" id="program"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' +
       (d.sessions || []).slice(0, 5).map(function (s, i) {
         var P = 'sessions.' + i;
         return '<div class="mb-srow rv"><span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
           '<span class="st"' + de(P + '.title') + '>' + esc(s.title || '') + '</span>' +
           '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
       }).join('') + '</div></div></section>' +
-      '<section class="mb-info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
-      '<table><tr><th>\uC77C\uC2DC</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
-      '<tr><th>\uC7A5\uC18C</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+      '<section class="mb-info" id="info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
+      '<table><tr><th>일시</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+      '<tr><th>장소</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
       '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>' +
       '<section class="mb-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
       (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
       '</div></section>' +
-      '<section class="mb-faq"><div class="wrap"><h2 class="tt rv">도입 전,<br>이런 점이 궁금하신가요?</h2>' +
+      '<section class="mb-faq" id="faq"><div class="wrap"><h2 class="tt rv">도입 전,<br>이런 점이 궁금하신가요?</h2>' +
       '<p class="sub rv">가장 많이 묻는 질문을 모았습니다. 더 궁금한 점은 부담 없이 문의해 주세요.</p>' +
       '<div class="mb-qs rv">' + qs + '</div></div></section>' +
-      '<section class="mb-cta"><div class="wrap"><h2 class="tt rv">' + ml(ctaTitle) + '</h2>' +
-      '<p class="sub rv"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
-      '<button class="btn rv"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta) + '</button></div></section>' +
-      '<footer class="mb-foot"><div class="wrap"><span class="mb-brand" style="color:#fff">' + esc(d.productName) + '</span>' +
+      '<section class="mb-cta" id="apply"><div class="wrap"><div class="agrid"><div class="l rv">' +
+      '<h2 class="tt">' + ml(ctaTitle) + '</h2>' +
+      '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p></div>' +
+      '<form class="mb-form rv" data-fdone="' + esc(d.formDone) + '">' +
+      '<b class="ft"' + de('formTitle') + '>' + esc(d.formTitle) + '</b>' +
+      '<label' + de('formName') + '>' + esc(d.formName) + '</label><input type="text" name="name" required autocomplete="name">' +
+      '<label' + de('formCompany') + '>' + esc(d.formCompany) + '</label><input type="text" name="company" autocomplete="organization">' +
+      '<label' + de('formEmail') + '>' + esc(d.formEmail) + '</label><input type="email" name="email" required autocomplete="email">' +
+      '<label' + de('formPhone') + '>' + esc(d.formPhone) + '</label><input type="tel" name="phone" autocomplete="tel">' +
+      '<label class="agr"><input type="checkbox" required><span' + de('formAgree') + '>' + esc(d.formAgree) + '</span></label>' +
+      '<button class="sbm" type="submit"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></form>' +
+      '</div></div></section>' +
+      '<footer class="mb-foot"><div class="wrap"><span class="mb-logo" style="color:#fff"><i style="background:#fff;color:#0A0B0B">' + initial + '</i>' + esc(d.productName) + '</span>' +
       '<div class="lks">' + (d.footerLinks || []).map(function (l, i) { return '<a' + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div>' +
       '<span class="cp"' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span></div></footer>' +
-      mot + '</body></html>';
+      fnjs + mot + '</body></html>';
   };
 
-  window.MBM_STYLE = { id: 'mbm', name: '세미나 집객 블루', desc: '다크블루 히어로 · 챕터 그라데이션 · FAQ 아코디언', swatch: 'linear-gradient(135deg,#1E56A8 0%,#00BDDE 55%,#6BE016 100%)' };
+  window.MBM_STYLE = { id: 'mbm', name: '세미나 집객 블루', desc: '블루 히어로(교량 실사) · 앵커 GNB · 신청 폼 · FAQ 아코디언', swatch: 'linear-gradient(135deg,#006BDE 0%,#00BDDE 55%,#6BE016 100%)' };
 })();
