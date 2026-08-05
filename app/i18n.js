@@ -513,6 +513,8 @@
     'Saturn 블루': ['Saturn Blue', 'Saturnブルー', 'Saturn 蓝'],
     '세미나 집객 블루': ['Seminar Blue', 'セミナー集客ブルー', '研讨会引流蓝'],
     'AX Day 오렌지': ['AX Day Orange', 'AX Dayオレンジ', 'AX Day 橙'],
+    '챌린지 화이트': ['Challenge White', 'チャレンジホワイト', '挑战白'],
+    '글로벌 오르빗': ['Global Orbit', 'グローバルオービット', '全球轨道'],
     '이미지 바꾸기': ['Replace image', '画像を変更', '更换图片'],
     '이미지 주소를 직접 붙여넣어도 돼요': ['or paste an image URL', '画像URLを貼り付けてもOK', '也可直接粘贴图片地址'],
     '적용': ['Apply', '適用', '应用'],

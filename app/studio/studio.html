@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../pagetypes.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.mbm.js','../packs.axday.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../packs.naver.js','../packs.rams.js','../packs.pastel.js','../packs.sfmi.js','../packs.machine.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../pagetypes.js','../packs.krds.js','../packs.midas.js','../packs.edm.js','../packs.aether.js','../packs.saturn.js','../packs.mbm.js','../packs.axday.js','../packs.toss.js','../packs.orbit.js','../packs.ppt.js','../charts.js','../packs.pitch.js','../packs.honors.js','../packs.naver.js','../packs.rams.js','../packs.pastel.js','../packs.sfmi.js','../packs.machine.js','../export-pptx.js','../llm.js','../edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -630,6 +630,8 @@
     if(pack && pack.id==='saturn' && typeof renderSaturnPage==='function') return renderSaturnPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='mbm' && typeof renderMbmPage==='function') return renderMbmPage(rd, {volume:vol, motion:mot!=='none'});
     if(pack && pack.id==='axday' && typeof renderAxdayPage==='function') return renderAxdayPage(rd, {volume:vol, motion:mot!=='none'});
+    if(pack && pack.id==='toss' && typeof renderTossPage==='function') return renderTossPage(rd, {volume:vol, motion:mot!=='none'});
+    if(pack && pack.id==='orbit' && typeof renderOrbitPage==='function') return renderOrbitPage(rd, {volume:vol, motion:mot!=='none'});
     if(pack && pack.id==='ppt' && typeof renderPptDeck==='function') return renderPptDeck(rd);
     if(pack && pack.id==='pitch' && typeof renderPitchDeck==='function') return renderPitchDeck(rd);
     if(pack && pack.id==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(rd);
@@ -2596,6 +2598,8 @@
     data = structuredClone(pageRef.data || EMPTY);
     pack = (project.stylePack==='mbm' && typeof MBM_STYLE!=='undefined') ? MBM_STYLE
          : (project.stylePack==='axday' && typeof AXDAY_STYLE!=='undefined') ? AXDAY_STYLE
+         : (project.stylePack==='toss' && typeof TOSS_STYLE!=='undefined') ? TOSS_STYLE
+         : (project.stylePack==='orbit' && typeof ORBIT_STYLE!=='undefined') ? ORBIT_STYLE
          : (project.stylePack==='saturn' && typeof SATURN_STYLE!=='undefined') ? SATURN_STYLE
          : (project.stylePack==='machine' && typeof MACHINE_STYLE!=='undefined') ? MACHINE_STYLE
          : (project.stylePack==='sfmi' && typeof SFMI_STYLE!=='undefined') ? SFMI_STYLE

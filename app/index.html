@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.mbm.js','packs.axday.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js','packs.sfmi.js','packs.machine.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.mbm.js','packs.axday.js','packs.toss.js','packs.orbit.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js','packs.sfmi.js','packs.machine.js','llm.js','edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -290,7 +290,7 @@
 <!-- 홈 히어로 — 센터 타이틀 + 큰 입력창 + 샘플 (Genspark 홈 패턴). 첫 전송 시 챗으로 전환 -->
 <div class="hero" id="hero">
   <div class="htop">
-    <span class="hlogo">MIDAS GROUP</span>
+    <span class="hlogo">DesignRS</span>
     <div class="hlang">
       <button class="hlangbtn" id="hlangBtn" title="Language" aria-haspopup="true">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
@@ -744,6 +744,8 @@
         const STYLES=[
           { id:'mbm', name:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.name:'세미나 집객 블루'), swatch:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.swatch:'linear-gradient(135deg,#1E56A8,#00BDDE)') },
           { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'AX Day 오렌지'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
+          { id:'toss', name:(typeof TOSS_STYLE!=='undefined'?TOSS_STYLE.name:'챌린지 화이트'), swatch:(typeof TOSS_STYLE!=='undefined'?TOSS_STYLE.swatch:'linear-gradient(135deg,#fff 46%,#0064FF 46%)') },
+          { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'글로벌 오르빗'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
           { id:'aether', name:'다크 글로우', swatch:glow.swatch },
           { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn 블루'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0F62FE,#CFE0FF)') },
           { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
@@ -761,6 +763,17 @@
       }
   }
 
+  // 웹 스타일 카드 미리보기 — 팩 데모(내장 DEMO 폴백)를 축소 iframe에 실제 렌더.
+  // 자기완결 데모가 없는 팩은 throw → 호출부 try/catch가 스와치 그라데이션 유지.
+  function styleThumb(id){
+    if(id==='mbm' && window.renderMbmPage) return renderMbmPage({}, {motion:false});
+    if(id==='axday' && window.renderAxdayPage) return renderAxdayPage({}, {motion:false});
+    if(id==='toss' && window.renderTossPage) return renderTossPage({}, {motion:false});
+    if(id==='orbit' && window.renderOrbitPage) return renderOrbitPage({}, {motion:false});
+    if(id==='saturn' && window.renderSaturnPage) return renderSaturnPage({pageType:'landing'}, {volume:'heavy', motion:'none'});
+    throw new Error('no self-demo thumb: '+id);
+  }
+
   // 내용 키워드 기반 스타일 3개 추천 — 로컬 규칙. null이면 전체 표시(edm 등)
   function recStyles(kind, plan){
     const t=(plan||'').toLowerCase();
@@ -771,6 +784,8 @@
       return ['naver','rams','pastel'];
     }
     if(kind==='single'||kind==='multi'){
+      if(/채용|챌린지|공모|모집|지원|커리어|리크루팅|toss/.test(t)) return ['toss','orbit','saturn'];
+      if(/글로벌|해외|월드|world|global|지구/.test(t)) return ['orbit','toss','saturn'];
       if(/세미나|행사|이벤트|집객|신청|초청|참가|컨퍼런스|mbm|day/.test(t)) return ['mbm','axday','saturn'];
       if(/다크|테크|개발|ai|글로우|스타트업/.test(t)) return ['aether','saturn','midas'];
       if(/공공|신뢰|안내|공지|정부/.test(t)) return ['krds','saturn','midas'];
@@ -979,6 +994,8 @@
         const seed={ productName:draft.productName||prod||'', tagline:draft.tagline||'', subcopy:draft.subcopy||'', primaryCta:draft.primaryCta||'',
           features:draft.features||[], stats:draft.stats||[], bannerText:draft.bannerText||'', bannerCta:draft.bannerCta||'',
           footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[], _clang:S.lang };
+        // 세미나·행사 필드 — 첨부 기획서의 세션·일시·장소·마감·FAQ가 초안에 있으면 그대로 시드(집객 팩이 소비)
+        ['sessions','eventDate','eventPlace','deadline','faq','ctaTitle','ctaSub'].forEach(k=>{ if(draft[k]!=null && draft[k]!=='') seed[k]=draft[k]; });
         if(S.kind==='multi'){
           pg0.pageType='main'; pg0.name='메인홈';
           seed.shownSections=['feature','cta'];
