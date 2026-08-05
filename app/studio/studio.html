@@ -203,7 +203,7 @@
   .dl.dark:disabled{opacity:.6}
   .linkmodal{position:fixed;inset:0;z-index:200;background:rgba(10,12,20,.45);backdrop-filter:blur(4px);display:grid;place-items:center}
   .linkmodal[hidden]{display:none}
-  .lm-card{width:min(460px,92vw);background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px}
+  .lm-card{width:min(460px,92vw);background:var(--surface-solid,#fff);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 70px rgba(10,12,30,.25)}
   .lm-card b.t{font-size:15px}
   .lm-url{display:flex;gap:8px}
   .lm-url input{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--tx);background:var(--bg,transparent);font-family:inherit}
@@ -773,8 +773,8 @@
     // 도메인 카테고리(마이다스 제품군) — 전 ID Unsplash 실검증(200 + 대표컷 눈검증). '/' 포함 항목은 로컬 자산
     '세미나': ['1540575467063-178a50c2df87','1505373877841-8d25f7d46678','1511578314322-379afb476865','1475721027785-f74eccf877e2','1587825140708-dfaf72ae4b04','1531058020387-3be344556be6'],
     '토목': ['../bg/mbm-hero.jpg','1533852990198-bdd4082bf8c0','1512187849-463fdb898f21','1515674744565-0d7112cd179a','1559843788-693858bf7338','1494867121604-060b20cba39c','1575649212514-010c84a3a161'],
-    '지반': ['1610079732357-0d20c1a98ceb','1652303713917-2666b8bee507','1517089258673-4b72e709a9c5','1691047489143-79b91c648c85','1541888946425-d81bb19240f5','1504307651254-35680f356dfd'],
-    '건축': ['1554793000-245d3a3c2a51','1483366774565-c783b9f70e2c','1488972685288-c3fd157d7c7a','1518005076933-9ef6bec005cb','1616418534243-ab757ff8ce3a','1481253127861-534498168948'],
+    '지반': ['1504635589510-808c8a0b509f','1525121577197-56ddc8d76c87','1542753151-fa8c1cab6aff','1563741957649-8de4b44903c8','1534590158618-73acb7d3641d','1610079732357-0d20c1a98ceb','1517089258673-4b72e709a9c5'],
+    '건축': ['1617761141732-d481912af1a9','1637640213473-34cdeb01ab11','1673296844329-7b110b0de4ac','1685210482397-037803ed3902','1685211097893-c3fcafdae020','1685210461560-080329a34d2e','1554793000-245d3a3c2a51'],
     '기계': ['1524514587686-e2909d726e9b','1512813759302-a44af29da3c1','1655874837055-7adc909ae602','1569968201228-01aebb252e80','1563456021008-5cd6ac7c005d','1670483109381-8bccb7d29383'],
     '비즈니스': ['1497366216548-37526070297c','1522071820081-009f0129c71c','1551434678-e076c223a692','1556761175-b413da4baf72','1454165804606-c3d57bc86b40','1521737604893-d14cc237f11d'],
     '테크': ['1518770660439-4636190af475','1526374965328-7f61d4dc18c5','1550751827-4bd374c3f58b','1519389950473-47ba0277781c','1531297484001-80022131f5a1','1488590528505-98d2b5aba04b'],
@@ -818,6 +818,11 @@
   function sectionSpec(){
     if(pack && pack.id==='krds' && window.KRDS_SECTION_SPEC) return window.KRDS_SECTION_SPEC;
     if(pack && pack.id==='midas' && window.MIDAS_SECTION_SPEC) return window.MIDAS_SECTION_SPEC;
+    // 세미나·이벤트 팩 — 고정 TEMPLATE이지만 sectionOrder/hiddenSections는 소비함
+    if(pack && pack.id==='mbm' && window.MBM_SECTION_SPEC) return window.MBM_SECTION_SPEC;
+    if(pack && pack.id==='axday' && window.AXDAY_SECTION_SPEC) return window.AXDAY_SECTION_SPEC;
+    if(pack && pack.id==='toss' && window.TOSS_SECTION_SPEC) return window.TOSS_SECTION_SPEC;
+    if(pack && pack.id==='orbit' && window.ORBIT_SECTION_SPEC) return window.ORBIT_SECTION_SPEC;
     return { template:(DG_TEMPLATES[pageType]||DG_TEMPLATES.main), fixed:['gnb','footer'], labels:SECLABEL };
   }
   function secLabel(type){ return tL(sectionSpec().labels[type] || type); }

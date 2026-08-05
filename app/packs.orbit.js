@@ -110,7 +110,7 @@
       '.ob-hero{position:relative;padding:96px 0 0;text-align:center;overflow:hidden}',
       '.ob-eb{display:inline-block;font-size:15px;font-weight:800;letter-spacing:.16em;background:' + GRAD + ';-webkit-background-clip:text;background-clip:text;color:transparent}',
       '.ob-ht{margin-top:18px;font-size:64px;font-weight:300;line-height:1.16;letter-spacing:-.03em;word-break:keep-all;text-wrap:balance;color:#fff}',
-      '.ob-ht b{font-weight:900}',
+      '.ob-ht b{font-weight:700}',
       '.ob-hs{margin:22px auto 0;font-size:18.5px;line-height:1.65;color:' + SUB + ';max-width:560px;word-break:keep-all}',
       '.ob-hcta{display:inline-block;margin-top:34px;background:' + GRAD + ';color:#fff;font-size:17px;font-weight:700;padding:16px 40px;border-radius:999px;box-shadow:0 14px 40px rgba(0,145,255,.34);transition:transform .18s,box-shadow .18s}',
       '.ob-hcta:hover{transform:translateY(-2px);box-shadow:0 20px 52px rgba(113,126,255,.44)}',
@@ -278,15 +278,24 @@
       '<div class="ob-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">' + esc(TT.cd) + '</span><b>D-00 00:00:00</b></div>' +
       '<div class="ob-earth"><div class="ob-glow"></div><div class="ob-globe"><div class="sky"></div><div class="shade"></div></div><div class="ob-ring"></div></div>' +
       '</div></header>' +
-      '<section class="ob-stats"><div class="wrap"><div class="grid">' + st + '</div></div></section>' +
-      '<section class="ob-sec" id="about"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.why) + '</h2><div class="ob-cards">' + cards + '</div></div></section>' +
-      '<section class="ob-sec alt" id="program"><div class="wrap"><h2 class="ob-tt rv">SESSIONS</h2><div class="ob-slist">' + rows + '</div></div></section>' +
-      '<section class="ob-sec" id="info"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.sv) + '</h2>' +
-      '<div class="ob-info rv"><div class="l"><table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
-      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
-      '<div class="ob-map"><span class="pin"></span></div></div></div></section>' +
-      '<section class="ob-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>' +
-      '<section class="ob-sec alt" id="faq"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.faq) + '</h2><div class="ob-qs rv">' + qs + '</div></div></section>' +
+      (function () {
+        var SEC = {
+          stats: '<section class="ob-stats" data-section="stats"><div class="wrap"><div class="grid">' + st + '</div></div></section>',
+          about: '<section class="ob-sec" id="about" data-section="about"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.why) + '</h2><div class="ob-cards">' + cards + '</div></div></section>',
+          program: '<section class="ob-sec alt" id="program" data-section="program"><div class="wrap"><h2 class="ob-tt rv">SESSIONS</h2><div class="ob-slist">' + rows + '</div></div></section>',
+          info: '<section class="ob-sec" id="info" data-section="info"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.sv) + '</h2>' +
+            '<div class="ob-info rv"><div class="l"><table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+            '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+            '<div class="ob-map"><span class="pin"></span></div></div></div></section>',
+          statement: '<section class="ob-st" data-section="statement"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>',
+          faq: '<section class="ob-sec alt" id="faq" data-section="faq"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.faq) + '</h2><div class="ob-qs rv">' + qs + '</div></div></section>',
+        };
+        var ORDER = ['stats', 'about', 'program', 'info', 'statement', 'faq'];
+        var saved = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
+        var order = saved.concat(ORDER.filter(function (k) { return saved.indexOf(k) < 0; }));
+        var hid = shared.hiddenSections || [];
+        return order.filter(function (k) { return hid.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
+      })() +
       '<section class="ob-cta" id="apply"><div class="wrap rv"><h2 class="tt"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
       '<a class="btn"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta) + '</a></div></section>' +
@@ -296,5 +305,11 @@
       fnjs + mot + '</body></html>';
   };
 
+
+  window.ORBIT_SECTION_SPEC = {
+    template: [{ type: 'stats', tier: 'core' }, { type: 'about', tier: 'core' }, { type: 'program', tier: 'core' }, { type: 'info', tier: 'core' }, { type: 'statement', tier: 'core' }, { type: 'faq', tier: 'core' }],
+    fixed: [],
+    labels: { stats: '지표', about: '소개', program: '세션', info: '일정·장소', statement: '선언', faq: 'FAQ' },
+  };
   window.ORBIT_STYLE = { id: 'orbit', name: '글로벌 오르빗', desc: '회전 지구 히어로 · 다크 네이비 · 멀티컬러 그라데이션 · 글래스 카드', swatch: 'linear-gradient(135deg,#050B1A 0%,#0A1C3E 45%,#0091FF 75%,#FF8EBD 100%)' };
 })();

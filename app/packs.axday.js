@@ -80,7 +80,7 @@
     venue:   '1511578314322-379afb476865',   // 행사장 테이블 세팅
     mic:     '1475721027785-f74eccf877e2',   // 마이크 클로즈업
     hall:    '1587825140708-dfaf72ae4b04',   // 대형 홀 와이드
-    arch:    '1554793000-245d3a3c2a51',      // 곡면 타워 건축물 + 청록 하늘 (히어로 기본, 눈검증)
+    arch:    '1617761141732-d481912af1a9',      // 고층 유리 빌딩 + 파란 하늘 (히어로 기본, 눈검증)
   };
   function stockUrl(key, w, h) {
     return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
@@ -112,7 +112,7 @@
       '.ax-eb{font-size:19px;font-weight:800;letter-spacing:-.01em;color:' + ORANGE + '}',
       /* 타이틀 강약 의무 — 베이스 라이트 300, <b>=900 (첫 줄 볼드/다음 줄 라이트, 사용자 레퍼런스) */
       '.ax-ht{margin-top:16px;font-size:82px;font-weight:300;letter-spacing:-.02em;line-height:1.08;word-break:keep-all}',
-      '.ax-ht b{font-weight:900}',
+      '.ax-ht b{font-weight:700}',
       '.ax-hsub{margin:26px auto 0;font-size:19px;line-height:1.6;color:#4B5563;max-width:600px;word-break:keep-all}',
       '.ax-hero .ph-wide{margin-top:56px;height:460px;border-radius:0}',
       /* 오렌지 임팩트 밴드 */
@@ -220,6 +220,35 @@
     ].join('\n');
   }
 
+
+  // 섹션 조립 — sectionOrder(순서)·hiddenSections(숨김) 반영. 스튜디오 편집모드 핸들용 data-section 부여.
+  function _axBody(shared, d, TT, cards, sess, qs) {
+    var SEC = {
+      band: '<section class="ax-band" data-section="band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
+        '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
+        '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>',
+      count: '<div class="ax-count" data-section="count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">' + esc(TT.cd) + '</span>' +
+        '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>',
+      about: '<section class="ax-sec alt" id="about" data-section="about"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + esc(TT.why) + '</h2>' +
+        '<div class="ax-cards">' + cards + '</div></div></section>',
+      program: '<section class="ax-sec" id="program" data-section="program"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
+        '<div class="ax-ses">' + sess + '</div></div></section>',
+      info: '<section class="ax-sec alt" id="info" data-section="info"><div class="wrap"><h2 class="ax-tt rv">' + esc(TT.sv) + '</h2>' +
+        '<div class="ax-info rv"><div class="l"><div class="nm"' + de('productName') + '>' + esc(d.productName) + '</div>' +
+        '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
+        '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
+        '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
+        '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>',
+      faq: '<section class="ax-sec" id="faq" data-section="faq"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
+        '<div class="ax-faq rv">' + qs + '</div></div></section>',
+    };
+    var ORDER = ['band', 'count', 'about', 'program', 'info', 'faq'];
+    var saved = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
+    var order = saved.concat(ORDER.filter(function (k) { return saved.indexOf(k) < 0; }));
+    var hid = shared.hiddenSections || [];
+    return order.filter(function (k) { return hid.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
+  }
+
   window.renderAxdayPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
     IMGS = shared.images || {};
@@ -294,23 +323,7 @@
       '<h1 class="ax-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ax-hsub"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p></div>' +
       '<div class="ph-wide">' + photo('', 'arch', 1600, 620, 'hero') + '</div></header>' +
-      '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
-      '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
-      '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
-      '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">' + esc(TT.cd) + '</span>' +
-      '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
-      '<section class="ax-sec alt" id="about"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + esc(TT.why) + '</h2>' +
-      '<div class="ax-cards">' + cards + '</div></div></section>' +
-      '<section class="ax-sec" id="program"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
-      '<div class="ax-ses">' + sess + '</div></div></section>' +
-      '<section class="ax-sec alt" id="info"><div class="wrap"><h2 class="ax-tt rv">' + esc(TT.sv) + '</h2>' +
-      '<div class="ax-info rv"><div class="l"><div class="nm"' + de('productName') + '>' + esc(d.productName) + '</div>' +
-      '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
-      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
-      '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
-      '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>' +
-      '<section class="ax-sec" id="faq"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
-      '<div class="ax-faq rv">' + qs + '</div></div></section>' +
+      _axBody(shared, d, TT, cards, sess, qs) +
       '<section class="ax-cta" id="apply"><div class="wrap"><h2 class="tt rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<button class="pill-dark rv"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
       '<footer class="ax-foot"><div class="wrap"><span' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span>' +
@@ -318,5 +331,11 @@
       mot + '</body></html>';
   };
 
+
+  window.AXDAY_SECTION_SPEC = {
+    template: [{ type: 'band', tier: 'core' }, { type: 'count', tier: 'core' }, { type: 'about', tier: 'core' }, { type: 'program', tier: 'core' }, { type: 'info', tier: 'core' }, { type: 'faq', tier: 'core' }],
+    fixed: [],
+    labels: { band: '임팩트 밴드', count: '카운트다운', about: '소개', program: '세션', info: '일정·장소', faq: 'FAQ' },
+  };
   window.AXDAY_STYLE = { id: 'axday', name: 'AX Day 오렌지', desc: '화이트·블랙 미니멀 · 오렌지 임팩트 밴드 · 포토 카드 · 블루 CTA', swatch: 'linear-gradient(115deg,#FFFFFF 0%,#FFFFFF 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)' };
 })();

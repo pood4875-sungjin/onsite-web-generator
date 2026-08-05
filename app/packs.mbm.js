@@ -345,6 +345,34 @@
       'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
       'q("[data-cd=m]").textContent=String(m).padStart(2,"0");q("[data-cd=s]").textContent=String(s2).padStart(2,"0");};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
       '})();<\/script>';
+    var sess = (d.sessions || []).slice(0, 5).map(function (s, i) {
+      var P = 'sessions.' + i;
+      return '<div class="mb-srow rv"><span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
+        '<span class="st"' + de(P + '.title') + '>' + esc(s.title || '') + '</span>' +
+        '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
+    }).join('');
+    // 섹션 조립 — sectionOrder·hiddenSections 반영 + 편집모드 핸들용 data-section
+    var SEC = {
+      count: '<div class="mb-count" data-section="count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + esc(TT.cd) + '</span>' +
+        '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>',
+      about: '<div data-section="about">' + chapters + '</div>',
+      program: '<section class="mb-ses" id="program" data-section="program"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' + sess + '</div></div></section>',
+      info: '<section class="mb-info" id="info" data-section="info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
+        '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+        '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+        '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>',
+      statement: '<section class="mb-st" data-section="statement"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
+        (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
+        '</div></section>',
+      faq: '<section class="mb-faq" id="faq" data-section="faq"><div class="wrap"><h2 class="tt rv">' + TT.faqT + '</h2>' +
+        '<p class="sub rv">' + esc(TT.faqS) + '</p>' +
+        '<div class="mb-qs rv">' + qs + '</div></div></section>',
+    };
+    var ORDER = ['count', 'about', 'program', 'info', 'statement', 'faq'];
+    var savedOrd = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
+    var ordAll = savedOrd.concat(ORDER.filter(function (k) { return savedOrd.indexOf(k) < 0; }));
+    var hidden = shared.hiddenSections || [];
+    var bodySecs = ordAll.filter(function (k) { return hidden.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
@@ -355,26 +383,7 @@
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<a class="mb-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>' +
-      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + esc(TT.cd) + '</span>' +
-      '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
-      chapters +
-      '<section class="mb-ses" id="program"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' +
-      (d.sessions || []).slice(0, 5).map(function (s, i) {
-        var P = 'sessions.' + i;
-        return '<div class="mb-srow rv"><span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
-          '<span class="st"' + de(P + '.title') + '>' + esc(s.title || '') + '</span>' +
-          '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
-      }).join('') + '</div></div></section>' +
-      '<section class="mb-info" id="info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
-      '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
-      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
-      '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>' +
-      '<section class="mb-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
-      (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
-      '</div></section>' +
-      '<section class="mb-faq" id="faq"><div class="wrap"><h2 class="tt rv">' + TT.faqT + '</h2>' +
-      '<p class="sub rv">' + esc(TT.faqS) + '</p>' +
-      '<div class="mb-qs rv">' + qs + '</div></div></section>' +
+      bodySecs +
       '<section class="mb-cta" id="apply"><div class="wrap"><div class="agrid"><div class="l rv">' +
       '<h2 class="tt">' + ml(ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p></div>' +
@@ -393,5 +402,11 @@
       fnjs + mot + '</body></html>';
   };
 
+
+  window.MBM_SECTION_SPEC = {
+    template: [{ type: 'count', tier: 'core' }, { type: 'about', tier: 'core' }, { type: 'program', tier: 'core' }, { type: 'info', tier: 'core' }, { type: 'statement', tier: 'core' }, { type: 'faq', tier: 'core' }],
+    fixed: [],
+    labels: { count: '카운트다운', about: '소개', program: '세션', info: '일정·장소', statement: '선언', faq: 'FAQ' },
+  };
   window.MBM_STYLE = { id: 'mbm', name: '세미나 집객 블루', desc: '블루 히어로(교량 실사) · 앵커 GNB · 신청 폼 · FAQ 아코디언', swatch: 'linear-gradient(135deg,#006BDE 0%,#00BDDE 55%,#6BE016 100%)' };
 })();

@@ -109,7 +109,7 @@
       '.ts-hero{padding:110px 0 96px;text-align:center}',
       '.ts-eb{display:inline-block;font-size:16px;font-weight:800;color:' + BLUE + ';letter-spacing:-.01em}',
       '.ts-ht{margin-top:16px;font-size:76px;font-weight:300;line-height:1.12;letter-spacing:-.035em;word-break:keep-all;text-wrap:balance}',
-      '.ts-ht b{font-weight:900}',
+      '.ts-ht b{font-weight:700}',
       '.ts-hs{margin:26px auto 0;font-size:19px;line-height:1.6;color:' + SUB + ';max-width:560px;word-break:keep-all}',
       '.ts-hcta{display:inline-block;margin-top:36px;background:' + BLUE + ';color:#fff;font-size:17.5px;font-weight:700;padding:16px 42px;border-radius:999px;box-shadow:0 12px 30px rgba(0,100,255,.28);transition:transform .18s,box-shadow .18s}',
       '.ts-hcta:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(0,100,255,.36)}',
@@ -258,13 +258,23 @@
       '<div><a class="ts-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div>' +
       '<div class="ts-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">' + esc(TT.cd) + '</span><b>D-00 00:00:00</b></div>' +
       '</div></header>' +
-      '<section class="ts-tl" id="timeline"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.tl) + '</h2><div class="ts-steps">' + steps + '</div></div></section>' +
-      '<section class="ts-ft" id="about"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ab) + '</h2><div class="ts-cards">' + cards + '</div></div></section>' +
-      '<section class="ts-brief"><div class="wrap rv"><div class="q">CHALLENGE BRIEF</div><p class="tx"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>' +
-      '<section class="ts-ev" id="criteria"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ev) + '</h2><div class="ts-crit">' + crit + '</div>' +
-      '<div class="ts-info rv"><div class="i"><b>' + esc(TT.sch) + '</b><span' + de('eventDate') + '>' + esc(d.eventDate || '') + '</span></div>' +
-      '<div class="i"><b>' + esc(TT.how) + '</b><span' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</span></div></div></div></section>' +
-      '<section class="ts-faq" id="faq"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.faq) + '</h2><div class="ts-qs rv">' + qs + '</div></div></section>' +
+      (function () {
+        // 섹션 조립 — sectionOrder·hiddenSections + data-section
+        var SEC = {
+          timeline: '<section class="ts-tl" id="timeline" data-section="timeline"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.tl) + '</h2><div class="ts-steps">' + steps + '</div></div></section>',
+          about: '<section class="ts-ft" id="about" data-section="about"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ab) + '</h2><div class="ts-cards">' + cards + '</div></div></section>',
+          brief: '<section class="ts-brief" data-section="brief"><div class="wrap rv"><div class="q">CHALLENGE BRIEF</div><p class="tx"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>',
+          criteria: '<section class="ts-ev" id="criteria" data-section="criteria"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ev) + '</h2><div class="ts-crit">' + crit + '</div>' +
+            '<div class="ts-info rv"><div class="i"><b>' + esc(TT.sch) + '</b><span' + de('eventDate') + '>' + esc(d.eventDate || '') + '</span></div>' +
+            '<div class="i"><b>' + esc(TT.how) + '</b><span' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</span></div></div></div></section>',
+          faq: '<section class="ts-faq" id="faq" data-section="faq"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.faq) + '</h2><div class="ts-qs rv">' + qs + '</div></div></section>',
+        };
+        var ORDER = ['timeline', 'about', 'brief', 'criteria', 'faq'];
+        var saved = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
+        var order = saved.concat(ORDER.filter(function (k) { return saved.indexOf(k) < 0; }));
+        var hid = shared.hiddenSections || [];
+        return order.filter(function (k) { return hid.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
+      })() +
       '<section class="ts-cta" id="apply"><div class="wrap rv"><h2 class="tt"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
       '<a class="btn"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta) + '</a></div></section>' +
@@ -274,5 +284,11 @@
       fnjs + mot + '</body></html>';
   };
 
+
+  window.TOSS_SECTION_SPEC = {
+    template: [{ type: 'timeline', tier: 'core' }, { type: 'about', tier: 'core' }, { type: 'brief', tier: 'core' }, { type: 'criteria', tier: 'core' }, { type: 'faq', tier: 'core' }],
+    fixed: [],
+    labels: { timeline: '일정', about: '소개', brief: '브리프 밴드', criteria: '평가 기준', faq: 'FAQ' },
+  };
   window.TOSS_STYLE = { id: 'toss', name: '챌린지 화이트', desc: '초대형 타이포 히어로 · 타임라인 · 블루 브리프 밴드 · 카운트다운', swatch: 'linear-gradient(135deg,#fff 0%,#fff 46%,#0064FF 46%,#0064FF 100%)' };
 })();
