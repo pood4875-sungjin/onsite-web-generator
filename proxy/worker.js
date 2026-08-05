@@ -539,7 +539,9 @@ export default {
         outline: (Array.isArray(body.outline) ? body.outline : []).slice(0, 8).map((s) => clip(s, 120)),
       };
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
-      system = clip(body.pack, 10) === 'machine' ? MACHINE_SYSTEM : clip(body.pack, 10) === 'sfmi' ? SFMI_SYSTEM : clip(body.pack, 10) === 'pastel' ? PASTEL_SYSTEM : clip(body.pack, 10) === 'rams' ? RAMS_SYSTEM : clip(body.pack, 10) === 'naver' ? NAVER_SYSTEM : clip(body.pack, 10) === 'honors' ? HONORS_SYSTEM : clip(body.pack, 10) === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
+      var _pk = clip(body.pack, 10);
+      if (!_pk && /gen[\s_-]*nx/i.test(String(body.title || '') + ' ' + String(body.plan || '').slice(0, 400))) _pk = 'machine';   // [시연] 팩 유실 방어 — GEN NX 브리프는 제품소개 잠금으로
+      system = _pk === 'machine' ? MACHINE_SYSTEM : _pk === 'sfmi' ? SFMI_SYSTEM : _pk === 'pastel' ? PASTEL_SYSTEM : _pk === 'rams' ? RAMS_SYSTEM : _pk === 'naver' ? NAVER_SYSTEM : _pk === 'honors' ? HONORS_SYSTEM : _pk === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
       // 덱 콘텐츠 언어 — UI 언어를 따른다(영어 시연 등). ko면 기존 시스템의 한국어 지시 그대로.
       const deckLang = clip(body.lang, 5) || 'ko';
       if (deckLang !== 'ko') system += '\n[출력 언어 — 최우선 규칙] 위 지시의 "한국어"와 무관하게, 모든 슬라이드 텍스트(제목·본문·리스트·캡션·note·인용)를 ' + uiLangName(deckLang) + '로 작성한다. 브랜드·고유명사는 원문 유지. 영문 챕터 라벨(label·tag 대문자류)은 그대로 영문.';
