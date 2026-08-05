@@ -630,6 +630,10 @@
     '핵심 카피': ['Key copy', 'キーコピー', '核心文案'],
     '화면과 콘텐츠가 함께 바뀝니다': ['UI and content change together', '画面とコンテンツが一緒に切り替わります', '界面与内容将一并切换'],
     '화면과 콘텐츠를 번역하는 중…': ['Translating UI and content…', '画面とコンテンツを翻訳中…', '正在翻译界面与内容…'],
+    '콘텐츠를 번역하는 중…': ['Translating content…', 'コンテンツを翻訳中…', '正在翻译内容…'],
+    '콘텐츠를 번역했어요.': ['Content translated.', 'コンテンツを翻訳しました。', '内容已翻译。'],
+    '콘텐츠 번역에 실패했어요. 잠시 후 다시 시도해주세요.': ['Content translation failed. Please try again shortly.', 'コンテンツの翻訳に失敗しました。しばらくして再試行してください。', '内容翻译失败，请稍后重试。'],
+    '생성된 결과물의 내용을 이 언어로 번역합니다': ['Translates the generated output into this language', '生成された成果物の内容をこの言語に翻訳します', '将生成结果的内容翻译为该语言'],
     '콘텐츠 번역에 실패해 화면 언어만 바꿨어요. 언어 버튼으로 다시 시도해주세요.': ['Content translation failed — only the UI language changed. Please try again from the language button.', 'コンテンツの翻訳に失敗したため、画面言語のみ切り替えました。言語ボタンから再試行してください。', '内容翻译失败，仅切换了界面语言。请通过语言按钮重试。'],
   };
   var KEY = 'midas-lang';
