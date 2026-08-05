@@ -268,6 +268,9 @@
     // eyebrow — AI 초안(tagline 있음)인데 eyebrow가 없으면 DEMO 예시("채용…") 대신 productName으로.
     // 첨부와 무관한 데모 카피가 실초안에 새는 것 방지. 과거 저장분에 KO 데모값이 박혀 있어도 자가치유.
     if (shared.tagline && (shared.eyebrow == null || shared.eyebrow === '' || shared.eyebrow === DEMO.eyebrow)) d.eyebrow = d.productName;
+    /* [시연 잠금] GNB 브랜드·히어로 서브타이틀(eyebrow)은 무조건 고정 문구 — 생성·번역·편집값보다 우선 */
+    d.productName = 'MIDAS GEN NX Seminar 2026';
+    d.eyebrow = 'MIDAS GEN NX Seminar 2026';
     // 템플릿 고정 라벨 — 산출물 언어(_clang)를 따른다. 데이터가 아니라 번역 파이프라인을 안 타므로 팩이 직접 처리.
     var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
     var TT = {

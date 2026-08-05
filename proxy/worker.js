@@ -606,7 +606,8 @@ export default {
       body: JSON.stringify({
         // 인테이크(질문 추출)·번역은 기계적 작업 — 빠른 모델로 체감 지연 단축. 덱/사이트 생성·수정은 상위 모델 유지.
         model: (route === '/intake' || route === '/translate') ? 'claude-haiku-4-5' : MODEL,
-        max_tokens: route === '/intake' ? 800 : route === '/translate' ? 8000 : MAX_TOKENS,
+        // 번역 상한은 공용 유지 — 웹(사이트)은 통짜 번역이라 8000이면 큰 페이지가 잘려 JSON 파손("translation failed")
+        max_tokens: route === '/intake' ? 800 : MAX_TOKENS,
         // 사고(thinking) 끔 — 문서 첨부 브리프에서 모델이 사고에 출력 예산을 다 써서
         // 덱 JSON이 빈손/3장 잘림으로 나오던 실사고. 덱 설계는 사고 없이 충분하다.
         ...(route === '/intake' || route === '/translate' ? {} : { thinking: { type: 'disabled' } }),
