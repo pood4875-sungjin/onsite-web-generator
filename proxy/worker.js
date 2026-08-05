@@ -207,7 +207,7 @@ const MACHINE_SYSTEM =
   'plan의 구체 정보는 반드시 반영(플레이스홀더 금지). 마지막은 closing(다음 행동 명시). ' +
   '총 장수는 length를 따른다: short=5~8장, std=10~15장, deep=18~22장, 없으면 6~12장. ' +
   '작법 규칙(엄수): 한 장에 한 메시지. 제목만 이어 읽어도 논리 성립. 첫 3장 안에 왜-지금, 마지막에 다음 행동. ' +
-  '연속 3장 같은 골격 금지. 수치엔 출처, 추정은 표기. 모든 장 title에 핵심 어구 **굵게** 강약.';
+  '연속 3장 같은 골격 금지. 수치엔 출처, 추정은 표기. 모든 장 title에 핵심 어구 **굵게** 강약.' + '\n' + GENNX_FACTS;
 const SFMI_SYSTEM =
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
@@ -340,6 +340,19 @@ const PITCH_EDIT_SYSTEM =
   '- 발표와 무관한 요청이면 slides null + 정중히 수정 요청을 유도.\n' +
   '- message는 {LANG} 한두 문장, 무엇을 했는지 구체적으로.';
 
+/* MIDAS GEN NX 공식 제품 팩트 — midasuser.com/en/product/gen-nx 실측 추출(2026-08).
+   GEN NX 관련 브리프에서 소개·기능 장을 채울 1차 지식. 무관한 브리프면 무시된다. */
+const GENNX_FACTS =
+  '[MIDAS GEN NX 공식 제품 정보 — 브리프가 MIDAS GEN NX 관련일 때 소개·기능·가치 장에 이 사실만 사용(지어내기 금지), 무관하면 무시]\n' +
+  '- 포지셔닝: The Next Generation of Structural Design — "GEN NX × API × AI. Faster analysis. Smarter design. More flexible workflows."\n' +
+  '- Global Design Codes: 글로벌 재료·단면·설계 기준 내장, 반복 입력 축소·코드 기반 설계 검토 가속\n' +
+  '- Advanced Analysis: 시공단계(construction stage)·시간이력(time-history)·비선형(nonlinear) 해석을 한 워크플로우에서\n' +
+  '- Enhanced Workspace: 4K 대응 그래픽·최적화 인터페이스, 장시간 검토에도 선명한 모델·결과 확인\n' +
+  '- API Integration: Excel·Python·사내 시스템 연동, 입력·해석·리포트 자동화\n' +
+  '- Plug-in Workflow: Grasshopper 연동 — 파라메트릭 모델링과 구조해석 연결, 복잡 형상 대안 비교 가속\n' +
+  '- MIDAS Pro(예정): GEN NX 안의 AI 가이드 — 기능·해석 조건·기술 정보 탐색 지원\n' +
+  '- 적용 사례: 베이징 수도국제공항 T3(장스팬 곡면 지붕 — FEM 선형 정적해석·노드 로컬축 반력 검토) 등\n';
+
 /* 웹(랜딩/웹사이트) 초안 — 모든 필드를 채운다. 브리프에 근거 없는 항목은
    그럴듯한 예시로 채우되 assumed 목록에 표시 → 스튜디오가 "임의로 채운 부분" 안내. */
 const WEB_SYSTEM =
@@ -380,7 +393,7 @@ const WEB_SYSTEM =
   '- features는 정확히 3개(제목 2~6단어+한 줄 설명). stats는 3개.\n' +
   '- footerLinks는 이용약관·개인정보처리방침 등 표준 3개 기본, footerCopyright는 "© 연도 제품명" 형태.\n' +
   '- 문구는 lang 값의 언어로(ko=한국어, en=영어). 톤은 간결·자신감, 과장 금지.\n' +
-  '- tagline은 두 줄 구성(\\n으로 분리): 첫 줄=가벼운 도입구, 둘째 줄=핵심 메시지(화면에서 볼드로 강조됨). 각 줄 6~14자(영문 3~6단어). subcopy는 1~2문장.';
+  '- tagline은 두 줄 구성(\\n으로 분리): 첫 줄=가벼운 도입구, 둘째 줄=핵심 메시지(화면에서 볼드로 강조됨). 각 줄 6~14자(영문 3~6단어). subcopy는 1~2문장.' + '\n' + GENNX_FACTS;
 
 /* 인테이크 되묻기 — 브리프를 읽고 "생성 품질에 정말 필요한데 빠진 정보"만 0~2개 질문.
    이름/제품명도 브리프에서 추출(따로 폼으로 안 물음). 질문 없으면 빈 배열. */
