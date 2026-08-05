@@ -379,7 +379,7 @@
       '<nav class="mb-nav"><div class="wrap"><span class="mb-logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<div class="mb-menu">' + menu + '</div>' +
       '<a class="mb-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
-      '<header class="mb-hero"><img class="bgimg" alt="" data-img="hero" src="' + esc(imgs.hero || IMG_HERO) + '" onerror="this.remove()"><div class="shade"></div><div class="wrap">' +
+      '<header class="mb-hero"><img class="bgimg" alt="" data-img="hero" src="' + esc(imgs.hero || IMG_HERO) + '" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'https://midas-drs.pages.dev/app/bg/mbm-hero.jpg\';}else{this.remove();}"><div class="shade"></div><div class="wrap">' +
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<a class="mb-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>' +

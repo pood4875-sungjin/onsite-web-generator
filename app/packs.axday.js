@@ -92,7 +92,7 @@
   function photo(mode, key, w, h, slot) {
     var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE : key ? stockUrl(key, w, h) : '');
     return '<div class="ax-ph ph ' + (mode || '') + '"' + (slot ? ' data-img="' + slot + '"' : '') + '><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
-      (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="this.remove()">' : '') + '</div>';
+      (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="if(!this.dataset.f&&/bg\\/mbm-hero/.test(this.src)){this.dataset.f=1;this.src=\'https://midas-drs.pages.dev/app/bg/mbm-hero.jpg\';}else{this.remove();}">' : '') + '</div>';
   }
 
   function css() {

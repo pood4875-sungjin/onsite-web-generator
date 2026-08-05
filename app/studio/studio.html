@@ -2753,9 +2753,16 @@
         const base=(window.LLM && LLM.proxyUrl && LLM.proxyUrl())||'';
         if(!base){ await uiAlert(tL('공유 서버 주소가 설정되지 않았어요.')); return; }
         const o=lb.textContent; lb.disabled=true; lb.textContent=tL('링크 만드는 중…');
+        /* 공유 스냅샷 자산 절대화 — 로컬(localhost·file)·상대 경로는 공유 페이지(https)에서
+           mixed content 차단/404로 이미지가 깨진다 → 프로드 절대주소로 재작성 */
+        const PROD_ASSETS='https://midas-drs.pages.dev/app/';
+        const absAssets=(h)=>h
+          .replace(/(src|href)="https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?\//g, '$1="'+PROD_ASSETS)
+          .replace(/(src|href)="file:\/\/[^"]*?\/app\//g, '$1="'+PROD_ASSETS)
+          .replace(/(<img[^>]+src=")(bg\/)/g, '$1'+PROD_ASSETS+'$2');
         try{
           const r=await fetch(base+'/publish',{ method:'POST', headers:{'content-type':'application/json'},
-            body: JSON.stringify({ html: pageHtml(), title: (project&&project.name)||'' }) });
+            body: JSON.stringify({ html: absAssets(pageHtml()), title: (project&&project.name)||'' }) });
           const j=await r.json().catch(()=>null);
           if(!r.ok || !j || !j.url) throw new Error((j&&(j.message||j.error))||('HTTP '+r.status));
           showLinkModal(j.url, j.expiresDays||90);
