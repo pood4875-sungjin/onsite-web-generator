@@ -15,6 +15,7 @@
     tagline: 'AX DAY',
     subcopy: '채용 에이전트로 완전히 달라질 HR의 변화, AX DAY에서 확인하세요!\nAI 에이전트 시대, HR의 업무 방식도 이제 달라져야 합니다.',
     primaryCta: '신청하기',
+    navLinks: ['소개', '세션', '일정·장소', 'FAQ'],
     features: [
       { tag: 'Experience', title: '채용이 바뀌는 순간', desc: '에이전트가 공개하는 최신 기능을 만나보세요. 우리 기업만의 특화된 채용 시나리오에 맞춰 채용 과정이 어떻게 바뀌는지 확인해 보세요.', chips: ['실시간 시연', '에이전트 활용법', '1:1 컨설팅'] },
       { tag: 'Insight', title: 'AI가 바꾸는 2026', desc: 'AI 시대, HR 담당자의 역할과 업무 방식은 어떻게 달라질까요? 현장에서 즉시 활용할 수 있는 전략과 인사이트를 얻어갑니다.', chips: ['키노트', '인사이트', '활용사례'] },
@@ -46,6 +47,7 @@
     tagline: 'AX DAY',
     subcopy: 'See how HR changes with hiring agents — at AX DAY!\nIn the age of AI agents, the way HR works must change too.',
     primaryCta: 'Register',
+    navLinks: ['About', 'Sessions', 'Schedule', 'FAQ'],
     features: [
       { tag: 'Experience', title: 'The moment hiring changes', desc: 'Meet the latest agent features live and see how your hiring flow transforms for your company\u2019s own scenarios.', chips: ['Live demo', 'Agent playbook', '1:1 consulting'] },
       { tag: 'Insight', title: 'AI reshapes 2026', desc: 'How will HR roles and workflows change in the AI era? Take home strategies and insights you can use right away.', chips: ['Keynote', 'Insights', 'Case studies'] },
@@ -78,6 +80,7 @@
     venue:   '1511578314322-379afb476865',   // 행사장 테이블 세팅
     mic:     '1475721027785-f74eccf877e2',   // 마이크 클로즈업
     hall:    '1587825140708-dfaf72ae4b04',   // 대형 홀 와이드
+    arch:    '1554793000-245d3a3c2a51',      // 곡면 타워 건축물 + 청록 하늘 (히어로 기본, 눈검증)
   };
   function stockUrl(key, w, h) {
     return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
@@ -121,6 +124,7 @@
       /* 섹션 공통 */
       /* 섹션 지브라 — 미세한 배경으로 섹션 경계 구분(사용자 피드백) + 넉넉한 여백 */
       '.ax-sec{padding:104px 0}',
+      '.ax-sec,.ax-cta{scroll-margin-top:64px}',
       '.ax-sec.alt{background:#F7F9FB}',
       '.ax-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.035em;word-break:keep-all}',
       '.ax-tt+*{margin-top:52px}',
@@ -166,9 +170,9 @@
       '.ax-q.open .qh i{transform:rotate(45deg);color:' + INK + '}',
       '.ax-q.open .qa{max-height:200px;margin-top:12px}',
       /* CTA 블루 */
-      /* 마지막 배너 = 그라데이션(사용자 지정) — 시안블루→딥블루 + 오렌지 글로우 */
-      '.ax-cta{position:relative;overflow:hidden;background:linear-gradient(118deg,' + BLUE + ' 0%,#2E5BFF 100%);padding:110px 0;text-align:center;color:#fff}',
-      '.ax-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(52% 90% at 84% 8%,rgba(255,85,0,.34),transparent 68%);pointer-events:none}',
+      /* 마지막 배너 = 블루→퍼플 은은한 그라데이션(사용자 지정) + 옅은 화이트 글로우 */
+      '.ax-cta{position:relative;overflow:hidden;background:linear-gradient(118deg,#4A7CF6 0%,#6B66F0 55%,#8A63F2 100%);padding:110px 0;text-align:center;color:#fff}',
+      '.ax-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 100% at 50% -10%,rgba(255,255,255,.16),transparent 62%);pointer-events:none}',
       '.ax-cta>.wrap{position:relative}',
       '.ax-cta .tt{font-size:42px;font-weight:900;letter-spacing:-.03em}',
       '.ax-cta .pill-dark{margin-top:32px;background:' + INK + ';color:#fff;font-size:16px;font-weight:700;padding:14px 34px;border-radius:999px;border:0}',
@@ -283,30 +287,31 @@
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="axday">' +
       '<nav class="ax-nav"><div class="wrap"><span class="brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
-      (d.footerLinks || []).map(function (l, i) { return '<a' + (i === (d.footerLinks.length - 1) ? ' class="on"' : '') + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div></nav>' +
+      (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + ['#about', '#program', '#info', '#faq'][i % 4] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') +
+      '<a class="on" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
       '<h1 class="ax-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ax-hsub"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p></div>' +
-      '<div class="ph-wide">' + photo('', 'bridge', 1600, 620, 'hero') + '</div></header>' +
+      '<div class="ph-wide">' + photo('', 'arch', 1600, 620, 'hero') + '</div></header>' +
       '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
       '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
       '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
       '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">' + esc(TT.cd) + '</span>' +
       '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
-      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + esc(TT.why) + '</h2>' +
+      '<section class="ax-sec alt" id="about"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + esc(TT.why) + '</h2>' +
       '<div class="ax-cards">' + cards + '</div></div></section>' +
-      '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
+      '<section class="ax-sec" id="program"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
       '<div class="ax-ses">' + sess + '</div></div></section>' +
-      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(TT.sv) + '</h2>' +
+      '<section class="ax-sec alt" id="info"><div class="wrap"><h2 class="ax-tt rv">' + esc(TT.sv) + '</h2>' +
       '<div class="ax-info rv"><div class="l"><div class="nm"' + de('productName') + '>' + esc(d.productName) + '</div>' +
       '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
       '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
       '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
       '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>' +
-      '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
+      '<section class="ax-sec" id="faq"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
       '<div class="ax-faq rv">' + qs + '</div></div></section>' +
-      '<section class="ax-cta"><div class="wrap"><h2 class="tt rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
+      '<section class="ax-cta" id="apply"><div class="wrap"><h2 class="tt rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<button class="pill-dark rv"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
       '<footer class="ax-foot"><div class="wrap"><span' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span>' +
       '<span>' + esc(d.productName) + '</span></div></footer>' +
