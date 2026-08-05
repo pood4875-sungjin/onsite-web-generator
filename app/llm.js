@@ -556,7 +556,8 @@
     Object.keys(v).forEach(function (k) {
       if (typeof v[k] === 'string') v[k] = v[k]
         .replace(/\bMIDAS[\s-]*GEN[\s-]*NX\b|\bGEN[\s-]*NX\b/gi, 'MIDAS GEN NX')
-        .replace(/신[제재]경화/g, '신해경화');
+        .replace(/신[제재]경화/g, '신해경화')
+        .replace(/뤄장린|뤄강린|라장린/g, '라강림');
       else _fixBrand(v[k]);
     });
     return v;
