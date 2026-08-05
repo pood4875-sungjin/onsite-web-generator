@@ -865,16 +865,21 @@
     if(!btn||!window.I18N) return;
     // 기준은 "산출물의 언어"(data._clang, 기본 ko) — UI 언어와 별개
     const contentLang=()=>((data&&data._clang)||'ko');
-    cur.textContent=(I18N.LANGS.find(l=>l[0]===contentLang())||I18N.LANGS[0])[2];
+    // 데이터가 비동기 로드라 초기엔 부정확할 수 있다 — 로드 후·메뉴 열 때마다 재동기
+    const syncLabel=()=>{
+      const cl=contentLang(), c=document.getElementById('stLangCur');
+      if(c) c.textContent=(I18N.LANGS.find(l=>l[0]===cl)||I18N.LANGS[0])[2];
+      menu.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.__lang===cl));
+    };
     I18N.LANGS.forEach(l=>{
-      const b=document.createElement('button');
+      const b=document.createElement('button'); b.__lang=l[0];
       b.innerHTML='<span>'+l[1]+'</span><i>'+l[2]+'</i>';
-      if(l[0]===contentLang()) b.classList.add('on');
       b.onclick=async e=>{ e.stopPropagation(); menu.hidden=true; if(l[0]===contentLang()) return; await switchContentLang(l[0]); };
       menu.appendChild(b);
     });
     const nt=document.createElement('div'); nt.className='note'; nt.textContent=tL('생성된 결과물의 내용을 이 언어로 번역합니다'); menu.appendChild(nt);
-    btn.onclick=e=>{ e.stopPropagation(); menu.hidden=!menu.hidden; };
+    syncLabel(); setTimeout(syncLabel, 1200);
+    btn.onclick=e=>{ e.stopPropagation(); syncLabel(); menu.hidden=!menu.hidden; };
     document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.stlang')) menu.hidden=true; }, true);
     /* 스튜디오 언어 버튼 = 산출물(덱·사이트) 내용 번역 전용 — UI 언어는 건드리지 않는다(홈·대시보드 스위처 소관) */
     async function switchContentLang(to){
