@@ -215,7 +215,7 @@
       return '<section class="slide rs md" data-kind="' + kind(s, 'Media') + '">' + runhead(s, P, ctx) + headline(s, P) +
         '<div class="rs-mdcols"><div class="rs-specs">' + rows + '</div>' +
         '<div class="rs-mdimg"><div class="rs-imgwrap">' + imgPh(s.image && s.image.label, P) +
-        '<img class="rs-mdphoto" loading="lazy" alt="" src="https://midas-drs.pages.dev/app/bg/dubai-hero.jpg" onerror="this.remove()"></div>' +
+        '<img class="rs-mdphoto" loading="lazy" alt="" src="https://midas-drs.pages.dev/app/bg/gennx-1.jpg" onerror="this.remove()"></div>' +
         (s.caption ? '<span class="rs-cap"' + de(P + '.caption') + '>' + esc(s.caption) + '</span>' : '') + '</div></div></section>';
     },
     /* 로드맵 — 상단 월별 진행 바 + Now/Next/Then 카드. 원본 23 */

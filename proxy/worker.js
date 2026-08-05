@@ -150,24 +150,24 @@ const RAMS_SYSTEM_FREE =   // [시연 잠금 해제 시 복귀용] 자유 구성
 
 /* pastel 팩(Pastel Gradient) — naver와 동일 타입 어휘, 화이트·챕터 그라데이션·키밴드. packs.pastel.js와 동기 */
 const PASTEL_USE_DOC = "cover(표지): 첫 장 — 그라데이션 대형 번호·Archivo 타이틀·5색 바\nstatement(대형 선언): 표지 다음 선언 — 대형 영문+그라데이션 키워드+비교 카드 2\ntoc(목차): 챕터 목차 — 챕터별 그라데이션 컬럼(번호·영문 라벨·메시지)\ndivider(간지): 챕터 시작 — 풀블리드 챕터 그라데이션+대형 타이틀\nsection(본문 표준): 핵심 논점 3~4개 — 대형 번호+보더탑 소제목+설명\ncards(N열 카드): 동급 항목 2~4개 — 그라데이션 톤 사다리 셀\nsplit(좌우 대비): 흐린 리스트 vs 강조 리스트(활용 vs 설계 대비)\nstats(수치): 대형 그라데이션 %+진행바 — 진척도·달성률\nmedia(스펙 rows): 구조·사양 행(라벨+내용, 핵심 행 그라데이션 강조)+이미지 슬롯\nroadmap(로드맵): 단계 계획 — Now/Next/Then 3열+월별 타임라인 밴드\nbigstat(대형 수치): 수치 하나로 임팩트 — 그라데이션 클립 숫자\nkpi(KPI 셀): 지표 2~4개 — 값+라벨 그라데이션 셀\ntable(표): 열이 정해진 데이터 — 보더바텀 rows\ntimeline(타임라인): 시간순 이벤트 — when+제목+설명 행\nmilestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바. 일정·완료 기준 중심일 때\nprocess(프로세스): 단계 흐름 3~4개 — 중앙(또는 지정) 그라데이션 강조\ncompare(비교): Before/After — 보더 vs 그라데이션 카드\nquote(질문/인용): 핵심 질문·인용 — 풀블리드 그라데이션 Q 패널\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 그라데이션 카드\nchecklist(체크리스트): 확인·항목 목록 — 대시바+보더바텀 rows. 5개 초과 시 2열\nlineup(라인업): 제품·계획 라인업 4개 — 진행=그라데이션·후보=보더\nbranch(갈래): 조직·영역 3갈래+공통 리드 박스\nhighlight(하이라이트): 데모·발표 안내 — 풀블리드 그라데이션+대형 타이틀+단계 행\nboard(현황 보드): 진행 현황 — 2톤 대형 타이틀+카드 2+사이드 리스트\nclosing(엔딩): 마지막 장 — dim+강조 대형 타이틀+다음 행동+5색 바";
-/* [시연 고정] rams(Structure style) — 10장 스켈레톤 잠금. 다양 구성(도식·그래프·건축 이미지 포함), 텍스트만 채움. */
+/* [시연 고정] rams(Structure style) = MIDAS GEN NX 제품소개 10장 고정.
+   공식 제품 정보(GENNX_FACTS)가 1차 소스 — 첨부는 행사 일시·장소·청중 톤에만. 해제=RAMS_SYSTEM_FREE. */
 const RAMS_SYSTEM =
-  '너는 시니어 발표 기획자다. 브리프로 프레젠테이션 슬라이드 덱을 만든다.\n' +
-  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
-  '형식: {"slides":[ ... ]}\n' +
-  '[템플릿 고정 모드] 정확히 아래 10장을 이 순서·이 타입으로. 타입·순서·장수 변경 금지 — 텍스트 필드만 브리프·첨부로 채운다:\n' +
-  '1) cover — {label,date,eyebrow("PROLOGUE"류),title(3톤 2~3줄 \\n: **굵게**+__회색 흐림__),band(비유 한 줄,**강조**),docLabel}\n' +
-  '2) statement — {title(**굵게** 조합 2줄),sub,cols 2개:[{tag,text("A → **B**")}]}\n' +
-  '3) toc — {items 4~5개:[{no,label(영문 챕터명),desc(**강조** 1회),pages}]}\n' +
-  '4) divider — {no:"01",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(**강조**)}\n' +
-  '5) section — {title,points 3~4개:[{head,text}],note(**강조** 1회)}\n' +
-  '6) media — {title,specs 3~4개:[{label(짧은 영문),text,on:true 1개},...],image:{label:"Architecture reference"},caption} — 건축 이미지 장\n' +
+  '너는 MIDAS GEN NX 제품 소개 발표를 만드는 시니어 프로덕트 마케터다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지. 형식: {"slides":[ ... ]}\n' +
+  '[템플릿 고정] 정확히 아래 10장, 이 순서·타입 그대로. 텍스트만 채운다. 제품 내용은 아래 공식 정보만 사용(지어내기 금지):\n' +
+  '1) cover — {label,date,eyebrow("PROLOGUE"류),title("MIDAS GEN NX" 포함 2~3줄 \\n·40자 이내, **굵게**+__흐림__ 3톤),band(가치 한 줄,**강조**),docLabel}\n' +
+  '2) statement — {title("GEN NX × API × AI"류 영문 대형 2줄),sub,cols 2개:[{tag,text("복잡한 해석 → **더 빠르게**"류)}]}\n' +
+  '3) toc — {items 4개:[{no,label(영문 챕터),desc,pages}]}\n' +
+  '4) divider — {no:"01",title(영문 2줄, 둘째 줄 **굵게**),lead(**강조**)}\n' +
+  '5) section — 핵심 기능: {title,points 4개:[{head,text}] — 설계기준 대응·고급 특수해석·4K 작업환경·API 자동화(공식 정보),note(**강조**)}\n' +
+  '6) media — 제품 화면: {title,specs 3~4개:[{label(짧은 영문),text,on:true 1개}] — 시공단계·시간이력·비선형·Grasshopper,image:{label:"GEN NX Live Screen"},caption}\n' +
   '7) divider — {no:"02",title(영문 2줄),lead(**강조**)}\n' +
-  '8) stats — {title,donut:{pct,value?,caption?,label?},bars 3개:[{label,pct,value?,on:true 1개}],note(SO WHAT,**강조**)} — 수치는 브리프 근거 우선, 없으면 목표치 라벨\n' +
-  '9) process — {title,steps 3~4개:[{tag:"1 · 기획"류,head,text?}],accent?,note}\n' +
-  '10) closing — {label?,title(마지막 줄 **굵게**),sub?(**강조**),nextLabel?,contacts?:[{k?,v}]}\n' +
+  '8) stats — {title,donut:{pct,label?,caption?},bars 3개:[{label,pct,on:true 1개}],note(SO WHAT,**강조**)} — 수치는 근거 우선, 없으면 목표(Target) 라벨\n' +
+  '9) process — 워크플로우: {title,steps 4개:[{tag,head,text?}] — 모델링→해석→도면→API 자동화,note}\n' +
+  '10) closing — {label?,title(마지막 줄 **굵게**),sub(참석 유도,**강조**),nextLabel?,contacts?:[{v}] — 첨부의 일시·장소}\n' +
   '각 타입의 필드: ' + RAMS_FIELD_DOC + '\n' +
-  '규칙: 브리프·첨부([첨부 문서])가 1차 소스, 플레이스홀더 금지. 인명·팀명·고유명사는 첨부 표기 그대로(임의 음차·재번역 금지). **굵게** 장당 1~2회, 이모지 금지, 번호 자동 부여(재기입 금지), 의미 단위 \\n 줄바꿈. length와 무관하게 정확히 10장. 언어는 lang.';
+  '규칙: 모든 문구는 lang 언어로(영문 라벨 제외 혼용 금지). 인명·고유명사 원문 그대로. **굵게** 장당 1~2회, 이모지 금지, 번호 자동, length 무관 정확히 10장.\n' + GENNX_FACTS;
 
 const PASTEL_FIELD_DOC = "cover:{label?(좌상 로고명),date?,eyebrow?(하단 영문 밴드),title(**강조**=500, \\n 2~3줄),band?(리드 문장, **강조**),docLabel?} | statement:{title(영문 대형, **키워드**=그라데이션),sub?(**강조**),cols?:[{tag,text(\"A **→ B**\")}](2개)} | toc:{title?,items:[{no?,label(영문 챕터명),desc(한 줄 메시지, **강조**, \\n 가능),pages?:\"04 — 07\"}](3~5개)} | divider:{no?:\"01\",title(영문 2줄 \\n, 둘째 줄 **굵게**),lead(한 문장, **강조**)} | section:{title,points:[{no?,head,text}](3~4개),tag?,sub?,note?(키밴드 문장, **강조**)} | cards:{title,cards:[{head,text?,tag?,tone?:\"dark\"(강조 셀)}](2~4개),sub?,note?} | split:{title?,left:{kicker,items:[str],foot?},right:{kicker,items:[str],foot?},note?} — 좌 흐림/우 강조 | stats:{title,donut?:{pct:0~100,label?,caption?},bars?:[{label,pct:0~100,value?,on?:true(강조 행),text?}],sub?,note?} | media:{title,specs:[{label(짧은 영문),text,on?:true(그라데이션 강조 행)}](3~5개),image?:{label},caption?,sub?,note?} | roadmap:{title,steps:[{when:\"Now|Next|Then\",head,items:[str],state?:\"now\"}](3개),months?:[{when:\"8월\",text}](4~5개 하단 밴드),sub?,note?} | bigstat:{title,value,caption?(**강조**),note?} | kpi:{title,items:[{value,label,desc?,tone?:\"on\"}](2~4개),sub?,note?} | table:{title,columns:[str],rows:[{cells:[str]}],sub?,note?} | timeline:{title,items:[{when,head,text?,on?:true}](3~5개),sub?,note?} | milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),caption?,bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[월 라벨 4~6],note?} | process:{title,steps:[{tag:\"1단계 · 기획\"류,head(\\n 2줄 가능),text?}](3~4개),accent?,sub?,note?} | compare:{title,items:[{head:\"Before|After\",items:[str]}](2개),sub?,note?} | quote:{text(질문·인용, **강조**, \\n),by?} | position:{title,panels:[{tag,head(**굵게**),text?}](3개),accent?,note?} | checklist:{title,items:[str],cols?:1~2,sub?,note?} | lineup:{title,items:[{tag(분야),head(이름),text,badge?(상태),state?:\"dim\"(후보)}](4개),sub?,note?} | branch:{title,branches:[{label(조직명),head(역할),text}](3개),lead?:{label,text(**굵게**)},sub?,note?} | highlight:{title(영문 대형 \\n, **강조**),items:[{no?,head,text?}](2~3개),footnote?} | board:{title(2톤: __흐림__+**강조**),cards:[{tag:\"01 · 분야\",head,text?}](2개),side?:{title,items:[str],pills?:[str]},note?} | closing:{label?,title(2톤: __흐림__ 줄+**강조** 줄),sub?,nextLabel?(**강조**),contacts?:[{v}](우하단 2줄)}\n규칙: note=하단 키밴드 문장(장당 1개, **강조** 1회) — 본문 장엔 적극 넣는다. 챕터 컬러는 간지 순서 자동(블루→틸→그린→코랄→딥블루). title은 의미 단위 \\n 줄바꿈. 이모지 금지.";
 const PASTEL_SYSTEM =
