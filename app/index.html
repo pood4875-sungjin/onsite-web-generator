@@ -922,7 +922,7 @@
         const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:packKind||'ppt' });
         const full=getProject(p.id); const pg0=full.pages[0];
         pg0.pageType='ppt'; pg0.name='덱';
-        pg0.data={ slides:[], style:S.pptStyle, accent:'blue' };
+        pg0.data={ slides:[], style:S.pptStyle, accent:'blue', _clang:S.lang };   // 산출물 언어 — 스튜디오 언어 버튼 기준값
         pg0.pendingBrief=brief;
         pg0.chat={ log:[], idx:8, generated:false };
         full.lang=S.lang; upsertProject(full);
@@ -970,7 +970,7 @@
         const full=getProject(p.id); const pg0=full.pages.find(x=>x.id===pg.id)||full.pages[0];
         const seed={ productName:draft.productName||prod||'', tagline:draft.tagline||'', subcopy:draft.subcopy||'', primaryCta:draft.primaryCta||'',
           features:draft.features||[], stats:draft.stats||[], bannerText:draft.bannerText||'', bannerCta:draft.bannerCta||'',
-          footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[] };
+          footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[], _clang:S.lang };
         if(S.kind==='multi'){
           pg0.pageType='main'; pg0.name='메인홈';
           seed.shownSections=['feature','cta'];
