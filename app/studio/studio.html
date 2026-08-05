@@ -1663,6 +1663,8 @@
     // pack 유실 방어 — 어떤 생성 경로든 프로젝트 스타일 팩이 워커 잠금 분기에 도달해야 한다
     try{ const PK={naver:1,rams:1,pastel:1,sfmi:1,machine:1,pitch:1,honors:1};
       if(brief && (!brief.pack || !PK[brief.pack]) && pack && PK[pack.id]) brief.pack=pack.id; }catch(e){}
+    // 생성 언어로 덱 언어 기록 갱신 — 프로젝트 생성 때 박힌 옛 기록이 남아 표지 잠금 언어가 어긋나는 것 방지
+    try{ data._clang = (window.I18N && I18N.getLang()) || localStorage.getItem('midas-lang') || data._clang || 'ko'; }catch(e){}
     _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');

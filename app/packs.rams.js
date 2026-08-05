@@ -724,16 +724,17 @@
 
   /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
   function lockDemo(slides, clang) {
-    // _clang 기록이 없는 덱(구버전 저장분)은 내용 문자 "비율"로 언어 추론 — EN 덱에 남는 한국어 인명 몇 자에 속지 않게
-    var L = ({ en: 1, ja: 1, zh: 1, ko: 1 })[clang] ? clang : (function (o) {
+    // 언어는 "내용"이 진실 — 기록(_clang)은 재생성·구버전에서 어긋난 채 남을 수 있어 보조로만 쓴다.
+    // 비율 판정이라 EN 덱에 남는 한국어 인명 몇 자에는 안 속는다. 신호가 약할 때만 기록/기본값.
+    var L = (function (o) {
       var t = ''; try { t = JSON.stringify(o); } catch (e) {}
       var ko = (t.match(/[가-힣]/g) || []).length, ja = (t.match(/[\u3040-\u30ff]/g) || []).length,
           zh = (t.match(/[\u4e00-\u9fff]/g) || []).length, la = (t.match(/[A-Za-z]/g) || []).length;
-      if (la < 30 && ko + ja + zh < 5) return 'ko';
       if (ja > 10 && ja >= ko) return 'ja';
-      if (ko > la * 0.15) return 'ko';
+      if (ko > 5 && ko > la * 0.15) return 'ko';
       if (zh > 10 && zh > la * 0.15) return 'zh';
-      return 'en';
+      if (la >= 30) return 'en';
+      return ({ en: 1, ja: 1, zh: 1, ko: 1 })[clang] ? clang : 'ko';
     })(slides);
     var CV = {
       ko: { t: '**MIDAS GEN NX**\n__차세대__\n**구조설계 플랫폼**', b: '모델링부터 **API 자동화**까지, 하나의 플랫폼', c: '**차세대 구조설계를**\n__직접 경험하세요__\n**MIDAS GEN NX**' },
