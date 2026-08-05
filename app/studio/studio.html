@@ -1524,10 +1524,14 @@
     const hasDT=e=>[...e.childNodes].some(n=>n.nodeType===3 && n.textContent.trim());
     const all=[...root.querySelectorAll('*')].filter(e=>{ const r=e.getBoundingClientRect(); return r.width>0 && r.height>0; });
     // 텍스트 단위 — 리프, 또는 직접 텍스트를 가진 요소(자식이 블록이어도 그 문장은 이 단위 소속).
+    // CSS 생성 텍스트(::before/::after 번호·체크·라벨) — 골격으로 새면 "이미 쳐진 글자"로 보인다
+    const psText=e=>{ try{ const gs=doc.defaultView.getComputedStyle; const has=v=>v&&v!=='none'&&v!=='normal'&&/[0-9A-Za-z가-힣✓·]/.test(v);
+      return has(gs(e,'::before').content)||has(gs(e,'::after').content); }catch(_){ return false; } };
     let els=all.filter(e=>{
-      if(!e.textContent || !e.textContent.trim()) return false;
-      if(e.children.length===0) return true;
-      return hasDT(e);
+      const hasTxt=e.textContent && e.textContent.trim();
+      if(hasTxt && e.children.length===0) return true;
+      if(hasTxt && hasDT(e)) return true;
+      return psText(e);
     });
     // 인라인 강조(<b> 등)만 품은 부모가 잡혔으면 그 인라인 자식은 제외(이중 처리 방지)
     els=els.filter(e=>!els.some(p=>p!==e && p.contains(e) && [...p.children].every(c=>INLINE.test(c.tagName) || !c.contains(e))));

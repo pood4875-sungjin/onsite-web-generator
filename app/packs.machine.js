@@ -204,6 +204,18 @@
         '<ul>' + side + '</ul></div></div>' + footline(s, P, 1) + '</section>';
     },
     /* 다크 스펙 시트 — 레일 캡션 행 + 그린 필 밴드. 원본 14 */
+    /* 제품 실스크린샷 장 — 좌 rows(첫 행 다크 강조)/우 공식 UI 캡처(bg/gennx-*.jpg) */
+    shot: function (s, P, ctx) {
+      var rows = (s.rows || []).map(function (r, i) {
+        var IP = P + '.rows.' + i;
+        return '<div class="nx-shrow' + (i === 0 ? ' on' : '') + '"><i' + de(IP + '.tag') + '>' + esc(r.tag || '') + '</i><span' + de(IP + '.text') + '>' + mb(r.text || '') + '</span></div>';
+      }).join('');
+      var img = String(s.img || 'gennx-1.jpg').replace(/[^a-zA-Z0-9._-]/g, '');
+      return '<section class="slide nx sh" data-kind="' + kind(s, 'Product') + '">' + runhead(s, P, ctx) + headline(s, P) +
+        '<div class="nx-shgrid"><div class="nx-shrows">' + rows + '</div>' +
+        '<figure class="nx-shimg"><img loading="lazy" alt="" src="' + aurl(img) + '" onerror="this.closest(\'figure\').style.display=\'none\'">' +
+        (s.caption ? '<figcaption' + de(P + '.caption') + '>' + esc(s.caption) + '</figcaption>' : '') + '</figure></div>' + footline(s, P) + '</section>';
+    },
     spec: function (s, P, ctx) {
       var rows = (s.rows || []).map(function (r, i) {
         var IP = P + '.rows.' + i;
@@ -366,6 +378,16 @@
     /* 표지·엔딩 */
     '.slide.cv,.slide.cl{background:#0D1015;color:#fff}',
     '.nx-photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.9;z-index:-2}',
+    '.nx-shgrid{flex:1;display:grid;grid-template-columns:0.92fr 1.08fr;gap:42px;min-height:0;align-items:stretch}',
+    '.nx-shrows{display:flex;flex-direction:column;justify-content:center}',
+    '.nx-shrow{display:grid;grid-template-columns:128px 1fr;gap:18px;padding:19px 0;border-bottom:1px solid #E5E7EA;align-items:baseline}',
+    '.nx-shrow i{font-style:normal;font-size:12.5px;font-weight:700;letter-spacing:.08em;color:#8A8F98;text-transform:uppercase}',
+    '.nx-shrow span{font-size:16.5px;line-height:1.5;color:#30343B}',
+    '.nx-shrow.on{background:#0B0E16;border-radius:14px;padding:19px 22px;border-bottom:0;margin-bottom:6px}',
+    '.nx-shrow.on i{color:#00DE5A}.nx-shrow.on span{color:#fff;font-weight:600}',
+    '.nx-shimg{margin:0;display:flex;flex-direction:column;min-height:0}',
+    '.nx-shimg img{flex:1;min-height:0;width:100%;object-fit:cover;border-radius:16px;background:#0B0E16}',
+    '.nx-shimg figcaption{margin-top:10px;font-size:12.5px;color:#8A8F98}',
     '.nx-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,13,18,.92) 0%,rgba(10,13,18,.55) 46%,rgba(10,13,18,.28) 100%);z-index:-1}',
     '.nx-shade.cl{background:linear-gradient(180deg,rgba(10,13,18,.62) 0%,rgba(10,13,18,.4) 45%,rgba(10,13,18,.86) 100%)}',
     '.nx-cvtitle{font-size:54px;line-height:1.18;font-weight:300;letter-spacing:-.02em;color:#E7E9EC}.nx-cvtitle b{font-weight:800;color:#fff}.nx-cvtitle .mut{color:rgba(231,233,236,.34);font-weight:300}',
