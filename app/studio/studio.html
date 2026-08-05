@@ -1402,37 +1402,49 @@
     // "텍스트+<b>류 인라인"이 섞인 문장(마크업 강조)은 부모를 통째로 한 단위로 —
     // 리프만 잡으면 <b>만 숨고 나머지 일반 텍스트가 미리 보인다.
     const INLINE=/^(B|I|EM|STRONG|SPAN|SMALL|U|SUP|SUB)$/;
-    let els=[...root.querySelectorAll('*')].filter(e=>{
+    const hasDT=e=>[...e.childNodes].some(n=>n.nodeType===3 && n.textContent.trim());
+    const all=[...root.querySelectorAll('*')].filter(e=>{ const r=e.getBoundingClientRect(); return r.width>0 && r.height>0; });
+    // 텍스트 단위 — 리프, 또는 직접 텍스트를 가진 요소(자식이 블록이어도 그 문장은 이 단위 소속).
+    let els=all.filter(e=>{
       if(!e.textContent || !e.textContent.trim()) return false;
-      const r=e.getBoundingClientRect(); if(!(r.width>0 && r.height>0)) return false;
       if(e.children.length===0) return true;
-      const hasDirectText=[...e.childNodes].some(n=>n.nodeType===3 && n.textContent.trim());
-      return hasDirectText && [...e.children].every(c=>INLINE.test(c.tagName));
+      return hasDT(e);
     });
-    els=els.filter(e=>!els.some(p=>p!==e && p.contains(e)));   // 부모가 잡혔으면 자식은 제외(이중 처리 방지)
-    if(!els.length){ if(done) done(); return; }
+    // 인라인 강조(<b> 등)만 품은 부모가 잡혔으면 그 인라인 자식은 제외(이중 처리 방지)
+    els=els.filter(e=>!els.some(p=>p!==e && p.contains(e) && [...p.children].every(c=>INLINE.test(c.tagName) || !c.contains(e))));
+    // 골격(도형·사진·차트·컨테이너 — 텍스트 단위가 아닌 전부) — 텍스트보다 먼저 위→아래로 슥 깔린다
+    const skel=all.filter(e=>els.indexOf(e)<0);
+    const byY=(a,b)=>{ const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+      return (Math.abs(ra.top-rb.top)>8 ? ra.top-rb.top : ra.left-rb.left); };
+    skel.sort(byY);
+    if(!els.length && !skel.length){ if(done) done(); return; }
     // 화면 위→아래(같은 줄이면 왼→오른쪽) 순서로 등장 — DOM 순서는 grid/절대배치에서 뒤섞인다
-    els.sort((a,b)=>{ const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
-      return (Math.abs(ra.top-rb.top)>8 ? ra.top-rb.top : ra.left-rb.left); });
+    els.sort(byY);
     // 요소가 많아도 장 전체 리빌 시간은 일정하게 — 한 개당 간격을 개수로 나눠 가속
-    const stepMs = fast ? Math.max(28, Math.min(110, 1400/els.length))
-                        : Math.max(50, Math.min(270, 3800/els.length));
-    els.forEach(e=>{ e.__vis=e.style.visibility; e.__full=e.textContent; e.style.visibility='hidden'; });
+    const stepMs = fast ? Math.max(28, Math.min(110, 1400/Math.max(1,els.length)))
+                        : Math.max(50, Math.min(270, 3800/Math.max(1,els.length)));
+    // 초기 숨김은 srcdoc의 #lvhide(CSS)가 담당 — 여기선 텍스트 원문만 보관
+    els.forEach(e=>{ e.__full=e.textContent; });
+    // 골격 선등장 — 빈 지면에 도형·박스가 위에서부터 빠르게 깔린 뒤 텍스트가 써진다
+    skel.forEach((e,k)=>{ setTimeout(()=>{ e.style.visibility='visible'; }, Math.min(k*(fast?8:16), fast?260:600)); });
     const fr=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
     const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || 1280, sc=fr.width/iw;
     let i=0, typedN=0;
+    const unhide=()=>{ try{ const st=doc.getElementById('lvhide'); if(st) st.remove(); }catch(e){} };   // 통짜 숨김 해제 — 이후엔 전부 기본 표시
     _revealCleanup=()=>{ clearTimeout(_revealTimer);
       // 마크업 섞인 요소는 textContent 복원 금지(굵기 <b>가 날아간다) — 표시만 되살린다
-      els.forEach(e=>{ if(e.__full!=null && e.children.length===0) e.textContent=e.__full; e.style.visibility=e.__vis||''; });
+      els.forEach(e=>{ if(e.__full!=null && e.children.length===0) e.textContent=e.__full; e.style.visibility=''; });
+      skel.forEach(e=>{ e.style.visibility=''; });
+      unhide();
       _revealCleanup=null; };
     function typeText(e, cb){
-      const full=e.__full; e.textContent=''; e.style.visibility=e.__vis||'';
+      const full=e.__full; e.textContent=''; e.style.visibility='visible';
       let k=0;
       (function t(){ if(k>=full.length){ cb(); return; }
         k+=1; e.textContent=full.slice(0,k); _revealTimer=setTimeout(t, fast?14:42); })();
     }
     (function step(){
-      if(i>=els.length){ _revealCleanup=null; if(done) done(); return; }
+      if(i>=els.length){ unhide(); _revealCleanup=null; if(done) done(); return; }
       const e=els[i], r=e.getBoundingClientRect();
       cursorToPx(fr.left-pr.left + (r.left+Math.min(r.width*0.4,80))*sc,
                  fr.top-pr.top + (r.top+r.height*0.5)*sc, i%3===0);
@@ -1442,7 +1454,7 @@
         typedN++;
         _revealTimer=setTimeout(()=>typeText(e, ()=>{ _revealTimer=setTimeout(step, stepMs); }), fast?100:300);
       } else {
-        e.style.visibility=e.__vis||'';
+        e.style.visibility='visible';
         _revealTimer=setTimeout(step, stepMs);
       }
     })();
@@ -1516,7 +1528,10 @@
         try{ revealSlideTyping(fin, fast, rootEl); }
         catch(e){ fin(); }
       };
-      frame.srcdoc=renderDeckFor(_livePlayed.map(s=>JSON.parse(JSON.stringify(s))));
+      // 새 장은 "완전 빈 지면"으로 시작 — JS 필터가 놓치는 요소가 미리 보이는 일이 없도록 CSS로 통짜 숨김.
+      // reveal이 요소별 인라인 visibility:visible로 걷어낸다(인라인이 이 규칙을 이김).
+      frame.srcdoc=renderDeckFor(_livePlayed.map(s=>JSON.parse(JSON.stringify(s))))
+        .replace('</head>','<style id="lvhide">.ppt-stack > .slide:last-child *{visibility:hidden}</style></head>');
     }catch(e){ _liveShownN=item.num; paintLiveRail(); _slidePlaying=false; playNextSlide(); }
   }
   async function startLiveCompose(){
