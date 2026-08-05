@@ -119,7 +119,7 @@
       /* 타임라인(일정) — 세로 스텝 */
       '.ts-tl{padding:96px 0}',
       '.ts-sec-tt{font-size:38px;font-weight:800;letter-spacing:-.03em;text-align:center;word-break:keep-all}',
-      '.ts-steps{margin:52px auto 0;max-width:720px;display:flex;flex-direction:column}',
+      '.ts-steps{margin:70px auto 0;max-width:720px;display:flex;flex-direction:column}',
       '.ts-step{position:relative;display:grid;grid-template-columns:150px 1fr;gap:26px;padding:22px 0 26px 0}',
       '.ts-step:before{content:"";position:absolute;left:161px;top:34px;bottom:-8px;width:2px;background:' + LINE + '}',
       '.ts-step:last-child:before{display:none}',
@@ -130,7 +130,7 @@
       '.ts-step .by{margin-top:5px;font-size:13.5px;color:#8B95A1;font-weight:600;letter-spacing:.04em}',
       /* 챌린지 안내 카드 — 그레이 밴드 r20 */
       '.ts-ft{background:' + BAND + ';padding:104px 0}',
-      '.ts-cards{margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}',
+      '.ts-cards{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}',
       '.ts-card{background:#fff;border-radius:20px;padding:34px 30px;transition:transform .25s ease,box-shadow .25s ease}',
       '.ts-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(25,31,40,.08)}',
       '.ts-card .no{font-size:14px;font-weight:800;color:' + BLUE + '}',
@@ -142,7 +142,7 @@
       '.ts-brief .tx{margin-top:18px;font-size:44px;font-weight:800;line-height:1.32;letter-spacing:-.03em;color:#fff;word-break:keep-all;text-wrap:balance}',
       /* 평가 기준 — 3col */
       '.ts-ev{padding:104px 0}',
-      '.ts-crit{margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}',
+      '.ts-crit{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}',
       '.ts-crit .c{padding:30px 18px;border-top:3px solid ' + BLUE + ';background:#fff;box-shadow:0 1px 0 ' + LINE + ' inset}',
       '.ts-crit b{display:block;font-size:23px;font-weight:800;letter-spacing:-.02em;word-break:keep-all}',
       '.ts-crit span{display:block;margin-top:10px;font-size:15px;color:' + SUB + ';word-break:keep-all}',
@@ -152,7 +152,7 @@
       '.ts-info .i span{display:block;margin-top:5px;font-size:16.5px;font-weight:700;word-break:keep-all}',
       /* FAQ — 라인 아코디언 */
       '.ts-faq{padding:96px 0 110px}',
-      '.ts-qs{margin:44px auto 0;max-width:760px}',
+      '.ts-qs{margin:70px auto 0;max-width:760px}',
       '.ts-q{border-bottom:1px solid ' + LINE + ';padding:22px 4px;cursor:pointer}',
       '.ts-q .qh{display:flex;justify-content:space-between;gap:16px;font-size:18px;font-weight:700;letter-spacing:-.02em;word-break:keep-all}',
       '.ts-q .qh i{font-style:normal;color:#B0B8C1;transition:transform .2s}',
@@ -183,7 +183,7 @@
       '@media (max-width:600px){.ts-nav .wrap{gap:12px;height:56px}.ts-menu{display:none}.ts-logo{font-size:15px}.ts-navcta{padding:8px 15px;font-size:13px}',
       '.ts-hero{padding:74px 0 66px}.ts-ht{font-size:38px}.ts-hs{font-size:16px}.ts-sec-tt{font-size:27px}',
       '.ts-step{grid-template-columns:100px 1fr;gap:18px}.ts-step:before{left:111px}.ts-step:after{left:106px}.ts-step .tm{padding-right:18px;font-size:13px}',
-      '.ts-brief .tx{font-size:28px}.ts-cta .tt{font-size:30px}.ts-info{gap:18px;padding:22px 24px}}',
+      '.ts-brief .tx{font-size:28px}.ts-cta .tt{font-size:30px}.ts-info{gap:18px;padding:22px 24px}.ts-steps,.ts-cards,.ts-crit,.ts-qs{margin-top:44px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }

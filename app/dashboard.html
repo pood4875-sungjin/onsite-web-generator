@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','packs.krds.js','packs.midas.js','packs.edm.js','packs.aether.js','packs.saturn.js','packs.ppt.js','charts.js','packs.pitch.js','packs.honors.js','packs.naver.js','packs.rams.js','packs.pastel.js','packs.sfmi.js','packs.machine.js','packs.mbm.js','packs.axday.js','packs.toss.js','packs.orbit.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -78,7 +78,10 @@
 
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
-  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name; return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
+  function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name;
+    if(sp==='mbm'&&window.MBM_STYLE)return MBM_STYLE.name; if(sp==='axday'&&window.AXDAY_STYLE)return AXDAY_STYLE.name; if(sp==='toss'&&window.TOSS_STYLE)return TOSS_STYLE.name; if(sp==='orbit'&&window.ORBIT_STYLE)return ORBIT_STYLE.name;
+    if(sp==='pastel'&&window.PASTEL_STYLE)return PASTEL_STYLE.name; if(sp==='sfmi'&&window.SFMI_STYLE)return SFMI_STYLE.name; if(sp==='machine'&&window.MACHINE_STYLE)return MACHINE_STYLE.name;
+    return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function renderForStyle(sp, pg){ const d=pg.data||{};
     if(sp==='saturn'&&window.renderSaturnPage) return renderSaturnPage(d,{volume:pg.volume,motion:'static'});
     if(sp==='krds'&&window.renderKrdsPage) return renderKrdsPage(d,{volume:pg.volume,motion:'static'});
@@ -90,10 +93,55 @@
     if(sp==='naver'&&window.renderNaverDeck) return renderNaverDeck(d);
     if(sp==='rams'&&window.renderRamsDeck) return renderRamsDeck(d);
     if(sp==='pitch'&&window.renderPitchDeck) return renderPitchDeck(d);
+    if(sp==='pastel'&&window.renderPastelDeck) return renderPastelDeck(d);
+    if(sp==='sfmi'&&window.renderSfmiDeck) return renderSfmiDeck(d);
+    if(sp==='machine'&&window.renderMachineDeck) return renderMachineDeck(d);
+    if(sp==='mbm'&&window.renderMbmPage) return renderMbmPage(d,{volume:pg.volume,motion:false});
+    if(sp==='axday'&&window.renderAxdayPage) return renderAxdayPage(d,{volume:pg.volume,motion:false});
+    if(sp==='toss'&&window.renderTossPage) return renderTossPage(d,{volume:pg.volume,motion:false});
+    if(sp==='orbit'&&window.renderOrbitPage) return renderOrbitPage(d,{volume:pg.volume,motion:false});
     return renderComposed(d, DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether, 'static', pg.pageType, pg.volume); }
+  /* 썸네일 스마트핏(index fitThumb과 동일 규칙) — PPT=표지 한 장, 웹=첫 섹션 통째 contain */
+  function fitT(sw,f){
+    function base(){
+      const W=sw.clientWidth,H=sw.clientHeight; if(!W){ requestAnimationFrame(base); return; }
+      const sc=W/1280;
+      f.style.transformOrigin='0 0';
+      f.style.width='1280px'; f.style.height=Math.ceil(H/sc)+'px';
+      f.style.transform='scale('+sc+')';
+      setTimeout(refine,150); setTimeout(refine,500);
+    }
+    function refine(){
+      const W=sw.clientWidth,H=sw.clientHeight; if(!W) return;
+      let r=null,bg='';
+      try{
+        const d=f.contentDocument;
+        if(d&&d.body){
+          bg=(d.defaultView.getComputedStyle(d.body).backgroundColor)||'';
+          const sl=d.querySelector('.ppt-stack > .slide');
+          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height}; }
+          else{
+            let bot=0;
+            for(const el of d.body.children){
+              if(/^(SCRIPT|STYLE|LINK)$/i.test(el.tagName)) continue;
+              const b=el.getBoundingClientRect(); if(b.height<=0) continue;
+              bot=Math.max(bot,b.bottom);
+              if(bot>=560) break;
+            }
+            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1500)};
+          }
+        }
+      }catch(e){}
+      if(!r) return;
+      const sc=Math.min(W/r.width,H/r.height);
+      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+((H-r.height*sc)/2-r.top*sc).toFixed(1)+'px) scale('+sc.toFixed(4)+')';
+      if(bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent') sw.style.background=bg;
+    }
+    requestAnimationFrame(base);
+    f.addEventListener('load',base);
+  }
   function thumb(p){ const wrap=document.createElement('div'); wrap.className='thumb'; const pg=p.pages[0];
-    if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(p.stylePack,pg); wrap.append(f);
-      requestAnimationFrame(()=>{ const s=wrap.clientWidth/1280; f.style.width='1280px'; f.style.height=(wrap.clientHeight/s)+'px'; f.style.transform='scale('+s+')'; }); }
+    if(pg){ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=renderForStyle(p.stylePack,pg); wrap.append(f); fitT(wrap,f); }
     return wrap; }
   function isDone(p){ return p.pages.some(pg=>(pg.chat&&pg.chat.generated) || (pg.data&&((pg.data.features&&pg.data.features.length)||pg.data.bannerText))); }
   function relTime(ts){ const s=Math.floor((Date.now()-ts)/1000); if(s<60)return LL('방금'); const m=Math.floor(s/60); if(m<60)return m+LL('분 전'); const h=Math.floor(m/60); if(h<24)return h+LL('시간 전'); const d=Math.floor(h/24); if(d<7)return d+LL('일 전'); return Math.floor(d/7)+LL('주 전'); }

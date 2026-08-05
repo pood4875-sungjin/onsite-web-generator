@@ -176,10 +176,10 @@
   .htop{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px 30px}
   .hlogo{font-family:'Poppins','Pretendard Variable',Pretendard,sans-serif;font-weight:600;font-size:20px;letter-spacing:-.02em;color:var(--ink)}
   .hlang{position:relative}
-  .hlangbtn{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--hairline-strong);border-radius:var(--r-pill);background:var(--card,#fff);color:var(--body);cursor:pointer;font-family:inherit;transition:var(--dur) var(--ease)}
+  .hlangbtn{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--hairline-strong);border-radius:var(--r-pill);background:var(--surface-solid,#fff);color:var(--body);cursor:pointer;font-family:inherit;transition:var(--dur) var(--ease)}
   .hlangbtn:hover{border-color:var(--body-mid)}
   .hlangbtn b{font-size:11.5px;font-weight:700;letter-spacing:.06em}
-  .hlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:132px;background:var(--card,#fff);border:1px solid var(--hairline-strong);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.12);padding:5px;z-index:30;display:flex;flex-direction:column}
+  .hlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:132px;background:var(--surface-solid,#fff);border:1px solid var(--hairline-strong);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.12);padding:5px;z-index:30;display:flex;flex-direction:column}
   .hlangmenu[hidden]{display:none}
   .hlangmenu button{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 11px;border:0;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--body);cursor:pointer;text-align:left}
   .hlangmenu button:hover{background:var(--brand-weak)}
@@ -440,19 +440,48 @@
   /* ---- 챗 프리미티브 ---- */
   const msgs=document.getElementById('cmsgs');
   function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
-  /* 썸네일 iframe을 카드 폭에 맞춰 축소 — 덱/페이지는 1280px 기준 렌더.
-     (정의 누락으로 원본 크기 그대로 붙어 표지 좌상단만 보이던 문제 수리)
-     PPT 덱은 .ppt-stack 상단 패딩 24px을 걷어 표지 첫 장이 꽉 차게. */
-  function fitThumb(sw,f,off){
-    function fit(){
-      const W=sw.clientWidth; if(!W){ requestAnimationFrame(fit); return; }
+  /* 썸네일 스마트핏 — PPT는 메인 표지 한 장, 웹은 첫 섹션(GNB+히어로)이 카드에 통째로.
+     1차: 1280px 폭맞춤(덱 내장 뷰어가 이 뷰포트에 자체 핏) → 2차: 표지/1섹션 박스 실측 후 contain·중앙. */
+  function fitThumb(sw,f){
+    let t1=0,t2=0;
+    function base(){
+      const W=sw.clientWidth,H=sw.clientHeight; if(!W){ requestAnimationFrame(base); return; }
       const sc=W/1280;
-      f.style.width='1280px'; f.style.height=Math.ceil(sw.clientHeight/sc)+'px';
-      f.style.transform='scale('+sc+') translateY(-'+(off||0)+'px)';
+      f.style.transformOrigin='0 0';
+      f.style.width='1280px'; f.style.height=Math.ceil(H/sc)+'px';
+      f.style.transform='scale('+sc+')';
+      clearTimeout(t1); clearTimeout(t2);
+      t1=setTimeout(refine,120); t2=setTimeout(refine,450);
     }
-    requestAnimationFrame(fit);
-    f.addEventListener('load',fit);
-    window.addEventListener('resize',fit);
+    function refine(){
+      const W=sw.clientWidth,H=sw.clientHeight; if(!W) return;
+      let r=null,bg='';
+      try{
+        const d=f.contentDocument;
+        if(d&&d.body){
+          bg=(d.defaultView.getComputedStyle(d.body).backgroundColor)||'';
+          const sl=d.querySelector('.ppt-stack > .slide');
+          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height}; }
+          else{
+            let bot=0;
+            for(const el of d.body.children){
+              if(/^(SCRIPT|STYLE|LINK)$/i.test(el.tagName)) continue;
+              const b=el.getBoundingClientRect(); if(b.height<=0) continue;
+              bot=Math.max(bot,b.bottom);
+              if(bot>=560) break;
+            }
+            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1500)};
+          }
+        }
+      }catch(e){}
+      if(!r) return;
+      const sc=Math.min(W/r.width,H/r.height);
+      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+((H-r.height*sc)/2-r.top*sc).toFixed(1)+'px) scale('+sc.toFixed(4)+')';
+      if(bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent') sw.style.background=bg;
+    }
+    requestAnimationFrame(base);
+    f.addEventListener('load',base);
+    window.addEventListener('resize',base);
   }
   /* 템플릿 미리보기 오버레이 — 스타일 카드의 🔍 버튼. 인앱 오버레이(팝업 금지) */
   function openTplPreview(html,title){
@@ -743,10 +772,9 @@
       } else {
         const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
         const STYLES=[
-          { id:'mbm', name:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.name:'세미나 집객 블루'), swatch:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.swatch:'linear-gradient(135deg,#1E56A8,#00BDDE)') },
-          { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'AX Day 오렌지'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
-          { id:'toss', name:(typeof TOSS_STYLE!=='undefined'?TOSS_STYLE.name:'챌린지 화이트'), swatch:(typeof TOSS_STYLE!=='undefined'?TOSS_STYLE.swatch:'linear-gradient(135deg,#fff 46%,#0064FF 46%)') },
-          { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'글로벌 오르빗'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
+          { id:'mbm', name:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.name:'Civil Blue'), swatch:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.swatch:'linear-gradient(135deg,#1E56A8,#00BDDE)') },
+          { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'Ensol MBM'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
+          { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'Global MBM'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
           { id:'aether', name:'다크 글로우', swatch:glow.swatch },
           { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn 블루'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0F62FE,#CFE0FF)') },
           { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
@@ -785,8 +813,8 @@
       return ['naver','rams','pastel'];
     }
     if(kind==='single'||kind==='multi'){
-      if(/채용|챌린지|공모|모집|지원|커리어|리크루팅|toss/.test(t)) return ['toss','orbit','saturn'];
-      if(/글로벌|해외|월드|world|global|지구/.test(t)) return ['orbit','toss','saturn'];
+      if(/채용|챌린지|공모|모집|지원|커리어|리크루팅/.test(t)) return ['orbit','mbm','saturn'];
+      if(/글로벌|해외|월드|world|global|지구/.test(t)) return ['orbit','mbm','saturn'];
       if(/세미나|행사|이벤트|집객|신청|초청|참가|컨퍼런스|mbm|day/.test(t)) return ['mbm','axday','saturn'];
       if(/다크|테크|개발|ai|글로우|스타트업/.test(t)) return ['aether','saturn','midas'];
       if(/공공|신뢰|안내|공지|정부/.test(t)) return ['krds','saturn','midas'];

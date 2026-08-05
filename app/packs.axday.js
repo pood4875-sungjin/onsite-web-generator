@@ -127,7 +127,7 @@
       '.ax-sec,.ax-cta{scroll-margin-top:64px}',
       '.ax-sec.alt{background:#F7F9FB}',
       '.ax-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.035em;word-break:keep-all}',
-      '.ax-tt+*{margin-top:52px}',
+      '.ax-tt+*{margin-top:70px}',
       /* 이유 3카드 */
       '.ax-cards{margin-top:54px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}',
       '.ax-card{border:1px solid rgba(3,7,18,.09);border-radius:14px;overflow:hidden;background:#fff}',
@@ -215,7 +215,7 @@
       '.ax-hero{padding:56px 0 0}.ax-eb{font-size:15px}.ax-ht{font-size:42px}.ax-hsub{font-size:15.5px;margin-top:18px}.ax-hero .ph-wide{height:300px;margin-top:36px}',
       '.ax-band{padding:32px 0}.ax-band .bt{font-size:18px}.ax-band .bs{font-size:14px}',
       '.ax-count .wrap{gap:12px}.ax-count .lb{width:100%;text-align:center}.ax-count .seg b{font-size:19px}',
-      '.ax-sec{padding:66px 0}.ax-tt{font-size:25px}.ax-tt+*{margin-top:36px}.ax-cta .tt{font-size:27px}}',
+      '.ax-sec{padding:66px 0}.ax-tt{font-size:25px}.ax-tt+*{margin-top:44px}.ax-cta .tt{font-size:27px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }
@@ -337,5 +337,5 @@
     fixed: [],
     labels: { band: '임팩트 밴드', count: '카운트다운', about: '소개', program: '세션', info: '일정·장소', faq: 'FAQ' },
   };
-  window.AXDAY_STYLE = { id: 'axday', name: 'AX Day 오렌지', desc: '화이트·블랙 미니멀 · 오렌지 임팩트 밴드 · 포토 카드 · 블루 CTA', swatch: 'linear-gradient(115deg,#FFFFFF 0%,#FFFFFF 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)' };
+  window.AXDAY_STYLE = { id: 'axday', name: 'Ensol MBM', desc: '화이트·블랙 미니멀 · 오렌지 임팩트 밴드 · 포토 카드 · 블루 CTA', swatch: 'linear-gradient(115deg,#FFFFFF 0%,#FFFFFF 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)' };
 })();

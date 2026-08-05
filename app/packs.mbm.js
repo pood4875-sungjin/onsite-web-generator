@@ -152,7 +152,7 @@
       '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:74% 50%}',
       /* 첨부 원본에 좌측 블루가 이미 있음 — 오버레이는 좁은 화면 가독성 보강용으로만 얇게 */
       '.mb-hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,107,222,.55) 0%,rgba(0,107,222,.22) 38%,rgba(0,107,222,0) 62%)}',
-      '.mb-hero .wrap{position:relative;z-index:2;padding-top:168px;padding-bottom:150px}',
+      '.mb-hero .wrap{position:relative;z-index:2;width:100%;padding-top:168px;padding-bottom:150px}',
       '.mb-ht{font-size:72px;line-height:1.29;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
       '.mb-hs{margin-top:18px;font-size:20px;line-height:1.5;color:#EAF3FD;max-width:660px}',
       '.mb-hcta{display:inline-block;margin-top:40px;background:#fff;color:#374151;font-size:17.5px;font-weight:600;padding:17px 34px;border-radius:8px;border:0;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(3,40,90,.28)}',
@@ -262,7 +262,7 @@
       '.rv.in{opacity:1;transform:none}',
       /* 한국어 제목 중간 꺾임 방지 */
       '.mb-ht,.mb-ch .tt,.mb-faq .tt,.mb-st .tx,.mb-cta .tt,.mb-card .ct{word-break:keep-all}',
-      '@media (max-width:960px){.mb-menu{display:none}.mb-zig,.mb-zig.flip{grid-template-columns:1fr}.mb-ht{font-size:44px}.mb-ch .tt,.mb-faq .tt{font-size:33px}.mb-st .tx{font-size:36px}.mb-cta .tt{font-size:36px}.mb-cta .agrid{grid-template-columns:1fr;gap:44px}}',
+      '@media (max-width:960px){.mb-menu{display:none}.mb-navcta{margin-left:auto}.mb-zig,.mb-zig.flip{grid-template-columns:1fr}.mb-ht{font-size:44px}.mb-ch .tt,.mb-faq .tt{font-size:33px}.mb-st .tx{font-size:36px}.mb-cta .tt{font-size:36px}.mb-cta .agrid{grid-template-columns:1fr;gap:44px}}',
       /* 모바일(≤600) — GNB 한 줄 유지·히어로 가독 오버레이·카운트다운 축소·폼 여백 */
       '@media (max-width:600px){',
       '.mb-nav .wrap{gap:12px;height:60px}.mb-logo{font-size:15px}.mb-navcta{padding:9px 14px;font-size:13px}',
@@ -408,5 +408,5 @@
     fixed: [],
     labels: { count: '카운트다운', about: '소개', program: '세션', info: '일정·장소', statement: '선언', faq: 'FAQ' },
   };
-  window.MBM_STYLE = { id: 'mbm', name: '세미나 집객 블루', desc: '블루 히어로(교량 실사) · 앵커 GNB · 신청 폼 · FAQ 아코디언', swatch: 'linear-gradient(135deg,#006BDE 0%,#00BDDE 55%,#6BE016 100%)' };
+  window.MBM_STYLE = { id: 'mbm', name: 'Civil Blue', desc: '블루 히어로(교량 실사) · 앵커 GNB · 신청 폼 · FAQ 아코디언', swatch: 'linear-gradient(135deg,#006BDE 0%,#00BDDE 55%,#6BE016 100%)' };
 })();
