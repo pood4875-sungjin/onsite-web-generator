@@ -664,10 +664,13 @@
       'if(ch)el.style.transform="translate("+dx+"px,"+dy+"px)";}};' +
       'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
       // 내용 과다 장 자동 축소 — 래퍼로 감싸 scale(k). 하단 37px 패딩 보존
-      'window.__fitSlide=function(s){var w=s.querySelector(":scope > .nv-fit");' +
-      'if(!w){w=document.createElement("div");w.className="nv-fit";w.style.cssText="display:flex;flex-direction:column;gap:27px;flex:1 1 auto;min-height:0;transform-origin:top left";while(s.firstChild)w.appendChild(s.firstChild);s.appendChild(w);}' +
+      'window.__fitSlide=function(s){var cs=getComputedStyle(s);var w=s.querySelector(":scope > .nv-fit");' +
+      'if(!w){if(s.scrollHeight<=s.clientHeight+2)return;' +   // 넘친 장만 개입 — 정상 장 레이아웃 불변
+      'w=document.createElement("div");w.className="nv-fit";' +
+      'w.style.cssText="transform-origin:top left;flex:1 1 auto;min-height:0;display:"+cs.display+";flex-direction:"+cs.flexDirection+";gap:"+cs.gap+";align-items:"+cs.alignItems+";justify-content:"+cs.justifyContent+";";' +
+      'while(s.firstChild)w.appendChild(s.firstChild);s.appendChild(w);}' +
       'w.style.transform="";w.style.width="";' +
-      'var cs=getComputedStyle(s),avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);' +
+      'var avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);' +
       'var need=w.scrollHeight;if(need>avail+2){var k=Math.max(0.6,avail/need);var bw=w.clientWidth;w.style.width=(bw/k)+"px";w.style.transform="scale("+k+")";}};' +
       'var fitAll=function(){var ss=document.querySelectorAll(".ppt-stack > .slide");for(var f2=0;f2<ss.length;f2++)window.__fitSlide(ss[f2]);};' +
       'fitAll();window.addEventListener("load",fitAll);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitAll);' +
