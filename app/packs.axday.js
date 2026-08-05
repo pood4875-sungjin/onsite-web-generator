@@ -86,11 +86,17 @@
     return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
   }
   var IMGS = {};   // renderAxdayPage 진입 시 shared.images로 채움 — 편집(피커)에서 바꾼 이미지 우선
+  /* [시연 고정] 중간 사진 = 공유본 /p/MmrgGJ7j와 동일 세트를 호출 순서대로 강제.
+     사용자가 피커로 고른 이미지(IMGS)와 교량 키만 우선. 해제 = PIN_MID를 null로. */
+  var PIN_MID = ['1540575467063-178a50c2df87', '1505373877841-8d25f7d46678', '1511578314322-379afb476865',
+                 '1505373877841-8d25f7d46678', '1475721027785-f74eccf877e2', '1540575467063-178a50c2df87'];
+  var _pinI = 0;
   // 히어로 기본 = 첨부 원본 교량(mbm과 공유, bg/mbm-hero.jpg) — currentScript 기준 절대경로
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
   var BRIDGE = BASE + 'bg/mbm-hero.jpg';
   function photo(mode, key, w, h, slot) {
-    var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE : key ? stockUrl(key, w, h) : '');
+    var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE :
+      key ? (PIN_MID && key !== 'arch' ? 'https://images.unsplash.com/photo-' + PIN_MID[(_pinI++) % PIN_MID.length] + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop' : stockUrl(key, w, h)) : '');
     return '<div class="ax-ph ph ' + (mode || '') + '"' + (slot ? ' data-img="' + slot + '"' : '') + '><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
       (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="if(!this.dataset.f&&/bg\\/mbm-hero/.test(this.src)){this.dataset.f=1;this.src=\'https://midas-drs.pages.dev/app/bg/mbm-hero.jpg\';}else{this.remove();}">' : '') + '</div>';
   }
@@ -252,6 +258,7 @@
   window.renderAxdayPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
     IMGS = shared.images || {};
+    _pinI = 0;   // 렌더마다 핀 시퀀스 처음부터
     var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
     var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
@@ -314,6 +321,8 @@
       '})();<\/script>';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
+      (LANG === 'ja' || LANG === 'zh' ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + (LANG === 'ja' ? 'Noto+Sans+JP' : 'Noto+Sans+SC') + ':wght@300;400;500;700;800;900&display=swap">' +
+        '<style>body,button,input,textarea{font-family:"Pretendard Variable",Pretendard,"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '",-apple-system,sans-serif}</style>' : '') +
       '<style>' + css() + '</style></head><body data-pack="axday">' +
       '<nav class="ax-nav"><div class="wrap"><span class="brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
       (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + ['#about', '#program', '#info', '#faq'][i % 4] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') +

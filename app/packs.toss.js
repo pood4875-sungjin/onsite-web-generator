@@ -247,6 +247,8 @@
       '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});})();<\/script>';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
+      (LANG === 'ja' || LANG === 'zh' ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + (LANG === 'ja' ? 'Noto+Sans+JP' : 'Noto+Sans+SC') + ':wght@300;400;500;700;800;900&display=swap">' +
+        '<style>body,button,input,textarea{font-family:"Pretendard Variable",Pretendard,"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '",-apple-system,sans-serif}</style>' : '') +
       '<style>' + css() + '</style></head><body data-pack="toss">' +
       '<nav class="ts-nav"><div class="wrap"><span class="ts-logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<div class="ts-menu">' + menu + '</div>' +

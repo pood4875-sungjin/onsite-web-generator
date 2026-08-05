@@ -113,6 +113,17 @@
   };
 
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
+  // 타이틀 강약 — **마커** 우선, 여러 줄이면 첫 줄 볼드+나머지 라이트, 한 줄이면 앞 40% 볼드
+  function mixT(s) {
+    s = String(s == null ? '' : s);
+    if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    var lines = esc(s).split('\n');
+    if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+    var w = lines[0].split(' ');
+    if (w.length < 2) return '<b>' + lines[0] + '</b>';
+    var n = Math.max(1, Math.round(w.length * 0.4));
+    return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+  }
   /* desc 한 덩어리 → 체크 불릿 — 문장 단위 분해(마침표), 최대 3개 */
   function bullets(desc, P) {
     var parts = String(desc || '').split(/(?<=다\.)\s+|(?<=요\.)\s+|(?<=\.)\s+(?=[A-Z가-힣])/).filter(function (s) { return s.trim(); }).slice(0, 3);
@@ -153,7 +164,8 @@
       /* 첨부 원본에 좌측 블루가 이미 있음 — 오버레이는 좁은 화면 가독성 보강용으로만 얇게 */
       '.mb-hero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,107,222,.55) 0%,rgba(0,107,222,.22) 38%,rgba(0,107,222,0) 62%)}',
       '.mb-hero .wrap{position:relative;z-index:2;width:100%;padding-top:168px;padding-bottom:150px}',
-      '.mb-ht{font-size:72px;line-height:1.29;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
+      '.mb-ht{font-size:72px;line-height:1.29;letter-spacing:-.044em;font-weight:300;color:#FDFDFE;text-wrap:balance}',
+      '.mb-ht b,.mb-st .tx b,.mb-cta .tt b{font-weight:700}',
       '.mb-hs{margin-top:18px;font-size:20px;line-height:1.5;color:#EAF3FD;max-width:660px}',
       '.mb-hcta{display:inline-block;margin-top:40px;background:#fff;color:#374151;font-size:17.5px;font-weight:600;padding:17px 34px;border-radius:8px;border:0;cursor:pointer;font-family:inherit;box-shadow:0 10px 30px rgba(3,40,90,.28)}',
       /* 챕터 */
@@ -179,7 +191,7 @@
       '.mb-line{width:100%;height:76px}',
       /* 다크 선언 */
       '.mb-st{background:#0C0D0D;padding:150px 0;text-align:center}',
-      '.mb-st .tx{font-size:54px;line-height:1.286;letter-spacing:-.045em;font-weight:600;color:#fff;text-wrap:balance}',
+      '.mb-st .tx{font-size:54px;line-height:1.286;letter-spacing:-.045em;font-weight:300;color:#fff;text-wrap:balance}',
       '.mb-st .tx .dim{color:#6B7280}',
       '.mb-st .nums{margin-top:56px;display:flex;justify-content:center;gap:72px}',
       '.mb-st .n b{font-size:44px;font-weight:800;color:#fff;letter-spacing:-.03em}.mb-st .n span{display:block;margin-top:6px;font-size:15px;color:#6B7280}',
@@ -199,7 +211,7 @@
       '.mb-cta{position:relative;background:linear-gradient(135deg,#065454 0%,#071E21 100%);padding:120px 0;overflow:hidden}',
       '.mb-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(60% 90% at 80% 10%,rgba(27,185,205,.24),transparent 70%)}',
       '.mb-cta .agrid{position:relative;display:grid;grid-template-columns:1fr 520px;gap:64px;align-items:center}',
-      '.mb-cta .tt{font-size:50px;line-height:1.286;letter-spacing:-.045em;font-weight:700;color:#fff;text-wrap:balance}',
+      '.mb-cta .tt{font-size:50px;line-height:1.286;letter-spacing:-.045em;font-weight:300;color:#fff;text-wrap:balance}',
       '.mb-cta .sub{margin-top:20px;font-size:17.5px;line-height:1.55;color:rgba(255,255,255,.86)}',
       '.mb-form{background:#fff;border-radius:16px;padding:38px 36px;box-shadow:0 30px 80px rgba(0,0,0,.35)}',
       '.mb-form .ft{display:block;font-size:24px;font-weight:800;letter-spacing:-.03em;color:#0A0B0B}',
@@ -308,9 +320,9 @@
     var ctaTitle = shared.bannerText && shared.bannerCta ? shared.bannerText : d.ctaTitle;   // 배너 텍스트를 CTA로 쓰는 초안 대응
     var stTx = (function () {   // 선언 2톤 — 마지막 줄을 딤 처리
       var lines = String(d.bannerText || '').split('\n');
-      if (lines.length < 2) return ml(d.bannerText);
+      if (lines.length < 2) return mixT(d.bannerText);
       var last = lines.pop();
-      return ml(lines.join('\n')) + '<br><span class="dim">' + esc(last) + '</span>';
+      return '<b>' + esc(lines[0]) + '</b>' + (lines.length > 1 ? '<br>' + ml(lines.slice(1).join('\n')) : '') + '<br><span class="dim">' + esc(last) + '</span>';
     })();
     var stats = (d.stats || []).slice(0, 3);
     var chapters = feats.map(function (f, i) {
@@ -375,17 +387,19 @@
     var bodySecs = ordAll.filter(function (k) { return hidden.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
+      (LANG === 'ja' || LANG === 'zh' ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + (LANG === 'ja' ? 'Noto+Sans+JP' : 'Noto+Sans+SC') + ':wght@300;400;500;700;800;900&display=swap">' +
+        '<style>body,button,input,textarea{font-family:"Pretendard Variable",Pretendard,"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '",-apple-system,sans-serif}</style>' : '') +
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
       '<nav class="mb-nav"><div class="wrap"><span class="mb-logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<div class="mb-menu">' + menu + '</div>' +
       '<a class="mb-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="mb-hero"><img class="bgimg" alt="" data-img="hero" src="' + esc(imgs.hero || IMG_HERO) + '" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'https://midas-drs.pages.dev/app/bg/mbm-hero.jpg\';}else{this.remove();}"><div class="shade"></div><div class="wrap">' +
-      '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+      '<h1 class="mb-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<a class="mb-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>' +
       bodySecs +
       '<section class="mb-cta" id="apply"><div class="wrap"><div class="agrid"><div class="l rv">' +
-      '<h2 class="tt">' + ml(ctaTitle) + '</h2>' +
+      '<h2 class="tt">' + mixT(ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p></div>' +
       '<form class="mb-form rv" data-fdone="' + esc(d.formDone) + '">' +
       '<b class="ft"' + de('formTitle') + '>' + esc(d.formTitle) + '</b>' +

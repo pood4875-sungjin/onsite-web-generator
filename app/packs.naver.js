@@ -266,7 +266,7 @@
     /* N열 카드 — 두 변형: 기본=border-top 위계(원본 11/15) / variant brand=캡+규칙선+컬러 대형 이름(원본 07).
        banner:true면 상단이 챕터컬러 밴드(흰 헤드라인+라디얼 그래픽) — 원본 07 상단 구조 */
     cards: function (s, P, ctx) {
-      var items = s.cards || [], cols = Math.min(Math.max(+s.cols || items.length || 3, 2), 4);
+      var items = s.cards || [], cols = Math.min(Math.max(+s.cols || items.length || 3, 2), 5);
       var brand = s.variant === 'brand';
       var cells = items.map(function (it, i) {
         var IP = P + '.cards.' + i;

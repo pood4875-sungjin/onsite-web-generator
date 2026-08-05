@@ -262,7 +262,7 @@ const NAVER_FIELD_DOC =
   'lineup:{title?,badge?,name?,items:[{head(영문 대문자),tag?,text,state?:"dim"}],summary?} | ' +
   'branch:{title,lead?:{label,text},branches:[{label,head,text?}],summary?} | ' +
   'closing:{title,sub?,contacts?:[{k,v}]}';
-const NAVER_SYSTEM =
+const NAVER_SYSTEM_FREE =   // [시연 잠금 해제 시 복귀용] 자유 구성 원본
   '너는 시니어 발표 기획자다. 브리프로 한국어 프레젠테이션 슬라이드 덱을 설계한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
   '형식: {"slides":[ ... ]}\n' +
@@ -283,6 +283,29 @@ const NAVER_SYSTEM =
   '수치·인용에는 출처를 붙이고(footnote 등), 추정치는 "약/추정"으로 확정과 구분한다. 근거 없는 장식용 수치·게이지 금지. ' +
   '제목·리드는 의미 단위로 줄바꿈(\\n)한다 — 어절 중간에서 끊지 않는다. ' +
   '넘버 리스트의 번호(01·02…)는 자동 부여된다 — head·label 텍스트에 번호를 다시 쓰지 말 것.';
+/* [시연 고정] naver(Design AX Line) = "PPT 템플릿 제작 요청" 1~10장 스켈레톤 잠금.
+   타입·순서·장수 불변, 텍스트만 브리프로 채움. 해제 = NAVER_SYSTEM_FREE로 되돌리기. */
+const NAVER_SYSTEM =
+  '너는 시니어 발표 기획자다. 브리프로 프레젠테이션 슬라이드 덱을 만든다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ]}\n' +
+  '[템플릿 고정 모드] 정확히 아래 10장을 이 순서·이 타입으로 만든다. 타입·순서·장수 변경 절대 금지 — 각 장의 텍스트 필드만 브리프·첨부 내용으로 새로 쓴다:\n' +
+  '1) cover — {label(상단좌 영문 시스템명),date("2026 · 08" 형식),eyebrow:"PROLOGUE",title(2줄 \\n, 3톤: 첫 줄 보통+둘째 줄 **굵게**+꼬리 __회색 흐림__),band(비유 한 줄 2행 \\n, 둘째 행 **강조**),docLabel(하단좌 보고명),team(하단우 팀명)}\n' +
+  '2) statement — {title(영문 대형 2줄 \\n, 둘째 줄 **굵게**),sub(국문 2문장 \\n),cols 정확히 2개:[{tag(영문 라벨),text("A → **B**" 전환)}]}\n' +
+  '3) section — 결론 요약: {title(2줄 \\n, 둘째 줄에 **핵심 강조**),text(리드 한 문장 — **강조** 1회),listTitle(좌 리스트 제목),points 3개:[{text}],listTitle2(우 리스트 제목),points2 3개:[{text}]}\n' +
+  '4) toc — {title(영문 짧게, 예 "PGWO Flow"류 흐름명),items 정확히 5개:[{no,label(영문 대문자 한 단어),desc(한 줄),pages:"05 – 06" 형식}]}\n' +
+  '5) divider — {ch:1,no:"01",title(영문 대문자 2줄 \\n, 예 "WHERE\\nIT HURTS"),lead(질문형 핵심 문장, **강조**),items 1~2개:[{head,text}]}\n' +
+  '6) table — 1챕터 본문: {title(2줄 \\n, **강조** 1회),columns 2개(좌=현상, 우=문제/결과),rows 정확히 5개:[{cells:[좌,우]}]}\n' +
+  '7) divider — {ch:2,no:"02",title(영문 대문자 2줄, 예 "WHAT\\nWE GAIN"),lead(**강조**),items 2개:[{head,text}]}\n' +
+  '8) table — 2챕터 본문: {title(2줄 \\n, **강조**),columns:["AS-IS","TO-BE"],rows 정확히 4개:[{cells:[AS-IS 문구,TO-BE 문구(**강조** 가능)]}]}\n' +
+  '9) cards — 사용자 가치: {cols:5,cards 정확히 5개:[{tag(대상 역할 부제),head(대상명),text(얻는 가치 1~2문장 + 산출물 나열)}]} — banner·variant 쓰지 않음\n' +
+  '10) divider — {ch:3,no:"03",title(영문 대문자 2줄, 예 "WHAT\\nCHANGES"),lead(**강조**),items 2개:[{head,text}]}\n' +
+  '각 타입의 필드: ' + NAVER_FIELD_DOC + '\n' +
+  '규칙: 브리프·첨부([첨부 문서])가 1차 소스 — 실제 내용으로 채우고 플레이스홀더 금지. ' +
+  '챕터 컬러는 divider의 ch가 정한다(1·2·3 고정). 본문 장에 ch 금지. ' +
+  '**굵게**는 장당 1~2회. 이모지 금지. 번호(01·02…)는 자동 부여 — head·label에 번호 재기입 금지. ' +
+  '제목·리드는 의미 단위 \\n 줄바꿈. length 값과 무관하게 정확히 10장. 문구 언어는 lang을 따른다(영문 라벨·챕터 타이틀은 영문 유지).';
+
 const PITCH_EDIT_SYSTEM =
   '너는 프레젠테이션 편집자다. 현재 덱(slides 배열)과 사용자 지시를 받아 덱을 수정한다.\n' +
   '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지.\n' +
