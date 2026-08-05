@@ -50,6 +50,47 @@
     footerCopyright: '© 2026 MIDAS IT',
   };
 
+  // 영문 폴백 데모 — _clang이 ko가 아니면 누락 필드가 이걸로 채워진다(KO 예시 누수 방지)
+  var DEMO_EN = {
+    productName: 'MIDAS Design Challenge 2026',
+    navTitle: 'MIDAS Design Challenge',
+    tagline: 'From problem\nto product',
+    subcopy: 'Prove yourself with problem-solving, not a portfolio.\nWe evaluate potential from your submitted solution alone.',
+    primaryCta: 'Enter now',
+    navLinks: ['Timeline', 'About', 'Criteria', 'FAQ'],
+    deadline: '2026-09-30T23:59:00+09:00',
+    sessions: [
+      { time: 'Sep 1 (Tue)', title: 'Entries open — challenge brief released', by: 'STEP 1' },
+      { time: 'Sep 30 (Wed) 23:59', title: 'Submission deadline', by: 'STEP 2' },
+      { time: 'Oct 12 (Mon)', title: 'Results & interview invitations', by: 'STEP 3' },
+      { time: 'Late Oct', title: 'Final offers', by: 'STEP 4' },
+    ],
+    features: [
+      { title: 'A real-work problem', desc: 'Go deep on one task drawn from a real product. We look at how you think, not a “right answer.”' },
+      { title: 'Submit by link', desc: 'Figma, a website, or a video — any accessible link works. No format restrictions.' },
+      { title: 'Feedback for everyone', desc: 'Every participant gets review comments. Even a miss becomes a record of growth.' },
+    ],
+    stats: [
+      { value: 'Problem framing', label: 'Did you find the right problem?' },
+      { value: 'Solution design', label: 'Is the flow and structure convincing?' },
+      { value: 'Visual polish', label: 'Did you carry the details through?' },
+    ],
+    bannerText: 'Redesign how six people\nschedule a meeting',
+    bannerCta: '',
+    eventDate: 'Sep 1 (Tue) — Sep 30 (Wed) 23:59, 2026',
+    eventPlace: 'Submit online · results by email',
+    faq: [
+      { q: 'Can anyone enter?', a: 'No limits on experience or education. If you\u2019re serious about product design, you\u2019re welcome.' },
+      { q: 'Can I enter as a team?', a: 'This challenge is individual only — we want to see your own thinking.' },
+      { q: 'Is there a required format?', a: 'Any accessible link: Figma, a deployed site, or a video. Drive links aren\u2019t accepted due to permissions.' },
+      { q: 'When will I hear back?', a: 'Everyone gets an email within two weeks after the deadline.' },
+    ],
+    ctaTitle: 'We\u2019re waiting for designers\nwho solve problems',
+    ctaSub: 'Check the brief and enter the challenge now.',
+    footerLinks: ['Challenge Brief', 'FAQ', 'Contact'],
+    footerCopyright: '\u00a9 2026 MIDAS IT',
+  };
+
   function css() {
     return [
       '*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}',
@@ -67,7 +108,8 @@
       /* 히어로 — 센터 초대형 타이포 + 카운트다운 */
       '.ts-hero{padding:110px 0 96px;text-align:center}',
       '.ts-eb{display:inline-block;font-size:16px;font-weight:800;color:' + BLUE + ';letter-spacing:-.01em}',
-      '.ts-ht{margin-top:16px;font-size:76px;font-weight:900;line-height:1.12;letter-spacing:-.035em;word-break:keep-all;text-wrap:balance}',
+      '.ts-ht{margin-top:16px;font-size:76px;font-weight:300;line-height:1.12;letter-spacing:-.035em;word-break:keep-all;text-wrap:balance}',
+      '.ts-ht b{font-weight:900}',
       '.ts-hs{margin:26px auto 0;font-size:19px;line-height:1.6;color:' + SUB + ';max-width:560px;word-break:keep-all}',
       '.ts-hcta{display:inline-block;margin-top:36px;background:' + BLUE + ';color:#fff;font-size:17.5px;font-weight:700;padding:16px 42px;border-radius:999px;box-shadow:0 12px 30px rgba(0,100,255,.28);transition:transform .18s,box-shadow .18s}',
       '.ts-hcta:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(0,100,255,.36)}',
@@ -148,12 +190,32 @@
 
   window.renderTossPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
+    var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
+    var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
-    for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
-    var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
-    var faq = (shared.faq && shared.faq.length ? shared.faq : DEMO.faq).slice(0, 8);
-    var stats = (d.stats && d.stats.length ? d.stats : DEMO.stats).slice(0, 3);
-    var sess = (d.sessions && d.sessions.length ? d.sessions : DEMO.sessions).slice(0, 6);
+    for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
+    // 템플릿 고정 라벨 — 산출물 언어(_clang) 기준 + 타이틀 강약(첫 줄 볼드/다음 라이트, **마커** 우선)
+    function mixT(s) {
+      s = String(s == null ? '' : s);
+      if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+      var lines = esc(s).split('\n');
+      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+      var w = lines[0].split(' ');
+      if (w.length < 2) return '<b>' + lines[0] + '</b>';
+      var n = Math.max(1, Math.round(w.length * 0.4));
+      return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+    }
+    var TT = {
+      ko: { tl: '진행 일정', ab: '이런 챌린지예요', ev: '이렇게 평가해요', faq: '자주 묻는 질문', sch: '일정', how: '참여 방법', cd: '마감까지' },
+      en: { tl: 'Timeline', ab: 'About the challenge', ev: 'How we evaluate', faq: 'FAQ', sch: 'Schedule', how: 'How to enter', cd: 'Deadline' },
+      ja: { tl: 'スケジュール', ab: 'チャレンジ概要', ev: '評価基準', faq: 'よくある質問', sch: '日程', how: '参加方法', cd: '締切まで' },
+      zh: { tl: '日程安排', ab: '挑战介绍', ev: '评审标准', faq: '常见问题', sch: '日程', how: '参与方式', cd: '截止倒计时' },
+    }[LANG];
+
+    var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 3);
+    var faq = (shared.faq && shared.faq.length ? shared.faq : BD.faq).slice(0, 8);
+    var stats = (d.stats && d.stats.length ? d.stats : BD.stats).slice(0, 3);
+    var sess = (d.sessions && d.sessions.length ? d.sessions : BD.sessions).slice(0, 6);
     var anchors = ['#timeline', '#about', '#criteria', '#faq'];
     var menu = (d.navLinks || []).slice(0, 4).map(function (l, i) {
       return '<a href="' + anchors[i % anchors.length] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>';
@@ -191,18 +253,18 @@
       '<a class="ts-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="ts-hero"><div class="wrap">' +
       '<span class="ts-eb"' + de('productName') + '>' + esc(d.productName) + '</span>' +
-      '<h1 class="ts-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+      '<h1 class="ts-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ts-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<div><a class="ts-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div>' +
-      '<div class="ts-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">마감까지</span><b>D-00 00:00:00</b></div>' +
+      '<div class="ts-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">' + esc(TT.cd) + '</span><b>D-00 00:00:00</b></div>' +
       '</div></header>' +
-      '<section class="ts-tl" id="timeline"><div class="wrap"><h2 class="ts-sec-tt rv">진행 일정</h2><div class="ts-steps">' + steps + '</div></div></section>' +
-      '<section class="ts-ft" id="about"><div class="wrap"><h2 class="ts-sec-tt rv">이런 챌린지예요</h2><div class="ts-cards">' + cards + '</div></div></section>' +
+      '<section class="ts-tl" id="timeline"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.tl) + '</h2><div class="ts-steps">' + steps + '</div></div></section>' +
+      '<section class="ts-ft" id="about"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ab) + '</h2><div class="ts-cards">' + cards + '</div></div></section>' +
       '<section class="ts-brief"><div class="wrap rv"><div class="q">CHALLENGE BRIEF</div><p class="tx"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>' +
-      '<section class="ts-ev" id="criteria"><div class="wrap"><h2 class="ts-sec-tt rv">이렇게 평가해요</h2><div class="ts-crit">' + crit + '</div>' +
-      '<div class="ts-info rv"><div class="i"><b>일정</b><span' + de('eventDate') + '>' + esc(d.eventDate || '') + '</span></div>' +
-      '<div class="i"><b>참여 방법</b><span' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</span></div></div></div></section>' +
-      '<section class="ts-faq" id="faq"><div class="wrap"><h2 class="ts-sec-tt rv">자주 묻는 질문</h2><div class="ts-qs rv">' + qs + '</div></div></section>' +
+      '<section class="ts-ev" id="criteria"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.ev) + '</h2><div class="ts-crit">' + crit + '</div>' +
+      '<div class="ts-info rv"><div class="i"><b>' + esc(TT.sch) + '</b><span' + de('eventDate') + '>' + esc(d.eventDate || '') + '</span></div>' +
+      '<div class="i"><b>' + esc(TT.how) + '</b><span' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</span></div></div></div></section>' +
+      '<section class="ts-faq" id="faq"><div class="wrap"><h2 class="ts-sec-tt rv">' + esc(TT.faq) + '</h2><div class="ts-qs rv">' + qs + '</div></div></section>' +
       '<section class="ts-cta" id="apply"><div class="wrap rv"><h2 class="tt"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
       '<a class="btn"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta) + '</a></div></section>' +

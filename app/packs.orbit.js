@@ -51,6 +51,47 @@
     footerCopyright: '© 2026 MIDAS IT',
   };
 
+  // 영문 폴백 데모 — _clang이 ko가 아니면 누락 필드가 이걸로 채워진다(KO 예시 누수 방지)
+  var DEMO_EN = {
+    productName: 'GLOBAL AX SUMMIT 2026',
+    navTitle: 'Global AX Summit',
+    tagline: 'One day of summit\nfor teams going global',
+    subcopy: 'The insights every team preparing to expand abroad should meet first.\nGlobal market strategy to local hiring — compressed into one day.',
+    primaryCta: 'Register free',
+    navLinks: ['About', 'Sessions', 'Schedule', 'FAQ'],
+    deadline: '2026-10-20T18:00:00+09:00',
+    features: [
+      { title: 'Read the market first', desc: 'Compare entry strategies with real data from teams expanding to North America, SEA, and Europe.' },
+      { title: 'Global team building', desc: 'Learn from teams that built local hiring and remote collaboration first.' },
+      { title: 'A roadmap for you', desc: 'Get a 1:1 consultation at the venue booth, matched to your team\u2019s stage.' },
+    ],
+    stats: [
+      { value: '24', label: 'Global speakers' },
+      { value: '12', label: 'Country sessions' },
+      { value: '1,000+', label: 'Seats' },
+    ],
+    sessions: [
+      { time: '10:00 - 11:00', title: 'Opening keynote — products without borders', by: 'Keynote' },
+      { time: '11:20 - 12:30', title: 'North America: the first 90 days', by: 'Track A' },
+      { time: '14:00 - 15:10', title: 'Global hiring — teams that beat time zones', by: 'Track B' },
+      { time: '15:30 - 17:00', title: 'Panel talk · networking lounge', by: 'All' },
+    ],
+    eventDate: 'Oct 24 (Sat), 2026 · 10:00 - 17:00',
+    eventPlace: 'COEX Grand Ballroom\nDirect from Samseong Stn. Exit 5·6',
+    bannerText: 'The fastest route is asking\nsomeone who\u2019s been there',
+    bannerCta: '',
+    faq: [
+      { q: 'Is there an entry fee?', a: 'All sessions are free with advance registration. Walk-ins only if seats remain.' },
+      { q: 'Who is this event for?', a: 'Founders, leaders, and practitioners of teams considering or already expanding abroad.' },
+      { q: 'Will session materials be shared?', a: 'All registrants receive slides and replay links by email after the event.' },
+      { q: 'Is parking supported?', a: 'Public transit is recommended. On-site parking is paid and not supported.' },
+    ],
+    ctaTitle: 'Seats are limited',
+    ctaSub: 'Register now and take home your first map to going global.',
+    footerLinks: ['About', 'Past Summits', 'Contact'],
+    footerCopyright: '\u00a9 2026 MIDAS IT',
+  };
+
   function css() {
     return [
       '*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}',
@@ -68,7 +109,8 @@
       /* 히어로 — 회전 지구 */
       '.ob-hero{position:relative;padding:96px 0 0;text-align:center;overflow:hidden}',
       '.ob-eb{display:inline-block;font-size:15px;font-weight:800;letter-spacing:.16em;background:' + GRAD + ';-webkit-background-clip:text;background-clip:text;color:transparent}',
-      '.ob-ht{margin-top:18px;font-size:64px;font-weight:900;line-height:1.16;letter-spacing:-.03em;word-break:keep-all;text-wrap:balance;color:#fff}',
+      '.ob-ht{margin-top:18px;font-size:64px;font-weight:300;line-height:1.16;letter-spacing:-.03em;word-break:keep-all;text-wrap:balance;color:#fff}',
+      '.ob-ht b{font-weight:900}',
       '.ob-hs{margin:22px auto 0;font-size:18.5px;line-height:1.65;color:' + SUB + ';max-width:560px;word-break:keep-all}',
       '.ob-hcta{display:inline-block;margin-top:34px;background:' + GRAD + ';color:#fff;font-size:17px;font-weight:700;padding:16px 40px;border-radius:999px;box-shadow:0 14px 40px rgba(0,145,255,.34);transition:transform .18s,box-shadow .18s}',
       '.ob-hcta:hover{transform:translateY(-2px);box-shadow:0 20px 52px rgba(113,126,255,.44)}',
@@ -167,12 +209,32 @@
 
   window.renderOrbitPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
+    var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
+    var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
-    for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
-    var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
-    var faq = (shared.faq && shared.faq.length ? shared.faq : DEMO.faq).slice(0, 8);
-    var stats = (d.stats && d.stats.length ? d.stats : DEMO.stats).slice(0, 3);
-    var sess = (d.sessions && d.sessions.length ? d.sessions : DEMO.sessions).slice(0, 6);
+    for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
+    // 템플릿 고정 라벨 — 산출물 언어(_clang) 기준 + 타이틀 강약(첫 줄 볼드/다음 라이트, **마커** 우선)
+    function mixT(s) {
+      s = String(s == null ? '' : s);
+      if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+      var lines = esc(s).split('\n');
+      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+      var w = lines[0].split(' ');
+      if (w.length < 2) return '<b>' + lines[0] + '</b>';
+      var n = Math.max(1, Math.round(w.length * 0.4));
+      return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+    }
+    var TT = {
+      ko: { why: '하루면 충분한 이유', sv: '일정 및 장소', faq: '자주 묻는 질문', cd: '신청 마감까지', dt: '일시', pl: '장소' },
+      en: { why: 'Why one day is enough', sv: 'Schedule & Venue', faq: 'FAQ', cd: 'Registration closes in', dt: 'Date', pl: 'Venue' },
+      ja: { why: '1日で十分な理由', sv: '日程・会場', faq: 'よくある質問', cd: '申込締切まで', dt: '日時', pl: '会場' },
+      zh: { why: '一天足矣的理由', sv: '日程与场地', faq: '常见问题', cd: '距报名截止', dt: '日期', pl: '地点' },
+    }[LANG];
+
+    var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 3);
+    var faq = (shared.faq && shared.faq.length ? shared.faq : BD.faq).slice(0, 8);
+    var stats = (d.stats && d.stats.length ? d.stats : BD.stats).slice(0, 3);
+    var sess = (d.sessions && d.sessions.length ? d.sessions : BD.sessions).slice(0, 6);
     var anchors = ['#about', '#program', '#info', '#faq'];
     var menu = (d.navLinks || []).slice(0, 4).map(function (l, i) {
       return '<a href="' + anchors[i % anchors.length] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>';
@@ -210,21 +272,21 @@
       '<a class="ob-navcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></nav>' +
       '<header class="ob-hero"><div class="wrap">' +
       '<span class="ob-eb"' + de('productName') + '>' + esc(d.productName) + '</span>' +
-      '<h1 class="ob-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+      '<h1 class="ob-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ob-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<div><a class="ob-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div>' +
-      '<div class="ob-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">신청 마감까지</span><b>D-00 00:00:00</b></div>' +
+      '<div class="ob-count" data-deadline="' + esc(d.deadline || '') + '"><span class="lb">' + esc(TT.cd) + '</span><b>D-00 00:00:00</b></div>' +
       '<div class="ob-earth"><div class="ob-glow"></div><div class="ob-globe"><div class="sky"></div><div class="shade"></div></div><div class="ob-ring"></div></div>' +
       '</div></header>' +
       '<section class="ob-stats"><div class="wrap"><div class="grid">' + st + '</div></div></section>' +
-      '<section class="ob-sec" id="about"><div class="wrap"><h2 class="ob-tt rv">하루면 충분한 이유</h2><div class="ob-cards">' + cards + '</div></div></section>' +
+      '<section class="ob-sec" id="about"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.why) + '</h2><div class="ob-cards">' + cards + '</div></div></section>' +
       '<section class="ob-sec alt" id="program"><div class="wrap"><h2 class="ob-tt rv">SESSIONS</h2><div class="ob-slist">' + rows + '</div></div></section>' +
-      '<section class="ob-sec" id="info"><div class="wrap"><h2 class="ob-tt rv">일정 및 장소</h2>' +
-      '<div class="ob-info rv"><div class="l"><table><tr><th>일시</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
-      '<tr><th>장소</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+      '<section class="ob-sec" id="info"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.sv) + '</h2>' +
+      '<div class="ob-info rv"><div class="l"><table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
       '<div class="ob-map"><span class="pin"></span></div></div></div></section>' +
       '<section class="ob-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>' +
-      '<section class="ob-sec alt" id="faq"><div class="wrap"><h2 class="ob-tt rv">자주 묻는 질문</h2><div class="ob-qs rv">' + qs + '</div></div></section>' +
+      '<section class="ob-sec alt" id="faq"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.faq) + '</h2><div class="ob-qs rv">' + qs + '</div></div></section>' +
       '<section class="ob-cta" id="apply"><div class="wrap rv"><h2 class="tt"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<p class="sub"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
       '<a class="btn"' + de('bannerCta') + '>' + esc(d.bannerCta || d.primaryCta) + '</a></div></section>' +

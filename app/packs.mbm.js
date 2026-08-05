@@ -68,6 +68,50 @@
     footerCopyright: '© 2026 MIDAS IT',
   };
 
+  // 영문 폴백 데모 — _clang이 ko가 아니면 누락 필드가 이걸로 채워진다(KO 예시 누수 방지)
+  var DEMO_EN = {
+    productName: 'MIDAS ONSITE',
+    tagline: 'Real-time, data-driven\nsafety prediction for temporary works',
+    subcopy: 'We analyze live sensor data from excavation sites to predict behavior and risk,\nsupporting safe response with anomaly alerts and optimal remedial design.',
+    primaryCta: 'Register for the Seminar',
+    navTitle: 'Civil NX Seminar 2026',
+    navLinks: ['About', 'Program', 'Schedule', 'FAQ'],
+    features: [
+      { title: 'HQ sees every site at a glance,\nsites respond faster with dashboards.', desc: 'Check sensor status and risk across sites on one screen. Get instant alerts on abnormal sensors. Per-site checklists are generated automatically.' },
+      { title: 'Predict risks of upcoming\nconstruction stages in advance.', desc: 'Detect early anomalies from sensor patterns. Remove risk beforehand with optimal remedial designs. Secure the golden hour before limits are exceeded.' },
+      { title: 'Weekly and monthly reports,\ngenerated automatically.', desc: 'AI trend analysis with action guides per risk level. Cut reporting time dramatically. Records accumulate automatically for easy history management.' },
+    ],
+    stats: [],
+    sessions: [
+      { time: '13:30 - 14:10', title: 'Why prediction, why now — the golden hour of site safety', by: 'MIDAS ONSITE Planning' },
+      { time: '14:10 - 15:00', title: 'Live demo: the central monitoring dashboard', by: 'Product Lead' },
+      { time: '15:00 - 15:40', title: 'Field case study — 4-week onboarding in practice', by: 'Field Engineer' },
+    ],
+    eventDate: 'Sep 12 (Thu), 2026 · 13:30 - 16:00',
+    eventPlace: 'Conference Hall, Textile Center (Gangnam)\n4 min from Samseong Stn. Exit 4',
+    deadline: '2026-09-10T18:00:00+09:00',
+    bannerText: 'On field data\nand academic validation,\nwe build ONSITE\u2019s credibility',
+    bannerCta: '',
+    faq: [
+      { q: 'Will it work on our site?', a: 'Any excavation or temporary-works site can connect, regardless of sensor types. We\u2019ll confirm site conditions in a consultation.' },
+      { q: 'Can we keep existing sensors or manual readings?', a: 'We configure around the sensors you already have. No reinstallation needed.' },
+      { q: 'Is adoption complicated or slow?', a: 'From site assessment to dashboard launch, four weeks is enough.' },
+      { q: 'Can we trust the predictions?', a: 'Accuracy keeps improving, grounded in field data and academic validation.' },
+      { q: 'What if it\u2019s too costly or doesn\u2019t fit?', a: 'We\u2019ll tailor a plan and quote to your site scale and sensors. Feel free to ask.' },
+    ],
+    ctaTitle: 'Register for the seminar\ntoday',
+    ctaSub: 'Seats are limited. You\u2019ll receive details by email after registering.\nYou can also request a consultation tailored to your site.',
+    formTitle: 'Register',
+    formName: 'Name',
+    formCompany: 'Company / Team',
+    formEmail: 'Email',
+    formPhone: 'Phone',
+    formAgree: 'I agree to the collection and use of my information',
+    formDone: 'You\u2019re registered!\nWe\u2019ll send details to your email.',
+    footerLinks: ['Solution', 'Contact Sales', 'About Us'],
+    footerCopyright: '\u00a9 2026 MIDAS IT',
+  };
+
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }
   /* desc 한 덩어리 → 체크 불릿 — 문장 단위 분해(마침표), 최대 3개 */
   function bullets(desc, P) {
@@ -239,10 +283,27 @@
 
   window.renderMbmPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
+    var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
+    var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
-    for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
-    var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
-    var faq = (shared.faq && shared.faq.length ? shared.faq : DEMO.faq).slice(0, 6);
+    for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
+    // 템플릿 고정 라벨 + 폼 기본 라벨 — 산출물 언어(_clang) 기준. 데이터가 아니라 번역 파이프라인을 안 타므로 팩이 직접 처리.
+    var TT = {
+      ko: { faqT: '도입 전,<br>이런 점이 궁금하신가요?', faqS: '가장 많이 묻는 질문을 모았습니다. 더 궁금한 점은 부담 없이 문의해 주세요.', dt: '일시', pl: '장소', cd: ' 마감까지',
+            fT: '참가 신청', fN: '이름', fC: '회사명 / 소속', fE: '이메일', fP: '연락처', fA: '개인정보 수집·이용에 동의합니다', fD: '신청이 완료되었습니다!\n입력하신 이메일로 참가 안내를 보내드릴게요.' },
+      en: { faqT: 'Before you decide —<br>common questions', faqS: 'The questions we hear most. For anything else, just ask.', dt: 'Date', pl: 'Venue', cd: ' — closes in',
+            fT: 'Register', fN: 'Name', fC: 'Company / Team', fE: 'Email', fP: 'Phone', fA: 'I agree to the collection and use of my information', fD: 'You’re registered!\nWe’ll send details to your email.' },
+      ja: { faqT: '導入前に、<br>よくあるご質問', faqS: 'よくいただく質問をまとめました。お気軽にお問い合わせください。', dt: '日時', pl: '会場', cd: ' 締切まで',
+            fT: '参加申込', fN: 'お名前', fC: '会社名 / 所属', fE: 'メール', fP: '電話番号', fA: '個人情報の収集・利用に同意します', fD: 'お申込みが完了しました！\nご案内をメールでお送りします。' },
+      zh: { faqT: '在决定之前——<br>常见问题', faqS: '汇总了最常见的问题，欢迎随时咨询。', dt: '日期', pl: '地点', cd: ' 报名截止倒计时',
+            fT: '报名', fN: '姓名', fC: '公司 / 团队', fE: '邮箱', fP: '电话', fA: '同意收集和使用个人信息', fD: '报名成功！\n详情将发送至您的邮箱。' },
+    }[LANG];
+    // 폼 라벨 — 데이터에 없으면(AI 초안엔 항상 없음) 언어별 기본값으로. KO 예시가 EN 페이지에 새는 것 방지.
+    if (LANG !== 'ko') ['formTitle','formName','formCompany','formEmail','formPhone','formAgree','formDone'].forEach(function (k, i) {
+      if (shared[k] == null || shared[k] === '') d[k] = [TT.fT, TT.fN, TT.fC, TT.fE, TT.fP, TT.fA, TT.fD][i];
+    });
+    var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 3);
+    var faq = (shared.faq && shared.faq.length ? shared.faq : BD.faq).slice(0, 6);
     var imgs = shared.images || {};
     var ctaTitle = shared.bannerText && shared.bannerCta ? shared.bannerText : d.ctaTitle;   // 배너 텍스트를 CTA로 쓰는 초안 대응
     var stTx = (function () {   // 선언 2톤 — 마지막 줄을 딤 처리
@@ -294,7 +355,7 @@
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<a class="mb-hcta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>' +
-      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' 마감까지</span>' +
+      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + esc(TT.cd) + '</span>' +
       '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
       chapters +
       '<section class="mb-ses" id="program"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' +
@@ -305,14 +366,14 @@
           '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
       }).join('') + '</div></div></section>' +
       '<section class="mb-info" id="info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
-      '<table><tr><th>일시</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
-      '<tr><th>장소</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+      '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
       '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>' +
       '<section class="mb-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
       (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
       '</div></section>' +
-      '<section class="mb-faq" id="faq"><div class="wrap"><h2 class="tt rv">도입 전,<br>이런 점이 궁금하신가요?</h2>' +
-      '<p class="sub rv">가장 많이 묻는 질문을 모았습니다. 더 궁금한 점은 부담 없이 문의해 주세요.</p>' +
+      '<section class="mb-faq" id="faq"><div class="wrap"><h2 class="tt rv">' + TT.faqT + '</h2>' +
+      '<p class="sub rv">' + esc(TT.faqS) + '</p>' +
       '<div class="mb-qs rv">' + qs + '</div></div></section>' +
       '<section class="mb-cta" id="apply"><div class="wrap"><div class="agrid"><div class="l rv">' +
       '<h2 class="tt">' + ml(ctaTitle) + '</h2>' +

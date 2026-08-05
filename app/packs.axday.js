@@ -39,6 +39,37 @@
     footerCopyright: '© 2026. JAINWON Inc. All rights reserved.',
   };
 
+  // 영문 폴백 데모 — _clang이 ko가 아니면 누락 필드가 이걸로 채워진다(KO 예시 누수 방지). ja/zh도 EN 폴백(데이터 번역은 번역 버튼 소관).
+  var DEMO_EN = {
+    productName: 'AX DAY',
+    eyebrow: 'Hiring, completed by agents',
+    tagline: 'AX DAY',
+    subcopy: 'See how HR changes with hiring agents — at AX DAY!\nIn the age of AI agents, the way HR works must change too.',
+    primaryCta: 'Register',
+    features: [
+      { tag: 'Experience', title: 'The moment hiring changes', desc: 'Meet the latest agent features live and see how your hiring flow transforms for your company\u2019s own scenarios.', chips: ['Live demo', 'Agent playbook', '1:1 consulting'] },
+      { tag: 'Insight', title: 'AI reshapes 2026', desc: 'How will HR roles and workflows change in the AI era? Take home strategies and insights you can use right away.', chips: ['Keynote', 'Insights', 'Case studies'] },
+      { tag: 'Activity', title: 'Activities to enjoy together', desc: 'Meet fellow HR professionals, share insights, and enjoy special activities prepared just for you — with plenty of gifts.', chips: ['Events', 'Networking', 'Playground'] },
+    ],
+    sessions: [
+      { time: '14:10 - 14:50', title: 'Hiring,\ncompleted by agents', by: 'MIDAS Group Planner' },
+      { time: '14:50 - 15:30', title: 'Beyond experience:\nhands-on & consulting', by: 'MIDAS Consultant' },
+      { time: '15:30 - 16:00', title: 'How MIDAS uses agents\nat 200%', by: 'MIDAS Group HR' },
+    ],
+    eventDate: 'Oct 15 (Thu), 2026 · 13:30 - 16:00',
+    deadline: '2026-10-13T18:00:00+09:00',
+    eventPlace: 'Tex Fa Hall, Textile Center (Gangnam)\n4 min from Samseong Stn. Exit 4',
+    faq: [
+      { q: 'Is there an entry fee?', a: 'It\u2019s free. Register in advance and you\u2019ll receive a confirmation.' },
+      { q: 'Until when can I register?', a: 'Until seats run out — early closing is possible.' },
+      { q: 'Is parking available?', a: 'On-site parking is limited. Public transit is recommended.' },
+      { q: 'Can I register on site?', a: 'Pre-registered guests come first; walk-ins are accepted if seats remain.' },
+    ],
+    ctaTitle: 'Register for AX DAY',
+    footerLinks: ['Hiring Agent', 'User Guide', 'AX DAY'],
+    footerCopyright: '\u00a9 2026. JAINWON Inc. All rights reserved.',
+  };
+
   /* 포토 자리 — Unsplash 실사진(키 불필요 직링크, 전수 실검증) + 로드 실패 시 추상 모형 폴백.
      출처: unsplash.com — 청중/스피커 무대/행사장/마이크/홀 와이드 */
   var UIMG = {
@@ -52,8 +83,11 @@
     return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
   }
   var IMGS = {};   // renderAxdayPage 진입 시 shared.images로 채움 — 편집(피커)에서 바꾼 이미지 우선
+  // 히어로 기본 = 첨부 원본 교량(mbm과 공유, bg/mbm-hero.jpg) — currentScript 기준 절대경로
+  var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
+  var BRIDGE = BASE + 'bg/mbm-hero.jpg';
   function photo(mode, key, w, h, slot) {
-    var src = (slot && IMGS[slot]) || (key ? stockUrl(key, w, h) : '');
+    var src = (slot && IMGS[slot]) || (key === 'bridge' ? BRIDGE : key ? stockUrl(key, w, h) : '');
     return '<div class="ax-ph ph ' + (mode || '') + '"' + (slot ? ' data-img="' + slot + '"' : '') + '><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
       (src ? '<img class="ai" loading="lazy" alt="" src="' + esc(src) + '" onerror="this.remove()">' : '') + '</div>';
   }
@@ -73,7 +107,9 @@
       '.ax-hero{padding:84px 0 0;text-align:center}',
       /* 아이브로 = 오렌지 소제(타이틀과 강약 대비 — 사용자 피드백) */
       '.ax-eb{font-size:19px;font-weight:800;letter-spacing:-.01em;color:' + ORANGE + '}',
-      '.ax-ht{margin-top:16px;font-size:82px;font-weight:900;letter-spacing:-.02em;line-height:1.08;word-break:keep-all}',
+      /* 타이틀 강약 의무 — 베이스 라이트 300, <b>=900 (첫 줄 볼드/다음 줄 라이트, 사용자 레퍼런스) */
+      '.ax-ht{margin-top:16px;font-size:82px;font-weight:300;letter-spacing:-.02em;line-height:1.08;word-break:keep-all}',
+      '.ax-ht b{font-weight:900}',
       '.ax-hsub{margin:26px auto 0;font-size:19px;line-height:1.6;color:#4B5563;max-width:600px;word-break:keep-all}',
       '.ax-hero .ph-wide{margin-top:56px;height:460px;border-radius:0}',
       /* 오렌지 임팩트 밴드 */
@@ -130,7 +166,10 @@
       '.ax-q.open .qh i{transform:rotate(45deg);color:' + INK + '}',
       '.ax-q.open .qa{max-height:200px;margin-top:12px}',
       /* CTA 블루 */
-      '.ax-cta{background:' + BLUE + ';padding:110px 0;text-align:center;color:' + INK + '}',
+      /* 마지막 배너 = 그라데이션(사용자 지정) — 시안블루→딥블루 + 오렌지 글로우 */
+      '.ax-cta{position:relative;overflow:hidden;background:linear-gradient(118deg,' + BLUE + ' 0%,#2E5BFF 100%);padding:110px 0;text-align:center;color:#fff}',
+      '.ax-cta:before{content:"";position:absolute;inset:0;background:radial-gradient(52% 90% at 84% 8%,rgba(255,85,0,.34),transparent 68%);pointer-events:none}',
+      '.ax-cta>.wrap{position:relative}',
       '.ax-cta .tt{font-size:42px;font-weight:900;letter-spacing:-.03em}',
       '.ax-cta .pill-dark{margin-top:32px;background:' + INK + ';color:#fff;font-size:16px;font-weight:700;padding:14px 34px;border-radius:999px;border:0}',
       /* footer */
@@ -180,18 +219,42 @@
   window.renderAxdayPage = function (shared, opts) {
     shared = shared || {}; opts = opts || {};
     IMGS = shared.images || {};
+    var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
+    var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
-    for (var k in DEMO) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : DEMO[k];
-    var feats = (d.features && d.features.length ? d.features : DEMO.features).slice(0, 3);
+    for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
+    // eyebrow — AI 초안(tagline 있음)인데 eyebrow가 없으면 DEMO 예시("채용…") 대신 productName으로.
+    // 첨부와 무관한 데모 카피가 실초안에 새는 것 방지.
+    if ((shared.eyebrow == null || shared.eyebrow === '') && shared.tagline) d.eyebrow = d.productName;
+    // 템플릿 고정 라벨 — 산출물 언어(_clang)를 따른다. 데이터가 아니라 번역 파이프라인을 안 타므로 팩이 직접 처리.
+    var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
+    var TT = {
+      ko: { why: '를 놓치면 안되는 이유', sv: '일정 및 장소', cd: '신청 마감까지', dt: '일시', pl: '장소' },
+      en: { why: ' — why you can’t miss it', sv: 'Schedule & Venue', cd: 'Registration closes in', dt: 'Date', pl: 'Venue' },
+      ja: { why: 'を見逃せない理由', sv: '日程・会場', cd: '申込締切まで', dt: '日時', pl: '会場' },
+      zh: { why: ' — 不容错过的理由', sv: '日程与场地', cd: '距报名截止', dt: '日期', pl: '地点' },
+    }[LANG];
+    // 타이틀 강약 의무 — **마커** 있으면 그대로, 없으면 첫 줄 <b>볼드</b> + 다음 줄 라이트(한 줄이면 앞 단어 볼드)
+    function mixT(s) {
+      s = String(s == null ? '' : s);
+      if (/\*\*/.test(s)) return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+      var lines = esc(s).split('\n');
+      if (lines.length > 1) return lines.map(function (ln, i) { return i === 0 ? '<b>' + ln + '</b>' : ln; }).join('<br>');
+      var w = lines[0].split(' ');
+      if (w.length < 2) return '<b>' + lines[0] + '</b>';
+      var n = Math.max(1, Math.round(w.length * 0.4));
+      return '<b>' + w.slice(0, n).join(' ') + '</b> ' + w.slice(n).join(' ');
+    }
+    var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 3);
     var ses = (shared.sessions && shared.sessions.length ? shared.sessions
-      : (shared.agenda && shared.agenda.length ? shared.agenda.map(function (a) { return { time: a.time, title: a.title, by: a.desc }; }) : DEMO.sessions)).slice(0, 3);
-    var faq = (shared.faq && shared.faq.length ? shared.faq : DEMO.faq).slice(0, 6);
+      : (shared.agenda && shared.agenda.length ? shared.agenda.map(function (a) { return { time: a.time, title: a.title, by: a.desc }; }) : BD.sessions)).slice(0, 3);
+    var faq = (shared.faq && shared.faq.length ? shared.faq : BD.faq).slice(0, 6);
     var cards = feats.map(function (f, i) {
       var P = 'features.' + i;
-      var chips = (f.chips || (DEMO.features[i] && DEMO.features[i].chips) || []).slice(0, 4).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('');
+      var chips = (f.chips || (!shared.tagline && BD.features[i] && BD.features[i].chips) || []).slice(0, 4).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('');
       var IMGK = ['crowd', 'stage', 'venue'][i] || 'crowd';
       return '<div class="ax-card rv">' + photo(i === 1 ? 'dark' : i === 2 ? '' : 'cool', IMGK, 800, 480, 'feature.' + i) +
-        '<div class="bd"><span class="cap">' + esc(f.tag || (DEMO.features[i] && DEMO.features[i].tag) || 'POINT 0' + (i + 1)) + '</span>' +
+        '<div class="bd"><span class="cap">' + esc(f.tag || (BD.features[i] && BD.features[i].tag) || 'POINT 0' + (i + 1)) + '</span>' +
         '<h3 class="ct"' + de(P + '.title') + '>' + esc(f.title || '') + '</h3>' +
         '<p class="ds"' + de(P + '.desc') + '>' + ml(f.desc || '') + '</p>' +
         (chips ? '<div class="ax-chips">' + chips + '</div>' : '') + '</div></div>';
@@ -223,22 +286,22 @@
       (d.footerLinks || []).map(function (l, i) { return '<a' + (i === (d.footerLinks.length - 1) ? ' class="on"' : '') + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div></nav>' +
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
-      '<h1 class="ax-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+      '<h1 class="ax-ht"' + de('tagline') + '>' + mixT(d.tagline) + '</h1>' +
       '<p class="ax-hsub"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p></div>' +
-      '<div class="ph-wide">' + photo('', 'hall', 1600, 620, 'hero') + '</div></header>' +
+      '<div class="ph-wide">' + photo('', 'bridge', 1600, 620, 'hero') + '</div></header>' +
       '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
       '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
       '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
-      '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">\uC2E0\uCCAD \uB9C8\uAC10\uAE4C\uC9C0</span>' +
+      '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">' + esc(TT.cd) + '</span>' +
       '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
-      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + '를 놓치면 안되는 이유</h2>' +
+      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + esc(TT.why) + '</h2>' +
       '<div class="ax-cards">' + cards + '</div></div></section>' +
       '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
       '<div class="ax-ses">' + sess + '</div></div></section>' +
-      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">일정 및 장소</h2>' +
+      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(TT.sv) + '</h2>' +
       '<div class="ax-info rv"><div class="l"><div class="nm"' + de('productName') + '>' + esc(d.productName) + '</div>' +
-      '<table><tr><th>일시</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
-      '<tr><th>장소</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
+      '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
+      '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
       '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
       '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>' +
       '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
