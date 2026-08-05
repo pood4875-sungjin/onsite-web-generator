@@ -155,7 +155,7 @@
       '.ax-info th{color:#9AA0A6;font-weight:600;text-align:left;padding:9px 26px 9px 0;vertical-align:top;white-space:nowrap}',
       '.ax-info td{color:' + INK + ';padding:9px 0;line-height:1.5;font-weight:600}',
       '.ax-info .pill-dark{margin-top:30px;background:' + INK + ';color:#fff;font-size:15px;font-weight:700;padding:13px 28px;border-radius:999px;border:0}',
-      '.ax-map{position:relative;background:linear-gradient(135deg,#EDEFF2,#E1E5EA)}',
+      '.ax-map{position:relative;background:linear-gradient(135deg,#EDEFF2,#E1E5EA);border:0;width:100%;height:100%;display:block}',
       '.ax-map .pin{position:absolute;left:44%;top:40%;width:34px;height:34px;border-radius:50% 50% 50% 0;background:' + ORANGE + ';transform:rotate(-45deg);box-shadow:0 10px 24px rgba(255,85,0,.4)}',
       '.ax-map .pin:after{content:"";position:absolute;inset:10px;border-radius:50%;background:#fff}',
       '.ax-map .rd1,.ax-map .rd2{position:absolute;background:rgba(3,7,18,.08)}',
@@ -238,7 +238,7 @@
         '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
         '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
         '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
-        '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>',
+        (function(){var q=String(d.eventPlace||'').split('\n')[0].trim();return q?'<iframe class="ax-map" src="https://maps.google.com/maps?q='+encodeURIComponent(q)+'&z=15&output=embed" loading="lazy" title="map"></iframe>':'<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div>';})()+'</div></div></section>',
       faq: '<section class="ax-sec" id="faq" data-section="faq"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
         '<div class="ax-faq rv">' + qs + '</div></div></section>',
     };

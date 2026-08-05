@@ -240,7 +240,7 @@
       '.mb-ibox table{border-collapse:collapse;font-size:16.5px}',
       '.mb-ibox th{color:#9AA0A6;font-weight:600;text-align:left;padding:8px 24px 8px 0;vertical-align:top;white-space:nowrap}',
       '.mb-ibox td{padding:8px 0;line-height:1.5;font-weight:600;color:#0A0B0B}',
-      '.mb-imap{position:relative;background:linear-gradient(135deg,#E4EBF4,#D3DEEC);min-height:220px}',
+      '.mb-imap{position:relative;background:linear-gradient(135deg,#E4EBF4,#D3DEEC);min-height:220px;border:0;width:100%;height:100%;display:block}',
       '.mb-imap .pin{position:absolute;left:48%;top:38%;width:32px;height:32px;border-radius:50% 50% 50% 0;background:#165FCE;transform:rotate(-45deg);box-shadow:0 10px 24px rgba(22,95,206,.35)}',
       '.mb-imap .pin:after{content:"";position:absolute;inset:9px;border-radius:50%;background:#fff}',
       '.mb-imap .rd{position:absolute;left:0;right:0;top:58%;height:12px;background:rgba(10,11,11,.07);transform:rotate(-6deg)}',
@@ -360,7 +360,7 @@
       info: '<section class="mb-info" id="info" data-section="info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
         '<table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
         '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
-        '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>',
+        (function(){var q=String(d.eventPlace||'').split('\n')[0].trim();return q?'<iframe class="mb-imap" src="https://maps.google.com/maps?q='+encodeURIComponent(q)+'&z=15&output=embed" loading="lazy" title="map"></iframe>':'<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div>';})()+'</div></div></section>',
       statement: '<section class="mb-st" data-section="statement"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
         (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
         '</div></section>',

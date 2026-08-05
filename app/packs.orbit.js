@@ -166,7 +166,7 @@
       '.ob-info .l{padding:36px 38px}',
       '.ob-info th{color:' + SUB + ';font-weight:600;text-align:left;padding:8px 22px 8px 0;vertical-align:top;white-space:nowrap;font-size:15px}',
       '.ob-info td{padding:8px 0;line-height:1.55;font-weight:600;color:#fff;font-size:16px}',
-      '.ob-map{position:relative;background:radial-gradient(circle at 60% 40%,#0E2247,#071228);min-height:210px}',
+      '.ob-map{position:relative;background:radial-gradient(circle at 60% 40%,#0E2247,#071228);min-height:210px;border:0;width:100%;height:100%;display:block}',
       '.ob-map .pin{position:absolute;left:52%;top:40%;width:30px;height:30px;border-radius:50% 50% 50% 0;background:' + GRAD + ';transform:rotate(-45deg);box-shadow:0 10px 26px rgba(0,145,255,.5)}',
       '.ob-map .pin:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff}',
       /* 선언 */
@@ -416,7 +416,7 @@
           info: '<section class="ob-sec" id="info" data-section="info"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.sv) + '</h2>' +
             '<div class="ob-info rv"><div class="l"><table><tr><th>' + esc(TT.dt) + '</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
             '<tr><th>' + esc(TT.pl) + '</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
-            '<div class="ob-map"><span class="pin"></span></div></div></div></section>',
+            (function(){var q=String(d.eventPlace||'').split('\n')[0].trim();return q?'<iframe class="ob-map" src="https://maps.google.com/maps?q='+encodeURIComponent(q)+'&z=15&output=embed" loading="lazy" title="map"></iframe>':'<div class="ob-map"><span class="pin"></span></div>';})()+'</div></div></section>',
           statement: '<section class="ob-st" data-section="statement"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + ml(d.bannerText) + '</p></div></section>',
           faq: '<section class="ob-sec alt" id="faq" data-section="faq"><div class="wrap"><h2 class="ob-tt rv">' + esc(TT.faq) + '</h2><div class="ob-qs rv">' + qs + '</div></div></section>',
         };
