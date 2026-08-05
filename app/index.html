@@ -599,12 +599,17 @@
   }
   function loadScript(src){ return new Promise((res,rej)=>{ if([].slice.call(document.scripts).some(s=>s.src===src)) return res();
     const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('로드 실패: '+src)); document.head.appendChild(s); }); }
+  /* 파서는 사이트 동봉본(vendor/) 우선 — CDN 차단 망(사내망 등)에서도 첨부가 동작한다. 동봉본 실패 시에만 CDN 폴백 */
+  async function loadParser(localFile, cdnSrc){
+    try{ await loadScript(new URL('vendor/'+localFile, location.href).href); }
+    catch(e){ await loadScript(cdnSrc); }
+  }
   async function readFileText(f){
     const ext=(f.name.split('.').pop()||'').toLowerCase();
     if(['txt','md','markdown','csv','json','html','htm'].includes(ext)) return await f.text();
     if(ext==='pdf'){
-      await loadScript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      await loadParser('pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('vendor/pdf.worker.min.js', location.href).href;
       const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
       let t=''; const N=Math.min(doc.numPages,30);
       for(let i=1;i<=N;i++){ const pg=await doc.getPage(i); const tc=await pg.getTextContent(); t+=tc.items.map(x=>x.str).join(' ')+'\n'; }
@@ -613,13 +618,13 @@
       return t;
     }
     if(ext==='docx'){
-      await loadScript('https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
+      await loadParser('mammoth.browser.min.js','https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
       const r=await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});
       return r.value;
     }
     if(ext==='pptx'){
       // pptx = zip + slide XML. JSZip으로 열어 ppt/slides/slideN.xml의 <a:t> 텍스트를 장 순서대로 추출
-      await loadScript('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+      await loadParser('jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
       const zip=await window.JSZip.loadAsync(await f.arrayBuffer());
       const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))
         .sort((a,b)=>parseInt(a.match(/\d+/)[0],10)-parseInt(b.match(/\d+/)[0],10));
