@@ -589,6 +589,10 @@
       'for(var i2=0;i2<els.length;i2++){var el=els[i2];var r=el.getBoundingClientRect();var sr=s.getBoundingClientRect();' +
       'if(r.width&&(r.right>sr.right-8||r.bottom>sr.bottom-4)){var fs=parseFloat(getComputedStyle(el).fontSize);if(fs>11)el.style.fontSize=Math.max(11,fs*Math.min((sr.right-8-r.left)/r.width,(sr.bottom-4-r.top)/r.height))+"px";}}};' +
       'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
+      // 커버 타이틀 과장문 방어 — 슬라이드 하단 침범 시 폰트 단계 축소
+      'document.querySelectorAll(".nx-cvtitle").forEach(function(t){var sl=t.closest(".slide");if(!sl)return;' +
+      'var fs=parseFloat(getComputedStyle(t).fontSize);var guard=0;' +
+      'while(guard++<12&&fs>26&&t.getBoundingClientRect().bottom>sl.getBoundingClientRect().bottom-70){fs-=4;t.style.fontSize=fs+"px";}});' +
       '})();';
     return '<script>' + js + '<\/script>';
   }

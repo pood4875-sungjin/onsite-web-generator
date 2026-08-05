@@ -201,7 +201,7 @@ const MACHINE_SYSTEM =
   '형식: {"slides":[ ... ]}\n' +
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + MACHINE_USE_DOC + '\n' +
   '각 타입의 필드: ' + MACHINE_FIELD_DOC + '\n' +
-  '규칙: 1장 cover(영문 3톤 타이틀). 2장 statement 또는 toc(items.label=영문 챕터 대문자, 본문 순서와 1:1). ' +
+  '규칙: cover.title은 2~3줄(\\n)·전체 40자 이내로 짧게 — 긴 설명은 sub·band로 뺀다. 1장 cover(영문 3톤 타이틀). 2장 statement 또는 toc(items.label=영문 챕터 대문자, 본문 순서와 1:1). ' +
   '섹션 전환은 darkhero(초대형 영문)나 demo(그린). 진행 현황은 progress(pct는 plan의 실제 수치, 핵심 행 on:true). ' +
   '본문 장은 밀도 있게 — note(하단 풋라인 문장, **강조** 1회 그린)를 적극 넣는다. 다크·라이트 지면을 리듬 있게 교차. ' +
   'plan의 구체 정보는 반드시 반영(플레이스홀더 금지). 마지막은 closing(다음 행동 명시). ' +
