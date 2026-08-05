@@ -511,6 +511,8 @@
     '자동차가 아니라, **자동차를 만드는 시스템**을 설계합니다': ['We design not the car, but **the system that builds cars**', '車ではなく、**車を作るシステム**を設計します', '我们设计的不是汽车，而是**造车的系统**'],
     '디자인 AX 보고': ['Design AX Report', 'デザインAX報告', '设计AX报告'],
     'Saturn 블루': ['Saturn Blue', 'Saturnブルー', 'Saturn 蓝'],
+    '세미나 집객 블루': ['Seminar Blue', 'セミナー集客ブルー', '研讨会引流蓝'],
+    'AX Day 오렌지': ['AX Day Orange', 'AX Dayオレンジ', 'AX Day 橙'],
     // ── 배열 상수 경유 문구(샘플 칩·질문 카드·브리프 안내·수정 칩) ──
     '9월 태국 MBM 세미나를 진행하는데, 발표용 PPT를 만들고 싶어': ['We\'re running the September MBM seminar in Thailand — I need a presentation deck', '9月のタイMBMセミナー用の発表PPTを作りたい', '9月要在泰国举办MBM研讨会，想做一份演示PPT'],
     '신제품 소개 랜딩페이지가 필요해. 핵심 기능 3가지와 도입 문의 버튼': ['I need a landing page for our new product — 3 key features and a contact CTA', '新製品紹介のLPが必要。主要機能3つと導入問い合わせボタン', '需要新品介绍落地页：3个核心功能和咨询按钮'],
