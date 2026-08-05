@@ -533,6 +533,20 @@
       var fl = o.footerLinks.map(function (x) { return str(x); }).filter(Boolean).slice(0, 8);
       if (fl.length) out.footerLinks = fl;
     }
+    // 세미나·행사 필드 — 첨부 기획서의 세션·일시·장소가 여기로 온다 (mbm·axday 등 집객 팩이 소비)
+    if (Array.isArray(o.sessions)) {
+      var ss = o.sessions.map(function (x) { return x && { time: str(x.time), title: str(x.title), by: str(x.by) }; }).filter(function (x) { return x && x.title; }).slice(0, 8);
+      if (ss.length) out.sessions = ss;
+    }
+    if (str(o.eventDate)) out.eventDate = str(o.eventDate);
+    if (str(o.eventPlace)) out.eventPlace = str(o.eventPlace);
+    if (str(o.deadline)) out.deadline = str(o.deadline);
+    if (Array.isArray(o.faq)) {
+      var fq = o.faq.map(function (x) { return x && { q: str(x.q), a: str(x.a) }; }).filter(function (x) { return x && x.q; }).slice(0, 8);
+      if (fq.length) out.faq = fq;
+    }
+    if (str(o.ctaTitle)) out.ctaTitle = str(o.ctaTitle);
+    if (str(o.ctaSub)) out.ctaSub = str(o.ctaSub);
     // IA(하위 페이지 목록) — 브리프에 메뉴 구성이 있을 때만 채워짐. 없으면 빈 배열.
     var PT = { product: 1, features: 1, pricing: 1, faq: 1, contact: 1, manual: 1, blog: 1, landing: 1, event: 1 };   // pagetypes.js PAGE_TYPES와 동일(메인 제외)
     out.pages = (Array.isArray(o.pages) ? o.pages : []).map(function (x) {

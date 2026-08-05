@@ -306,10 +306,18 @@ const WEB_SYSTEM =
   '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
   '"features":[{"title":str,"desc":str}],"stats":[{"value":str,"label":str}],' +
   '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str],' +
+  '"sessions":[{"time":str,"title":str,"by":str}],"eventDate":str|null,"eventPlace":str|null,"deadline":str|null,' +
+  '"faq":[{"q":str,"a":str}],"ctaTitle":str|null,"ctaSub":str|null,' +
   '"pages":[{"name":str,"type":"product"|"features"|"pricing"|"faq"|"contact"|"manual"|"blog"|"landing"|"event","tagline":str,"subcopy":str,' +
   '"features":[{"title":str,"desc":str}]}]}\n' +
   '규칙:\n' +
   '- 모든 필드를 빠짐없이 채운다. 페이지는 완성된 모습으로 나가야 한다.\n' +
+  '- [최우선] 브리프에 첨부 문서([첨부 문서: ...])가 있으면 그 내용이 1차 소스다. 세션 구성·발표 제목·날짜·장소·연사·수치 등\n' +
+  '  문서에 있는 실제 정보를 그대로 반영하고, 문서와 무관한 일반론으로 채우지 마라.\n' +
+  '- 세미나·행사·이벤트 집객 페이지면: sessions(시간표 — 브리프의 발표/세션을 time·title·by로), eventDate(일시 문구),\n' +
+  '  eventPlace(장소, 줄바꿈 \\n 허용), deadline(신청 마감 시각 ISO8601, 예 2026-09-10T18:00:00+09:00 — 근거 있을 때만),\n' +
+  '  faq(브리프 근거 3~5개, 근거 없으면 행사 성격에 맞는 예시 2~3개+assumed에 "faq"),\n' +
+  '  ctaTitle/ctaSub(신청 유도 카피)를 채운다. 행사 아닌 일반 제품 페이지면 sessions=[]·eventDate=null·eventPlace=null·deadline=null·faq=[].\n' +
   '- pages = 사이트의 메인홈 외 하위 페이지(IA). kind=multi이고 브리프에 메뉴·페이지 구성(IA)이 드러날 때만 채운다.\n' +
   '  브리프에 IA 언급이 없거나 kind=single이면 반드시 빈 배열 []. 지어내지 마라.\n' +
   '  name=메뉴에 걸릴 이름(2~8자), type=성격이 가장 가까운 것, tagline/subcopy=그 페이지 히어로 문구,\n' +
