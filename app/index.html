@@ -398,10 +398,14 @@
   // 종류 감지 — 로컬 휴리스틱(AI 호출 없이 즉답). 확신 없으면 '' → 칩으로 유도
   function detectKind(t){
     t=(t||'').toLowerCase();
+    // 웹 신호가 함께 있으면 웹 우선 — "세미나 집객 사이트"처럼 주제(발표·세미나)와 매체(사이트)가 섞인 문장 대비
+    const web=/랜딩|landing|한 ?장짜리|공지 ?페이지|집객|웹사이트|홈페이지|website|사이트|페이지/.test(t);
+    if(!web && /ppt|피피티|발표|장표|슬라이드|프레젠|presentation|deck|덱/.test(t)) return 'ppt';
+    if(!web && /edm|이메일|메일|뉴스레터|newsletter/.test(t)) return 'edm';
+    if(/랜딩|landing|한 ?장짜리|공지 ?페이지|집객/.test(t)) return 'single';   // '랜딩'을 '사이트'보다 먼저 — "랜딩 사이트" 같은 표현 대비
+    if(/웹사이트|홈페이지|website|사이트/.test(t)) return 'multi';
     if(/ppt|피피티|발표|장표|슬라이드|프레젠|presentation|deck|덱/.test(t)) return 'ppt';
     if(/edm|이메일|메일|뉴스레터|newsletter/.test(t)) return 'edm';
-    if(/랜딩|landing|한 ?장짜리|공지 ?페이지/.test(t)) return 'single';   // '랜딩'을 '사이트'보다 먼저 — "랜딩 사이트" 같은 표현 대비
-    if(/웹사이트|홈페이지|website|사이트/.test(t)) return 'multi';
     return '';
   }
   // 첫 입력에 "내용"이 담겼는지 — 종류 단어·요청 상투구를 걷어내고 잔여 정보량으로 판단
@@ -524,6 +528,7 @@
     if(_skipW){ off(_skipW); _skipW=null; }
     if(_sampleW){ off(_sampleW); _sampleW=null; }
     // 첨부 문서 → 브리프에 병합 (파일당 8000자 제한)
+    S._rawInput=v;   // 종류 감지는 사용자가 타이핑한 원문만 — 첨부 문서 텍스트에 끌려가면 오판한다
     let out=v;
     const names=attachments.map(a=>a.name);
     if(!skipped && attachments.length){
@@ -1144,7 +1149,7 @@
     const tp0=typing(); await new Promise(r=>setTimeout(r,750)); tp0.remove();
 
     // 종류: 입력에서 감지, 애매하면 칩으로 유도 (짧게 말해도 시스템이 제안)
-    let kind=detectKind(first);
+    let kind=detectKind(S._rawInput||first);
     if(!kind){
       bot(_L('좋아요! 어떤 형태로 만들까요?'));
       kind=await askChips([
