@@ -216,7 +216,23 @@
       /* 모션 */
       '.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}',
       '.rv.in{opacity:1;transform:none}',
+      /* 한국어 제목 중간 꺾임 방지 */
+      '.mb-ht,.mb-ch .tt,.mb-faq .tt,.mb-st .tx,.mb-cta .tt,.mb-card .ct{word-break:keep-all}',
       '@media (max-width:960px){.mb-menu{display:none}.mb-zig,.mb-zig.flip{grid-template-columns:1fr}.mb-ht{font-size:44px}.mb-ch .tt,.mb-faq .tt{font-size:33px}.mb-st .tx{font-size:36px}.mb-cta .tt{font-size:36px}.mb-cta .agrid{grid-template-columns:1fr;gap:44px}}',
+      /* 모바일(≤600) — GNB 한 줄 유지·히어로 가독 오버레이·카운트다운 축소·폼 여백 */
+      '@media (max-width:600px){',
+      '.mb-nav .wrap{gap:12px;height:60px}.mb-logo{font-size:15px}.mb-navcta{padding:9px 14px;font-size:13px}',
+      '.mb-hero{min-height:640px}.mb-hero .wrap{padding-top:120px;padding-bottom:110px}',
+      '.mb-hero .shade{background:linear-gradient(180deg,rgba(0,86,190,.78) 0%,rgba(0,96,205,.55) 55%,rgba(0,107,222,.3) 100%)}',
+      '.mb-ht{font-size:34px}.mb-hs{font-size:16.5px}.mb-hcta{font-size:16px;padding:14px 26px}',
+      '.mb-count .wrap{gap:12px}.mb-count .lb{width:100%;text-align:center}.mb-count .seg b{font-size:20px;min-width:30px}',
+      '.mb-ch{padding:72px 0 84px}.mb-ch .tt{font-size:27px}.mb-card{padding:30px 24px}.mb-card .ct{font-size:23px}',
+      '.mb-srow{grid-template-columns:1fr;gap:8px;padding:18px 20px}.mb-srow .by{white-space:normal}',
+      '.mb-ibox{grid-template-columns:1fr}.mb-st{padding:90px 0}.mb-st .tx{font-size:27px}',
+      '.mb-faq .tt{font-size:27px}.mb-q .qh{font-size:17.5px}.mb-qs{margin-top:36px}',
+      '.mb-cta{padding:80px 0}.mb-cta .tt{font-size:29px}.mb-form{padding:26px 20px}',
+      '.mb-foot .wrap{flex-direction:column;align-items:flex-start}',
+      '}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }

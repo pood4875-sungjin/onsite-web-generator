@@ -70,10 +70,12 @@
       '.ax-nav .brand{position:absolute;left:30px;font-weight:900;font-size:19px;color:' + INK + '}',
       '.ax-nav .on{color:' + INK + ';font-weight:700}',
       /* hero */
-      '.ax-hero{padding:74px 0 0;text-align:center}',
-      '.ax-eb{font-size:26px;font-weight:700;letter-spacing:-.03em}',
-      '.ax-ht{margin-top:6px;font-size:82px;font-weight:900;letter-spacing:-.02em;line-height:1.08}',
-      '.ax-hero .ph-wide{margin-top:44px;height:460px;border-radius:0}',
+      '.ax-hero{padding:84px 0 0;text-align:center}',
+      /* 아이브로 = 오렌지 소제(타이틀과 강약 대비 — 사용자 피드백) */
+      '.ax-eb{font-size:19px;font-weight:800;letter-spacing:-.01em;color:' + ORANGE + '}',
+      '.ax-ht{margin-top:16px;font-size:82px;font-weight:900;letter-spacing:-.02em;line-height:1.08;word-break:keep-all}',
+      '.ax-hsub{margin:26px auto 0;font-size:19px;line-height:1.6;color:#4B5563;max-width:600px;word-break:keep-all}',
+      '.ax-hero .ph-wide{margin-top:56px;height:460px;border-radius:0}',
       /* 오렌지 임팩트 밴드 */
       '.ax-band{background:' + ORANGE + ';color:#fff;padding:44px 0}',
       '.ax-band .wrap{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;text-align:left}',
@@ -81,8 +83,11 @@
       '.ax-band .bs{margin-top:10px;font-size:15.5px;line-height:1.5;opacity:.92;font-weight:400}',
       '.ax-pill{background:#fff;color:' + INK + ';font-size:16px;font-weight:700;padding:14px 30px;border-radius:999px;border:0;flex:none}',
       /* 섹션 공통 */
-      '.ax-sec{padding:110px 0}',
-      '.ax-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.035em}',
+      /* 섹션 지브라 — 미세한 배경으로 섹션 경계 구분(사용자 피드백) + 넉넉한 여백 */
+      '.ax-sec{padding:104px 0}',
+      '.ax-sec.alt{background:#F7F9FB}',
+      '.ax-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.035em;word-break:keep-all}',
+      '.ax-tt+*{margin-top:52px}',
       /* 이유 3카드 */
       '.ax-cards{margin-top:54px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}',
       '.ax-card{border:1px solid rgba(3,7,18,.09);border-radius:14px;overflow:hidden;background:#fff}',
@@ -162,6 +167,12 @@
       '.rv{opacity:0;transform:translateY(24px);transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1)}',
       '.rv.in{opacity:1;transform:none}',
       '@media (max-width:960px){.ax-cards,.ax-ses{grid-template-columns:1fr}.ax-info{grid-template-columns:1fr}.ax-map{min-height:260px}.ax-ht{font-size:52px}.ax-tt{font-size:29px}.ax-cta .tt{font-size:31px}}',
+      /* 모바일(≤600) — 내비 축약·타이포 축소·카운트다운 정리 */
+      '@media (max-width:600px){.ax-nav .wrap{height:56px;gap:14px}.ax-nav .wrap a:not(.on){display:none}.ax-nav .brand{font-size:15.5px}',
+      '.ax-hero{padding:56px 0 0}.ax-eb{font-size:15px}.ax-ht{font-size:42px}.ax-hsub{font-size:15.5px;margin-top:18px}.ax-hero .ph-wide{height:300px;margin-top:36px}',
+      '.ax-band{padding:32px 0}.ax-band .bt{font-size:18px}.ax-band .bs{font-size:14px}',
+      '.ax-count .wrap{gap:12px}.ax-count .lb{width:100%;text-align:center}.ax-count .seg b{font-size:19px}',
+      '.ax-sec{padding:66px 0}.ax-tt{font-size:25px}.ax-tt+*{margin-top:36px}.ax-cta .tt{font-size:27px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }
@@ -212,24 +223,25 @@
       (d.footerLinks || []).map(function (l, i) { return '<a' + (i === (d.footerLinks.length - 1) ? ' class="on"' : '') + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div></nav>' +
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
-      '<h1 class="ax-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1></div>' +
+      '<h1 class="ax-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+      '<p class="ax-hsub"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p></div>' +
       '<div class="ph-wide">' + photo('', 'hall', 1600, 620, 'hero') + '</div></header>' +
       '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
       '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
       '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
       '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">\uC2E0\uCCAD \uB9C8\uAC10\uAE4C\uC9C0</span>' +
       '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
-      '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + '를 놓치면 안되는 이유</h2>' +
+      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + '를 놓치면 안되는 이유</h2>' +
       '<div class="ax-cards">' + cards + '</div></div></section>' +
-      '<section class="ax-sec" style="padding-top:0"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
+      '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +
       '<div class="ax-ses">' + sess + '</div></div></section>' +
-      '<section class="ax-sec" style="padding-top:0"><div class="wrap"><h2 class="ax-tt rv">일정 및 장소</h2>' +
+      '<section class="ax-sec alt"><div class="wrap"><h2 class="ax-tt rv">일정 및 장소</h2>' +
       '<div class="ax-info rv"><div class="l"><div class="nm"' + de('productName') + '>' + esc(d.productName) + '</div>' +
       '<table><tr><th>일시</th><td' + de('eventDate') + '>' + esc(d.eventDate) + '</td></tr>' +
       '<tr><th>장소</th><td' + de('eventPlace') + '>' + ml(d.eventPlace) + '</td></tr></table>' +
       '<button class="pill-dark"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
       '<div class="ax-map"><span class="rd1"></span><span class="rd2"></span><span class="pin"></span></div></div></div></section>' +
-      '<section class="ax-sec" style="padding-top:0"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
+      '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">FAQ</h2>' +
       '<div class="ax-faq rv">' + qs + '</div></div></section>' +
       '<section class="ax-cta"><div class="wrap"><h2 class="tt rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<button class="pill-dark rv"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
