@@ -630,6 +630,7 @@
     '핵심 카피': ['Key copy', 'キーコピー', '核心文案'],
     '화면과 콘텐츠가 함께 바뀝니다': ['UI and content change together', '画面とコンテンツが一緒に切り替わります', '界面与内容将一并切换'],
     '화면과 콘텐츠를 번역하는 중…': ['Translating UI and content…', '画面とコンテンツを翻訳中…', '正在翻译界面与内容…'],
+    '콘텐츠 번역에 실패해 화면 언어만 바꿨어요. 언어 버튼으로 다시 시도해주세요.': ['Content translation failed — only the UI language changed. Please try again from the language button.', 'コンテンツの翻訳に失敗したため、画面言語のみ切り替えました。言語ボタンから再試行してください。', '内容翻译失败，仅切换了界面语言。请通过语言按钮重试。'],
   };
   var KEY = 'midas-lang';
   function getLang() { return localStorage.getItem(KEY) || 'ko'; }

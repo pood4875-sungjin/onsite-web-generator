@@ -914,7 +914,7 @@
       // pitch·honors = 별도 팩(레이아웃 체계가 다름). packKind가 있으면 그 팩의 compose/template 경로
       const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : S.pptStyle==='pastel' ? 'pastel' : S.pptStyle==='sfmi' ? 'sfmi' : S.pptStyle==='machine' ? 'machine' : '';
       const isPitch = !!packKind;
-      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind };
+      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind, lang:S.lang };
       const hasBrief=!!plan;
       // AI 가능하면 생성을 스튜디오로 넘김 — 즉시 이동해서 좌측 챗이 과정을 안내하고
       // 우측에 장표가 한 장씩 실제로 그려진다 (pendingBrief를 스튜디오가 읽어 라이브 생성)

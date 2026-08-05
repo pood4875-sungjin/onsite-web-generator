@@ -885,18 +885,22 @@
         +'<span style="width:18px;height:18px;border:2.5px solid var(--line);border-top-color:#6c2bff;border-radius:50%;animation:stlspin .8s linear infinite"></span>'
         +tL('화면과 콘텐츠를 번역하는 중…')+' → '+name+'</div>';
       document.body.append(ov);
-      // 생성된 출력물이 있으면 콘텐츠도 번역 — 실패해도 UI 전환은 진행(콘텐츠는 원문 유지)
+      // 생성된 출력물이 있으면 콘텐츠도 번역 — 실패 시 사용자에게 알리고 UI만 전환(콘텐츠는 원문 유지)
+      let contentFail=false;
       try{
         if(window.LLM && LLM.aiAvailable() && LLM.translatePayload){
           if(curMode().slides && data.slides && data.slides.length){
             const out=await LLM.translatePayload({ slides: data.slides }, to);
             if(out && Array.isArray(out.slides) && out.slides.length===data.slides.length){ data.slides=out.slides; persist(); }
+            else contentFail=true;
           } else if(!curMode().editOnly && data && (data.tagline||data.productName)){
             const out=await LLM.translatePayload(data, to);
             if(out && typeof out==='object' && (out.tagline||out.productName)){ Object.keys(data).forEach(k=>{ delete data[k]; }); Object.assign(data, out); persist(); }
+            else contentFail=true;
           }
         }
-      }catch(e){ console.warn('[translate 실패 — UI만 전환]', e); }
+      }catch(e){ console.warn('[translate 실패 — UI만 전환]', e); contentFail=true; }
+      if(contentFail){ try{ ov.remove(); }catch(e){} if(window.uiAlert) await uiAlert(tL('콘텐츠 번역에 실패해 화면 언어만 바꿨어요. 언어 버튼으로 다시 시도해주세요.')); }
       I18N.setLang(to); location.reload();
     }
   })();
