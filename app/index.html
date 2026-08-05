@@ -461,7 +461,7 @@
         if(d&&d.body){
           bg=(d.defaultView.getComputedStyle(d.body).backgroundColor)||'';
           const sl=d.querySelector('.ppt-stack > .slide');
-          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height}; }
+          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height,slide:true}; }
           else{
             let bot=0;
             for(const el of d.body.children){
@@ -470,13 +470,15 @@
               bot=Math.max(bot,b.bottom);
               if(bot>=560) break;
             }
-            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1500)};
+            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1100)};
           }
         }
       }catch(e){}
       if(!r) return;
-      const sc=Math.min(W/r.width,H/r.height);
-      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+((H-r.height*sc)/2-r.top*sc).toFixed(1)+'px) scale('+sc.toFixed(4)+')';
+      /* cover-fit — 카드 꽉 채움(레터박스 없음). 웹은 히어로 상단 정렬, 표지는 중앙 */
+      const sc=Math.max(W/r.width,H/r.height);
+      const ty=r.slide?((H-r.height*sc)/2-r.top*sc):(-r.top*sc);
+      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+ty.toFixed(1)+'px) scale('+sc.toFixed(4)+')';
       if(bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent') sw.style.background=bg;
     }
     requestAnimationFrame(base);
@@ -775,12 +777,7 @@
           { id:'mbm', name:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.name:'Civil Blue'), swatch:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.swatch:'linear-gradient(135deg,#1E56A8,#00BDDE)') },
           { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'Ensol MBM'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
           { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'Global MBM'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
-          { id:'aether', name:'다크 글로우', swatch:glow.swatch },
-          { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn 블루'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0F62FE,#CFE0FF)') },
-          { id:'krds', name:'밝은 신뢰 블루', swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#256ef4,#0b50d0)') },
-          { id:'midas', name:'MIDAS AX', swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#e9eaec,#1b1c1e)') },
-          { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0B1220,#03C75A)') },
-        ];
+        ];   // 웹 스타일은 3종만 노출(사용자 지정) — 구 팩(aether·saturn·krds·midas·aglass)은 기존 프로젝트 열람용으로만 유지
         const recStyle=(ORGS.find(o=>o.id===S.org)||{}).rec;
         STYLES.forEach(p=>{
           if(skip(p.id)) return;
@@ -812,14 +809,7 @@
       if(/세미나|행사|마케팅|mbm|고객|초청/.test(t)) return ['pastel','sfmi','naver'];
       return ['naver','rams','pastel'];
     }
-    if(kind==='single'||kind==='multi'){
-      if(/채용|챌린지|공모|모집|지원|커리어|리크루팅/.test(t)) return ['orbit','mbm','saturn'];
-      if(/글로벌|해외|월드|world|global|지구/.test(t)) return ['orbit','mbm','saturn'];
-      if(/세미나|행사|이벤트|집객|신청|초청|참가|컨퍼런스|mbm|day/.test(t)) return ['mbm','axday','saturn'];
-      if(/다크|테크|개발|ai|글로우|스타트업/.test(t)) return ['aether','saturn','midas'];
-      if(/공공|신뢰|안내|공지|정부/.test(t)) return ['krds','saturn','midas'];
-      return ['midas','saturn','krds'];
-    }
+    if(kind==='single'||kind==='multi') return null;   // 웹 = 3종 전부 표시('다른 스타일 보기' 없음)
     return null;
   }
 

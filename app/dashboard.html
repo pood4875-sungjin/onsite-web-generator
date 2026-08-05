@@ -119,7 +119,7 @@
         if(d&&d.body){
           bg=(d.defaultView.getComputedStyle(d.body).backgroundColor)||'';
           const sl=d.querySelector('.ppt-stack > .slide');
-          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height}; }
+          if(sl){ const b=sl.getBoundingClientRect(); if(b.width>10) r={left:b.left,top:b.top,width:b.width,height:b.height,slide:true}; }
           else{
             let bot=0;
             for(const el of d.body.children){
@@ -128,13 +128,15 @@
               bot=Math.max(bot,b.bottom);
               if(bot>=560) break;
             }
-            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1500)};
+            if(bot>0) r={left:0,top:0,width:1280,height:Math.min(Math.max(bot,560),1100)};
           }
         }
       }catch(e){}
       if(!r) return;
-      const sc=Math.min(W/r.width,H/r.height);
-      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+((H-r.height*sc)/2-r.top*sc).toFixed(1)+'px) scale('+sc.toFixed(4)+')';
+      /* cover-fit — 카드 꽉 채움(레터박스 없음). 웹은 히어로 상단 정렬, 표지는 중앙 */
+      const sc=Math.max(W/r.width,H/r.height);
+      const ty=r.slide?((H-r.height*sc)/2-r.top*sc):(-r.top*sc);
+      f.style.transform='translate('+((W-r.width*sc)/2-r.left*sc).toFixed(1)+'px,'+ty.toFixed(1)+'px) scale('+sc.toFixed(4)+')';
       if(bg&&bg!=='rgba(0, 0, 0, 0)'&&bg!=='transparent') sw.style.background=bg;
     }
     requestAnimationFrame(base);
