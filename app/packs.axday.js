@@ -25,7 +25,8 @@
       { time: '14:50 - 15:30', title: '경험을 넘어 실행까지:\n체험/컨설팅', by: '마이다스 컨설턴트' },
       { time: '15:30 - 16:00', title: '에이전트 200% 활용한\n마이다스 사례', by: '마이다스그룹 HR 담당자' },
     ],
-    eventDate: '2026.05.07 (목) 13:30 - 16:00',
+    eventDate: '2026.10.15 (목) 13:30 - 16:00',
+    deadline: '2026-10-13T18:00:00+09:00',
     eventPlace: '섬유센터빌딩 Tex Fa Hall (강남)\n삼성역 4번 출구에서 도보 4분',
     faq: [
       { q: '세미나에 참가비가 있나요?', a: '무료로 진행됩니다. 사전 신청 후 참석 확정 안내를 받으시면 됩니다.' },
@@ -38,9 +39,21 @@
     footerCopyright: '© 2026. JAINWON Inc. All rights reserved.',
   };
 
-  /* 포토 자리 — 추상 모형(오렌지 무드 / 다크 무드) */
-  function photo(mode) {
-    return '<div class="ax-ph ph ' + (mode || '') + '"><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span></div>';
+  /* 포토 자리 — Unsplash 실사진(키 불필요 직링크, 전수 실검증) + 로드 실패 시 추상 모형 폴백.
+     출처: unsplash.com — 청중/스피커 무대/행사장/마이크/홀 와이드 */
+  var UIMG = {
+    crowd:   '1540575467063-178a50c2df87',   // 컨퍼런스 청중
+    stage:   '1505373877841-8d25f7d46678',   // 스피커 + 대형 스크린
+    venue:   '1511578314322-379afb476865',   // 행사장 테이블 세팅
+    mic:     '1475721027785-f74eccf877e2',   // 마이크 클로즈업
+    hall:    '1587825140708-dfaf72ae4b04',   // 대형 홀 와이드
+  };
+  function stockUrl(key, w, h) {
+    return 'https://images.unsplash.com/photo-' + (UIMG[key] || UIMG.crowd) + '?w=' + (w || 800) + '&h=' + (h || 520) + '&q=78&auto=format&fit=crop';
+  }
+  function photo(mode, key, w, h) {
+    return '<div class="ax-ph ph ' + (mode || '') + '"><span class="sp s1"></span><span class="sp s2"></span><span class="sp s3"></span>' +
+      (key ? '<img class="ai" loading="lazy" alt="" src="' + stockUrl(key, w, h) + '" onerror="this.remove()">' : '') + '</div>';
   }
 
   function css() {
@@ -116,6 +129,25 @@
       /* footer */
       '.ax-foot{background:#F5F6F7;padding:30px 0;font-size:13px;color:#9AA0A6}',
       '.ax-foot .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}',
+      /* 카운트다운 스트립 */
+      '.ax-count{background:' + INK + ';color:#fff;padding:16px 0}',
+      '.ax-count .wrap{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}',
+      '.ax-count .lb{font-size:14.5px;color:#9AA0A6;font-weight:600}',
+      '.ax-count .seg{display:flex;align-items:baseline;gap:5px}',
+      '.ax-count .seg b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.1);border-radius:8px;padding:2px 7px;min-width:36px;text-align:center}',
+      '.ax-count .seg span{font-size:12px;color:#9AA0A6}',
+      /* 호버 모션 */
+      '.ax-card,.ax-s{transition:transform .28s ease,box-shadow .28s ease}',
+      '.ax-card:hover{transform:translateY(-4px);box-shadow:0 20px 46px rgba(3,7,18,.12)}',
+      '.ax-s:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(3,7,18,.28)}',
+      '.ax-pill,.pill-dark{transition:transform .18s ease}',
+      '.ax-pill:hover,.pill-dark:hover{transform:translateY(-2px)}',
+      /* 히어로 진입 스태거 */
+      '.ax-eb,.ax-ht{opacity:0;transform:translateY(18px);animation:axUp .7s cubic-bezier(.2,.7,.2,1) forwards}',
+      '.ax-ht{animation-delay:.12s}',
+      '.ax-hero .ph-wide{opacity:0;animation:axUp .8s cubic-bezier(.2,.7,.2,1) .24s forwards}',
+      '@keyframes axUp{to{opacity:1;transform:none}}',
+      '@media (prefers-reduced-motion:reduce){.rv,.ax-eb,.ax-ht,.ax-hero .ph-wide{opacity:1;transform:none;animation:none;transition:none}}',
       /* photo placeholder */
       '.ax-ph{position:relative;background:linear-gradient(130deg,#FF7A33 0%,' + ORANGE + ' 42%,#C63B00 100%);overflow:hidden}',
       '.ax-ph.dark{background:linear-gradient(150deg,#20242E 0%,#0B0E16 70%)}',
@@ -124,6 +156,7 @@
       '.ax-ph .s1{width:42%;padding-top:42%;left:-8%;bottom:-24%}',
       '.ax-ph .s2{width:26%;padding-top:26%;right:6%;top:-10%;background:rgba(255,255,255,.1)}',
       '.ax-ph .s3{width:14%;padding-top:14%;right:30%;bottom:12%;background:rgba(3,7,18,.18)}',
+      '.ax-ph .ai{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}',
       '.rv{opacity:0;transform:translateY(24px);transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1)}',
       '.rv.in{opacity:1;transform:none}',
       '@media (max-width:960px){.ax-cards,.ax-ses{grid-template-columns:1fr}.ax-info{grid-template-columns:1fr}.ax-map{min-height:260px}.ax-ht{font-size:52px}.ax-tt{font-size:29px}.ax-cta .tt{font-size:31px}}',
@@ -142,7 +175,8 @@
     var cards = feats.map(function (f, i) {
       var P = 'features.' + i;
       var chips = (f.chips || (DEMO.features[i] && DEMO.features[i].chips) || []).slice(0, 4).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('');
-      return '<div class="ax-card rv">' + photo(i === 1 ? 'dark' : i === 2 ? '' : 'cool') +
+      var IMGK = ['crowd', 'stage', 'venue'][i] || 'crowd';
+      return '<div class="ax-card rv">' + photo(i === 1 ? 'dark' : i === 2 ? '' : 'cool', IMGK, 800, 480) +
         '<div class="bd"><span class="cap">' + esc(f.tag || (DEMO.features[i] && DEMO.features[i].tag) || 'POINT 0' + (i + 1)) + '</span>' +
         '<h3 class="ct"' + de(P + '.title') + '>' + esc(f.title || '') + '</h3>' +
         '<p class="ds"' + de(P + '.desc') + '>' + ml(f.desc || '') + '</p>' +
@@ -150,7 +184,7 @@
     }).join('');
     var sess = ses.map(function (s, i) {
       var P = 'sessions.' + i;
-      return '<div class="ax-s rv">' + photo(i === 2 ? 'cool' : 'dark') + '<span class="plus">+</span>' +
+      return '<div class="ax-s rv">' + photo(i === 2 ? 'cool' : 'dark', ['stage', 'mic', 'crowd'][i] || 'stage', 700, 900) + '<span class="plus">+</span>' +
         '<span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
         '<h3 class="st"' + de(P + '.title') + '>' + ml(s.title || '') + '</h3>' +
         '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
@@ -161,7 +195,13 @@
     }).join('');
     var mot = opts.motion === false ? '' :
       '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});' +
-      'document.querySelectorAll(".ax-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});})();<\/script>';
+      'document.querySelectorAll(".ax-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});' +
+      'var cd=document.querySelector(".ax-count");if(cd){var end=new Date(cd.getAttribute("data-deadline")||"").getTime();' +
+      'if(isFinite(end)){var q=function(s){return cd.querySelector(s);};var t=function(){var ms=Math.max(0,end-Date.now());' +
+      'var d2=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s2=Math.floor(ms/1000)%60;' +
+      'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
+      'q("[data-cd=m]").textContent=String(m).padStart(2,"0");q("[data-cd=s]").textContent=String(s2).padStart(2,"0");};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
+      '})();<\/script>';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="axday">' +
@@ -170,10 +210,12 @@
       '<header class="ax-hero"><div class="wrap">' +
       '<p class="ax-eb"' + de('eyebrow') + '>' + esc(d.eyebrow) + '</p>' +
       '<h1 class="ax-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1></div>' +
-      '<div class="ph-wide">' + photo('') + '</div></header>' +
+      '<div class="ph-wide">' + photo('', 'hall', 1600, 620) + '</div></header>' +
       '<section class="ax-band"><div class="wrap"><div><p class="bt"' + de('subcopy') + '>' + ml(String(d.subcopy).split('\n')[0] || '') + '</p>' +
       '<p class="bs">' + ml(String(d.subcopy).split('\n').slice(1).join('\n')) + '</p></div>' +
       '<button class="ax-pill"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></section>' +
+      '<div class="ax-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb">\uC2E0\uCCAD \uB9C8\uAC10\uAE4C\uC9C0</span>' +
+      '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
       '<section class="ax-sec"><div class="wrap"><h2 class="ax-tt rv">' + esc(d.productName) + '를 놓치면 안되는 이유</h2>' +
       '<div class="ax-cards">' + cards + '</div></div></section>' +
       '<section class="ax-sec" style="padding-top:0"><div class="wrap"><h2 class="ax-tt rv">SESSIONS</h2>' +

@@ -26,6 +26,14 @@
       { title: '주간·월간 보고서를\n자동으로 생성합니다.', desc: 'AI 경향 분석과 위험 단계별 행동 가이드를 제공합니다. 보고 업무 시간을 크게 줄입니다. 기록이 자동으로 축적되어 이력 관리가 쉬워집니다.' },
     ],
     stats: [],
+    sessions: [
+      { time: '13:30 - 14:10', title: '왜 지금 예측인가 — 가시설 안전의 골든타임', by: 'MIDAS ONSITE 기획' },
+      { time: '14:10 - 15:00', title: '통합 관제 대시보드 라이브 데모', by: '프로덕트 리드' },
+      { time: '15:00 - 15:40', title: '도입 현장 사례 — 4주 온보딩의 실제', by: '현장 엔지니어' },
+    ],
+    eventDate: '2026.09.12 (목) 13:30 - 16:00',
+    eventPlace: '섬유센터빌딩 컨퍼런스홀 (강남)\n삼성역 4번 출구 도보 4분',
+    deadline: '2026-09-10T18:00:00+09:00',
     bannerText: '현장 운영 데이터와\n학계 검증을 바탕으로,\n온사이트의 신뢰를 쌓아가고 있습니다',
     bannerCta: '',
     faq: [
@@ -77,6 +85,7 @@
       '.mb-hero:after{content:"";position:absolute;inset:auto 0 0 0;height:34%;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 96%)}',
       '.mb-hero .bgart{position:absolute;right:-6%;top:-12%;width:58%;height:120%;background:radial-gradient(closest-side,rgba(255,255,255,.34),rgba(255,255,255,0) 70%),linear-gradient(200deg,rgba(255,255,255,.22),rgba(255,255,255,0) 60%);transform:rotate(8deg)}',
       '.mb-hero .bgcable{position:absolute;right:4%;top:0;width:44%;height:100%;background:repeating-linear-gradient(112deg,rgba(255,255,255,.28) 0 2px,transparent 2px 74px);mask-image:linear-gradient(180deg,#000 55%,transparent 95%);-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 95%)}',
+      '.mb-hero .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% 30%;opacity:.5;mix-blend-mode:luminosity}',
       '.mb-hero .wrap{position:relative;z-index:2;padding-top:132px;padding-bottom:200px}',
       '.mb-ht{font-size:66px;line-height:1.286;letter-spacing:-.044em;font-weight:700;color:#FDFDFE;text-wrap:balance}',
       '.mb-hs{margin-top:26px;font-size:20px;line-height:1.445;color:#E7EDF4;max-width:640px}',
@@ -129,6 +138,43 @@
       '.mb-foot{background:#0A0B0B;color:#9AA0A6;padding:44px 0}',
       '.mb-foot .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}',
       '.mb-foot .lks{display:flex;gap:26px;font-size:14.5px}.mb-foot .cp{font-size:13.5px;color:#6B7280}',
+      /* 카운트다운 바 — 마감 긴급성 */
+      '.mb-count{background:#0A0B0B;color:#fff;padding:18px 0}',
+      '.mb-count .wrap{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap}',
+      '.mb-count .lb{font-size:15px;color:#9AA0A6;font-weight:600}',
+      '.mb-count .seg{display:flex;align-items:baseline;gap:5px}',
+      '.mb-count .seg b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:#fff;min-width:38px;text-align:center;background:rgba(255,255,255,.08);border-radius:8px;padding:3px 6px}',
+      '.mb-count .seg span{font-size:12.5px;color:#9AA0A6}',
+      /* 세션 타임테이블 */
+      '.mb-ses{padding:110px 0 20px}',
+      '.mb-ses .tt{text-align:center;font-size:44px;line-height:1.286;letter-spacing:-.045em;font-weight:600}',
+      '.mb-slist{margin:52px auto 0;max-width:1000px;display:flex;flex-direction:column;gap:14px}',
+      '.mb-srow{display:grid;grid-template-columns:170px 1fr auto;gap:22px;align-items:center;background:#fff;border:1px solid rgba(10,11,11,.08);border-radius:12px;padding:22px 28px;transition:transform .25s ease,box-shadow .25s ease}',
+      '.mb-srow:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(15,30,60,.1)}',
+      '.mb-srow .tm{font-size:15.5px;font-weight:700;color:#165FCE;font-variant-numeric:tabular-nums}',
+      '.mb-srow .st{font-size:20px;font-weight:700;letter-spacing:-.03em}',
+      '.mb-srow .by{font-size:14.5px;color:#6B7280;white-space:nowrap}',
+      /* 일정·장소 */
+      '.mb-info{padding:40px 0 120px}',
+      '.mb-ibox{max-width:1000px;margin:0 auto;background:#F5F7FA;border-radius:16px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}',
+      '.mb-ibox .l{padding:38px 40px}',
+      '.mb-ibox table{border-collapse:collapse;font-size:16.5px}',
+      '.mb-ibox th{color:#9AA0A6;font-weight:600;text-align:left;padding:8px 24px 8px 0;vertical-align:top;white-space:nowrap}',
+      '.mb-ibox td{padding:8px 0;line-height:1.5;font-weight:600;color:#0A0B0B}',
+      '.mb-imap{position:relative;background:linear-gradient(135deg,#E4EBF4,#D3DEEC);min-height:220px}',
+      '.mb-imap .pin{position:absolute;left:48%;top:38%;width:32px;height:32px;border-radius:50% 50% 50% 0;background:#165FCE;transform:rotate(-45deg);box-shadow:0 10px 24px rgba(22,95,206,.35)}',
+      '.mb-imap .pin:after{content:"";position:absolute;inset:9px;border-radius:50%;background:#fff}',
+      '.mb-imap .rd{position:absolute;left:0;right:0;top:58%;height:12px;background:rgba(10,11,11,.07);transform:rotate(-6deg)}',
+      /* 카드·버튼 호버 */
+      '.mb-card,.mb-vis{transition:transform .3s ease,box-shadow .3s ease}',
+      '.mb-card:hover{transform:translateY(-4px);box-shadow:0 22px 54px rgba(15,30,60,.1)}',
+      '.mb-hcta,.mb-cta .btn,.mb-navcta{transition:transform .2s ease,box-shadow .2s ease}',
+      '.mb-hcta:hover,.mb-cta .btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(8,20,40,.3)}',
+      /* 히어로 진입 스태거 */
+      '.mb-hero .mb-ht,.mb-hero .mb-hs,.mb-hero .mb-hcta{opacity:0;transform:translateY(22px);animation:mbUp .8s cubic-bezier(.2,.7,.2,1) forwards}',
+      '.mb-hero .mb-hs{animation-delay:.14s}.mb-hero .mb-hcta{animation-delay:.28s}',
+      '@keyframes mbUp{to{opacity:1;transform:none}}',
+      '@media (prefers-reduced-motion:reduce){.rv,.mb-hero .mb-ht,.mb-hero .mb-hs,.mb-hero .mb-hcta{opacity:1;transform:none;animation:none;transition:none}}',
       /* 모션 */
       '.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}',
       '.rv.in{opacity:1;transform:none}',
@@ -166,17 +212,36 @@
     }).join('');
     var mot = opts.motion === false ? '' :
       '<script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.14});document.querySelectorAll(".rv").forEach(function(e){io.observe(e);});' +
-      'document.querySelectorAll(".mb-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});})();<\/script>';
+      'document.querySelectorAll(".mb-q").forEach(function(q){q.addEventListener("click",function(ev){if(ev.target.closest("[contenteditable=true]"))return;q.classList.toggle("open");});});' +
+      'var cd=document.querySelector(".mb-count");if(cd){var end=new Date(cd.getAttribute("data-deadline")||"").getTime();' +
+      'if(isFinite(end)){var q=function(s){return cd.querySelector(s);};var t=function(){var ms=Math.max(0,end-Date.now());' +
+      'var d2=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s2=Math.floor(ms/1000)%60;' +
+      'q("[data-cd=d]").textContent=String(d2).padStart(2,"0");q("[data-cd=h]").textContent=String(h).padStart(2,"0");' +
+      'q("[data-cd=m]").textContent=String(m).padStart(2,"0");q("[data-cd=s]").textContent=String(s2).padStart(2,"0");};t();setInterval(t,1000);}else{cd.style.display="none";}}' +
+      '})();<\/script>';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       '<style>' + css() + '</style></head><body data-pack="mbm">' +
       '<nav class="mb-nav"><div class="wrap"><span class="mb-brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
       '<button class="mb-navcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></nav>' +
-      '<header class="mb-hero"><div class="bgart"></div><div class="bgcable"></div><div class="wrap">' +
+      '<header class="mb-hero"><img class="bgimg" loading="lazy" alt="" src="https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1600&h=800&q=78&auto=format&fit=crop" onerror="this.remove()"><div class="bgart"></div><div class="bgcable"></div><div class="wrap">' +
       '<h1 class="mb-ht"' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
       '<p class="mb-hs"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<button class="mb-hcta"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div></header>' +
+      '<div class="mb-count" data-deadline="' + esc(d.deadline || '') + '"><div class="wrap"><span class="lb"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' \uB9C8\uAC10\uAE4C\uC9C0</span>' +
+      '<span class="seg"><b data-cd="d">00</b><span>DAYS</span></span><span class="seg"><b data-cd="h">00</b><span>HRS</span></span><span class="seg"><b data-cd="m">00</b><span>MIN</span></span><span class="seg"><b data-cd="s">00</b><span>SEC</span></span></div></div>' +
       chapters +
+      '<section class="mb-ses"><div class="wrap"><h2 class="tt rv">SESSIONS</h2><div class="mb-slist">' +
+      (d.sessions || []).slice(0, 5).map(function (s, i) {
+        var P = 'sessions.' + i;
+        return '<div class="mb-srow rv"><span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
+          '<span class="st"' + de(P + '.title') + '>' + esc(s.title || '') + '</span>' +
+          '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
+      }).join('') + '</div></div></section>' +
+      '<section class="mb-info"><div class="wrap"><div class="mb-ibox rv"><div class="l">' +
+      '<table><tr><th>\uC77C\uC2DC</th><td' + de('eventDate') + '>' + esc(d.eventDate || '') + '</td></tr>' +
+      '<tr><th>\uC7A5\uC18C</th><td' + de('eventPlace') + '>' + ml(d.eventPlace || '') + '</td></tr></table></div>' +
+      '<div class="mb-imap"><span class="rd"></span><span class="pin"></span></div></div></div></section>' +
       '<section class="mb-st"><div class="wrap"><p class="tx rv"' + de('bannerText') + '>' + stTx + '</p>' +
       (stats.length ? '<div class="nums rv">' + stats.map(function (s, i) { return '<div class="n"><b' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</b><span' + de('stats.' + i + '.label') + '>' + esc(s.label || '') + '</span></div>'; }).join('') + '</div>' : '') +
       '</div></section>' +
