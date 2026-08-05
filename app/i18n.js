@@ -658,7 +658,17 @@
     root.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) { el.setAttribute('placeholder', L(el.getAttribute('data-i18n-placeholder'))); });
     root.querySelectorAll('[data-i18n-title]').forEach(function (el) { el.setAttribute('title', L(el.getAttribute('data-i18n-title'))); });
   }
+  /* 역변환 — 어떤 언어의 등재 번역문이든 한국어 원문으로. 채팅 로그처럼
+     "그 순간의 UI 언어로 저장된 문자열"을 현재 언어로 다시 그릴 때 쓴다(unL→L). */
+  var REV = null;
+  function unL(s) {
+    if (REV === null) {
+      REV = {};
+      for (var k in MAP) { var v = MAP[k]; for (var i = 0; i < v.length; i++) if (v[i]) REV[v[i]] = k; }
+    }
+    return REV[s] || s;
+  }
   try { document.documentElement.setAttribute('lang', getLang()); } catch (e) {}
-  window.I18N = { getLang: getLang, setLang: setLang, L: L, LF: LF, apply: apply, LANGS: LANGS };
+  window.I18N = { getLang: getLang, setLang: setLang, L: L, LF: LF, unL: unL, apply: apply, LANGS: LANGS };
   window.L = L; window.LF = LF;
 })();

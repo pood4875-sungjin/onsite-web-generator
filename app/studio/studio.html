@@ -545,13 +545,24 @@
   function addBot(txt){const r=el('div','row');r.append(el('div','bub bot',txt));msgs.append(r);}
   function addMe(txt){const r=el('div','row me');r.append(el('div','bub me',txt));msgs.append(r);}
   function saveChat(){ if(!project||!pageRef) return; pageRef.chat={log:chatLog, idx, generated, ...(aiMissing&&aiMissing.size?{aiDraft:[...aiMissing]}:{})}; upsertProject(project); }
-  /* 저장된 봇 발화 재생 로컬라이즈 — 원문(KO) 저장분을 현재 UI 언어로. 통짜 등재 우선, 조립형은 패턴 역변환 */
+  /* 저장된 봇 발화 재생 로컬라이즈 — 로그는 "그 순간의 UI 언어"로 저장돼 있다.
+     unL로 어떤 언어든 한국어 원문으로 되돌린 뒤(tL) 현재 언어로 다시 그린다. 조립형은 패턴 분해 후 세그먼트별 처리 */
   function locChat(t){
     t=String(t||'');
-    const d=tL(t); if(d!==t) return d;
-    let m=t.match(/^✅ 완성! (\d+)장을 만들었어요\. 슬라이드 텍스트를 클릭하면 바로 고칠 수 있어요\.$/);
-    if(m) return '✅ '+tL('완성!')+' '+m[1]+tL('장을 만들었어요. 슬라이드 텍스트를 클릭하면 바로 고칠 수 있어요.');
-    m=t.match(/^🪄 (.+)$/); if(m && tL(m[1])!==m[1]) return '🪄 '+tL(m[1]);
+    const un=s=>(window.I18N&&I18N.unL)?I18N.unL(s):s;
+    const norm=un(t);
+    const d=tL(norm); if(d!==t) return d;
+    let m=t.match(/^([✅🪄🌐✏️])\s?(.*)$/u);
+    if(m){
+      const emo=m[1], body=m[2];
+      // 🌐 번역 완료: "메시지 → 언어명 (부가)" — 가운데 언어명은 그대로 두고 앞뒤만 재번역
+      let g=body.match(/^(.+?) → (\S+)\s*([（(].+[）)])?$/);
+      if(emo==='🌐' && g) return '🌐 '+tL(un(g[1].trim()))+' → '+g[2]+(g[3]?' '+tL(un(g[3])):'');
+      // ✅ 완성: "완성문구 N꼬리문구" — 숫자 앞뒤 세그먼트 각각 역변환
+      g=body.match(/^(.+?)\s?(\d+)(.+)$/);
+      if(emo==='✅' && g) return '✅ '+tL(un(g[1].trim()))+' '+g[2]+tL(un(g[3]));
+      const b2=tL(un(body)); if(b2!==body) return emo+' '+b2;
+    }
     return t;
   }
   function botBubble(txt){ addBot(txt); chatLog.push({r:'bot',t:txt}); saveChat(); }
@@ -865,10 +876,13 @@
     if(!btn||!window.I18N) return;
     // 기준은 "산출물의 언어"(data._clang, 기본 ko) — UI 언어와 별개
     const contentLang=()=>((data&&data._clang)||'ko');
-    // 데이터가 비동기 로드라 초기엔 부정확할 수 있다 — 로드 후·메뉴 열 때마다 재동기
+    // 데이터가 비동기 로드라 초기엔 언어를 모른다 — 알기 전엔 '…', 로드되면 즉시 확정(잘못된 KO 선노출 금지)
+    const dataReady=()=>!!(data && ((data.slides&&data.slides.length) || data.tagline || data.productName || data._clang));
     const syncLabel=()=>{
-      const cl=contentLang(), c=document.getElementById('stLangCur');
-      if(c) c.textContent=(I18N.LANGS.find(l=>l[0]===cl)||I18N.LANGS[0])[2];
+      const c=document.getElementById('stLangCur'); if(!c) return;
+      if(!dataReady()){ c.textContent='…'; return; }
+      const cl=contentLang();
+      c.textContent=(I18N.LANGS.find(l=>l[0]===cl)||I18N.LANGS[0])[2];
       menu.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.__lang===cl));
     };
     I18N.LANGS.forEach(l=>{
@@ -878,7 +892,10 @@
       menu.appendChild(b);
     });
     const nt=document.createElement('div'); nt.className='note'; nt.textContent=tL('생성된 결과물의 내용을 이 언어로 번역합니다'); menu.appendChild(nt);
-    syncLabel(); setTimeout(syncLabel, 1200);
+    syncLabel();
+    // 데이터 로드를 감지해 확정 — 300ms 간격, 준비되면 즉시 중단(최대 6초)
+    (function poll(n){ if(dataReady()||n>20){ syncLabel(); return; } setTimeout(()=>poll(n+1), 300); })(0);
+    window.__syncLangLabel=syncLabel;   // 번역 ↺ 복귀 등 외부에서 라벨 재동기
     btn.onclick=e=>{ e.stopPropagation(); syncLabel(); menu.hidden=!menu.hidden; };
     document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.stlang')) menu.hidden=true; }, true);
     /* 스튜디오 언어 버튼 = 산출물(덱·사이트) 내용 번역 전용 — UI 언어는 건드리지 않는다(홈·대시보드 스위처 소관) */
@@ -896,10 +913,11 @@
       try{
         if(window.LLM && LLM.aiAvailable() && LLM.translatePayload){
           if(curMode().slides && data.slides && data.slides.length){
-            const snap=JSON.stringify(data.slides);
+            // ↺ 복귀 시 언어 기록(_clang)도 같이 돌아가도록 스냅에 동봉
+            const snap=JSON.stringify({ __clang:(data._clang||'ko'), slides: data.slides });
             const out=await LLM.translatePayload({ slides: data.slides }, to);
             if(out && Array.isArray(out.slides) && out.slides.length===data.slides.length){
-              pushUndo(snap);   // ↺로 원문 복귀 가능
+              pushUndo(snap);
               data.slides=out.slides; data._clang=to; persist(); render(); refreshPptPanel(); syncUndoUI(); ok=true;
             }
           } else if(!curMode().editOnly && data && (data.tagline||data.productName)){
@@ -913,10 +931,7 @@
       try{ ov.remove(); }catch(e){}
       btn.disabled=false; btn.innerHTML=oldHtml;
       if(ok){
-        // btn.innerHTML 복원으로 라벨 노드가 새로 만들어졌으므로 재조회해서 갱신
-        const cur2=document.getElementById('stLangCur')||cur;
-        cur2.textContent=(I18N.LANGS.find(x=>x[0]===to)||['','',to.toUpperCase()])[2];
-        menu.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.textContent.indexOf(name)>=0));
+        syncLabel();   // data._clang 기준 — btn.innerHTML 복원으로 라벨 노드가 새로 만들어져도 안전
         botBubble('🌐 '+tL('콘텐츠를 번역했어요.')+' → '+name+' '+tL('(↺로 되돌릴 수 있어요)'));
       } else if(window.uiAlert){ await uiAlert(tL('콘텐츠 번역에 실패했어요. 잠시 후 다시 시도해주세요.')); }
     }
@@ -1727,11 +1742,14 @@
     const u=document.getElementById('pptcUndo'); if(u) u.style.display=canUndo?'':'none';
   }
   function undoAll(){ const s=_undoStack.pop();
-    if(s){ data.slides=JSON.parse(s); }
+    if(s){ const p=JSON.parse(s);
+      if(Array.isArray(p)) data.slides=p;
+      else { data.slides=p.slides||[]; if(p.__clang!==undefined) data._clang=p.__clang; }   // 번역 스냅 — 언어 기록도 복원
+    }
     // 메모리 스택이 비면(새로고침 후) 영구 스냅샷에서 복구 — 마지막 AI 수정 직전 상태
     else if(pageRef && pageRef.prevSlides){ data.slides=structuredClone(pageRef.prevSlides); delete pageRef.prevSlides; }
     else return;
-    _pptMarks={}; persist(); render(); refreshPptPanel(); syncUndoUI(); }
+    _pptMarks={}; persist(); render(); refreshPptPanel(); syncUndoUI(); if(window.__syncLangLabel) window.__syncLangLabel(); }
 
   /* ---- PPT 편집 v2 — 블록(⠿이동·✕숨김) + 텍스트 굵기 툴바 + 슬라이드 호버 [↑↓✕] ----
      오프셋/숨김/굵기는 슬라이드 데이터(_pos/_hide/_fmt)에 저장 → 렌더·뷰어·PPTX 전부 반영 */
