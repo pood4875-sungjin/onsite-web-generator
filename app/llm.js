@@ -419,7 +419,12 @@
       var chunks = [];
       for (var ci = 0; ci < payload.slides.length; ci += 3) chunks.push(payload.slides.slice(ci, ci + 3));   // 3장 청크 — 병렬 폭을 키워 체감 시간 단축
       // 청크 병렬 번역 — 순차 대기로 늦던 언어 전환을 동시 호출로 단축
-      var parts = await Promise.all(chunks.map(function (c) { return _translateOne(_noHeavy({ slides: c }), to); }));
+      // 청크당 1회 자동 재시도 — 순간 오류(전파 창·일시 한도)로 전체 번역이 죽지 않게
+      var parts = await Promise.all(chunks.map(function (c) {
+        var p = _noHeavy({ slides: c });
+        var ok = function (r) { return r && Array.isArray(r.slides); };
+        return _translateOne(p, to).then(function (r) { return ok(r) ? r : _translateOne(p, to); }, function () { return _translateOne(p, to); });
+      }));
       var outAll = [];
       for (var pi = 0; pi < parts.length; pi++) {
         if (!parts[pi] || !Array.isArray(parts[pi].slides)) throw new Error('BAD_TRANSLATE_CHUNK');
@@ -427,7 +432,9 @@
       }
       return _fixBrand({ slides: outAll });
     }
-    var tr1 = await _translateOne(_noHeavy(payload), to);
+    var _p1 = _noHeavy(payload);
+    var tr1 = await _translateOne(_p1, to).catch(function () { return null; });
+    if (!tr1) tr1 = await _translateOne(_p1, to);   // 1회 재시도(웹 통짜 번역)
     return _fixBrand(_mergeBack(payload, tr1));
   }
   /* 번역 페이로드 다이어트 — 데이터URI(피커 업로드 이미지)·images 맵은 번역 대상이 아닌데
