@@ -539,6 +539,9 @@
     '사람': ['People', '人物', '人物'],
     '추상': ['Abstract', '抽象', '抽象'],
     // ── 배열 상수 경유 문구(샘플 칩·질문 카드·브리프 안내·수정 칩) ──
+    '첨부한 PPT 파일을 바탕으로 모던한 스타일의 새 발표자료를 만들어줘': ['Generate a new presentation in a modern style based on the attached PowerPoint file.', '添付したPowerPointファイルをもとに、モダンなスタイルの新しいプレゼン資料を作成して', '根据附加的PowerPoint文件，生成一个现代风格的新演示文稿'],
+    '첨부한 파일을 바탕으로 발표용 PPT를 만들어줘': ['Generate a PowerPoint presentation based on the attached file.', '添付ファイルをもとにプレゼン用PPTを作成して', '根据附加文件生成PowerPoint演示文稿'],
+    '첨부한 파일을 바탕으로 프로모션 랜딩페이지를 만들어줘': ['Create a promotional landing page based on the attached file.', '添付ファイルをもとにプロモーション用ランディングページを作成して', '根据附加文件制作宣传落地页'],
     '9월 태국 MBM 세미나를 진행하는데, 발표용 PPT를 만들고 싶어': ['We\'re running the September MBM seminar in Thailand — I need a presentation deck', '9月のタイMBMセミナー用の発表PPTを作りたい', '9月要在泰国举办MBM研讨会，想做一份演示PPT'],
     '신제품 소개 랜딩페이지가 필요해. 핵심 기능 3가지와 도입 문의 버튼': ['I need a landing page for our new product — 3 key features and a contact CTA', '新製品紹介のLPが必要。主要機能3つと導入問い合わせボタン', '需要新品介绍落地页：3个核心功能和咨询按钮'],
     '제품 소개 웹사이트를 만들고 싶어. 메인·기능·요금 구성': ['I want a product website — home, features, and pricing pages', '製品紹介サイトを作りたい。メイン・機能・料金構成', '想做产品介绍网站：首页·功能·价格'],
