@@ -67,7 +67,7 @@
   var LIST_SEL = '.block-list li, .p-bullets li, .pr-feats li';
   var SHAPE_SEL = '.row, .cols2 > div, .cols3 > div, .agenda-badge, .cover-arrow, .contact-cell.fill, ' +
     /* pitch 팩 — 카드·패널·플레이스홀더·라인 장식 */ '.g-cell.card, .g-cell.person, .g-cell.num, .l-cardrow, .pr-card, .t-panel, .sp-panel, .p-media.ph, .tl-dot, .mx-dot, .p-tick, .tl-axis, .tl-lead, .pr-div, .mx-ax, .ps-step, .ps-tag, ' +
-    /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
+    /* naver 팩 — 카드(보더탑 위계)·패널·밴드·바·게이지 */ '.cv-l, .nv-card, .nv-panel, .cv-band, .dv-panel, .cv-bar, .nv-gauge, .nv-gauge i, .nv-mark i, .sp-tick, .nv-row, .tc-row, .pc-step, .tl-cell, .tl-mark, .tl-axis, .ps-panel, .qt-bar, .tb-row, ' +
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
     /* machine 팩 — 사진·셰이드·라인·바·밴드·게이지 */ '.nx-photo, .nx-shade, .nx-dash, .nx-run, .nx-2col li, .nx-qbar, .nx-ref .ln, .nx-lc .ln, .nx-band, .nx-bn .ln, .nx-ag .ln, .nx-pc.on, .nx-prlab .ln, .nx-dhl .ln, .nx-sprow, .nx-ba .ln, .nx-dmcol .ln, .nx-track, .nx-fill, .nx-prow.on, .nx-rm .ln, .nx-tl, .nx-foot, .nx-toclist, .nx-tocrow, .nx-clfoot, ' +
@@ -77,6 +77,35 @@
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
+
+  /* 인라인 강약 → pptx 텍스트 런 — 타이틀의 <b>(볼드)·톤 스팬(.mut 등)이 통짜로 뭉개지던 문제.
+     스타일이 전부 같으면 null(기존 단일 텍스트 경로 유지). */
+  function runsOf(win, el, slideBg) {
+    if (!el.querySelector('b,strong,i,em,span')) return null;
+    var runs = [];
+    function push(t, cs) {
+      if (!t) return;
+      runs.push({ text: t.replace(/ /g, ' '), options: {
+        bold: (parseInt(cs.fontWeight, 10) || 400) >= 600,
+        italic: cs.fontStyle === 'italic',
+        color: hex(blend(parseColor(cs.color), slideBg)),
+      } });
+    }
+    function walk(node, cs) {
+      if (node.nodeType === 3) { push(node.textContent, cs); return; }
+      if (node.nodeType !== 1) return;
+      if (node.tagName === 'BR') { if (runs.length) runs[runs.length - 1].options.breakLine = true; return; }
+      var c2 = win.getComputedStyle(node);
+      if (c2.display === 'none' || parseColor(c2.color).a <= 0.01) return;
+      for (var c = node.firstChild; c; c = c.nextSibling) walk(c, c2);
+    }
+    var base = win.getComputedStyle(el);
+    for (var c = el.firstChild; c; c = c.nextSibling) walk(c, base);
+    while (runs.length && !runs[runs.length - 1].text.trim()) runs.pop();
+    var f = runs[0]; if (!f || runs.length < 2) return null;
+    var same = runs.every(function (r) { return r.options.bold === f.options.bold && r.options.color === f.options.color && r.options.italic === f.options.italic; });
+    return same ? null : runs;
+  }
 
   function addTextBox(win, s, el, origin, slideBg) {
     var cs = win.getComputedStyle(el);
@@ -116,7 +145,8 @@
     else if (align === 'center') boxX = r.x - slackW / 2;
     var opts = { x: boxX * IN, y: r.y * IN, w: boxW * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: (parseInt(cs.fontWeight, 10) || 400) >= 600, italic: cs.fontStyle === 'italic', fontFace: fontFamily(cs), align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacingMultiple: lsm || undefined, wrap: !oneLine };
     if (vertical) { var cx = r.x + r.w / 2, cy = r.y + r.h / 2; opts.w = Math.max(r.h, 6) * IN; opts.h = Math.max(r.w, 8) * IN; opts.x = cx * IN - opts.w / 2; opts.y = cy * IN - opts.h / 2; opts.rotate = 270; opts.align = 'center'; opts.valign = 'middle'; }
-    s.addText(txt, opts);
+    var runs = parseColor(cs.color).a > 0.01 && !vertical ? runsOf(win, el, slideBg) : null;
+    if (runs) s.addText(runs, opts); else s.addText(txt, opts);
   }
   function addShapeBox(win, pptx, s, el, origin, slideBg) {
     var cs = win.getComputedStyle(el); var r = rel(el, origin); if (r.w < 3 && r.h < 3) return;   // 한 축만 얇은 것(라인)은 허용
