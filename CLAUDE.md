@@ -64,4 +64,5 @@ cd proxy && npx wrangler deploy
 
 - 추측 금지. 워커는 **curl 실호출**, 렌더는 **브라우저 하네스**(레포 루트에 `_verify*.html` 임시 생성 → 검증 → 삭제)로 실측
 - JS 수정 후 `node --check`. 이미지 관련은 눈검증
+- **커밋 자동 검수**: `.githooks/pre-commit` → `node scripts/check.cjs`(문법 전수·활성 팩 한국어 폴백·core 테스트). 불합격=커밋 차단. 새로 클론하면 `git config core.hooksPath .githooks` 1회 필요
 - 타이틀 강약: 첫 줄 라이트 → 둘째 줄부터 볼드(mixT). `**마커**` 우선, CJK는 글자 기준 분할

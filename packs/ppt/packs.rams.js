@@ -961,7 +961,7 @@
   /* ---- 결정론 폴백 — AI 실패 시 브리프 키워드로 조립 ---- */
   function ramsComposeDeck(brief) {
     brief = brief || {};
-    var title = (brief.title || '').trim() || '보고';
+    var title = (brief.title || '').trim() || (brief.lang && brief.lang !== 'ko' ? 'Untitled Deck' : '보고');
     var outline = (brief.outline || []).map(function (s) { return (s || '').trim(); }).filter(Boolean).slice(0, 5);
     var slides = [{ type: 'cover', label: 'MIDAS Design AX', eyebrow: 'REPORT', title: title, band: brief.message || '', docLabel: brief.audience || '' }];
     if (outline.length > 1) slides.push({ type: 'toc', title: '보고 순서', items: outline.map(function (o) { return { label: o, desc: '' }; }) });

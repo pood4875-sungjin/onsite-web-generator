@@ -1277,7 +1277,7 @@
   /* 결정론 폴백 — AI 실패/미가용 시 브리프 키워드로 타입 선택 */
   function naverComposeDeck(brief) {
     brief = brief || {};
-    var title = (brief.title || '').trim() || '제안 발표';
+    var title = (brief.title || '').trim() || (brief.lang && brief.lang !== 'ko' ? 'Untitled Deck' : '제안 발표');
     var outline = (brief.outline || []).map(function (s) { return (s || '').trim(); }).filter(Boolean).slice(0, 5);
     var slides = [{ type: 'cover', eyebrow: 'MIDAS DESIGN AX', title: title, sub: brief.message || '', band: brief.message || '', meta: [{ k: 'DATE', v: String(new Date().getFullYear()) }, { k: 'TEAM', v: brief.audience || '' }] }];
     if (outline.length > 1) slides.push({ type: 'toc', title: 'CONTENTS', items: outline.map(function (o) { return { label: o }; }) });
