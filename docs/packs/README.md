@@ -3,7 +3,7 @@
 팩 소스 위치(2026-08-06 재구성):
 
 ```
-app/packs/
+packs/
   ppt/   PPT 팩  — packs.naver.js rams machine pastel sfmi pitch honors ppt
   web/   웹/랜딩 팩 — packs.mbm.js axday toss orbit saturn aether krds midas
   edm/   eDM 팩  — packs.edm.js

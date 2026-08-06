@@ -27,7 +27,7 @@
   var GREEN = '#FF5500'   /* [시연] 포인트 = 주황 */, INK = '#14181F';
   var PROD = 'https://midas-drs.pages.dev/app/';
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
-  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, '');   /* 팩 폴더 하위 이동 — bg/는 app/ 기준 유지 */
+  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, 'app/');   /* 팩=루트 packs/ — 자산은 app/bg 기준 */
   /* file:// 스튜디오는 srcdoc iframe에서 로컬 이미지 로드가 막힐 수 있어 프로드 자산으로 강제 */
   if (!BASE || BASE.indexOf('file:') === 0) BASE = PROD;
   function aurl(f) { return BASE + 'bg/' + f; }

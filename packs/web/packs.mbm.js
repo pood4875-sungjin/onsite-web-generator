@@ -17,7 +17,7 @@
   /* 기본 실사 — 히어로는 사용자 첨부 원본(Figma 239:107443 → bg/mbm-hero.jpg), 챕터는 눈검증 큐레이션.
      죽은 링크는 onerror로 제거되고 모형 폴백 */
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
-  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, '');   /* 팩 폴더 하위 이동 — bg/는 app/ 기준 유지 */
+  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, 'app/');   /* 팩=루트 packs/ — 자산은 app/bg 기준 */
   var IMG_HERO = BASE + 'bg/mbm-hero.jpg';
   var IMG_FEAT = [
     'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1100&q=78&auto=format&fit=crop',

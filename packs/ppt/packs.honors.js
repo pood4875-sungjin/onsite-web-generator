@@ -11,7 +11,7 @@
    레이아웃 카탈로그(window.HONORS_CATALOG)에 "언제 쓰나"가 붙어 있어 AI가 브리프를 읽고 타입을 고른다. */
 (function () {
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
-  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, '');   /* 팩 폴더 하위 이동 — bg/는 app/ 기준 유지 */
+  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, 'app/');   /* 팩=루트 packs/ — 자산은 app/bg 기준 */
   function bgUrl(n) { return BASE + 'bg/honors-' + n + '.jpg'; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function ml(s) { return esc(s).replace(/\n/g, '<br>'); }

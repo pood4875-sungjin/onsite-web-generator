@@ -20,7 +20,7 @@ description: 기존 PPT 팩에 슬라이드 타입 추가(예: machine의 shot).
 ## 검증
 
 ```bash
-node --check app/packs.X.js
+node --check packs/… packs.X.js
 # 타입을 강제 포함한 브리프로 실호출 → 해당 타입 반환·필드 확인
 ```
 - 하네스 렌더(KO+EN) → 레이아웃·이미지·data-edit 클릭 편집 확인 → 하네스 삭제
