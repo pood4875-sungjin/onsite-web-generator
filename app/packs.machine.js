@@ -637,7 +637,7 @@
     var fam = L === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC';
     return '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
       '<link href="https://fonts.googleapis.com/css2?family=' + fam.replace(/ /g, '+') + ':wght@300..900&display=swap" rel="stylesheet">' +
-      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}</style>';
+      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}.ds,.ld,.mut,.nx-cltitle,.nx-cvtitle,.nx-dktitle,.nx-dmtitle,.nx-hl,.nx-qtx,.nx-sttitle,.tt,.tx{font-weight:400}</style>';   /* 한자·가나는 300이 실낱 — 라이트 계열만 400으로 */
   }
   function lockDemo(slides, clang, touched) {
     if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */

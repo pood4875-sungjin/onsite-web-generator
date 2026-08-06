@@ -343,7 +343,7 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       (LANG === 'ja' || LANG === 'zh' ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + (LANG === 'ja' ? 'Noto+Sans+JP' : 'Noto+Sans+SC') + ':wght@300;400;500;700;800;900&display=swap">' +
-        '<style>body,button,input,textarea{font-family:"Pretendard Variable",Pretendard,"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '",-apple-system,sans-serif}</style>' : '') +
+        '<style>body,button,input,textarea{font-family:"' + (LANG === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC') + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}.ax-ht{font-weight:500}</style>' : '') +
       '<style>' + css() + '</style></head><body data-pack="axday">' +
       '<nav class="ax-nav"><div class="wrap"><span class="brand"' + de('productName') + '>' + esc(d.productName) + '</span>' +
       (d.navLinks || []).map(function (l, i) { return { l: l, i: i }; }).filter(function (x) { return String(x.l || '').trim(); }).slice(0, 4).map(function (x, j) { return '<a href="' + ['#about', '#program', '#info', '#faq'][j % 4] + '"' + de('navLinks.' + x.i) + '>' + esc(x.l) + '</a>'; }).join('') +

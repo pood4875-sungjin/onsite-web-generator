@@ -735,7 +735,7 @@
     var fam = L === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC';
     return '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
       '<link href="https://fonts.googleapis.com/css2?family=' + fam.replace(/ /g, '+') + ':wght@300..900&display=swap" rel="stylesheet">' +
-      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}</style>';
+      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}.mut,.rs-bdrows,.rs-body,.rs-brfoot,.rs-brltx,.rs-brtext,.rs-bscap,.rs-bsnum,.rs-btext,.rs-cdtext,.rs-clsub,.rs-cltitle,.rs-cmrows,.rs-cvfoot,.rs-cvtitle,.rs-dvlead,.rs-dvtitle,.rs-hhl,.rs-hl,.rs-hlfoot,.rs-hlsub,.rs-kpval,.rs-mtx,.rs-no,.rs-note,.rs-pchead,.rs-qtx,.rs-rmitems,.rs-rtext,.rs-srow,.rs-stsub,.rs-sttitle,.rs-sttx,.rs-tchead,.rs-tdesc{font-weight:400}</style>';   /* 한자·가나는 300이 실낱 — 라이트 계열만 400으로 */
   }
   function lockDemo(slides, clang, touched) {
     if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */
