@@ -11,7 +11,7 @@ buildless 정적 SPA. 빌드 도구·번들러·프레임워크 없음 — 클�
 - `proxy/worker.js` — Cloudflare Worker. 프롬프트 조립·모델·토큰 전부 서버 통제. **API 키는 여기(secret)에만**
 - `app/bg/` — 이미지 자산. 프로드 경로 `https://midas-drs.pages.dev/app/bg/...`
 - `core/`+`scripts/build.cjs` → `app/bundle.js` 생성(직접 편집 금지 이유). `scripts/` = 빌드·점검 CLI(check-i18n 등)
-- `sources/` — 팩 실측 원본 자료(로컬 전용, gitignore). `tools/` = 개발 보조 페이지(pack-inspector 등)
+- `sources/` — 팩 실측 원본·참고 자료(로컬 전용, gitignore)
 - 새 팩 추가 → `.claude/skills/new-ppt-pack` 또는 `new-web-pack` 스킬 참조
 
 ## 배포 (푸시 ≠ 배포)
