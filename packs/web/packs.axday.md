@@ -14,3 +14,10 @@
    - `.ax-ph`엔 'ph' 클래스 같이 붙여야 높이 적용 / 카운트다운 무효·지남=D-12 폴백
    - 이미지 onerror 2단(로컬→프로드→제거), BASE는 packs/ 폴더 strip
 7. **배선** — 로드 7페이지 / index STYLES·recStyles·styleThumb / studio 해석·renderWith·sectionSpec / dashboard·projects / worker compose-web(WEB_SYSTEM)
+
+## 디자인 DNA (스타일 이식용)
+
+- **무드**: 밝고 임팩트 — 화이트 바탕에 오렌지 한 방.
+- **팔레트**: 잉크 #030712 · 임팩트 오렌지 #FF5500(밴드·eyebrow) · 블루 CTA #00A3FE · 다크 세션 카드.
+- **타이포**: 히어로 68px 라이트 300(CJK 500)+볼드 700, 첫 줄 라이트·둘째 볼드. 센터 정렬 섹션 타이틀.
+- **모티프**: pill 버튼(r999), 포토 카드+캡션 칩, 일정·장소 표+지도, 미니멀 FAQ('+' 라인).
