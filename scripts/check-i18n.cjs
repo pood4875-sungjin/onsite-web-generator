@@ -1,6 +1,6 @@
 /* i18n 커버리지 체커 — 앱 코드의 모든 로컬라이징 대상 문구를 긁어 i18n.js MAP 등재 여부를 검사.
-   사용: node _src-check-i18n.cjs        → 미등재 한국어 문구 목록 출력(빌드 게이트용 exit 1)
-        node _src-check-i18n.cjs --json  → JSON 배열로 출력(자동 등재 파이프라인용)
+   사용: node scripts/check-i18n.cjs        → 미등재 한국어 문구 목록 출력(빌드 게이트용 exit 1)
+        node scripts/check-i18n.cjs --json  → JSON 배열로 출력(자동 등재 파이프라인용)
    대상: _L('…') · tL('…') · L('…') 호출 + data-i18n / data-i18n-ph / data-i18n-placeholder / data-i18n-title 속성.
    한국어가 없는 문구(영문·이모지 전용)는 통과 — 번역 불필요. */
 const fs = require('fs');
