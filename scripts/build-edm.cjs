@@ -6,7 +6,7 @@
    좌표/색/타이포는 각 노드 get_design_context 실측값 그대로. */
 const fs = require('fs');
 const path = require('path');
-const ROOT = __dirname;
+const ROOT = require('path').join(__dirname, '..');   /* scripts/ 하위 이동 — 루트 기준 유지 */
 
 function dataUri(file) {
   const ext = path.extname(file).slice(1).toLowerCase();

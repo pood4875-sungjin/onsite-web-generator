@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const APP = path.join(__dirname, 'app');
+const APP = path.join(__dirname, '..', 'app');   /* scripts/ 하위 이동 — 루트 기준 유지 */
 const FILES = [
   'index.html', 'projects.html', 'studio/studio.html', 'modal.js', 'templates.js', 'llm.js',
 ].map((f) => path.join(APP, f)).filter((f) => fs.existsSync(f));

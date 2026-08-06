@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = __dirname;
+const ROOT = require('path').join(__dirname, '..');   /* scripts/ 하위 이동 — 루트 기준 유지 */
 
 // 의존성 순서대로 (앞 파일이 뒤 파일보다 먼저 정의돼야 함)
 const FILES = [

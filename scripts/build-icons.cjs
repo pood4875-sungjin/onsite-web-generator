@@ -6,7 +6,7 @@
    classic script 산출물이라 file://에서도 동작. */
 const fs = require('fs');
 const path = require('path');
-const ROOT = __dirname;
+const ROOT = require('path').join(__dirname, '..');   /* scripts/ 하위 이동 — 루트 기준 유지 */
 const SRC = path.join(ROOT, 'assets/icons');
 const DEST = path.join(ROOT, 'app/icons.js');
 
