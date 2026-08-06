@@ -10,7 +10,7 @@ packs/
 ```
 
 로드 지점(경로 바꾸면 전부 수정): `index` `studio/studio` `dashboard` `projects` `resources` `settings` `icons` 7페이지의 스크립트 배열.
-팩이 하위 폴더로 가면서 currentScript 기반 BASE는 `replace(/packs\/(ppt|web|edm)\/$/,'')`로 app/ 기준 복원(axday·mbm·machine·honors).
+팩은 레포 루트 — currentScript 기반 BASE는 `replace(/packs\/(ppt|web|edm)\/$/,'app/')`로 자산(app/bg) 기준 복원(axday·mbm·machine·honors).
 
 ## 인벤토리
 

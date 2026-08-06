@@ -23,10 +23,10 @@ cd proxy && npx wrangler deploy
 ## 프로드 스모크
 
 ```bash
-for u in "app/studio/studio.html" "app/index.html" "app/llm.js" "packs/… packs.machine.js" "app/bg/gennx-1.jpg" "app/bg/dubai-hero.jpg"; do
+for u in "app/studio/studio.html" "app/index.html" "app/llm.js" "packs/ppt/packs.machine.js" "app/bg/gennx-1.jpg" "app/bg/dubai-hero.jpg"; do
   printf '%s ' "$u"; curl -sL -o /dev/null -w '%{http_code}\n' "https://midas-drs.pages.dev/$u"; done
 ```
-- 코드 내용 확인: `curl -s "https://midas-drs.pages.dev/packs/… packs.X.js?v=$(date +%s)" | grep -c "핵심문자열"
+- 코드 내용 확인: `curl -s "https://midas-drs.pages.dev/packs/ppt/packs.X.js?v=$(date +%s)" | grep -c "핵심문자열"
 - 실동작: Browser pane에서 프로드 studio 열어 콘솔 에러 0 + `window.LLM`/렌더 함수 직접 호출
 
 ## 클라 캐시
