@@ -719,7 +719,7 @@
   function renderDeckFor(slides){
     const sp = project ? project.stylePack : (pack && pack.id);
     // _clang 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로 떨어져 리스트/본문 언어가 어긋난다
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '', _clang: data._clang };
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '', _clang: data._clang, _userTouched: data._userTouched };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
     if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='rams' && typeof renderRamsDeck==='function') return renderRamsDeck(payload);
@@ -755,6 +755,12 @@
     const p=path.split('.'); let o=data;
     for(let i=0;i<p.length-1;i++){ const k=/^\d+$/.test(p[i])?+p[i]:p[i]; const nextIsIdx=/^\d+$/.test(p[i+1]); if(o[k]==null) o[k]=nextIsIdx?[]:{}; o=o[k]; }
     const last=p[p.length-1]; o[/^\d+$/.test(last)?+last:last]=val;
+    // 사용자 직접 편집 표시 — 시연 잠금(고정 문구)은 사용자가 손댄 값은 덮지 않는다
+    try{
+      data._userTouched=true;
+      (data._touched=data._touched||{})[path]=1;
+      const m=path.match(/^slides\.(\d+)\./); if(m&&data.slides&&data.slides[+m[1]]) data.slides[+m[1]]._touched=1;
+    }catch(e){}
   }
   function applyImage(key, src){
     data.images=data.images||{}; data.images[key]=src; persist();
@@ -1665,6 +1671,7 @@
       if(brief && (!brief.pack || !PK[brief.pack]) && pack && PK[pack.id]) brief.pack=pack.id; }catch(e){}
     // 생성 언어로 덱 언어 기록 갱신 — 프로젝트 생성 때 박힌 옛 기록이 남아 표지 잠금 언어가 어긋나는 것 방지
     try{ data._clang = (window.I18N && I18N.getLang()) || localStorage.getItem('midas-lang') || data._clang || 'ko'; }catch(e){}
+    try{ data._userTouched=false; data._touched={}; }catch(e){}   // 재생성 = 잠금 원복
     _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
     const prow=el('div','row'); const pbub=el('div','bub bot'); pbub.textContent=tL('목차를 구성하는 중…');
@@ -2289,6 +2296,7 @@
         wk.done();
         if(res.slides){
           pushUndo(snap);
+          data._userTouched=true;   // 채팅 수정 = 사용자 의지 — 표지 잠금보다 우선
           // 영구 스냅샷(1개) — 새로고침 뒤에도 ↺가 마지막 AI 수정 직전으로 복구 가능
           if(pageRef) pageRef.prevSlides = JSON.parse(snap);
           // 변경 감지: 그대로/이동만 된 장은 제외, 내용 바뀐 장='수정', 완전 새 장='NEW'

@@ -1016,7 +1016,8 @@
   }
 
   /* [시연 잠금] 표지 타이틀 고정(아너스데이) — 누가 언제 뽑아도 동일(언어별) */
-  function lockDemo(slides, clang) {
+  function lockDemo(slides, clang, touched) {
+    if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */
     // 언어는 "내용"이 진실 — 기록(_clang)은 재생성·구버전에서 어긋난 채 남을 수 있어 보조로만 쓴다.
     // 비율 판정이라 EN 덱에 남는 한국어 인명 몇 자에는 안 속는다. 신호가 약할 때만 기록/기본값.
     var L = (function (o) {
@@ -1035,13 +1036,13 @@
       ja: 'オナーズデイ\n**中国法人 所感発表**',
       zh: '荣誉日\n**中国法人 感想发表**',
     }[L];
-    return slides.map(function (s) { return s.type === 'cover' ? Object.assign({}, s, { title: T }) : s; });
+    return slides.map(function (s) { if (s && s._touched) return s; return s.type === 'cover' ? Object.assign({}, s, { title: T }) : s; });
   }
 
   function renderNaverDeck(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang);
+    slides = lockDemo(slides, data._clang, data._userTouched);
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + '</style></head><body data-style="naver">' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
@@ -1051,7 +1052,7 @@
   function renderNaverViewer(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang);
+    slides = lockDemo(slides, data._clang, data._userTouched);
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +

@@ -723,7 +723,8 @@
   }
 
   /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
-  function lockDemo(slides, clang) {
+  function lockDemo(slides, clang, touched) {
+    if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */
     // 언어는 "내용"이 진실 — 기록(_clang)은 재생성·구버전에서 어긋난 채 남을 수 있어 보조로만 쓴다.
     // 비율 판정이라 EN 덱에 남는 한국어 인명 몇 자에는 안 속는다. 신호가 약할 때만 기록/기본값.
     var L = (function (o) {
@@ -743,6 +744,7 @@
       zh: { t: '**MIDAS GEN NX**\n__新一代__\n**结构设计平台**', b: '从建模到**API自动化**，一个平台', c: '**亲身体验**\n__新一代结构设计__\n**MIDAS GEN NX**' },
     }[L];
     return slides.map(function (s) {
+      if (s && s._touched) return s;   /* 인라인 편집한 장은 그대로 */
       if (s.type === 'cover') return Object.assign({}, s, { title: CV.t, band: CV.b });
       if (s.type === 'statement') return Object.assign({}, s, { title: 'MIDAS GEN NX × API × AI' });
       if (s.type === 'closing') return Object.assign({}, s, { title: CV.c });
@@ -754,7 +756,7 @@
     data = data || {};
     CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
-    slides = lockDemo(slides, data._clang);
+    slides = lockDemo(slides, data._clang, data._userTouched);
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
   }
@@ -764,7 +766,7 @@
     data = data || {}; opts = opts || {};
     CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang);
+    slides = lockDemo(slides, data._clang, data._userTouched);
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +

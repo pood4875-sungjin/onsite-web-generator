@@ -336,14 +336,15 @@
     var BD = LANG === 'ko' ? DEMO : DEMO_EN;
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
-    /* [시연 잠금] GNB·히어로 타이틀 고정 — 누가 언제 뽑아도 동일(생성·번역·편집값보다 우선) */
-    d.navTitle = 'MIDAS GEN NX Seminar 2026';
-    d.tagline = ({
+    /* [시연 잠금] GNB·히어로 고정 — 단 사용자가 직접 편집한 필드(_touched)는 양보 */
+    var TCH = shared._touched || {};
+    if (!TCH.navTitle) d.navTitle = 'MIDAS GEN NX Seminar 2026';
+    if (!TCH.tagline) d.tagline = ({
       ko: '지금 만나보세요\n차세대 구조설계 워크플로우',
       en: 'Meet the Next Generation of\nStructural Design Workflow',
       ja: 'いま、出会う\n次世代の構造設計ワークフロー',
       zh: '即刻遇见\n新一代结构设计工作流',
-    })[LANG];
+    })[LANG] || d.tagline;
     // 템플릿 고정 라벨 — 산출물 언어(_clang) 기준 + 타이틀 강약(첫 줄 볼드/다음 라이트, **마커** 우선)
     function mixT(s) {
       s = String(s == null ? '' : s);
