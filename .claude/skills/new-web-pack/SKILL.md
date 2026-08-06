@@ -7,7 +7,7 @@ description: 새 웹/랜딩 스타일팩(packs.X.js) 추가 절차. 고정 TEMPL
 
 PPT 팩과 다름: 웹 팩은 **고정 TEMPLATE 자기조립** — `renderXPage(shared, {volume, motion})`이 완성 HTML 반환. PAGE_TYPES 라우팅 안 씀(랜딩 전용 정체성). mbm·axday·orbit 포크가 기본.
 
-## 1. 팩 파일 계약 (`app/packs.X.js`)
+## 1. 팩 파일 계약 (`app/packs/web/packs.X.js`)
 
 - `renderXPage(shared, opts)` + `X_SECTION_SPEC` export
 - 데이터: compose-web 평면 스키마(features·stats·sessions·eventDate/Place·deadline·faq·ctaTitle·formTitle…) + `DEMO`(KO)/`DEMO_EN` 폴백 쌍 — `LANG==='ko'?DEMO:DEMO_EN`(KO 예시가 EN 페이지에 새는 것 방지)
@@ -40,7 +40,7 @@ PPT 팩과 다름: 웹 팩은 **고정 TEMPLATE 자기조립** — `renderXPage(
 ## 4. 검증
 
 ```bash
-node --check app/packs.X.js
+node --check app/packs/web/packs.X.js
 # compose-web 실호출 — 첨부 필드(sessions·eventDate·faq)가 실제 반영되는지
 curl -sS -X POST https://webgen-ppt-proxy.ksj0225.workers.dev/compose-web -H 'Content-Type: application/json' \
   -d '{"plan":"...","kind":"single","lang":"en"}'

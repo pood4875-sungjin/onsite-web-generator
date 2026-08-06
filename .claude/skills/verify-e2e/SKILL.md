@@ -44,7 +44,7 @@ m = re.search(r'```json\s*(.*?)```', raw, re.S) or re.search(r'(\{.*\})', raw, r
 ## 4언어 매트릭스 (로컬라이징 수정 시)
 
 KO·EN·JA·ZH × {본문·썸네일(solo)·뷰어} — 언어 어긋남은 `_clang` 미동봉 경로가 주범.
-`grep "|| '[가-힣]" app/packs.*.js` = 하드코딩 폴백 검사.
+`grep -r "|| '[가-힣]" app/packs/` = 하드코딩 폴백 검사.
 
 ## JS 문법
 

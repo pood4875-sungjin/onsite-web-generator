@@ -5,7 +5,9 @@ buildless 정적 SPA. 빌드 도구·번들러·프레임워크 없음 — 클�
 
 ## 구조
 
-- `app/` — 전 화면(index=홈·인테이크, studio/=편집 스튜디오, dashboard, projects) + 팩들(`packs.*.js`) + `llm.js`(AI 클라이언트) + `export-pptx.js` + `charts.js`
+- `app/` — 전 화면(index=홈·인테이크, studio/=편집 스튜디오, dashboard, projects, resources, settings) + `llm.js`(AI 클라이언트) + `export-pptx.js` + `charts.js`
+- `app/packs/ppt/` `app/packs/web/` `app/packs/edm/` — 스타일팩(파일명은 packs.X.js 유지). 인벤토리·팩별 규칙 = `docs/packs/README.md`
+- 팩 로드 지점 7페이지(index·studio·dashboard·projects·resources·settings·icons) — 경로 바꾸면 전부 수정 + currentScript BASE strip 확인
 - `proxy/worker.js` — Cloudflare Worker. 프롬프트 조립·모델·토큰 전부 서버 통제. **API 키는 여기(secret)에만**
 - `app/bg/` — 이미지 자산. 프로드 경로 `https://midas-drs.pages.dev/app/bg/...`
 - 새 팩 추가 → `.claude/skills/new-ppt-pack` 또는 `new-web-pack` 스킬 참조
@@ -36,7 +38,7 @@ cd proxy && npx wrangler deploy
 - 덱/사이트 데이터의 `_clang` = 산출물 언어 기록. 생성·번역 시 갱신
 - **잠금 문구·폴백의 언어는 기록보다 "내용"이 진실** — 비율 기반 판정(EN 덱의 한국어 인명 몇 자에 속지 말 것)
 - 렌더 경로(본문·썸네일·라이브·뷰어)에 `_clang` 반드시 동봉 — 빼먹으면 리스트/본문 언어가 어긋난다
-- **렌더러에 `|| '한국어문구'` 하드코딩 폴백 금지** — 로컬라이징 지뢰. 검수: `grep "|| '[가-힣]" app/packs.*.js`
+- **렌더러에 `|| '한국어문구'` 하드코딩 폴백 금지** — 로컬라이징 지뢰. 검수: `grep -r "|| '[가-힣]" app/packs/`
 - CJK(zh·ja): **Noto Sans SC/JP를 폰트 1순위로**(Pretendard가 흔한 한자를 일부 갖고 있어 글자별 혼합됨) + 라이트 300은 한자에서 실낱 — 랜딩 500·PPT 400으로 상향
 
 ## 잠금(시연 고정) 우선순위

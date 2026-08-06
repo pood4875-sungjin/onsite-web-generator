@@ -93,6 +93,7 @@
   var _pinI = 0;
   // 히어로 기본 = 첨부 원본 교량(mbm과 공유, bg/mbm-hero.jpg) — currentScript 기준 절대경로
   var BASE = (function () { try { var sc = document.currentScript && document.currentScript.src || ''; return sc ? sc.slice(0, sc.lastIndexOf('/') + 1) : ''; } catch (e) { return ''; } })();
+  BASE = BASE.replace(/packs\/(ppt|web|edm)\/$/, '');   /* 팩 폴더 하위 이동 — bg/는 app/ 기준 유지 */
   var BRIDGE = BASE + 'bg/mbm-hero.jpg';
   var DUBAI = BASE + 'bg/dubai-hero.jpg';   // [시연 고정] 히어로 기본 = 사용자 첨부 두바이 원본(shutterstock_2780488677)
   function photo(mode, key, w, h, slot) {

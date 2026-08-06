@@ -7,7 +7,7 @@ description: 새 PPT 스타일팩(packs.X.js) 추가·포크 절차. 팩 계약,
 
 기존 팩 포크가 기본(naver·rams·machine·pastel 참조). 소스(PDF·Figma·사이트)가 있으면 **실측만** — 추측값 금지, 소스에 없는 건 만들지 않는다.
 
-## 1. 팩 파일 계약 (`app/packs.X.js`)
+## 1. 팩 파일 계약 (`app/packs/ppt/packs.X.js`)
 
 - 자기완결 IIFE, window 전역 export:
   `renderXDeck(data)` `renderXViewer(data,opts)` `xTemplateDeck()` `X_SCHEMA_DOC` `X_FIELD_DOC` `X_TYPE_LABEL` `X_CATALOG`(+ 팩별 MV_SEL 등 기존 팩 참조)
@@ -19,7 +19,7 @@ description: 새 PPT 스타일팩(packs.X.js) 추가·포크 절차. 팩 계약,
 
 ## 2. 배선 체크리스트 — 하나라도 빼먹으면 조용히 안 나옴
 
-1. 스크립트 로드 4곳: `app/index.html` `app/studio/studio.html`(라인 10 배열) `app/dashboard.html` `app/projects.html`
+1. 스크립트 로드 **7페이지**: `index` `studio/studio`(각 라인 10 배열) `dashboard` `projects` `resources` `settings` `icons` — 경로는 `app/packs/ppt/packs.X.js`(studio는 `../` 접두)
 2. `index.html` `PPT_VISIBLE` 배열(피커 노출) + FIRST_SAMPLES 필요 시
 3. `studio.html` `packMode`(팩별 스튜디오 동작 규칙) + 팩 해석 체인 + `renderDeckFor` 분기 + 뷰어 분기(`renderXViewer`)
 4. `dashboard/projects` `renderForStyle` + `styleName` + `PPT_PACKS`
@@ -37,7 +37,7 @@ description: 새 PPT 스타일팩(packs.X.js) 추가·포크 절차. 팩 계약,
 ## 4. 검증 (전부 실측 — 추측 금지)
 
 ```bash
-node --check app/packs.X.js
+node --check app/packs/ppt/packs.X.js
 # 워커 실호출 — 장수·타입 시퀀스·한글 누수 확인
 curl -sS -X POST https://webgen-ppt-proxy.ksj0225.workers.dev/compose -H 'Content-Type: application/json' \
   -d '{"pack":"X","lang":"en","title":"...","plan":"...","volume":"standard"}'
@@ -47,7 +47,7 @@ curl -sS -X POST https://webgen-ppt-proxy.ksj0225.workers.dev/compose -H 'Conten
 
 ## 5. 반복 사고 목록
 
-- 렌더러 `|| '한국어'` 폴백 → EN 덱에 한글 노출. `grep "|| '[가-힣]"` 필수
+- 렌더러 `|| '한국어'` 폴백 → EN 덱에 한글 노출. `grep -r "|| '[가-힣]" app/packs/` 필수
 - 뷰어는 시작 시 전 장 `display:none` — rect 기반 축소/맞춤 가드는 **숨김 장 스킵** 안 하면 rect=0을 오판해 폰트 뭉갬
 - 자동 축소 래핑은 **넘친 장만** + 원본 flex 레이아웃 복제(무조건 래핑 시 커버 붕괴)
 - `layout` 아닌 `data-edit` 경로 오타 → 편집 저장 안 됨
