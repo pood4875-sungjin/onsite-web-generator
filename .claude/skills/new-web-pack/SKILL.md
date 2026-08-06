@@ -19,6 +19,10 @@ PPT 팩과 다름: 웹 팩은 **고정 TEMPLATE 자기조립** — `renderXPage(
 - 이미지: onerror 2단 폴백(로컬→프로드→제거), 공유 스냅샷은 studio `absAssets`가 절대화
 - 잠금 필드(시연 고정)는 `shared._touched` 필드 단위로 양보
 
+## 1.5 짝꿍 문서 (필수)
+
+팩 JS 옆에 같은 이름 `.md`(packs.X.md) — `docs/packs/README.md` 공통 7절 포맷. 인벤토리 표에도 한 줄 추가.
+
 ## 2. 배선 7곳
 
 1. 스크립트 로드: `index.html` + `studio.html`(라인 10 배열)

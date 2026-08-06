@@ -16,23 +16,25 @@ packs/
 
 | 팩 | 종류 | 표시명 | 상태 | 문서 |
 |---|---|---|---|---|
-| naver | PPT | Design AX Line | **활성·시연 잠금**(아너스데이 10장) | [ppt-naver.md](ppt-naver.md) |
-| rams | PPT | Structure style | **활성·시연 잠금**(GEN NX 10장) | [ppt-rams.md](ppt-rams.md) |
-| machine | PPT | AX Machine | **활성·시연 잠금**(GEN NX 10장·주황) | [ppt-machine.md](ppt-machine.md) |
-| pastel | PPT | Pastel Gradient | 활성(피커 숨김 — 시연 중 machine으로 교체) | 표 참조 |
-| sfmi | PPT | SFMI Report | 활성(피커 밖) | 표 참조 |
-| pitch | PPT | Creatable Pitch | 활성(피커 밖) | 표 참조 |
-| honors | PPT | MIDAS Honors | 활성(피커 밖) | 표 참조 |
-| ppt | PPT | 기본(ax) | 레거시 폴백 | — |
-| mbm | 웹 | Civil Blue | **활성·시연 잠금**(GNB·히어로) | [web-mbm.md](web-mbm.md) |
-| axday | 웹 | Ensol MBM | **활성·시연 잠금**(GNB·eyebrow·히어로·사진) | [web-axday.md](web-axday.md) |
-| orbit | 웹 | Global MBM | **활성·시연 잠금**(GNB·히어로) | [web-orbit.md](web-orbit.md) |
-| toss | 웹 | 챌린지 화이트 | 유지(피커 제외) | — |
-| saturn | 웹 | Saturn 블루 | 레거시(기존 프로젝트 열람용) | — |
-| aether/krds/midas | 웹 | — | 레거시(기존 프로젝트 열람용) | — |
-| edm | eDM | — | 활성(eDM 플로우) | — |
+| naver | PPT | Design AX Line | **활성·시연 잠금**(아너스데이 10장) | [packs.naver.md](../../packs/ppt/packs.naver.md) |
+| rams | PPT | Structure style | **활성·시연 잠금**(GEN NX 10장) | [packs.rams.md](../../packs/ppt/packs.rams.md) |
+| machine | PPT | AX Machine | **활성·시연 잠금**(GEN NX 10장·주황) | [packs.machine.md](../../packs/ppt/packs.machine.md) |
+| pastel | PPT | Pastel Gradient | 활성(피커 숨김 — 시연 중 machine으로 교체) | 팩 옆 .md |
+| sfmi | PPT | SFMI Report | 활성(피커 밖) | 팩 옆 .md |
+| pitch | PPT | Creatable Pitch | 활성(피커 밖) | 팩 옆 .md |
+| honors | PPT | MIDAS Honors | 활성(피커 밖) | 팩 옆 .md |
+| ppt | PPT | 기본(ax) | 레거시 폴백 | 팩 옆 .md |
+| mbm | 웹 | Civil Blue | **활성·시연 잠금**(GNB·히어로) | [packs.mbm.md](../../packs/web/packs.mbm.md) |
+| axday | 웹 | Ensol MBM | **활성·시연 잠금**(GNB·eyebrow·히어로·사진) | [packs.axday.md](../../packs/web/packs.axday.md) |
+| orbit | 웹 | Global MBM | **활성·시연 잠금**(GNB·히어로) | [packs.orbit.md](../../packs/web/packs.orbit.md) |
+| toss | 웹 | 챌린지 화이트 | 유지(피커 제외) | 팩 옆 .md |
+| saturn | 웹 | Saturn 블루 | 레거시(기존 프로젝트 열람용) | 팩 옆 .md |
+| aether/krds/midas | 웹 | 팩 옆 .md | 레거시(기존 프로젝트 열람용) | 팩 옆 .md |
+| edm | eDM | 팩 옆 .md | 활성(eDM 플로우) | 팩 옆 .md |
 
 시연 잠금의 원리·해제는 `.claude/skills/demo-lock/SKILL.md`.
+
+**문서 위치 규칙: 팩 문서는 팩 JS 옆에 같은 이름 `.md`로 둔다**(packs.X.js ↔ packs.X.md — 팩을 추출·공유할 때 쌍으로 집어가면 됨). 이 README는 인벤토리 인덱스만.
 
 ## 팩 문서 공통 포맷 (신규 문서는 이 순서 고정)
 

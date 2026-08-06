@@ -17,6 +17,10 @@ description: 새 PPT 스타일팩(packs.X.js) 추가·포크 절차. 팩 계약,
 - `lockDemo(slides, clang, touched)` 패턴(시연 고정 시): touched(사용자 편집)면 양보, 언어는 내용 비율로 판정
 - CJK: `cjkHead(slides, clang)` — zh/ja면 Noto Sans SC/JP **1순위** 주입 + 라이트(300) 클래스 400으로
 
+## 1.5 짝꿍 문서 (필수)
+
+팩 JS 옆에 같은 이름 `.md`(packs.X.md) — `docs/packs/README.md` 공통 7절 포맷. 인벤토리 표에도 한 줄 추가.
+
 ## 2. 배선 체크리스트 — 하나라도 빼먹으면 조용히 안 나옴
 
 1. 스크립트 로드 **7페이지**: `index` `studio/studio`(각 라인 10 배열) `dashboard` `projects` `resources` `settings` `icons` — 경로는 `packs/ppt/packs.X.js`(studio는 `../` 접두)
