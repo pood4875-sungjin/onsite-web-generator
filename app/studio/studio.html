@@ -77,6 +77,7 @@
   .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
   .hbtn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surf);color:var(--tx2);text-decoration:none;transition:var(--dur) var(--ease)}
   .hbtn:hover{color:var(--tx);border-color:var(--line2);background:var(--brand-weak)}
+  .hbtn:focus{outline:none}.hbtn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}   /* 클릭 후 남는 타원 포커스 링 제거(키보드 접근성은 유지) */
   .logo{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--grad-brand);box-shadow:var(--cta-glow)}
   .brand b{font-size:16px;color:var(--tx);line-height:1.2}
   .brand .wg{font-size:16px;color:var(--tx);font-weight:var(--fw-semi)}
