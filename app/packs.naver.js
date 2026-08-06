@@ -1016,6 +1016,20 @@
   }
 
   /* [시연 잠금] 표지 타이틀 고정(아너스데이) — 누가 언제 뽑아도 동일(언어별) */
+
+  /* zh·ja 폰트 주입 — Pretendard엔 한자·가나 글리프가 없어 글자별 시스템 폰트가 섞여(굵기 들쭉날쭉) 보인다.
+     덱 내용으로 언어를 판정해 Noto Sans SC/JP를 뒤에 덧붙인다(뒤 선언이 이겨서 폰트 통일). */
+  function cjkHead(slides, clang) {
+    var t = ''; try { t = JSON.stringify(slides); } catch (e) {}
+    var ja = (t.match(/[\u3040-\u30ff]/g) || []).length, ko = (t.match(/[가-힣]/g) || []).length,
+        zh = (t.match(/[\u4e00-\u9fff]/g) || []).length;
+    var L = ja > 10 && ja >= ko ? 'ja' : (zh > 10 && zh > ko ? 'zh' : (({ ja: 1, zh: 1 })[clang] && ko < 5 ? clang : ''));
+    if (!L) return '';
+    var fam = L === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC';
+    return '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=' + fam.replace(/ /g, '+') + ':wght@300..900&display=swap" rel="stylesheet">' +
+      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}</style>';
+  }
   function lockDemo(slides, clang, touched) {
     if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */
     // 언어는 "내용"이 진실 — 기록(_clang)은 재생성·구버전에서 어긋난 채 남을 수 있어 보조로만 쓴다.
@@ -1036,7 +1050,7 @@
       ja: 'オナーズデイ\n**中国法人 所感発表**',
       zh: '荣誉日\n**中国法人 感想发表**',
     }[L];
-    return slides.map(function (s) { if (s && s._touched) return s; return s.type === 'cover' ? Object.assign({}, s, { title: T }) : s; });
+    return slides.map(function (s) { if (!s || s._touched) return s; return s.type === 'cover' ? Object.assign({}, s, { title: T }) : s; });
   }
 
   function renderNaverDeck(data, opts) {
@@ -1045,7 +1059,7 @@
     slides = lockDemo(slides, data._clang, data._userTouched);
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css() + '</style></head><body data-style="naver">' +
-      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
+      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* 발표 뷰어 — honors와 동일 UX(팩 자기완결 원칙상 사본). 순차 등장 유닛·카운트업만 naver 클래스로 교체 */
@@ -1111,7 +1125,7 @@
       '<style>' + css() + vcss + '</style></head><body data-style="naver">' +
       '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' + stateScript(slides) +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button><button class="vbtn vfs" title="전체화면 (F)">⛶</button></div>' +
-      '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
+      '<scr' + 'ipt>' + vjs + '</scr' + 'ipt>' + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* ---- 레이아웃 카탈로그 — "언제 쓰나"가 계약. AI가 브리프를 읽고 타입을 고른다 ---- */

@@ -224,6 +224,8 @@
           ptext = pj2 && pj2.text;
         }
         var pdeck = parseDeck(ptext, brief.pack);
+        // 잘린 스트림 방어 — 잠금 팩(정확히 10장)이 모자라면 관대한 파서가 조각을 "성공"으로 만든 것. 실패로 승격해 비스트림 재시도를 태운다.
+        if (useStream && ({ naver: 1, rams: 1, machine: 1 })[brief.pack] && (pdeck.slides || []).length < 10) throw new Error('TRUNCATED_STREAM_DECK');
         pdeck.style = brief.style || pdeck.style || 'ax';
         pdeck.accent = pdeck.accent || 'blue';
         return pdeck;

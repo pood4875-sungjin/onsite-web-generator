@@ -1704,6 +1704,12 @@
             try{ frame.srcdoc=skeletonSlideHtml(); }catch(e){}
           }
           deck=await LLM.composeDeck(brief, onText);
+          // 잘린 덱 방어 — 잠금 팩(정확히 10장)이 10장 미만이면 스트림이 끊긴 것. "완성 2장"으로 끝내지 말고 재시도.
+          const LOCK10={naver:1,rams:1,machine:1};
+          if(att===0 && deck && LOCK10[brief&&brief.pack] && (deck.slides||[]).length<10){
+            console.warn('[live compose 짧은 덱 '+(deck.slides||[]).length+'장 → 재시도]');
+            deck=null; continue;
+          }
         }catch(e){ if(att>0) throw e; console.warn('[live compose 1차 실패 → 재시도]', e); }
       }
       closeGate();

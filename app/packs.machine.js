@@ -625,6 +625,20 @@
   }
 
   /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
+
+  /* zh·ja 폰트 주입 — Pretendard엔 한자·가나 글리프가 없어 글자별 시스템 폰트가 섞여(굵기 들쭉날쭉) 보인다.
+     덱 내용으로 언어를 판정해 Noto Sans SC/JP를 뒤에 덧붙인다(뒤 선언이 이겨서 폰트 통일). */
+  function cjkHead(slides, clang) {
+    var t = ''; try { t = JSON.stringify(slides); } catch (e) {}
+    var ja = (t.match(/[\u3040-\u30ff]/g) || []).length, ko = (t.match(/[가-힣]/g) || []).length,
+        zh = (t.match(/[\u4e00-\u9fff]/g) || []).length;
+    var L = ja > 10 && ja >= ko ? 'ja' : (zh > 10 && zh > ko ? 'zh' : (({ ja: 1, zh: 1 })[clang] && ko < 5 ? clang : ''));
+    if (!L) return '';
+    var fam = L === 'ja' ? 'Noto Sans JP' : 'Noto Sans SC';
+    return '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=' + fam.replace(/ /g, '+') + ':wght@300..900&display=swap" rel="stylesheet">' +
+      '<style>body,.slide,.slide *{font-family:"' + fam + '","Pretendard Variable",Pretendard,-apple-system,sans-serif}</style>';
+  }
   function lockDemo(slides, clang, touched) {
     if (touched) return slides;   /* 사용자가 손댄 덱(채팅 수정)은 잠금이 양보 */
     // 언어는 "내용"이 진실 — 기록(_clang)은 재생성·구버전에서 어긋난 채 남을 수 있어 보조로만 쓴다.
@@ -646,7 +660,7 @@
       zh: { t: '**MIDAS GEN NX**\n__新一代__\n**结构设计平台**', b: '从建模到**API自动化**，一个平台', c: '**亲身体验**\n__新一代结构设计__\n**MIDAS GEN NX**' },
     }[L];
     return slides.map(function (s) {
-      if (s && s._touched) return s;   /* 인라인 편집한 장은 그대로 */
+      if (!s || s._touched) return s;   /* null·인라인 편집 장은 그대로 */
       if (s.type === 'cover') return Object.assign({}, s, { title: CV.t, band: CV.b });
       if (s.type === 'statement') return Object.assign({}, s, { title: 'MIDAS GEN NX × API × AI' });
       if (s.type === 'closing') return Object.assign({}, s, { title: CV.c });
@@ -676,7 +690,7 @@
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     slides = lockDemo(slides, data._clang, data._userTouched);
     return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS + '</style></head><body>' +
-      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + '</body></html>';
+      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* ---- 발표 뷰어 ---- */
@@ -702,7 +716,7 @@
       '@keyframes vSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}' +
       '#vpg{position:fixed;right:18px;bottom:14px;color:rgba(255,255,255,.5);font:12px/1 Pretendard,sans-serif;z-index:9}' +
       '</style></head><body><div class="ppt-stack">' + renderSlides(slides) + '</div><div id="vpg"></div>' +
-      stateScript(slides) + '<script>' + vjs + '<\/script></body></html>';
+      stateScript(slides) + '<script>' + vjs + '<\/script>' + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* ---- 카탈로그 ---- */
