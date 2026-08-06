@@ -13,6 +13,9 @@
    - zh/ja: Noto 1순위 + `.ob-ht{font-weight:500}`
 7. **배선** — axday와 동일 7곳 세트.
 
+
+**실물 표본**: [`packs.orbit.sample.html`](./packs.orbit.sample.html) — 기본 데이터 렌더 + 전체 CSS 내장(자동 생성 `node scripts/pack-spec.cjs`). **스타일 이식·외부 AI 첨부는 이 파일이 정답** — 브라우저로 열면 실물, 소스를 읽으면 전체 스타일 명세.
+
 ## 디자인 DNA (스타일 이식용)
 
 - **무드**: 글로벌·우주 — 다크 네이비에 멀티컬러 그라데이션과 회전 지구.

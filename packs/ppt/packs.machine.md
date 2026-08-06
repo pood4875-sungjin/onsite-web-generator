@@ -12,6 +12,9 @@
    - bignum·refcards 그리드 세로 중앙(`margin:auto 0`)
 7. **배선** — 로드 7페이지 / PPT_VISIBLE / studio 분기 / export-pptx `.nx-shrow`·figcaption TEXT_SEL / worker `MACHINE_SYSTEM`(+GENNX_FACTS) / llm.js `MACHINE_ALLOWED`(shot 포함) / **LOCK10**
 
+
+**실물 표본**: [`packs.machine.sample.html`](./packs.machine.sample.html) — 기본 데이터 렌더 + 전체 CSS 내장(자동 생성 `node scripts/pack-spec.cjs`). **스타일 이식·외부 AI 첨부는 이 파일이 정답** — 브라우저로 열면 실물, 소스를 읽으면 전체 스타일 명세.
+
 ## 디자인 DNA (스타일 이식용)
 
 - **무드**: 다크 테크 + 영문 빅타이포. 제품 실스크린샷이 주인공.

@@ -11,6 +11,9 @@
    - 표지 언어 = 내용 비율 판정(EN 덱의 한국어 인명에 안 속게)
 7. **배선** — 로드 7페이지 / index `PPT_VISIBLE` / studio packMode·renderDeckFor·뷰어 / dashboard·projects renderForStyle / export-pptx `.cv-l` SHAPE_SEL / worker `NAVER_SYSTEM` / llm.js `NAVER_ALLOWED`·_parseEdit / **LOCK10**(llm.js·studio 잘린 스트림 방어 목록)
 
+
+**실물 표본**: [`packs.naver.sample.html`](./packs.naver.sample.html) — 기본 데이터 렌더 + 전체 CSS 내장(자동 생성 `node scripts/pack-spec.cjs`). **스타일 이식·외부 AI 첨부는 이 파일이 정답** — 브라우저로 열면 실물, 소스를 읽으면 전체 스타일 명세.
+
 ## 디자인 DNA (스타일 이식용 — 이 절만 다른 AI에 넘겨도 됨)
 
 - **무드**: 네이버식 클린 화이트 + 챕터별 파스텔 틴트 지면. 정보 밀도 높지만 여백 넉넉.

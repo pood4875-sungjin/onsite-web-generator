@@ -34,7 +34,7 @@ packs/
 
 시연 잠금의 원리·해제는 `.claude/skills/demo-lock/SKILL.md`.
 
-**문서 위치 규칙: 팩 문서는 팩 JS 옆에 같은 이름 `.md`로 둔다**(packs.X.js ↔ packs.X.md — 팩을 추출·공유할 때 쌍으로 집어가면 됨). 이 README는 인벤토리 인덱스만.
+**문서 위치 규칙: 팩 = JS(실행) + MD(규칙·디자인 DNA) + sample.html(실물 표본, 자동 생성)** — 팩 JS 옆에 같은 이름으로 둔다(packs.X.js ↔ packs.X.md — 팩을 추출·공유할 때 쌍으로 집어가면 됨). 이 README는 인벤토리 인덱스만.
 
 ## 팩 문서 공통 포맷 (신규 문서는 이 순서 고정)
 

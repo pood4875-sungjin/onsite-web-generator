@@ -11,6 +11,9 @@
    - zh/ja `cjkHead` — 라이트 클래스 35종 400 상향
 7. **배선** — 로드 7페이지 / PPT_VISIBLE / studio 분기 / export-pptx / worker `RAMS_SYSTEM`(+GENNX_FACTS 부착) / llm.js ALLOWED / **LOCK10**
 
+
+**실물 표본**: [`packs.rams.sample.html`](./packs.rams.sample.html) — 기본 데이터 렌더 + 전체 CSS 내장(자동 생성 `node scripts/pack-spec.cjs`). **스타일 이식·외부 AI 첨부는 이 파일이 정답** — 브라우저로 열면 실물, 소스를 읽으면 전체 스타일 명세.
+
 ## 디자인 DNA (스타일 이식용)
 
 - **무드**: Rams식 절제 — 웜 그레이 페이퍼에 잉크, 액센트는 단 하나.

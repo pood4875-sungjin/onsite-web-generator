@@ -15,6 +15,9 @@
    - 이미지 onerror 2단(로컬→프로드→제거), BASE는 packs/ 폴더 strip
 7. **배선** — 로드 7페이지 / index STYLES·recStyles·styleThumb / studio 해석·renderWith·sectionSpec / dashboard·projects / worker compose-web(WEB_SYSTEM)
 
+
+**실물 표본**: [`packs.axday.sample.html`](./packs.axday.sample.html) — 기본 데이터 렌더 + 전체 CSS 내장(자동 생성 `node scripts/pack-spec.cjs`). **스타일 이식·외부 AI 첨부는 이 파일이 정답** — 브라우저로 열면 실물, 소스를 읽으면 전체 스타일 명세.
+
 ## 디자인 DNA (스타일 이식용)
 
 - **무드**: 밝고 임팩트 — 화이트 바탕에 오렌지 한 방.
