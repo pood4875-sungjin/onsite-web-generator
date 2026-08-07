@@ -416,18 +416,34 @@
 
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
   // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
-  /* 발표 대본 생성 — 덱 전체 → 장별 스크립트 {opening,items:[{i,title,secs,script}],closing} */
-  async function genScript(slides, lang) {
+  /* 발표 대본 생성 — 덱 전체 → 장별 스크립트 {opening,items:[{i,title,secs,script}],closing}
+     onProgress({n,total,opening}) — 스트림에서 완성된 장 수를 세어 진행 표시(항목마다 "script" 키 1개) */
+  async function genScript(slides, lang, onProgress) {
     if (!usingProxy()) throw new Error('발표 대본은 팀 프록시 연결이 필요해요.');
+    var total = (slides || []).length;
     var lastErr = null;
-    for (var att = 0; att < 2; att++) {   // 모델 JSON 오타 시 1회 자동 재생성
-      var r = await fetch(proxyUrl() + '/script', {
-        method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ slides: _noHeavy(slides), lang: lang || uiLang() }),
-      });
-      var j = null; try { j = await r.json(); } catch (e) {}
-      if (!r.ok) { lastErr = new Error(_proxyErrMsg(j, r.status)); continue; }
-      var t = String(j.text || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
+    for (var att = 0; att < 2; att++) {   // 1차=스트림(진행 표시), 2차=비스트림(순단·모델 JSON 오타 재생성)
+      var useStream = att === 0;
+      var t = '';
+      try {
+        var r = await fetch(proxyUrl() + '/script', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ slides: _noHeavy(slides), lang: lang || uiLang(), stream: useStream }),
+        });
+        if (!r.ok) { var j0 = null; try { j0 = await r.json(); } catch (e0) {} lastErr = new Error(_proxyErrMsg(j0, r.status)); continue; }
+        var ct = (r.headers.get('content-type') || '');
+        if (useStream && ct.indexOf('event-stream') >= 0 && r.body) {
+          t = await _readSse(r.body, function (full) {
+            if (!onProgress) return;
+            var done = (full.match(/"script""?\s*:/g) || []).length;   // 오타("script"":)도 진행으로 집계
+            onProgress({ n: Math.min(done, total), total: total, opening: /"opening""?\s*:/.test(full) });
+          });
+        } else {
+          var j = null; try { j = await r.json(); } catch (e1) {}
+          t = j && j.text;
+        }
+      } catch (e) { lastErr = e; continue; }   // 스트림 순단 → 비스트림 재시도
+      t = String(t || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
         .replace(/""\s*:/g, '":');   // 모델 오타 청소 — "key"": 를 "key": 로
       var out = _repairParse(t);
       if (out && Array.isArray(out.items) && out.items.length) return out;

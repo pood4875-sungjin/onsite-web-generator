@@ -661,8 +661,8 @@ export default {
         ...(route === '/intake' || route === '/translate' ? {} : { thinking: { type: 'disabled' } }),
         system: system,
         messages: [{ role: 'user', content: userMsg }],
-        // 생성 스트리밍 — 클라이언트가 슬라이드 제목을 실시간 표시("기다리는 맛"). compose 계열만.
-        ...(body.stream === true && (route === '/compose' || route === '/compose-web') ? { stream: true } : {}),
+        // 생성 스트리밍 — 클라이언트가 진행 상황을 실시간 표시("기다리는 맛"). compose 계열 + 대본.
+        ...(body.stream === true && (route === '/compose' || route === '/compose-web' || route === '/script') ? { stream: true } : {}),
       }),
     });
     if (!res.ok) {
@@ -670,7 +670,7 @@ export default {
       return json({ error: 'UPSTREAM', status: res.status, detail: t.slice(0, 300) }, 502);
     }
     // 스트리밍 요청이면 Anthropic SSE를 그대로 통과 — 카운트는 시작 시점에 선차감
-    if (body.stream === true && (route === '/compose' || route === '/compose-web')) {
+    if (body.stream === true && (route === '/compose' || route === '/compose-web' || route === '/script')) {
       try { await env.RATE_KV.put(rlKey, String(used + 1), { expirationTtl: 90000 }); } catch (e) {}
       return new Response(res.body, { status: 200, headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', ...CORS } });
     }
