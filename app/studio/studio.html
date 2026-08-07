@@ -796,7 +796,7 @@
     m=document.createElement('div'); m.className='linkmodal'; m.id='imgPicker';
     const cats=Object.keys(IMGLIB);
     m.innerHTML='<div class="lm-card" style="width:min(720px,94vw)"><b class="t">🖼 '+tL('이미지 바꾸기')+'</b>'+
-      '<div class="ip-tabs">'+cats.map((c,i)=>'<button class="ip-tab'+(i?'':' on')+'" data-c="'+c+'">'+tL(c)+'</button>').join('')+'</div>'+
+      '<div class="ip-tabs">'+cats.map((c,i)=>'<button class="ip-tab'+(i?'':' on')+'" data-c="'+c+'">'+tL(c)+'</button>').join('')+'<button class="ip-tab" data-c="__ai">✨ '+tL('AI 생성')+'</button></div>'+
       '<div class="ip-grid" id="ipGrid"></div>'+
       '<div class="lm-url"><input id="ipUrl" placeholder="https:// '+tL('이미지 주소를 직접 붙여넣어도 돼요')+'"><button class="dl" id="ipUrlGo">'+tL('적용')+'</button></div>'+
       '<div class="lm-row"><button class="dl" id="ipUpload">📁 '+tL('내 파일 올리기')+'</button><button class="dl" id="ipClose">'+tL('닫기')+'</button></div></div>';
@@ -804,6 +804,32 @@
     const grid=m.querySelector('#ipGrid');
     function paint(cat){
       grid.innerHTML='';
+      if(cat==='__ai'){
+        // AI 이미지 생성(나노바나나) — 문장 입력 → 미리보기 → 클릭 적용
+        grid.style.display='block';
+        grid.innerHTML='<div style="display:flex;flex-direction:column;gap:10px">'
+          +'<textarea id="aiPrompt" rows="3" style="width:100%;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px" placeholder="'+tL('원하는 이미지를 문장으로 써주세요. 예: 노을 지는 사장교를 아래에서 올려다본 와이드 사진, 파란 톤')+'"></textarea>'
+          +'<div style="display:flex;gap:8px;align-items:center"><select id="aiRatio" style="height:32px;border:1px solid var(--line);border-radius:8px;padding:0 8px"><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="3:4">3:4</option></select>'
+          +'<button class="dl" id="aiGo">✨ '+tL('생성')+'</button><span id="aiStat" style="font-size:12.5px;color:var(--tx2)"></span></div>'
+          +'<div id="aiOut" style="min-height:40px"></div></div>';
+        const go=grid.querySelector('#aiGo'), stat=grid.querySelector('#aiStat'), out=grid.querySelector('#aiOut');
+        go.onclick=async ()=>{
+          const p=grid.querySelector('#aiPrompt').value.trim(); if(!p){ stat.textContent=tL('문장을 입력해주세요.'); return; }
+          go.disabled=true; stat.textContent=tL('생성 중… 10초쯤 걸려요');
+          try{
+            const src=await LLM.genImage(p, grid.querySelector('#aiRatio').value);
+            stat.textContent=tL('클릭하면 적용돼요');
+            out.innerHTML='';
+            const im=document.createElement('img'); im.src=src;
+            im.style.cssText='max-width:100%;border-radius:10px;cursor:pointer;border:2px solid var(--brand)';
+            im.title=tL('클릭하면 적용돼요'); im.onclick=()=>{ applyImage(key, src); m.remove(); };
+            out.append(im);
+          }catch(e){ stat.textContent=(e&&e.message)||tL('실패했어요. 다시 시도해주세요.'); }
+          go.disabled=false;
+        };
+        return;
+      }
+      grid.style.display='';
       (IMGLIB[cat]||[]).forEach(id=>{
         // '/'가 있으면 로컬·직접 URL 자산(예: ../bg/mbm-hero.jpg) — 절대주소로 저장해 공유 링크에서도 안전
         const isUrl=id.indexOf('/')>=0;

@@ -416,6 +416,18 @@
 
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
   // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
+  /* AI 이미지 생성(나노바나나) — 프록시 전용. 성공 시 dataURI 반환 */
+  async function genImage(prompt, ratio) {
+    if (!usingProxy()) throw new Error('이미지 생성은 팀 프록시 연결이 필요해요.');
+    var r = await fetch(proxyUrl() + '/genimage', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, ratio: ratio || '16:9' }),
+    });
+    var j = null; try { j = await r.json(); } catch (e) {}
+    if (!r.ok || !j || !j.image) throw new Error((j && j.message) || _proxyErrMsg(j, r.status));
+    return j.image;
+  }
+
   async function translatePayload(payload, to) {
     if (payload && Array.isArray(payload.slides) && payload.slides.length > 3) {
       var chunks = [];
@@ -691,7 +703,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
-    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand,
+    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand, genImage: genImage,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();

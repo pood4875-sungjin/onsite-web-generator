@@ -10,6 +10,7 @@
 const MODEL = 'claude-sonnet-5';   // 서버 고정 — 클라이언트가 못 바꿈
 const MAX_TOKENS = 16000;   // deep(20~24장) 덱 + 문서 첨부 브리프 여유 — 8000에서 잘리던 문제 상향
 const DAILY_LIMIT = 999;           // 개발·테스트 중 임시 해제(사용자 요청 2026-07-28). 전면 배포 전 운영값 재설정 필수
+const IMG_DAILY_LIMIT = 30;        // AI 이미지 생성(나노바나나) — IP당 하루 장수. 비용 안전핀
 
 const CORS = {
   'access-control-allow-origin': '*',
@@ -510,6 +511,38 @@ export default {
       try { await env.PUB.put('p:' + id, html, { expirationTtl: 60 * 60 * 24 * 90 }); }
       catch (e) { return json({ error: 'STORE_FAIL' }, 500); }
       return json({ id, url: url.origin + '/p/' + id, expiresDays: 90 });
+    }
+
+    // ---- AI 이미지 생성 — POST /genimage {prompt, ratio?} → {image:"data:image/...;base64,..."} (Google 나노바나나) ----
+    if (req.method === 'POST' && route === '/genimage') {
+      if (!env.GEMINI_API_KEY) return json({ error: 'NO_KEY', message: '이미지 생성 키가 아직 등록되지 않았어요. 관리자에게 요청해주세요.' }, 503);
+      let gb;
+      try { gb = await req.json(); } catch (e) { return json({ error: 'BAD_REQUEST' }, 400); }
+      const prompt = String(gb.prompt == null ? '' : gb.prompt).slice(0, 1000).trim();
+      if (!prompt) return json({ error: 'EMPTY_PROMPT' }, 400);
+      const ratio = ({ '16:9': 1, '4:3': 1, '1:1': 1, '3:4': 1, '9:16': 1 })[gb.ratio] ? gb.ratio : '16:9';
+      // 이미지 전용 일일 한도(텍스트 호출과 별도 카운터)
+      const gip = req.headers.get('cf-connecting-ip') || 'unknown';
+      const gKey = `img:${gip}:${new Date().toISOString().slice(0, 10)}`;
+      let gUsed = 0;
+      try { gUsed = parseInt(await env.RATE_KV.get(gKey), 10) || 0; } catch (e) {}
+      if (gUsed >= IMG_DAILY_LIMIT) return json({ error: 'LIMIT', message: `오늘 이미지 생성 한도(${IMG_DAILY_LIMIT}장)를 모두 썼어요. 내일 다시 시도해주세요.` }, 429);
+      const gemUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + env.GEMINI_API_KEY;
+      const callGem = (b) => fetch(gemUrl, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) });
+      let gres = await callGem({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { imageConfig: { aspectRatio: ratio } } });
+      if (!gres.ok) {
+        const t1 = await gres.text().catch(() => '');
+        // 구버전 API가 imageConfig를 모르면 비율은 프롬프트 문장으로 폴백
+        if (/imageConfig|aspect/i.test(t1)) gres = await callGem({ contents: [{ parts: [{ text: prompt + ' (aspect ratio ' + ratio + ')' }] }] });
+        if (!gres.ok) return json({ error: 'UPSTREAM', message: '이미지 생성에 실패했어요. 잠시 후 다시 시도해주세요.', detail: t1.slice(0, 300) }, 502);
+      }
+      const gj = await gres.json().catch(() => null);
+      const parts = (gj && gj.candidates && gj.candidates[0] && gj.candidates[0].content && gj.candidates[0].content.parts) || [];
+      const ip2 = parts.find((p) => (p.inlineData && p.inlineData.data) || (p.inline_data && p.inline_data.data));
+      const d = ip2 && (ip2.inlineData || ip2.inline_data);
+      if (!d) return json({ error: 'NO_IMAGE', message: '이미지가 만들어지지 않았어요. 문구를 조금 바꿔 다시 시도해주세요.' }, 502);
+      try { await env.RATE_KV.put(gKey, String(gUsed + 1), { expirationTtl: 60 * 60 * 26 }); } catch (e) {}
+      return json({ image: 'data:' + (d.mimeType || d.mime_type || 'image/png') + ';base64,' + d.data, left: IMG_DAILY_LIMIT - gUsed - 1 });
     }
 
     if (req.method !== 'POST' || ROUTES.indexOf(route) < 0) return json({ error: 'NOT_FOUND' }, 404);
