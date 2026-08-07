@@ -416,6 +416,26 @@
 
   // 출력물 로컬라이징: payload({slides:[...]}든 사이트 JSON이든) → 같은 구조로 텍스트만 to 언어 번역
   // 긴 덱은 응답이 토큰 상한에 잘려 통째로 실패한다 → 슬라이드 8장 단위로 나눠 번역 후 합침
+  /* 발표 대본 생성 — 덱 전체 → 장별 스크립트 {opening,items:[{i,title,secs,script}],closing} */
+  async function genScript(slides, lang) {
+    if (!usingProxy()) throw new Error('발표 대본은 팀 프록시 연결이 필요해요.');
+    var lastErr = null;
+    for (var att = 0; att < 2; att++) {   // 모델 JSON 오타 시 1회 자동 재생성
+      var r = await fetch(proxyUrl() + '/script', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ slides: _noHeavy(slides), lang: lang || uiLang() }),
+      });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok) { lastErr = new Error(_proxyErrMsg(j, r.status)); continue; }
+      var t = String(j.text || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
+        .replace(/""\s*:/g, '":');   // 모델 오타 청소 — "key"": 를 "key": 로
+      var out = _repairParse(t);
+      if (out && Array.isArray(out.items) && out.items.length) return out;
+      lastErr = new Error('대본을 만들지 못했어요. 다시 시도해주세요.');
+    }
+    throw lastErr;
+  }
+
   /* AI 이미지 생성(나노바나나) — 프록시 전용. 성공 시 dataURI 반환 */
   async function genImage(prompt, ratio) {
     if (!usingProxy()) throw new Error('이미지 생성은 팀 프록시 연결이 필요해요.');
@@ -703,7 +723,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
-    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand, genImage: genImage,
+    hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand, genImage: genImage, genScript: genScript,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };
 })();

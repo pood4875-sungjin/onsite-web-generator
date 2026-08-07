@@ -487,7 +487,7 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
     const route = url.pathname;
-    const ROUTES = ['/compose', '/edit', '/compose-web', '/edit-web', '/translate', '/intake'];
+    const ROUTES = ['/compose', '/edit', '/compose-web', '/edit-web', '/translate', '/intake', '/script'];
 
     // ---- 공유 링크 조회 — GET /p/:id (스튜디오 "링크 만들기"로 발행된 페이지 서빙) ----
     if (req.method === 'GET' && /^\/p\/[A-Za-z0-9]{6,12}$/.test(route)) {
@@ -587,6 +587,21 @@ export default {
       userMsg = '브리프(kind=' + safe.kind + '):\n' + safe.plan +
         // 시스템 지시만으론 브리프 언어(예: 한국어 첨부)에 끌려감 — 유저 메시지 끝에도 못박는다(최근성)
         (safe.lang !== 'ko' ? '\n\n[OUTPUT LANGUAGE] The brief above may be in Korean, but you MUST write q and EVERY item in opts in ' + uiLangName(safe.lang) + '. Do not output Korean in q or opts.' : '');
+    } else if (route === '/script') {
+      // 발표 대본 — 덱 전체를 읽고 장표별 발표 스크립트 생성(내용 창작 금지, 덱이 근거)
+      const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
+      if (!slides.length) return json({ error: 'EMPTY_DECK' }, 400);
+      const sl = clip(body.lang, 5) || 'ko';
+      system = '너는 시니어 발표 코치다. 슬라이드 덱(JSON)을 읽고 발표자가 그대로 읽을 수 있는 발표 대본을 쓴다.\n' +
+        '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지. 형식: {"opening":"발표 시작 인사·후킹 한두 문장","items":[{"i":1,"title":"장 제목 요약","secs":45,"script":"..."}],"closing":"마무리·다음 행동 제안 한두 문장"}\n' +
+        '규칙:\n' +
+        '- 모든 텍스트를 ' + uiLangName(sl) + '로 쓴다(브랜드·고유명사는 원문 유지).\n' +
+        '- items는 슬라이드 수와 정확히 같게, i는 1부터.\n' +
+        '- 각 script는 구어체(발표체) 3~6문장: 첫 문장=앞 장에서 넘어오는 전환, 마지막 문장=다음 장 예고(마지막 장 제외).\n' +
+        '- 슬라이드에 있는 수치·사례·고유명사만 인용, 없는 사실 창작 금지.\n' +
+        '- secs=그 장의 예상 발표 시간(초, 20~90).\n' +
+        '- 이모지·마크다운 금지.';
+      userMsg = '덱:\n' + clip(JSON.stringify(slides), 24000);
     } else if (route === '/compose-web') {
       const safe = {
         product: clip(body.product, 100),

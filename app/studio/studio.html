@@ -212,12 +212,16 @@
   .lm-note{font-size:11.5px;color:var(--tx2)}
   /* 이미지 피커 */
   .ip-tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .lm-card{position:relative}
+  .lm-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface-solid,#fff);cursor:pointer;font-size:13px;color:var(--tx2);line-height:1;display:grid;place-items:center}
+  .lm-x:hover{color:var(--tx);border-color:var(--line2)}
   .ip-tab{border:1px solid var(--line);background:none;color:var(--tx2);border-radius:999px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
   .ip-tab.on{background:var(--tx);color:var(--surf);border-color:var(--tx)}
   .ip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:320px;overflow:auto}
   .ip-grid img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
   .ip-grid img:hover{transform:scale(1.03);box-shadow:0 8px 22px rgba(10,12,20,.25)}
   .dl:hover{background:rgba(255,255,255,.1)}
+  .dl.dark:hover{background:#2a2f45;color:#fff}   /* 다크 버튼이 공용 호버(반투명 흰색)에 덮여 흰바탕 흰글자 되던 버그 */
   .dl.on{background:var(--grad-cta);color:#fff;border-color:transparent}
   .pvbox.editing{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:-2px}
   .secadd{display:none;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 4px 4px}
@@ -469,6 +473,7 @@
           <div class="stlangmenu" id="stLangMenu" hidden></div>
         </div>
         <button class="dl" id="editBtn" data-i18n-title="텍스트·이미지 편집" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
+        <button class="dl" id="scriptBtn" style="display:none" data-i18n-title="AI가 장표별 발표 대본을 써드려요" title="AI가 장표별 발표 대본을 써드려요" data-i18n="대본">🎤 대본</button>
         <button class="dl" id="previewBtn" data-i18n-title="생성된 페이지를 새 창에서 미리보기" title="생성된 페이지를 새 창에서 미리보기" data-i18n="미리보기">미리보기</button>
         <button class="dl dark" id="linkBtn" style="display:none" data-i18n-title="접속 가능한 공유 링크를 만들어요" title="접속 가능한 공유 링크를 만들어요" data-i18n="링크 만들기">링크 만들기</button>
         <button class="dl" id="save" data-i18n="저장">저장</button>
@@ -688,6 +693,7 @@
     if(curMode().slides){ try{ _keepScrollY=frame.contentWindow.scrollY; }catch(e){ _keepScrollY=null; } }
     frame.srcdoc = pageHtml();
     badge.textContent = `${pack.name} ${tL('스타일')}`;
+    try{ const sb=document.getElementById('scriptBtn'); if(sb) sb.style.display=(curMode().slides&&generated)?'':'none'; }catch(e){}
     empty.classList.toggle('hide', generated);
     fitPreview();
   }
@@ -794,10 +800,10 @@
     if(m) m.remove();
     m=document.createElement('div'); m.className='linkmodal'; m.id='imgPicker';
     const cats=Object.keys(IMGLIB);
-    m.innerHTML='<div class="lm-card" style="width:min(720px,94vw)"><b class="t">🖼 '+tL('이미지 바꾸기')+'</b>'+
+    m.innerHTML='<div class="lm-card" style="width:min(720px,94vw)"><button class="lm-x" id="ipClose" title="'+tL('닫기')+'">✕</button><b class="t">🖼 '+tL('이미지 바꾸기')+'</b>'+
       '<div class="ip-tabs"><button class="ip-tab on" data-c="__ai">✨ '+tL('AI 생성')+'</button>'+cats.map(c=>'<button class="ip-tab" data-c="'+c+'">'+tL(c)+'</button>').join('')+'<button class="ip-tab" data-c="__url">'+tL('직접 입력')+'</button></div>'+
       '<div class="ip-grid" id="ipGrid"></div>'+
-      '<div class="lm-row"><button class="dl" id="ipClose">'+tL('닫기')+'</button></div></div>';
+      '</div>';
     document.body.append(m);
     const grid=m.querySelector('#ipGrid');
     function paint(cat){
@@ -819,7 +825,7 @@
           +'<textarea id="aiPrompt" rows="3" style="width:100%;resize:vertical;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px" placeholder="'+tL('원하는 이미지를 문장으로 써주세요. 예: 노을 지는 사장교를 아래에서 올려다본 와이드 사진, 파란 톤')+'"></textarea>'
           +'<div style="display:flex;gap:8px;align-items:center"><select id="aiRatio" style="height:32px;border:1px solid var(--line);border-radius:8px;padding:0 8px"><option value="16:9">16:9</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="3:4">3:4</option></select>'
           +'<button class="dl" id="aiGo" style="background:var(--brand,#6c2bff);color:#fff;border-color:transparent;font-weight:700;padding:0 18px;height:32px">✨ '+tL('생성')+'</button><span id="aiStat" style="font-size:12.5px;color:var(--tx2)"></span></div>'
-          +'<div id="aiOut" style="min-height:40px"></div></div>';
+          +'<div id="aiOut"></div></div>';
         const go=grid.querySelector('#aiGo'), stat=grid.querySelector('#aiStat'), out=grid.querySelector('#aiOut');
         go.onclick=async ()=>{
           const p=grid.querySelector('#aiPrompt').value.trim(); if(!p){ stat.textContent=tL('문장을 입력해주세요.'); return; }
@@ -2474,6 +2480,44 @@
     if(isPptPack) setTimeout(()=>{ try{ pvfFrame.contentWindow.focus(); }catch(e){} }, 250);   // 키보드 ←→ 즉시 동작
   }
   function closePreview(){ pvFull.hidden=true; pvfFrame.srcdoc=''; }
+  /* ---- 발표 대본 — 덱 전체를 읽고 장별 스크립트 생성(프로젝트에 캐시) ---- */
+  function scriptToText(sc){
+    const L=[]; if(sc.opening) L.push(tL('오프닝')+': '+sc.opening);
+    (sc.items||[]).forEach(it=>{ L.push(''); L.push(it.i+'. '+(it.title||'')+(it.secs?' ('+it.secs+tL('초')+')':'')); L.push(it.script||''); });
+    if(sc.closing){ L.push(''); L.push(tL('클로징')+': '+sc.closing); }
+    return L.join('\n');
+  }
+  async function showScriptModal(regen){
+    let m=document.getElementById('scriptModal'); if(m) m.remove();
+    m=document.createElement('div'); m.className='linkmodal'; m.id='scriptModal';
+    m.innerHTML='<div class="lm-card" style="width:min(680px,94vw)"><button class="lm-x" id="scClose">✕</button><b class="t">🎤 '+tL('발표 대본')+'</b>'+
+      '<div id="scBody" style="max-height:56vh;overflow:auto;display:flex;flex-direction:column;gap:12px;font-size:13.5px;line-height:1.7"></div>'+
+      '<div class="lm-row"><button class="dl" id="scRegen">↻ '+tL('다시 생성')+'</button><button class="dl dark" id="scCopy">📋 '+tL('전체 복사')+'</button></div></div>';
+    document.body.append(m);
+    m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
+    m.querySelector('#scClose').onclick=()=>m.remove();
+    const body=m.querySelector('#scBody');
+    m.querySelector('#scRegen').onclick=()=>{ showScriptModal(true); };
+    m.querySelector('#scCopy').onclick=async ()=>{ try{ await navigator.clipboard.writeText(scriptToText(data._script||{})); const b=m.querySelector('#scCopy'); const o=b.textContent; b.textContent=tL('복사됨 ✓'); setTimeout(()=>b.textContent=o,1200); }catch(e){} };
+    let sc=!regen && data._script;
+    if(!sc){
+      body.innerHTML='<p style="color:var(--tx2)">'+tL('덱을 읽고 대본을 쓰는 중… 20초쯤 걸려요')+'</p>';
+      try{ sc=await LLM.genScript(data.slides, data._clang||'ko'); data._script=sc; persist(); }
+      catch(e){ body.innerHTML='<p style="color:#c0392b">'+((e&&e.message)||tL('실패했어요. 다시 시도해주세요.'))+'</p>'; return; }
+    }
+    const total=(sc.items||[]).reduce((a,it)=>a+(parseInt(it.secs,10)||0),0);
+    let h='';
+    if(total) h+='<p style="color:var(--tx2);font-size:12.5px">'+tL('예상 발표 시간')+' 약 '+Math.round(total/60)+tL('분')+'</p>';
+    if(sc.opening) h+='<div><b style="font-size:12px;color:var(--brand,#6c2bff)">'+tL('오프닝')+'</b><p>'+esc2(sc.opening)+'</p></div>';
+    (sc.items||[]).forEach(it=>{ h+='<div style="border-top:1px solid var(--line);padding-top:10px"><b>'+it.i+'. '+esc2(it.title||'')+'</b> <span style="color:var(--tx2);font-size:12px">'+(it.secs?it.secs+tL('초'):'')+'</span><p style="margin-top:4px;white-space:pre-wrap">'+esc2(it.script||'')+'</p></div>'; });
+    if(sc.closing) h+='<div style="border-top:1px solid var(--line);padding-top:10px"><b style="font-size:12px;color:var(--brand,#6c2bff)">'+tL('클로징')+'</b><p>'+esc2(sc.closing)+'</p></div>';
+    body.innerHTML=h;
+  }
+  function esc2(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  document.getElementById('scriptBtn').onclick=async ()=>{
+    if(!curMode().slides || !(data.slides||[]).length){ await uiAlert(tL('먼저 PPT를 생성해주세요.')); return; }
+    showScriptModal(false);
+  };
   document.getElementById('previewBtn').onclick=async ()=>{
     if(!generated){ await uiAlert(tL('먼저 페이지를 생성해주세요.')); return; }
     openPreview();
