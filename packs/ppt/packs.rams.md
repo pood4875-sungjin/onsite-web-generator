@@ -1,4 +1,4 @@
-# rams — Structure style (PPT)
+# rams — Modern (PPT)
 
 1. **정체** — Rams Report 포크. 웜그레이·라운드 카드·버밀리언(주황 계열) 단일 액센트·다크/라이트 리듬·큐브 인디케이터.
 2. **상태** — 활성, PPT 피커 노출. **시연 잠금**: 클릭=무조건 MIDAS GEN NX 제품소개 10장(cover·statement·toc·divider·section(기능4)·media(실화면)·divider·stats(도넛)·process·closing).

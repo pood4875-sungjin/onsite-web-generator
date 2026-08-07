@@ -983,7 +983,7 @@
   window.RAMS_MV_SEL = MV_SEL;
   window.RAMS_DEFAULT_DECK = DEFAULT_DECK;
   window.RAMS_CATALOG = CATALOG;
-  window.RAMS_STYLE = { id: 'rams', name: 'Structure style', desc: '웜그레이 · 라운드 카드 · 버밀리언 액센트 · 16:9', swatch: 'linear-gradient(135deg,#F5F5F3 55%,#FF4D00 55%)' };
+  window.RAMS_STYLE = { id: 'rams', name: 'Modern', desc: '웜그레이 · 라운드 카드 · 버밀리언 액센트 · 16:9', swatch: 'linear-gradient(135deg,#F5F5F3 55%,#FF4D00 55%)' };
   window.RAMS_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.ramsNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.section)); };
 })();

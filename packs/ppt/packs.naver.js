@@ -1305,7 +1305,7 @@
   window.NAVER_MV_SEL = MV_SEL;
   window.NAVER_DEFAULT_DECK = DEFAULT_DECK;
   window.NAVER_CATALOG = CATALOG;
-  window.NAVER_STYLE = { id: 'naver', name: 'Design AX Line', desc: '직각·라인·아이소메트릭 · 챕터 컬러 · 16:9', swatch: 'linear-gradient(135deg,#FFFFFF 55%,#00DE5A 55%)' };
+  window.NAVER_STYLE = { id: 'naver', name: 'Minimal', desc: '직각·라인·아이소메트릭 · 챕터 컬러 · 16:9', swatch: 'linear-gradient(135deg,#FFFFFF 55%,#00DE5A 55%)' };
   window.NAVER_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.naverNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.section)); };
 })();

@@ -16,9 +16,9 @@ packs/
 
 | 팩 | 종류 | 표시명 | 상태 | 문서 |
 |---|---|---|---|---|
-| naver | PPT | Design AX Line | **활성·시연 잠금**(아너스데이 10장) | [packs.naver.md](../../packs/ppt/packs.naver.md) |
-| rams | PPT | Structure style | **활성·시연 잠금**(GEN NX 10장) | [packs.rams.md](../../packs/ppt/packs.rams.md) |
-| machine | PPT | AX Machine | **활성·시연 잠금**(GEN NX 10장·주황) | [packs.machine.md](../../packs/ppt/packs.machine.md) |
+| naver | PPT | Minimal | **활성·시연 잠금**(아너스데이 10장) | [packs.naver.md](../../packs/ppt/packs.naver.md) |
+| rams | PPT | Modern | **활성·시연 잠금**(GEN NX 10장) | [packs.rams.md](../../packs/ppt/packs.rams.md) |
+| machine | PPT | Premium Dark | **활성·시연 잠금**(GEN NX 10장·주황) | [packs.machine.md](../../packs/ppt/packs.machine.md) |
 | pastel | PPT | Pastel Gradient | 활성(피커 숨김 — 시연 중 machine으로 교체) | 팩 옆 .md |
 | sfmi | PPT | SFMI Report | 활성(피커 밖) | 팩 옆 .md |
 | pitch | PPT | Creatable Pitch | 활성(피커 밖) | 팩 옆 .md |

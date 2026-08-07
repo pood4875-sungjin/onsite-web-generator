@@ -1,4 +1,4 @@
-# machine — AX Machine (PPT)
+# machine — Premium Dark (PPT)
 
 1. **정체** — 네이버스타일(3).pdf 19장 실측. 다크·포인트 **주황 #FF5500**(원래 그린 — 시연 스왑)·영문 빅타이포·포토 커버·게이지.
 2. **상태** — 활성, PPT 피커 노출. **시연 잠금**: GEN NX 제품소개 10장(cover·statement·toc·twocol·shot×2(실스크린샷)·bignum·refcards(공식사례)·beforeafter·closing).

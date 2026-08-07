@@ -1,4 +1,4 @@
-# naver — Design AX Line (PPT)
+# naver — Minimal (PPT)
 
 1. **정체** — 네이버 스타일 실측(PDF "PPT 템플릿 제작 요청" 1~10장). 화이트·그린 포인트·챕터컬러 5종 자동상속·아이소 SVG(나침반 커버).
 2. **상태** — 활성, PPT 피커 노출. **시연 잠금**: 아너스데이 10장 템플릿(cover·statement·section2열·toc·divider×2·table·process·cards(5열,title필수)·stats) — 텍스트만 교체.

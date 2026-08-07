@@ -892,7 +892,7 @@
   window.MACHINE_MV_SEL = MV_SEL;
   window.MACHINE_DEFAULT_DECK = DEFAULT_DECK;
   window.MACHINE_CATALOG = CATALOG;
-  window.MACHINE_STYLE = { id: 'machine', name: 'AX Machine', desc: '다크·네이버그린 · 영문 빅타이포 · 포토 커버 · 16:9', swatch: 'linear-gradient(135deg,#14181F 0%,#14181F 55%,#40C057 100%)' };
+  window.MACHINE_STYLE = { id: 'machine', name: 'Premium Dark', desc: '다크·네이버그린 · 영문 빅타이포 · 포토 커버 · 16:9', swatch: 'linear-gradient(135deg,#14181F 0%,#14181F 55%,#40C057 100%)' };
   window.MACHINE_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.machineNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.twocol)); };
 })();
