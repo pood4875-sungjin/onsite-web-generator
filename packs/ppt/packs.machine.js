@@ -32,6 +32,10 @@
   if (!BASE || BASE.indexOf('file:') === 0) BASE = PROD;
   function aurl(f) { return BASE + 'bg/' + f; }
 
+  /* ---- 비율 계약 v1 ---- data._ratio 없으면 16:9(하위호환) */
+  var RATIO = { '16:9': { slug: 'r169', w: 1280, h: 720 }, '4:3': { slug: 'r43', w: 1280, h: 960 }, '3.8:1': { slug: 'r381', w: 2736, h: 720 } };
+  function ratioOf(r) { return RATIO[r] || RATIO['16:9']; }
+
   /* ---- 공통 조각 ---- */
   function runhead(s, P, ctx, mode) { /* mode: '', 'dk'(다크), 'gr'(그린 지면) */
     var pg = (ctx && ctx.no < 10 ? '0' : '') + (ctx ? ctx.no : '');
@@ -356,10 +360,14 @@
   var CSS = [
     '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");',
     '*{margin:0;padding:0;box-sizing:border-box}',
+    /* 캔버스 계약 — 다른 7개 팩과 동일한 --slide-w/--slide-h. 비율은 문서 루트 data-ratio가 갈아끼운다 */
+    ':root{--slide-w:1280px;--slide-h:720px;--pad-t:44px;--pad-x:80px;--pad-b:50px}',
+    '[data-ratio="r43"]{--slide-w:1280px;--slide-h:960px}',
+    '[data-ratio="r381"]{--slide-w:2736px;--slide-h:720px}',
     'body{background:#0F1217}',
     '.ppt-stack{display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px 0}',
-    '.slide{position:relative;width:1280px;height:720px;flex:0 0 auto;overflow:hidden;background:#fff;color:#14181F;',
-    " font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;display:flex;flex-direction:column;padding:44px 80px 50px;isolation:isolate}",
+    '.slide{position:relative;width:var(--slide-w);height:var(--slide-h);flex:0 0 auto;overflow:hidden;background:#fff;color:#14181F;',
+    " font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;display:flex;flex-direction:column;padding:var(--pad-t) var(--pad-x) var(--pad-b);isolation:isolate}",
     '.slide .sp{flex:1 1 0}.slide .sp.s{flex:.55}',
     'b{font-weight:800}.mut{color:#575C64;font-weight:300}',
     /* 러닝 헤더 */
@@ -593,6 +601,107 @@
     '[data-edit]{cursor:default}'
   ].join('\n');
 
+  /* ---- 비율 오버라이드 ----
+     machine은 내부가 전부 절대 px라 캔버스만 바꾸면 안 맞는다. **깨지는 요소만** 스코프로 덮는다.
+     r43(1280×960): 폭 동일·세로 +240 → 세로 리듬(패딩·행 높이·차트 높이)만 상향, 폰트는 커버류만 소폭.
+     r381(2736×720): 세로 동일·가로 +1456 → 폰트 유지, 가로 여백·그리드 간격·측정폭(measure) 캡만 조정. */
+  var R43 = '[data-ratio="r43"] ', R381 = '[data-ratio="r381"] ';
+  CSS += '\n' + [
+    /* ===== 4:3 — 늘어난 240px를 여백·행 높이·차트 높이로 흡수 ===== */
+    R43 + '.slide{--pad-t:60px;--pad-b:68px}',                       /* 상하 여백을 캔버스 비례로 */
+    R43 + '.nx-hl{margin-top:42px}',                                  /* 헤드라인 위 숨 공간 확대 */
+    R43 + '.nx-dktitle{margin-top:46px}' + R43 + '.nx-tctitle{margin-top:40px}',
+    R43 + '.nx-cvtitle{font-size:72px}' + R43 + '.nx-cltitle{font-size:64px}',   /* 커버·엔딩은 세로 여유만큼 히어로 타이포 상향 */
+    R43 + '.nx-sttitle{font-size:80px}' + R43 + '.nx-dmtitle{font-size:84px}' + R43 + '.nx-dhtitle{font-size:66px}',
+    /* 리스트 행 — 같은 행 수로 240px를 채우도록 세로 패딩 상향 */
+    R43 + '.nx-tocrow{padding:30px 0}' + R43 + '.nx-toclist{margin-top:46px}',
+    R43 + '.nx-2col li{padding:24px 2px}' + R43 + '.nx-2grid{margin-top:52px}',
+    R43 + '.nx-qlist li{padding:20px 2px}' + R43 + '.nx-qgrid{margin-top:60px}' + R43 + '.nx-qbar{min-height:300px}',
+    R43 + '.nx-sprow{padding:29px 0}' + R43 + '.nx-spgrid{margin-top:62px}',
+    R43 + '.nx-shrow{padding:28px 0}' + R43 + '.nx-shrow.on{padding:28px 24px}',
+    R43 + '.nx-ba li{padding:14px 0}' + R43 + '.nx-bagrid{margin-top:78px}',
+    R43 + '.nx-dhr li{padding:13px 0}' + R43 + '.nx-dhgrid{margin-top:60px}',
+    R43 + '.nx-rm li{padding:11px 0}' + R43 + '.nx-rmgrid{margin-top:66px}',
+    R43 + '.nx-prow{padding:22px 0}' + R43 + '.nx-pggrid{margin-top:62px}',
+    R43 + '.nx-lcgrid{margin-top:62px}' + R43 + '.nx-aggrid{margin-top:72px}',
+    R43 + '.nx-prgrid{margin-top:36px}' + R43 + '.nx-prlab{margin-top:56px}',
+    R43 + '.nx-stcols{margin-top:60px}' + R43 + '.nx-dmcols{margin-top:70px}',
+    R43 + '.ms-chart{margin-top:46px}' + R43 + '.ms-lane{height:58px}' + R43 + '.ms-bar{top:18px}',
+    /* 차트 — align-items:center면 행 높이가 불확정이라 SVG의 max-height:100%가 안 먹고 지면을 뚫는다.
+       stretch로 행 높이를 확정시키고 박스에 상한을 준다(세로 여유만큼 상향) */
+    R43 + '.nx-chgrid{align-items:stretch;grid-template-rows:minmax(0,1fr)}' + R43 + '.nx-chside{justify-content:center}',
+    /* place-items:center 그리드 안에서는 SVG의 max-height:100%가 해석되지 않는다(크롬) — 플렉스 중앙정렬로 교체 */
+    R43 + '.nx-chbox{max-height:640px;display:flex;align-items:center;justify-content:center}',
+    /* shot — 세로가 커지면 object-fit:cover가 좌우를 잘라낸다. 원본 비율(1600×1230) 유지 + 세로 중앙 */
+    R43 + '.nx-shimg{justify-content:center}',
+    R43 + '.nx-shimg img{flex:0 1 auto;height:auto;max-height:100%}',
+
+    /* ===== 3.8:1 — 세로는 16:9와 동일. 가로만 재배치(폰트 크기 불변) ===== */
+    R381 + '.slide{--pad-x:150px}',                                   /* 좌우 여백을 캔버스 비례로 */
+    /* 측정폭(measure) 캡 — 안 걸면 한 줄이 2400px까지 늘어나 읽을 수 없다 */
+    R381 + '.nx-hl,' + R381 + '.nx-dktitle,' + R381 + '.nx-dhtitle{max-width:1560px}',
+    R381 + '.nx-sttitle,' + R381 + '.nx-dmtitle{max-width:1900px}',
+    R381 + '.nx-sub,' + R381 + '.nx-dksub,' + R381 + '.nx-src{max-width:1200px}',
+    R381 + '.nx-foot .nx-ftx{max-width:1700px}',
+    R381 + '.nx-ref .ds,' + R381 + '.nx-lc .ds,' + R381 + '.nx-bn .ds,' + R381 + '.nx-ag .ds,' + R381 + '.nx-pc .ds{max-width:620px}',
+    /* 카드 그리드 — 열 수는 데이터가 정한다. 트랙 폭을 16:9 수준으로 고정하고 남는 가로는 카드 사이로 분배.
+       (1fr로 두면 카드 위 라인만 700px 넘게 늘어나 2줄짜리 설명 위에 뜬금없이 뻗는다) */
+    R381 + '.nx-refgrid.n2,' + R381 + '.nx-lcgrid.n2{grid-template-columns:repeat(2,minmax(0,900px));justify-content:space-between;gap:0}',
+    R381 + '.nx-refgrid.n3,' + R381 + '.nx-lcgrid.n3,' + R381 + '.nx-rmgrid{grid-template-columns:repeat(3,minmax(0,640px));justify-content:space-between;gap:0}',
+    R381 + '.nx-refgrid.n4,' + R381 + '.nx-lcgrid.n4,' + R381 + '.nx-bngrid,' + R381 + '.nx-aggrid{grid-template-columns:repeat(4,minmax(0,540px));justify-content:space-between;gap:0}',
+    R381 + '.nx-rm li{max-width:620px}',
+    R381 + '.nx-tl{gap:80px}',                                        /* 타임라인 칩이 붙어보이지 않게 */
+    /* 2열 텍스트 — 트랙을 양끝에 고정하면 가운데 500px 공백이 생겨 두 열이 따로 논다.
+       거터를 16:9 비율 그대로(76/1120=6.8%, 64/1120=5.7%) 환산해 붙여 두고, 남는 폭은 열이 나눠 갖는다 */
+    R381 + '.nx-2grid{gap:166px}' + R381 + '.nx-bagrid{gap:140px}',   /* 1fr 1fr 유지 — 열 좌우 끝이 타이틀·풋라인과 같은 선에 선다 */
+    /* 선언·데모 간지 — 16:9의 max-width(900/none)를 그대로 두면 우측에 500px 공백이 남아 한쪽으로 쏠린다.
+       전폭으로 펴서 두 열의 룰이 좌우 마진에 닿게 하고, 간지 타이틀은 디스플레이 타이포로 상향 */
+    R381 + '.nx-stcols{max-width:none;gap:170px}' + R381 + '.nx-sttitle{font-size:96px}',
+    R381 + '.nx-dmcols{max-width:none;gap:180px}' + R381 + '.nx-dmtitle{font-size:100px}',
+    R381 + '.nx-dhgrid{grid-template-columns:1.35fr 1fr;gap:220px}',
+    R381 + '.nx-pggrid{gap:220px}' + R381 + '.nx-prgrid{gap:120px}',
+    R381 + '.nx-prlab .cr{margin-left:auto}',
+    /* 인용 — 좌 리스트와 우 인용 사이가 벌어지면 오렌지 바가 둘을 못 잇는다. 거터를 16:9 비율(44/1120=3.9%)로 */
+    R381 + '.nx-qgrid{gap:96px}',
+    R381 + '.nx-qtx{font-size:42px}',   /* 우측 인용은 이 장의 디스플레이 요소 — 좌측 리스트를 상대할 무게를 준다 */
+    /* 목차 — 레일(번호·챕터)을 넓혀 desc와 페이지 범위 사이 공백을 줄인다 */
+    R381 + '.nx-tocrow{grid-template-columns:72px 340px minmax(0,1fr) auto;gap:28px}',
+    /* 스펙 시트 — 레일 폭만 확대(텍스트는 캡) */
+    R381 + '.nx-sprow{grid-template-columns:240px minmax(0,1fr)}' + R381 + '.nx-sprow .tx{max-width:1700px}',
+    /* shot — 이미지 칸을 고정폭으로. 원본 1600×1230(≈1.30)에 맞춰야 cover가 잘라내지 않는다 */
+    R381 + '.nx-shgrid{grid-template-columns:minmax(0,1400px) 660px;justify-content:space-between;gap:0}',
+    R381 + '.nx-shrow{grid-template-columns:150px minmax(0,1fr)}' + R381 + '.nx-shrow span{max-width:1150px}',
+    /* 차트 — 트랙이 1800px가 되면 SVG가 종횡비대로 세로까지 커져 지면을 뚫는다(16:9엔 없던 사고).
+       stretch로 행 높이를 확정해 SVG의 max-height:100%가 실제로 걸리게 하고, 남는 가로는 KPI 열에 준다 */
+    R381 + '.nx-chgrid{grid-template-columns:minmax(0,1fr) 420px;gap:160px;align-items:stretch;grid-template-rows:minmax(0,1fr)}',
+    R381 + '.nx-chside{justify-content:center}',
+    R381 + '.nx-chbox{display:flex;align-items:center;justify-content:center}',
+    /* 밀스톤 — 레인이 2000px 넘게 늘어나 라벨이 초라해진다 */
+    R381 + '.ms-row{grid-template-columns:280px minmax(0,1fr)}',
+    /* ---- 커버·엔딩: 초광폭 시네마스코프 구성 ----
+       64px 타이틀은 2736 캔버스에서 폭의 16%만 먹어 좌상단에 몰린다(= 방치된 여백).
+       ① 디스플레이 타이포만 캔버스 비례로 상향(본문 크기는 불변) ② 하단 가중으로 시선을 낮추고
+       ③ 좌=타이틀 / 우=리드 캡션으로 양극 지지 ④ 하단 메타를 전폭 룰 위에 올려 지면 바닥을 긋는다.
+       전부 기존 자산(타이틀·오렌지 대시·리드·라벨/날짜·보더)의 크기·위치 재구성이며 새 조형은 없다 */
+    R381 + '.slide.cv .nx-run + .sp,' + R381 + '.slide.cl .nx-run + .sp{flex:2.1}',   /* 시네마스코프 — 타이틀을 아래로 */
+    R381 + '.nx-cvtitle{font-size:112px;line-height:1.06;max-width:2100px}',
+    R381 + '.nx-cltitle{font-size:98px;line-height:1.12;max-width:2100px}',
+    /* 우측 앵커 — 타이틀 반대편을 지지. 아래 메타 룰과 붙어 보이지 않게 간격을 벌린다 */
+    R381 + '.nx-cvlead{margin-left:auto;margin-top:46px;margin-bottom:34px;text-align:right}',
+    R381 + '.nx-cvlead span{font-size:19px}',
+    R381 + '.nx-dash{width:120px;height:5px}',                                         /* 오렌지 액센트도 캔버스 비례로 */
+    R381 + '.nx-cvfoot{border-top:1px solid rgba(255,255,255,.22);padding-top:22px;font-size:14px;letter-spacing:.26em}',
+    R381 + '.nx-clfoot{padding-top:22px}' + R381 + '.nx-clfoot .l{font-size:22px}' + R381 + '.nx-clfoot .r{font-size:14px}',
+    /* 포토 커버 — 16:9 원본(1920×1079)을 3.8:1로 cover하면 세로 53%가 잘린다.
+       가로 그라데이션 스톱을 앞당겨 사진이 드러나는 구간을 넓히고, 초점을 살짝 위로 올려 밝은 대역을 살린다 */
+    R381 + '.nx-photo{background-position:center 42%}',
+    R381 + '.nx-shade{background:linear-gradient(90deg,rgba(10,13,18,.94) 0%,rgba(10,13,18,.6) 30%,rgba(10,13,18,.24) 62%,rgba(10,13,18,.22) 100%)}',
+    /* 엔딩은 세로 그라데이션이라 잘린 중앙 대역이 가장 어둡다 — 초점을 아래로 내리고 딤을 완화해야 사진이 보인다 */
+    R381 + '.slide.cl .nx-photo{background-position:center 64%}',
+    R381 + '.nx-shade.cl{background:linear-gradient(180deg,rgba(10,13,18,.46) 0%,rgba(10,13,18,.28) 45%,rgba(10,13,18,.8) 100%)}',
+    ''
+  ].join('\n');
+
   /* ---- 상태 재적용 스크립트 (공통 계약) ---- */
   var MV_SEL = '[data-edit], .nx-photo, .nx-qbar, .nx-track, .nx-dash';
   var UNIT_SEL = '.nx-2col,.nx-stcol,.nx-tocrow,.nx-ref,.nx-lc,.nx-bn,.nx-ag,.nx-pc,.nx-dhmini,.nx-sprow,.nx-ba,.nx-dmcol,.nx-prow,.nx-rm,.nx-tlc,.nx-qlist li,.ms-bar,.ms-phase,.nx-chbox,.nx-chk';
@@ -615,12 +724,31 @@
       'window.__clampSlide=function(s){if(!s)return;var els=s.querySelectorAll("[data-mvkey][data-edit]");' +
       'for(var i2=0;i2<els.length;i2++){var el=els[i2];var r=el.getBoundingClientRect();var sr=s.getBoundingClientRect();' +
       'if(r.width&&(r.right>sr.right-8||r.bottom>sr.bottom-4)){var fs=parseFloat(getComputedStyle(el).fontSize);if(fs>11)el.style.fontSize=Math.max(11,fs*Math.min((sr.right-8-r.left)/r.width,(sr.bottom-4-r.top)/r.height))+"px";}}};' +
-      'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
       // 커버 타이틀 과장문 방어 — 슬라이드 하단 침범 시 폰트 단계 축소
       // 뷰어는 시작 시 전 장 display:none → rect 0으로 오판해 최소치까지 줄어들던 버그: 숨김 장은 건너뜀
       'document.querySelectorAll(".nx-cvtitle").forEach(function(t){var sl=t.closest(".slide");if(!sl||!sl.getBoundingClientRect().height)return;' +
       'var fs=parseFloat(getComputedStyle(t).fontSize);var guard=0;' +
       'while(guard++<12&&fs>26&&t.getBoundingClientRect().bottom>sl.getBoundingClientRect().bottom-70){fs-=4;t.style.fontSize=fs+"px";}});' +
+      // 내용 과다 장 자동 축소(naver __fitSlide 이식) — 넘친 장만 래퍼로 감싸 scale(k), 하한 0.6.
+      // 판정은 캔버스 하드코딩이 아니라 실제 clientHeight - 상하 패딩(= --slide-h에서 파생)
+      'window.__fitSlide=function(s){if(!s)return;var cs=getComputedStyle(s);var w=s.querySelector(":scope > .nx-fit");' +
+      'if(!w){if(s.scrollHeight<=s.clientHeight+2)return;' +   // 넘친 장만 개입 — 정상 장 레이아웃 불변
+      'w=document.createElement("div");w.className="nx-fit";' +
+      'w.style.cssText="transform-origin:top left;flex:1 1 auto;min-height:0;display:"+cs.display+";flex-direction:"+cs.flexDirection+";gap:"+cs.gap+";align-items:"+cs.alignItems+";justify-content:"+cs.justifyContent+";";' +
+      // 풀블리드 배경(.nx-photo·.nx-shade)은 슬라이드 직속 유지 — 래퍼에 transform이 걸리면 containing block이 되어 inset:0이 패딩박스로 줄어든다
+      'var kids=[].slice.call(s.childNodes);' +
+      'for(var q3=0;q3<kids.length;q3++){var c0=kids[q3];' +
+      'if(c0.nodeType===1&&/nx-photo|nx-shade/.test(String(c0.className||"")))continue;' +
+      'w.appendChild(c0);}' +
+      's.appendChild(w);}' +
+      'w.style.transform="";w.style.width="";' +
+      'var avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);' +
+      'var need=w.scrollHeight;if(need>avail+2){var k=Math.max(0.6,avail/need);var bw=w.clientWidth;w.style.width=(bw/k)+"px";w.style.transform="scale("+k+")";}};' +
+      'var fitAll=function(){var ss=document.querySelectorAll(".ppt-stack > .slide");for(var f2=0;f2<ss.length;f2++)window.__fitSlide(ss[f2]);};' +
+      // 축소를 먼저 걸고 나서 clamp — 순서를 반대로 두면 넘친 장의 뒷부분만 글자가 작아져 크기가 들쭉날쭉해진다
+      'fitAll();' +
+      'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
+      'window.addEventListener("load",fitAll);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitAll);' +
       '})();';
     return '<script>' + js + '<\/script>';
   }
@@ -689,30 +817,37 @@
 
   function renderMachineDeck(data) {
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
-    slides = lockDemo(slides, data._clang, data._userTouched);
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS + '</style></head><body>' +
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    return '<!doctype html><html data-ratio="' + ratioOf(data._ratio).slug + '"><head><meta charset="utf-8"><style>' + chcss() + CSS + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* ---- 발표 뷰어 ---- */
   function renderMachineViewer(data) {
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang, data._userTouched);
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    var RT = ratioOf(data._ratio);
+    /* 뷰어 스케일 = 캔버스 값 기준(하드코딩 1280/720 제거) — 런타임에 CSS 변수를 읽어 비율이 바뀌어도 따라온다 */
     var vjs = '(function(){var i=0;var sl=document.querySelectorAll(".ppt-stack > .slide");var n=sl.length;' +
-      'function fit(){var w=innerWidth,h=innerHeight;var k=Math.min(w/1280,h/720);document.querySelector(".ppt-stack").style.transform="scale("+k+")";}' +
+      'function canvas(){var cs=getComputedStyle(document.documentElement);' +
+      'return[parseFloat(cs.getPropertyValue("--slide-w"))||' + RT.w + ',parseFloat(cs.getPropertyValue("--slide-h"))||' + RT.h + '];}' +
+      'function fit(){var c=canvas();var k=Math.min(innerWidth/c[0],innerHeight/c[1]);document.querySelector(".ppt-stack").style.transform="scale("+k+")";}' +
       'function show(x){i=Math.max(0,Math.min(n-1,x));for(var a=0;a<n;a++){sl[a].style.display=a===i?"flex":"none";}' +
       'var cur=sl[i];cur.classList.remove("vin");void cur.offsetWidth;cur.classList.add("vin");' +
       'var us=cur.querySelectorAll(' + JSON.stringify(UNIT_SEL + ',.nx-hl,.nx-cvtitle,.nx-sttitle,.nx-dhtitle,.nx-dktitle,.nx-dmtitle,.nx-cltitle,.nx-tctitle,.nx-foot,.nx-band,.nx-tl,.nx-src') + ');var q2=0;for(var q=0;q<us.length;q++){var u=us[q];if(u.style.display==="none")continue;' +
       'u.style.animation="none";void u.offsetWidth;u.style.animation="vSlideUp .5s "+(q2*0.045)+"s cubic-bezier(.2,.7,.2,1) both";q2++;}' +
+      /* 뷰어는 시작 시 전 장 display:none → 최초 fitAll이 높이 0으로 보고 지나친다. 장을 띄운 직후 다시 판정(축소 먼저, clamp 나중) */
+      'if(window.__fitSlide)window.__fitSlide(cur);' +
       'if(window.__clampSlide)window.__clampSlide(cur);' +
       'var pg=document.getElementById("vpg");if(pg)pg.textContent=(i+1)+" / "+n;}' +
       'addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown")show(i+1);' +
       'if(e.key==="ArrowLeft"||e.key==="PageUp")show(i-1);if(e.key==="Home")show(0);if(e.key==="End")show(n-1);});' +
       'addEventListener("click",function(e){if(e.clientX>innerWidth/2)show(i+1);else show(i-1);});' +
       'addEventListener("resize",fit);fit();show(0);})();';
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' + chcss() + CSS +
+    return '<!doctype html><html data-ratio="' + RT.slug + '"><head><meta charset="utf-8"><style>' + chcss() + CSS +
       '\nhtml,body{background:#0A0D12;height:100%;overflow:hidden}' +
-      '.ppt-stack{position:absolute;left:50%;top:50%;margin:-360px 0 0 -640px;width:1280px;height:720px;padding:0;gap:0;transform-origin:center center}' +
+      /* 중앙 정렬 margin = 캔버스의 절반 — 비율 변수에서 계산 */
+      '.ppt-stack{position:absolute;left:50%;top:50%;margin:calc(var(--slide-h) / -2) 0 0 calc(var(--slide-w) / -2);width:var(--slide-w);height:var(--slide-h);padding:0;gap:0;transform-origin:center center}' +
       '.ppt-stack > .slide{display:none}' +
       '@keyframes vSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}' +
       '#vpg{position:fixed;right:18px;bottom:14px;color:rgba(255,255,255,.5);font:12px/1 Pretendard,sans-serif;z-index:9}' +
@@ -892,7 +1027,7 @@
   window.MACHINE_MV_SEL = MV_SEL;
   window.MACHINE_DEFAULT_DECK = DEFAULT_DECK;
   window.MACHINE_CATALOG = CATALOG;
-  window.MACHINE_STYLE = { id: 'machine', name: 'Premium Dark', desc: '다크·네이버그린 · 영문 빅타이포 · 포토 커버 · 16:9', swatch: 'linear-gradient(135deg,#14181F 0%,#14181F 55%,#40C057 100%)' };
+  window.MACHINE_STYLE = { id: 'machine', name: 'Premium Dark', desc: '다크·네이버그린 · 영문 빅타이포 · 포토 커버 · 비율 선택', swatch: 'linear-gradient(135deg,#14181F 0%,#14181F 55%,#40C057 100%)' };
   window.MACHINE_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.machineNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.twocol)); };
 })();

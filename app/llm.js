@@ -2,10 +2,38 @@
    백엔드 없는 정적 앱: 사용자가 자신의 Anthropic API 키를 설정에 입력→localStorage(이 브라우저에만) 저장.
    브라우저에서 api.anthropic.com 직접 호출(anthropic-dangerous-direct-browser-access 헤더로 CORS 허용).
    키는 서버로 전송되지 않으며 이 기기 로컬에만 존재. window.LLM 노출. */
+
+/* ── 화면 비율 계약 v1 — 단일 진실(규격서: docs/RATIO_CONTRACT.md) ─────────────
+   data._ratio = '16:9' | '4:3' | '3.8:1'. 필드가 없으면 '16:9'로 간주(하위호환 필수).
+   캔버스 px는 반드시 "인치 × 96" — export-pptx.js의 IN=1/96이 px→인치 환산의 유일한 상수라
+   96의 배수가 아니면 PPTX 슬라이드 규격이 소수점으로 어긋난다.
+   이 파일에 두는 이유: 버들리스(번들러 없음) 앱이라 공용 유틸 모듈이 없고,
+   llm.js가 index·studio 양쪽이 모두 로드하는 유일한 공용 스크립트다(LLM.fixBrand와 같은 이유).
+   packs/**는 "완전 자기완결" 원칙상 같은 표를 자체 보유한다 — 값 변경은 계약 문서부터. */
+(function () {
+  var TABLE = {
+    '16:9':  { w: 1280, h: 720, slug: 'r169' },
+    '4:3':   { w: 1280, h: 960, slug: 'r43'  },
+    '3.8:1': { w: 2736, h: 720, slug: 'r381' },
+  };
+  function norm(r) { return TABLE[r] ? r : '16:9'; }            // 미지정·미지값 → 16:9
+  function canvas(r) {
+    var k = norm(r), t = TABLE[k];
+    return { ratio: k, w: t.w, h: t.h, slug: t.slug, inW: t.w / 96, inH: t.h / 96, ar: t.w + '/' + t.h };
+  }
+  window.RATIO = {
+    LIST: ['16:9', '4:3', '3.8:1'],
+    norm: norm,
+    canvas: canvas,
+    of: function (d) { return canvas(d && d._ratio); },          // 덱/사이트 데이터 → 캔버스 스펙
+  };
+})();
+
 (function () {
   /* 팀 공용 프록시(관리자 키 1개, proxy/README.md로 배포) 주소.
      채우면 전원 프록시 모드(개별 키 불필요·모델 서버 고정·일일 제한 서버 적용).
-     비우면 BYOK(각자 키) 모드. 로컬 테스트: localStorage 'onsite-ai-proxy'로 오버라이드 가능. */
+     비우면 BYOK(각자 키) 모드. 로컬 테스트: localStorage 'onsite-ai-proxy'로 오버라이드 가능.
+     ⚠️ 계정 이관 시 교체 지점은 이 한 곳뿐 — 절차는 docs/HANDOVER.html §13. */
   var PROXY_URL = 'https://webgen-ppt-proxy.ksj0225.workers.dev';
 
   var KEY_LS = 'onsite-ai-key', MODEL_LS = 'onsite-ai-model', PROXY_LS = 'onsite-ai-proxy';
@@ -24,7 +52,14 @@
   function maskKey(k) { k = k || getKey(); if (!k) return ''; return k.length <= 12 ? '••••' : k.slice(0, 7) + '…' + k.slice(-4); }
   // UI 언어 — 되묻기 질문·수정 결과 메시지를 이 언어로 받는다(초안 콘텐츠 언어는 brief.lang)
   function uiLang() { try { return (window.I18N ? I18N.getLang() : localStorage.getItem('midas-lang')) || 'ko'; } catch (e) { return 'ko'; } }
-  function proxyUrl() { var o = ''; try { o = localStorage.getItem(PROXY_LS) || ''; } catch (e) {} return (o || PROXY_URL || '').replace(/\/$/, ''); }
+  /* 프록시 주소 결정: localStorage 오버라이드 > 내장 PROXY_URL.
+     오버라이드에 'off'를 넣으면 프록시를 끄고 BYOK(개인 키) 모드로 — 인계자가 코드 수정 없이
+     자기 키/자기 워커로 갈아끼울 때 쓴다(docs/HANDOVER.html §13). */
+  function proxyUrl() {
+    var o = ''; try { o = localStorage.getItem(PROXY_LS) || ''; } catch (e) {}
+    if (o === 'off') return '';
+    return (o || PROXY_URL || '').replace(/\/$/, '');
+  }
   function usingProxy() { return !!proxyUrl(); }
   // AI 사용 가능? 프록시(팀 공용) 또는 개인 키
   function aiAvailable() { return usingProxy() || hasKey(); }
@@ -212,7 +247,8 @@
       var _attempt = async function (useStream) {
         var pres = await fetch(proxyUrl() + '/compose', {
           method: 'POST', headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '', lang: _ol, stream: useStream }),
+          // ratio — 화면 비율(계약 v1). 워커가 비율에 맞는 "분량 지시"만 프롬프트에 덧붙인다(장수·타입 불변)
+          body: JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [], pack: brief.pack || '', lang: _ol, ratio: (window.RATIO ? RATIO.norm(brief.ratio) : (brief.ratio || '16:9')), stream: useStream }),
         });
         if (!pres.ok) { var pj = null; try { pj = await pres.json(); } catch (e) {} throw new Error(_proxyErrMsg(pj, pres.status)); }
         var ptext;
@@ -225,7 +261,7 @@
         }
         var pdeck = parseDeck(ptext, brief.pack);
         // 잘린 스트림 방어 — 잠금 팩(정확히 10장)이 모자라면 관대한 파서가 조각을 "성공"으로 만든 것. 실패로 승격해 비스트림 재시도를 태운다.
-        if (useStream && ({ naver: 1, rams: 1, machine: 1 })[brief.pack] && (pdeck.slides || []).length < 10) throw new Error('TRUNCATED_STREAM_DECK');
+        if (useStream && ({})[brief.pack] && (pdeck.slides || []).length < 10) throw new Error('TRUNCATED_STREAM_DECK');   // 시연 잠금 해제로 비움 — 재잠금 시 { naver:1, rams:1, machine:1 } 복원
         pdeck.style = brief.style || pdeck.style || 'ax';
         pdeck.accent = pdeck.accent || 'blue';
         return pdeck;

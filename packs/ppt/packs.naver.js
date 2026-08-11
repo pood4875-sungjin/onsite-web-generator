@@ -23,6 +23,10 @@
   function de(path) { return ' data-edit="' + path + '"'; }
   function kind(s, fb) { return esc(String(s.title || fb || s.type || 'Slide').replace(/\n/g, ' ').replace(/\*\*/g, '')); }
 
+  /* ---- 비율 계약 v1 ---- data._ratio 없으면 16:9(하위호환). 팩은 ①루트 data-ratio ②--slide-w/h ③깨지는 요소 오버라이드만 책임진다 */
+  var RATIO = { '16:9': { slug: 'r169', w: 1280, h: 720 }, '4:3': { slug: 'r43', w: 1280, h: 960 }, '3.8:1': { slug: 'r381', w: 2736, h: 720 } };
+  function ratioOf(r) { return RATIO[r] || RATIO['16:9']; }
+
   /* 챕터 컬러 — 면(panel)/흰 배경 위 텍스트(text)/연한 배경(tint). g=시그니처 그린(기본) */
   var CH = {
     1: { p: '#A97BDE', t: '#9059C8', bg: '#F4F5F6' },
@@ -135,8 +139,11 @@
       '<circle cx="250" cy="105" r="22" fill="rgba(255,255,255,.85)"/><circle cx="155" cy="105" r="6" fill="rgba(255,255,255,.7)"/><circle cx="250" cy="10" r="5" fill="rgba(255,255,255,.6)"/></svg>';
   }
   /* 로드맵 라인 차트 — 점선 그리드 + 상승 커브 + 45° 마커 + 시점 라벨(원본 23) */
-  function roadChart(steps, col, P) {
-    var n = Math.max(steps.length, 2), W = 1150, H = 210;
+  /* cw=캔버스 폭. viewBox는 폭에 맞춰 넓힌다 — 차트는 width:100%/height:auto라 뷰박스 비율이 곧 높이다.
+     2736 캔버스에서 W를 1150으로 두면 높이가 460px로 부풀어 max-height:230에 걸려 레터박싱되고,
+     시점 라벨(퍼센트 오버레이)만 전폭에 흩어져 마커와 어긋난다. */
+  function roadChart(steps, col, P, cw) {
+    var n = Math.max(steps.length, 2), W = (cw || RATIO['16:9'].w) > 1600 ? 2400 : 1150, H = 210;
     var pts = steps.map(function (st, i) {
       var x = 60 + i * (W - 140) / (n - 1), y = (H - 44) - i * (H - 92) / (n - 1);
       return { x: x, y: y, lab: ((st.when || '') + ' ' + (st.head || '')).trim() };
@@ -356,7 +363,7 @@
           '<p class="nv-chead"' + de(IP + '.head') + '>' + ml(st.head || '') + '</p>' +
           (st.text ? '<p class="nv-ctext"' + de(IP + '.text') + '>' + ml(st.text) + '</p>' : '') + '</div>';
       }).join('');
-      var chart = (s.steps && s.steps.length >= 2 && s.chart !== false) ? '<div class="rm-chartwrap">' + roadChart(s.steps, chOf(s).p, P) + '</div>' : '';
+      var chart = (s.steps && s.steps.length >= 2 && s.chart !== false) ? '<div class="rm-chartwrap">' + roadChart(s.steps, chOf(s).p, P, ctx && ctx.cw) + '</div>' : '';
       return '<section class="slide rm" data-kind="' + kind(s, 'Roadmap') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) + chart +
         '<div class="cd-grid rmg c' + Math.min((s.steps || []).length || 3, 4) + '">' + cells + '</div>' + summary(s, P) + '</section>';
@@ -615,7 +622,7 @@
     }
   };
 
-  function renderSlides(slides) {
+  function renderSlides(slides, RT) {
     /* 네비 스트립용 챕터 목록 — divider 장에서 파생(ch 없으면 순서대로 부여) */
     var chapters = [];
     slides.forEach(function (s) {
@@ -627,7 +634,7 @@
     return slides.map(function (s, i) {
       var fn = R[s.type] || R.section;
       var html = '';
-      try { html = fn(s, 'slides.' + i, { chapters: chapters, no: i + 1 }); }
+      try { html = fn(s, 'slides.' + i, { chapters: chapters, no: i + 1, cw: (RT || RATIO['16:9']).w }); }
       catch (e) { html = '<section class="slide sc" data-kind="Error"><h2 class="nv-hl">' + esc(s.type) + ' 렌더 오류</h2></section>'; }
       return html;
     }).join('\n');
@@ -668,6 +675,8 @@
       'if(!w){if(s.scrollHeight<=s.clientHeight+2)return;' +   // 넘친 장만 개입 — 정상 장 레이아웃 불변
       'w=document.createElement("div");w.className="nv-fit";' +
       'w.style.cssText="transform-origin:top left;flex:1 1 auto;min-height:0;display:"+cs.display+";flex-direction:"+cs.flexDirection+";gap:"+cs.gap+";align-items:"+cs.alignItems+";justify-content:"+cs.justifyContent+";";' +
+      /* 표지·간지처럼 grid인 장은 트랙까지 옮기지 않으면 1열로 무너진다(마지막 트랙은 남는 폭을 먹도록 1fr) */
+      'if(cs.display.indexOf("grid")>=0){var gt=cs.gridTemplateColumns.split(" ");if(gt.length>1)gt[gt.length-1]="1fr";w.style.gridTemplateColumns=gt.join(" ");w.style.gridTemplateRows=cs.gridTemplateRows;}' +
       'while(s.firstChild)w.appendChild(s.firstChild);s.appendChild(w);}' +
       'w.style.transform="";w.style.width="";' +
       'var avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);' +
@@ -1012,7 +1021,143 @@
       '.ms-axis{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;border-top:1px solid var(--rule);padding-top:8px}' +
       '.ms-axis span{font-size:13px;color:var(--body);text-align:center}' +
       '.ms-note{flex:none;font-size:17px;font-weight:400;border-left:3px solid var(--cht);padding:9px 0 9px 16px}.ms-note b{font-weight:700;color:var(--cht)}' +
-      '@keyframes vfu{from{opacity:0}to{opacity:1}}';
+      '@keyframes vfu{from{opacity:0}to{opacity:1}}' +
+      ratioCSS();
+  }
+
+  /* ---- 비율 오버라이드 — 위 CSS는 전부 절대 px라 액자(--slide-w/h)만 바꾸면 내부는 그대로다. **깨지는 요소만** 스코프로 덮는다.
+     r43 (1280×960): 폭은 16:9와 동일 → 가로 레이아웃은 손대지 않는다. 늘어난 240px를 여백·행 리듬·고정높이 패널에 흡수. 폰트 불변.
+     r381 (2736×720): 세로는 16:9와 동일 → 폰트·세로 고정값 불변. 좌우 여백·고정폭 컬럼·측정폭(measure) 캡·그리드 분배만 조정. */
+  function ratioCSS() {
+    var A = '[data-ratio="r43"] ', B = '[data-ratio="r381"] ';
+    return [
+      /* 캔버스 — 루트의 data-ratio가 변수만 갈아끼운다(다른 팩과 동일 계약) */
+      '[data-ratio="r43"]{--slide-w:1280px;--slide-h:960px}',
+      '[data-ratio="r381"]{--slide-w:2736px;--slide-h:720px}',
+
+      /* ===== 4:3 (1280×960) ===== */
+      A + '.slide{padding:44px 43px 52px 56px;gap:34px}',                              /* 상하 여백·블록 간격을 캔버스 비례로(+33%) — 상단이 뜨고 하단이 남는 걸 방지 */
+      A + '.slide.cv,' + A + '.slide.cl,' + A + '.slide.dv{padding:0;gap:27px}',       /* 그리드 장은 padding:0·거터 27px 유지 — 위 규칙이 같은 특이도로 덮으므로 재선언 필수 */
+      A + '.slide.st{padding:52px 56px 64px 43px;gap:0}',
+      A + '.slide.tc{padding:44px 56px 56px;gap:0}',
+      A + '.cd-band{margin:-44px -43px 0 -56px;padding:44px 43px 46px 56px}',          /* 밴드는 슬라이드 패딩을 음수 마진으로 상쇄 — 패딩이 바뀌면 반드시 동반 */
+      A + '.cv-band{height:284px}',                                                    /* 표지 좌 밴드 213px 고정 → 960에선 화면의 30%가 22%로 쪼그라든다 */
+      A + '.slide.cl .cv-band{min-height:352px}',
+      A + '.cv-r{padding:60px 59px 52px 64px}',
+      A + '.dv-panel{min-height:417px}',                                               /* 간지 좌 컬러 패널 313px 고정 → 아래 그래픽 칸만 늘어나 상단이 빈다 */
+      A + '.dv-r{padding:44px 37px 52px 56px}',
+      /* 행 리듬 — 같은 행 수로 240px를 채운다(행을 늘리면 데이터 계약이 바뀐다).
+         넘버 리스트는 상단 고정·SO WHAT은 하단 고정이라 그냥 두면 가운데가 300px 넘게 빈다 → 행 높이로 흡수 */
+      A + '.nl-row,' + A + '.as-row{padding:38px 0}',
+      A + '.nl-cap{padding-bottom:14px}' + A + '.sc-main{gap:28px}',
+      A + '.tc-row{padding:26px 0}',
+      A + '.dv-item{padding:22px 0}',
+      A + '.hl-row{padding:30px 4px}',
+      A + '.tb-row{padding:20px 4px}',
+      A + '.ck-li{padding:28px 26px}',
+      A + '.ms-phase{padding:20px 19px}',
+      /* 카드·이미지 — 세로 여유를 간격과 이미지 높이로 */
+      A + '.cd-grid{gap:44px;padding:40px 0}',
+      A + '.cd-grid.c2{gap:84px}' + A + '.cd-grid.c3{gap:56px}' + A + '.cd-grid.c4{gap:44px}',
+      A + '.md-body{padding:28px 0 0}',
+      A + '.cv-gfx svg.cp{width:92%}',                                                /* 표지 나침반 — 그래픽 칸이 240px 높아진 만큼 확대(가로는 440 컬럼 안) */
+      /* 로드맵 시점 라벨은 wrap 높이 기준 퍼센트 좌표라, wrap이 차트보다 커지면 마커와 어긋난다 → wrap이 차트를 꼭 감싸게 */
+      A + '.rm-chartwrap{flex:0 0 auto;margin:auto 0}',
+      A + '.s-imgwrap{top:210px}' + A + '.s-imgwrap img{max-height:600px}',            /* 업로드 이미지 절대배치가 720 기준이라 960에선 위로 쏠린다 */
+      A + '.nv-donut{width:340px;height:340px}' + A + '.stt-hole{width:248px;height:248px}',  /* 도넛은 400px 컬럼 안에서만 커진다(가로 불변) */
+
+      /* ===== 3.8:1 (2736×720) ===== */
+      B + '.slide{padding:29px 90px 37px 112px}',                                      /* 좌우 여백을 캔버스 비례로 — 43/56px는 2736에서 종이 끝에 붙는다 */
+      B + '.slide.cv,' + B + '.slide.cl,' + B + '.slide.dv{padding:0}',
+      B + '.slide.st{padding:37px 116px 56px 90px}',
+      B + '.slide.tc{padding:29px 116px 43px}',
+      B + '.cd-band{margin:-29px -90px 0 -112px;padding:29px 90px 40px 112px}',        /* 슬라이드 패딩 동반(위와 같은 이유) */
+      B + '.cd-fn{right:84px}',                                                        /* 각주는 우측 절대배치 — 패딩과 함께 움직인다 */
+      /* 디스플레이 타이포 — 풀블리드 대형 타이틀만 캔버스 비례로 상향(본문·카드·리스트는 불변).
+         2736 지면에서 75px 타이틀은 점처럼 읽힌다. 모듈러 스케일 1.25 단계로 올리고 자간을 조인다 */
+      B + '.st-title{font-size:116px;letter-spacing:-.04em}' + B + '.st-sub{margin-top:38px}',
+      B + '.hlx-title{font-size:88px}' + B + '.qt-text{font-size:64px}',
+      /* 인용 — 문장(좌)과 화자(우 끝)를 한 줄 필드로. 좌측에만 몰려 우측 65%가 비던 구성을 좌우 앵커로 */
+      B + '.qt-body{padding:16px 0}' + B + '.qt-bar{width:6px}',
+      B + '.qt-body>div{flex:1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:100px}',   /* flex 항목이라 flex:1 없으면 내용 폭에 붙어 화자가 우측 끝으로 안 간다 */
+      B + '.qt-by{margin:0 0 10px;white-space:nowrap}',
+      B + '.nv-big.xl{font-size:210px}',
+      /* 측정폭 캡 — 안 걸면 한 줄이 2400px를 가로질러 읽히지 않는다 */
+      B + '.nv-hl{max-width:2000px}' + B + '.hlx-title{max-width:2200px}',
+      B + '.st-title{max-width:2400px}' + B + '.st-sub{max-width:1500px}',
+      B + '.nv-body{max-width:1200px}' + B + '.nv-body.lg{max-width:1500px}',
+      B + '.qt-text{max-width:1900px}' + B + '.nv-sum p{max-width:1900px}',
+      B + '.cv-sub{max-width:900px}' + B + '.bs-cap{max-width:900px}',
+      B + '.dv-mid{max-width:1750px}' + B + '.dv-text{max-width:1400px}',
+      B + '.rm-chartwrap{flex:0 0 auto;margin:auto 0}',                               /* 위와 동일 — 라벨 퍼센트 좌표를 차트 박스에 고정 */
+      /* ---- 초광폭 전용 구성: 양극(bipolar) 배치 ----
+         16:9 구성(그래픽 좌 → 텍스트 우)을 2736에 그대로 두면 텍스트가 좌측 45%에서 끝나고 우측이 백지로 남는다.
+         → 텍스트 앵커를 좌측 끝, 시각 앵커(기존 그래픽 패널)를 우측 끝에 놓아 화면을 양쪽에서 지탱한다.
+         새 조형을 만들지 않고 기존 패널·밴드·SVG의 크기와 위치만 재배치한다.
+         그래픽은 폭에 비례해 커지는데 세로는 720 그대로라 지면을 뚫으므로(표지 +215px·간지 +119px 실측)
+         SVG는 높이 고정+폭 auto(뷰박스 비율)로 못 박는다 — %max-height는 부모 높이가 불확정이라 안 먹는다 */
+      B + '.slide.cv,' + B + '.slide.cl{grid-template-columns:minmax(0,1fr) 720px}',
+      B + '.cv-r{order:1;padding:43px 130px 36px 112px}' + B + '.cv-l{order:2}',      /* 텍스트 좌·그래픽 패널 우 (16:9와 좌우 반대) */
+      B + '.cv-gfx svg.cp{width:auto;height:440px}',                                  /* 나침반 — 밴드(213) 제외 447px 안에서 최대 */
+      B + '.cv-band{padding:36px 44px}',
+      /* 표지 중단 — 큰 타이틀(좌)과 서브 카피(우)를 한 필드에 나란히. 좌측 덩어리 하나로 끝나던 것을 좌우로 벌린다 */
+      B + '.cv-mid{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:110px;align-items:end;justify-items:start}',
+      B + '.cv-mid .nv-label.gr{grid-column:1;grid-row:1}',
+      B + '.cv-title{grid-column:1;grid-row:2;font-size:116px;letter-spacing:-.04em;max-width:1500px}',  /* 디스플레이 타이포는 캔버스 비례로 상향(본문은 불변) */
+      B + '.cv-bar{grid-column:1;grid-row:3;width:150px;height:4px}',
+      /* 서브 카피는 우측 끝에 — 상단(라벨↔날짜)·하단(문서명↔팀)과 같은 좌우 앵커 패턴을 중단에도 적용 */
+      B + '.cv-sub{grid-column:2;grid-row:2/4;align-self:end;justify-self:end;text-align:right;margin:0 0 12px;max-width:620px}',
+      B + '.slide.cl .cv-title{font-size:124px}',                                      /* 클로징은 한 줄이라 표지(2줄 116px)보다 크게 잡아야 같은 무게로 읽힌다 */
+      /* 클로징 — 좌 그래픽 칸이 원래 비어 있어(cv-gfx 무그래픽) 우측 패널이 회색 공백이 된다.
+         잉크 밴드를 컬럼 전체로 키워(마크 위·연락처 아래) 표지의 그린 밴드와 대칭되는 앵커로 */
+      B + '.slide.cl .cv-gfx{display:none}' + B + '.slide.cl .cv-band{flex:1;padding:43px 48px}',
+      /* 간지 — [챕터 컬러 패널][텍스트][아이소 그래픽] 3존. dv-l을 display:contents로 풀어 3열 그리드의 직계 항목으로 */
+      B + '.slide.dv{grid-template-columns:520px minmax(0,1fr) 660px}',
+      B + '.dv-l{display:contents}',
+      /* grid-row를 명시하지 않으면 자동배치 커서가 col3을 지난 뒤라 텍스트가 2행으로 밀려난다(실측: 지면 넘침 → __fitSlide 축소) */
+      B + '.dv-panel{grid-column:1;grid-row:1;padding:29px 40px 44px}' + B + '.dv-panel .nv-mark{margin-bottom:auto}',  /* 마크 위 / 번호·챕터명 아래 — 클로징 밴드와 같은 패턴 */
+      B + '.dv-no{margin:0}' + B + '.dv-title{font-size:68px}',
+      B + '.dv-r{grid-column:2;grid-row:1;padding:29px 60px 37px 60px}' + B + '.dv-mid{max-width:none}',
+      B + '.dv-lead{font-size:44px}',
+      B + '.dv-gfx{grid-column:3;grid-row:1;padding:40px}' + B + '.dv-gfx svg{width:auto;height:440px}',
+      /* 본문 2단 — 우측 서피스가 실오라기가 되지 않게. bleed 폭은 aside+우측패딩과 한 몸 */
+      B + '.sc-cols{gap:90px}',
+      B + '.slide.sc.has-aside .sc-cols{grid-template-columns:1fr 820px}',
+      B + '.sc-bleed{width:950px}',
+      /* 넘버 리스트 2열 — 1열로 두면 설명 한 줄이 2000px를 가로지른다(2열 변형 two-col은 이미 분할돼 있어 제외) */
+      B + '.slide.sc:not(.two-col) .sc-main>.nl-list,' + B + '.sp-txt>.nl-list{display:grid;grid-template-columns:1fr 1fr;column-gap:80px}',
+      B + '.slide.sc:not(.two-col) .sc-main>.nl-list>.nl-row:nth-child(2),' + B + '.sp-txt>.nl-list>.nl-row:nth-child(2){border-top:0}',
+      /* 행 그리드 — 라벨 칸을 넓혀 본문 칸만 통째로 늘어나는 걸 막는다 */
+      B + '.tc-row{grid-template-columns:110px 340px 1fr auto;gap:40px}',
+      B + '.hl-row{grid-template-columns:90px 420px 1fr;gap:40px}',
+      B + '.dv-item{grid-template-columns:44px 220px 1fr}',
+      /* 2단 구성 — 우측 패널 폭 상향 */
+      B + '.sp-cols{grid-template-columns:1fr 900px;gap:90px}',
+      B + '.slide.sp.v-left .sp-cols{grid-template-columns:900px 1fr}',
+      B + '.stt-cols{grid-template-columns:640px 1fr;gap:120px}' + B + '.stt-r{max-width:1600px}',
+      B + '.br-cols{grid-template-columns:620px 120px 1fr;gap:40px}',
+      B + '.bd-cols{grid-template-columns:1.5fr 1fr;gap:120px}',
+      B + '.bs-body{gap:160px}',
+      /* 카드 그리드 — 열 수는 데이터(카드 수)가 정한다. 트랙 폭을 16:9 수준으로 고정하고 남는 가로는 카드 사이로 분배 */
+      B + '.cd-grid.c2{grid-template-columns:repeat(2,minmax(0,900px));justify-content:space-between}',
+      B + '.cd-grid.c3{grid-template-columns:repeat(3,minmax(0,720px));justify-content:space-between}',
+      B + '.cd-grid.c4{grid-template-columns:repeat(4,minmax(0,580px));justify-content:space-between}',
+      B + '.cmp-cols{grid-template-columns:minmax(0,900px) auto minmax(0,900px);justify-content:center;gap:80px}',
+      B + '.st-cols{grid-template-columns:repeat(2,minmax(0,880px));justify-content:space-between}',   /* 비교 블록(A→B)을 좌우 끝에 — 하단 밴드가 지면 폭을 다 쓴다 */
+      /* 항목이 짧아 열 수 상향이 정직하게 먹히는 그리드(체크리스트) — 4개는 한 줄, 5~8개는 2줄 */
+      B + '.ck-grid{grid-template-columns:repeat(4,1fr);gap:22px 44px}',
+      B + '.ck-grid.c1{grid-template-columns:repeat(4,1fr);max-width:none}',
+      /* 라인업 — 다이아 SVG는 preserveAspectRatio=none + width:100%라 컬럼이 1206px가 되면 높이 905px로 지면을 뚫는다.
+         좌 그래픽은 뷰박스 비율 그대로 고정하고, 우 리스트를 2열로 나눠 밑줄만 2000px 늘어나는 걸 막는다.
+         부챗살은 "좌 컬럼 47.6%" 좌표를 하드코딩한 오버레이라 이 배치에선 성립하지 않아 숨긴다 */
+      B + '.ln-cols{grid-template-columns:600px 1fr;gap:80px}',
+      B + '.ln-fan{display:none}',
+      B + '.ln-gfx .nv-iso{width:560px;height:420px;max-height:none;align-self:center}',
+      B + '.ln-list{display:grid;grid-template-columns:1fr 1fr;gap:24px 70px;align-content:center}',
+      /* 나머지는 열 간격만 — 붙어 보이지 않게 */
+      B + '.tl-grid{gap:60px}' + B + '.pc-flow{gap:40px}' + B + '.ps-cols{gap:80px}' + B + '.tb-row{gap:48px}',
+      B + '.s-imgwrap{right:120px}'
+    ].join('\n');
   }
 
   /* [시연 잠금] 표지 타이틀 고정(아너스데이) — 누가 언제 뽑아도 동일(언어별) */
@@ -1056,17 +1201,20 @@
   function renderNaverDeck(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang, data._userTouched);
-    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<style>' + css() + '</style></head><body data-style="naver">' +
-      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    /* 비율 계약: 슬러그는 문서 루트에. body에도 같이 박아 두면 본문만 떼어 옮기는 경로에서도 캔버스가 따라간다 */
+    var RT = ratioOf(data._ratio);
+    return '<!doctype html><html lang="ko" data-ratio="' + RT.slug + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<style>' + css() + '</style></head><body data-style="naver" data-ratio="' + RT.slug + '">' +
+      '<div class="ppt-stack">' + renderSlides(slides, RT) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
   }
 
   /* 발표 뷰어 — honors와 동일 UX(팩 자기완결 원칙상 사본). 순차 등장 유닛·카운트업만 naver 클래스로 교체 */
   function renderNaverViewer(data, opts) {
     data = data || {}; opts = opts || {};
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang, data._userTouched);
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    var RT = ratioOf(data._ratio);
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +
@@ -1090,8 +1238,9 @@
       'var p=null;try{p=rq&&rq.call(de2)}catch(e){}' +
       'if(p&&p.then)p.then(null,function(){});' +
       'setTimeout(function(){if(!document.fullscreenElement&&!pseudo)setPseudo(true);},600);}' +
-      'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
-      'var ty=Math.max(0,(area-720*sc)/2);' +
+      /* 캔버스 리터럴 금지 — 비율에 따라 1280×720/1280×960/2736×720 */
+      'function fit(){var CW=' + RT.w + ',CH2=' + RT.h + ';var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/CW,area/CH2)*(fs()?1:0.97);' +
+      'var ty=Math.max(0,(area-CH2*sc)/2);' +
       'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
       'var v=document.querySelector(".vscale");v.style.transform="translateY("+ty+"px) scale("+sc+")";}' +
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
@@ -1121,9 +1270,9 @@
       'else if(e.key==="f"||e.key==="F")toggleFs();' +
       'else if(e.key==="Escape"){if(document.fullscreenElement)return;if(pseudo){setPseudo(false);return}try{parent.postMessage({pptViewerClose:1},"*")}catch(x){}}});' +
       '})();';
-    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<style>' + css() + vcss + '</style></head><body data-style="naver">' +
-      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' + stateScript(slides) +
+    return '<!doctype html><html lang="ko" data-ratio="' + RT.slug + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<style>' + css() + vcss + '</style></head><body data-style="naver" data-ratio="' + RT.slug + '">' +
+      '<div class="vwrap"><div class="vscale">' + renderSlides(slides, RT) + '</div></div>' + stateScript(slides) +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount">1 / ' + slides.length + '</span><button class="vbtn vnext">›</button><button class="vbtn vfs" title="전체화면 (F)">⛶</button></div>' +
       '<scr' + 'ipt>' + vjs + '</scr' + 'ipt>' + cjkHead(slides, data._clang) + '</body></html>';
   }
@@ -1305,7 +1454,7 @@
   window.NAVER_MV_SEL = MV_SEL;
   window.NAVER_DEFAULT_DECK = DEFAULT_DECK;
   window.NAVER_CATALOG = CATALOG;
-  window.NAVER_STYLE = { id: 'naver', name: 'Minimal', desc: '직각·라인·아이소메트릭 · 챕터 컬러 · 16:9', swatch: 'linear-gradient(135deg,#FFFFFF 55%,#00DE5A 55%)' };
+  window.NAVER_STYLE = { id: 'naver', name: 'Minimal', desc: '직각·라인·아이소메트릭 · 챕터 컬러 · 비율 선택', swatch: 'linear-gradient(135deg,#FFFFFF 55%,#00DE5A 55%)' };
   window.NAVER_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.naverNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.section)); };
 })();

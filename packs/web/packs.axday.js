@@ -269,16 +269,7 @@
     // eyebrow — AI 초안(tagline 있음)인데 eyebrow가 없으면 DEMO 예시("채용…") 대신 productName으로.
     // 첨부와 무관한 데모 카피가 실초안에 새는 것 방지. 과거 저장분에 KO 데모값이 박혀 있어도 자가치유.
     if (shared.tagline && (shared.eyebrow == null || shared.eyebrow === '' || shared.eyebrow === DEMO.eyebrow)) d.eyebrow = d.productName;
-    /* [시연 잠금] GNB·eyebrow·히어로 고정 — 단 사용자가 직접 편집한 필드(_touched)는 양보 */
-    var TCH = shared._touched || {};
-    if (!TCH.productName) d.productName = 'MIDAS GEN NX Seminar 2026';
-    if (!TCH.eyebrow) d.eyebrow = 'MIDAS GEN NX Seminar 2026';
-    if (!TCH.tagline) d.tagline = ({
-      ko: '지금 만나보세요\n차세대 구조설계 워크플로우',
-      en: 'Meet the Next Generation of\nStructural Design Workflow',
-      ja: 'いま、出会う\n次世代の構造設計ワークフロー',
-      zh: '即刻遇见\n新一代结构设计工作流',
-    })[LANG] || d.tagline;
+    // [시연 잠금 해제 2026-08-11] GNB·히어로 강제 블록 제거 — 재잠금 시 demo-lock 스킬 참조
     // 템플릿 고정 라벨 — 산출물 언어(_clang)를 따른다. 데이터가 아니라 번역 파이프라인을 안 타므로 팩이 직접 처리.
     var LANG = ({ en: 1, ja: 1, zh: 1 })[shared._clang] ? shared._clang : 'ko';
     var TT = {

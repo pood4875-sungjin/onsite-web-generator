@@ -162,8 +162,11 @@
   .scards .sc:hover{transform:translateY(-6px);box-shadow:var(--shadow-2)}
   .scards .sc .sw{height:158px}
   .scards .sc .cap{padding:12px 14px;font-size:13.5px}
-  /* PPT는 장표가 16:9 한 장이라 카드도 16:9 — 웹처럼 상단 크롭하면 커버 제목이 잘린다 */
-  .scards.ppt .sc .sw{height:auto;aspect-ratio:16/9}
+  /* PPT는 장표 한 장이 통째로 카드 — 웹처럼 상단 크롭하면 커버 제목이 잘린다.
+     액자 비율은 선택한 화면 비율(계약 v1)을 따른다. --sw-ar은 buildStyleCards가 세팅(기본 16/9).
+     fitThumb의 cover-fit(Math.max)은 액자와 슬라이드 비율이 같아야 전체가 보인다 — 그래서 액자도 같이 바꾼다. */
+  .scards.ppt .sc .sw{height:auto;aspect-ratio:var(--sw-ar,16/9)}
+  .styles.ppt .sc .sw{height:auto;aspect-ratio:var(--sw-ar,16/9)}
   /* 사업군 선택(#oscreen) 썸네일 그라데이션 — 종류 카드(파랑/보라/초록/빨강)와 구분되는 색 */
   .tb-org-ent{background:radial-gradient(130% 130% at 50% -10%,#0b1533 0%,#31437a 46%,#cdd6ee 100%)}
   .tb-org-sk{background:radial-gradient(130% 130% at 50% -10%,#5e1a0a 0%,#e0562f 46%,#f7d9cf 100%)}
@@ -374,9 +377,14 @@
       th:'<div class="thumb tb-ppt"><div class="gw gw-ppt"><span class="gwd"><i></i><i></i><i></i></span><span class="gwhero"></span><span class="gwbar cc w50"></span><span class="gwbar cc w50"></span></div></div>'},
   ];
   const PPT_LENGTHS=[['short','⚡ 5–8장 · 짧은 발표'],['std','📊 10–15장 · 표준 발표'],['deep','📚 20장+ · 심층 자료']];
+  /* 화면 비율(계약 v1 — docs/RATIO_CONTRACT.md). 값은 RATIO.LIST와 동일 순서.
+     분량(PPT_LENGTHS)과 같은 어휘의 옵션 카드로 묻고, 요약 카드에서 칩으로 다시 바꿀 수 있다.
+     스타일 카드보다 먼저 물어야 썸네일이 고른 비율로 그려진다(pagerQs → askStyleChat 순서). */
+  const PPT_RATIOS=[['16:9','🖥️ 16:9 · 와이드 (기본)'],['4:3','📺 4:3 · 클래식'],['3.8:1','🎞️ 3.8:1 · 초와이드']];
   // 종류별 기본 질문 — AI 되묻기 질문 뒤에 "같은 카드 페이저"로 이어붙는다 (종류마다 물을 게 다름)
   const FIXED_QS={
-    ppt:[{key:'__len', q:'분량은 어느 정도로 할까요?', opts:PPT_LENGTHS.map(([id,label])=>({id,label}))}],
+    ppt:[{key:'__len', q:'분량은 어느 정도로 할까요?', opts:PPT_LENGTHS.map(([id,label])=>({id,label}))},
+         {key:'__ratio', q:'화면 비율은 어떻게 할까요?', opts:PPT_RATIOS.map(([id,label])=>({id,label}))}],
     single:[{key:'goal', q:'방문자가 페이지에서 어떤 행동을 하면 좋을까요?', opts:['💬 문의 남기기','📝 참가·가입 신청','⬇️ 자료 다운로드','🔍 제품 둘러보기']}],
     multi:[{key:'goal', q:'사이트의 가장 중요한 목표는 무엇인가요?', opts:['🤝 제품 소개와 도입 문의','🎪 행사·이벤트 안내','👥 채용·회사 소개','📚 고객 지원·문서 제공']}],
   };
@@ -434,7 +442,9 @@
     ],
   };
 
-  const S={ kind:'', stylePack:'aether', styleName:'', org:'', lang:(window.I18N?I18N.getLang():'ko'), plan:'', answers:[], name:'', product:'', pptStyle:'ax', len:'short', edmTpl:null };
+  const S={ kind:'', stylePack:'aether', styleName:'', org:'', lang:(window.I18N?I18N.getLang():'ko'), plan:'', answers:[], name:'', product:'', pptStyle:'ax', len:'short', ratio:'16:9', edmTpl:null };
+  // 현재 선택 비율의 캔버스 스펙(계약 v1) — 리터럴 1280/720을 코드에 흩뿌리지 않기 위한 단일 진입점
+  const curCanvas=()=> (window.RATIO?RATIO.canvas(S.ratio):{ratio:'16:9',w:1280,h:720,slug:'r169',inW:13.3333,inH:7.5,ar:'1280/720'});
   let leaving=false;
 
   /* ---- 챗 프리미티브 ---- */
@@ -442,13 +452,15 @@
   function el(t,c,h){const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
   /* 썸네일 스마트핏 — PPT는 메인 표지 한 장, 웹은 첫 섹션(GNB+히어로)이 카드에 통째로.
      1차: 1280px 폭맞춤(덱 내장 뷰어가 이 뷰포트에 자체 핏) → 2차: 표지/1섹션 박스 실측 후 contain·중앙. */
-  function fitThumb(sw,f){
+  // baseW = 1차 폭맞춤 기준(기본 1280 = 가상 데스크탑). PPT는 선택한 화면 비율의 캔버스 폭을 넘긴다(3.8:1=2736)
+  function fitThumb(sw,f,_pad,baseW){
+    const VWID=baseW||1280;
     let t1=0,t2=0;
     function base(){
       const W=sw.clientWidth,H=sw.clientHeight; if(!W){ requestAnimationFrame(base); return; }
-      const sc=W/1280;
+      const sc=W/VWID;
       f.style.transformOrigin='0 0';
-      f.style.width='1280px'; f.style.height=Math.ceil(H/sc)+'px';
+      f.style.width=VWID+'px'; f.style.height=Math.ceil(H/sc)+'px';
       f.style.transform='scale('+sc+')';
       clearTimeout(t1); clearTimeout(t2);
       t1=setTimeout(refine,120); t2=setTimeout(refine,450);
@@ -745,12 +757,18 @@
       const skip=(id)=> only && !only.has(id);
       const pick=(id,name)=>{ S.styleName=name; onPick(id,name); };
       if(kind==='ppt'){
+        /* 선택한 화면 비율을 썸네일에도 반영 — 액자(--sw-ar)와 렌더 데이터(_ratio)를 함께 맞춘다.
+           초와이드(3.8:1)는 그리드 3열에 넣으면 카드가 손톱만 해져 한 줄에 하나씩 편다. */
+        const cv=curCanvas();
+        sz.classList.add('ppt'); sz.style.setProperty('--sw-ar', cv.ar);
+        if(cv.slug==='r381') sz.style.gridTemplateColumns='1fr';
+        const withRatio=(d)=>Object.assign({}, d, {_ratio:cv.ratio});
         // 노출 팩 화이트리스트(2026-07-31 사용자 지시) — 구 팩·pitch·honors는 잠시 가림. 되살리려면 여기에 추가
-        const PPT_VISIBLE=['naver','rams','machine'];   // [시연] 3종 노출 — naver는 10장 템플릿 잠금, 전체 복원 시 +'sfmi','machine'
+        const PPT_VISIBLE=['naver','rams','machine','pastel','sfmi'];   // 시연 잠금 해제(2026-08-11) — 활성 팩 전체 노출
         (PPT_VISIBLE.includes('ppt')?(window.PPT_STYLES||[]):[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
-          try{ const deck=Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id}); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>renderPptDeck(deck),s.name); }catch(e){}
+          try{ const deck=withRatio(Object.assign({},window.PPT_DEFAULT_DECK,{style:s.id})); const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(window.renderPptDeck?renderPptDeck(deck):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24,cv.w); pvBtn(c,()=>renderPptDeck(deck),s.name); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(s.id, s.name); };
           sz.append(c);
         });
@@ -765,7 +783,7 @@
           if(!PPT_VISIBLE.includes(pid)) return;
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${_L(ps.name)}</div>`);
-          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(locWalk(dd)):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24); pvBtn(c,()=>rfn(locWalk(tfn?showcaseDeck(tfn):dd)),_L(ps.name)); }catch(e){}
+          try{ const f=document.createElement('iframe'); f.setAttribute('scrolling','no'); f.srcdoc=(rfn?rfn(withRatio(locWalk(dd))):''); c.querySelector('.sw').append(f); fitThumb(c.querySelector('.sw'),f,24,cv.w); pvBtn(c,()=>rfn(withRatio(locWalk(tfn?showcaseDeck(tfn):dd))),_L(ps.name)); }catch(e){}
           c.onclick=()=>{ c.classList.add('sel'); pick(pid, _L(ps.name)); };
           sz.append(c);
         });
@@ -808,7 +826,7 @@
   // 내용 키워드 기반 스타일 3개 추천 — 로컬 규칙. null이면 전체 표시(edm 등)
   function recStyles(kind, plan){
     const t=(plan||'').toLowerCase();
-    if(kind==='ppt') return null;   // [시연] 3종(PPT_VISIBLE) 전부 표시 — '다른 스타일 보기' 없음
+    if(kind==='ppt') return null;   // PPT_VISIBLE 전부 표시 — '다른 스타일 보기' 없음
     if(kind==='single'||kind==='multi') return null;   // 웹 = 3종 전부 표시('다른 스타일 보기' 없음)
     return null;
   }
@@ -859,6 +877,13 @@
       rows.append(row('이름',nameIn));
       rows.append(row('스타일',String(styleLabel)));
       if(S.kind==='ppt'){ const lm=PPT_LENGTHS.find(l=>l[0]===S.len); if(lm) rows.append(row('분량',_L(lm[1]))); }
+      // 화면 비율 — 언어 칩과 같은 패턴. 여기서 바꾸면 생성 덱의 data._ratio가 그 값으로 저장된다
+      if(S.kind==='ppt'){
+        const rrow=el('div','chiprow'); rrow.style.margin='0';
+        PPT_RATIOS.forEach(([id,label])=>{ const b=el('button','ds-chip'+(id===S.ratio?' on':''),_L(label));
+          b.onclick=()=>{ S.ratio=id; rrow.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; rrow.append(b); });
+        rows.append(row('화면 비율',rrow));
+      }
       if(S.plan) rows.append(row('요약',S.plan.length>90?S.plan.slice(0,90)+'…':S.plan));
       // 되묻기에서 받은 답들 — 무엇을 만들지 여기서 한눈에 확인
       if(S.answers.length){
@@ -956,7 +981,7 @@
       // pitch·honors = 별도 팩(레이아웃 체계가 다름). packKind가 있으면 그 팩의 compose/template 경로
       const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : S.pptStyle==='pastel' ? 'pastel' : S.pptStyle==='sfmi' ? 'sfmi' : S.pptStyle==='machine' ? 'machine' : '';
       const isPitch = !!packKind;
-      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind, lang:S.lang };
+      const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind, lang:S.lang, ratio:S.ratio };
       const hasBrief=!!plan;
       // AI 가능하면 생성을 스튜디오로 넘김 — 즉시 이동해서 좌측 챗이 과정을 안내하고
       // 우측에 장표가 한 장씩 실제로 그려진다 (pendingBrief를 스튜디오가 읽어 라이브 생성)
@@ -964,7 +989,7 @@
         const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:packKind||'ppt' });
         const full=getProject(p.id); const pg0=full.pages[0];
         pg0.pageType='ppt'; pg0.name='덱';
-        pg0.data={ slides:[], style:S.pptStyle, accent:'blue', _clang:S.lang };   // 산출물 언어 — 스튜디오 언어 버튼 기준값
+        pg0.data={ slides:[], style:S.pptStyle, accent:'blue', _clang:S.lang, _ratio:S.ratio };   // 산출물 언어 — 스튜디오 언어 버튼 기준값 / _ratio — 화면 비율(계약 v1)
         pg0.pendingBrief=brief;
         pg0.chat={ log:[], idx:8, generated:false };
         full.lang=S.lang; upsertProject(full);
@@ -990,6 +1015,7 @@
       const p=createProject({ kind:'single', name:(S.name||brief.title||prod||'무제 PPT'), shared:{productName:prod}, stylePack:packKind||'ppt' });
       const full=getProject(p.id); const pg0=full.pages[0];
       pg0.pageType='ppt'; pg0.name='덱'; pg0.data=deck;
+      deck._ratio=S.ratio;   // 화면 비율(계약 v1) — 템플릿/비AI 경로도 덱 데이터에 기록
       pg0.chat={ log:[{r:'bot',t:'📊 '+_L(hasBrief?'PPT 초안이 준비됐어요. 편집 모드에서 바로 수정하세요.':'전체 템플릿을 한 장씩 담았어요. 필요 없는 장은 지우고, 채팅으로 내용을 채워보세요.')}], idx:8, generated:true };
       full.lang=S.lang; upsertProject(full);
       await storeFlush(); leaving=true; location.href='studio/studio.html?v='+Date.now()+'&p='+full.id+'&page='+pg0.id+'&edit=1'; return;
@@ -1231,7 +1257,9 @@
       if(pagerQs.length){
         bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
         const ans=await askOptionCards(pagerQs);
-        ans.forEach(x=>{ if(x.key==='__len'){ if(x.id) S.len=x.id; } else S.answers.push({q:x.q, a:x.a}); });
+        ans.forEach(x=>{ if(x.key==='__len'){ if(x.id) S.len=x.id; }
+          else if(x.key==='__ratio'){ if(x.id) S.ratio=(window.RATIO?RATIO.norm(x.id):x.id); }   // 화면 비율 — 스타일 썸네일이 이 값으로 그려진다
+          else S.answers.push({q:x.q, a:x.a}); });
       }
       for(const q of freeQs){
         bot(q.q);

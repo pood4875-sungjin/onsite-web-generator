@@ -16,6 +16,15 @@
 
   var ACC = '#FF4D00', INK = '#0A0A0A', PAPER = '#F5F5F3';
 
+  /* ---- 화면 비율(계약 v1) — data._ratio → 캔버스 px + 문서 루트 data-ratio 슬러그.
+     필드가 없으면 16:9로 간주(구 프로젝트 하위호환). 리터럴 캔버스 값은 이 표에서만 나온다. ---- */
+  var RATIOS = {
+    '16:9': { slug: 'r169', w: 1280, h: 720 },
+    '4:3': { slug: 'r43', w: 1280, h: 960 },
+    '3.8:1': { slug: 'r381', w: 2736, h: 720 }
+  };
+  function canvasOf(data) { return RATIOS[(data && data._ratio) || '16:9'] || RATIOS['16:9']; }
+
   /* ---- 아이소메트릭 와이어 큐브 (원본 표지·엔딩 그래픽) ----
      iso 투영: x' = (x-y)*cos30, y' = (x+y)*sin30 - z. 그리드 바닥 + 와이어 큐브 + 액센트 큐브. */
   function isoPt(x, y, z) { var c = 0.866, s = 0.5; return [(x - y) * c, (x + y) * s - z]; }
@@ -469,6 +478,20 @@
       'if(fy>0){dy+=fy;ch=true;}if(fx>0){dx+=fx;ch=true;}' +
       'if(ch)el.style.transform="translate("+dx+"px,"+dy+"px)";}};' +
       'var sls=document.querySelectorAll(".ppt-stack > .slide");for(var c2=0;c2<sls.length;c2++)window.__clampSlide(sls[c2]);' +
+      /* 내용 과다 장 자동 축소 — 넘친 장만 래퍼(.rs-fit)로 감싸 scale(k), 하한 0.6.
+         무조건 래핑하면 표지·간지의 space-between 2단 구성이 무너지므로 넘친 장만 개입하고,
+         래퍼는 슬라이드의 계산된 flex 구성을 그대로 복제한다. 판정 기준은 실측 clientHeight
+         (= --slide-h에서 파생) — 비율이 바뀌어도 하드코딩 없이 따라간다. */
+      'window.__fitSlide=function(s){if(!s)return;var cs=getComputedStyle(s);var w=s.querySelector(":scope > .rs-fit");' +
+      'if(!w){if(s.scrollHeight<=s.clientHeight+2)return;' +
+      'w=document.createElement("div");w.className="rs-fit";' +
+      'w.style.cssText="transform-origin:top left;flex:1 1 auto;min-height:0;display:"+cs.display+";flex-direction:"+cs.flexDirection+";gap:"+cs.gap+";align-items:"+cs.alignItems+";justify-content:"+cs.justifyContent+";grid-template-columns:"+cs.gridTemplateColumns+";grid-template-rows:"+cs.gridTemplateRows+";";' +   /* 그리드 장(3.8:1 statement)도 래핑 후 배치 유지 */
+      'while(s.firstChild)w.appendChild(s.firstChild);s.appendChild(w);}' +
+      'w.style.transform="";w.style.width="";' +
+      'var avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);' +
+      'var need=w.scrollHeight;if(need>avail+2){var k=Math.max(0.6,avail/need);var bw=w.clientWidth;w.style.width=(bw/k)+"px";w.style.transform="scale("+k+")";}};' +
+      'var fitAll=function(){var ss=document.querySelectorAll(".ppt-stack > .slide, .vscale > .slide");for(var f2=0;f2<ss.length;f2++)window.__fitSlide(ss[f2]);};' +
+      'fitAll();window.addEventListener("load",fitAll);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitAll);' +
       '})();';
     return '<scr' + 'ipt>' + js + '</scr' + 'ipt>';
   }
@@ -719,7 +742,97 @@
       '.ms-axis{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;border-top:1px solid var(--rule);padding-top:8px}' +
       '.ms-axis span{font-size:13px;color:var(--muted);text-align:center}' +
       '.ms-note{flex:none;font-size:17px;font-weight:400;border-left:3px solid var(--acc);padding:9px 0 9px 16px}.ms-note b{font-weight:700;color:var(--acc)}' +
-      '@keyframes vfu{from{opacity:0}to{opacity:1}}';
+      '@keyframes vfu{from{opacity:0}to{opacity:1}}' +
+      ratioCss();
+  }
+
+  /* ---- 화면 비율 오버라이드 (계약 v1) ----
+     액자(--slide-w/--slide-h)만 바꿔도 내부는 전부 절대 px라 그대로 남는다 → "깨지는 것만" 스코프 오버라이드.
+     4:3   = 폭 동일 · 세로 +240px → 늘어난 세로를 카드 높이·행 간격·여백에 배분(폰트는 폭 제약이 같아 소폭만).
+     3.8:1 = 세로 동일 · 가로 +1456px → 본문 폰트는 유지(세로 예산이 그대로라 키우면 넘침), 가로는
+             좌우 여백·고정 열 폭·다열화로 쓰고 글줄 길이는 max-width로 끊는다. */
+  function ratioCss() {
+    return '[data-ratio="r43"]{--slide-w:1280px;--slide-h:960px}[data-ratio="r381"]{--slide-w:2736px;--slide-h:720px}' +
+
+      /* ===== 4:3 — 1280×960 ===== */
+      '[data-ratio="r43"] .slide{padding:60px 75px 64px;gap:38px}' +                       /* 상하 98→124px·블록 간격 30→38px: 세로 증가분의 1/4을 여백으로 */
+      '[data-ratio="r43"] .slide.cv,[data-ratio="r43"] .slide.dv,[data-ratio="r43"] .slide.cl{padding:68px 75px;gap:0}' +   /* 풀블리드 장은 자체 패딩·gap:0 유지(위 규칙이 덮지 않게 재선언) */
+      '[data-ratio="r43"] .slide.sp{padding:0;gap:0}' +                                    /* 좌우 반반 장은 하프가 패딩을 갖는다 — 슬라이드 패딩 0 복구 */
+      '[data-ratio="r43"] .slide.rs.ms{gap:26px}' +                                        /* 간트 장 전용 간격도 같은 비율로 */
+      '[data-ratio="r43"] .rs-hl{font-size:52px}' +                                        /* 헤드라인 48→52: 폭은 그대로라 줄바꿈 위험 낮고 세로 여유는 충분 */
+      '[data-ratio="r43"] .rs-grid{gap:18px}' +                                            /* 카드 간격 13→18 */
+      '[data-ratio="r43"] .rs-grid>.rs-card{min-height:252px}' +                            /* 세로 흡수의 핵심 — 186 그대로면 카드가 넓적해지고 아래가 빈다 */
+      '[data-ratio="r43"] .rs-grid.c4{grid-template-columns:repeat(2,1fr)}' +               /* 4열은 1280 폭에서 열당 265px로 좁다 — 세로 여유를 써 2×2로 */
+      '[data-ratio="r43"] .rs-card{padding:25px 29px}' +                                    /* 카드가 커진 만큼 내부 여백도 */
+      '[data-ratio="r43"] .rs-card.stc{padding:38px 35px}' +                                /* 선언 카드는 2개뿐이라 세로를 더 받는다 */
+      '[data-ratio="r43"] .rs-tlist,[data-ratio="r43"] .rs-brrows,[data-ratio="r43"] .rs-bars,[data-ratio="r43"] .rs-cklist{gap:13px}' +   /* 행 리스트 간격 9→13 */
+      '[data-ratio="r43"] .rs-card.ck{padding:31px 27px}' +                                 /* 체크 카드는 flex:0 0 auto 고정 높이 — 패딩으로 세로를 흡수 */
+      '[data-ratio="r43"] .rs-srow{padding:24px 0}' +                                       /* split 행도 고정 높이 — 17→24 */
+      '[data-ratio="r43"] .rs-half{padding:68px 59px 68px 75px}[data-ratio="r43"] .rs-half.dk{padding:68px 75px 68px 59px}' +   /* 하프 상하 패딩 53→68 */
+      '[data-ratio="r43"] .rs-tbrow{padding:30px 0}' +                                      /* 표 행 높이 23→30 */
+      '[data-ratio="r43"] .rs-hllist{gap:18px}[data-ratio="r43"] .rs-hlrow{padding:26px 33px}' +   /* 하이라이트 행도 고정 높이 */
+      '[data-ratio="r43"] .rs-sttcols{grid-template-columns:360px 1fr}' +                   /* 도넛을 키우려면 좌열도 함께(307→360) */
+      '[data-ratio="r43"] .rs-donut{width:262px;height:262px}[data-ratio="r43"] .rs-hole{width:196px;height:196px}' +   /* 카드가 세로로 길어져 220px 원이 작아 보인다 */
+      '[data-ratio="r43"] .rs-cvmid{grid-template-columns:1fr 400px}[data-ratio="r43"] .rs-cvtitle{font-size:96px}' +   /* 표지: 큐브 그래픽·타이틀이 세로 대비 작아 보임 */
+      '[data-ratio="r43"] .rs-clmid{grid-template-columns:1fr 480px}' +                     /* 클로징 큐브 군집도 동일 이유 */
+      '[data-ratio="r43"] .rs-bsnum{font-size:140px}' +                                     /* 대형 수치는 좌우 배치 유지(폭이 같아 상하 스택은 우측이 비어 더 나쁘다) — 세로 여유만큼 체급만 상향 */
+
+      /* ===== 3.8:1 — 2736×720 ===== */
+      '[data-ratio="r381"] .slide{padding:48px 160px 50px}' +                               /* 좌우 75px은 2736 폭에서 2.7% — 캔버스 비례로 160px */
+      '[data-ratio="r381"] .slide.cv,[data-ratio="r381"] .slide.dv,[data-ratio="r381"] .slide.cl{padding:53px 160px;gap:0}' +
+      '[data-ratio="r381"] .slide.sp{padding:0;gap:0}' +
+      '[data-ratio="r381"] .rs-grid{gap:24px}' +                                            /* 카드가 2~3배 넓어져 13px 간격은 붙어 보인다 */
+      '[data-ratio="r381"] .rs-grid>.rs-card{min-height:280px}' +                            /* 카드 폭이 790px가 되면 186px 높이는 띠처럼 납작하다 — 남는 세로(186px)를 카드에 */
+      '[data-ratio="r381"] .rs-grid.two>.rs-card{min-height:186px}' +                        /* 단 2행 그리드(라인업)는 원래 높이 유지 — 2×280은 720 예산을 넘긴다 */
+      '[data-ratio="r381"] .rs-card{border-radius:24px;padding:23px 40px}' +                /* 넓은 카드에 맞춘 라운드·좌우 패딩(19px 라운드는 초와이드에서 각져 보인다) */
+      '[data-ratio="r381"] .rs-cdtext,[data-ratio="r381"] .rs-cmrows,[data-ratio="r381"] .rs-rmitems,[data-ratio="r381"] .rs-bdrows{max-width:760px}' +   /* 카드 폭이 1000px를 넘으면 한 줄이 읽기 한계를 넘는다 */
+      '[data-ratio="r381"] .rs-hl,[data-ratio="r381"] .rs-note{max-width:1800px}' +          /* 헤드라인·마무리 문장 글줄 길이 제한(좌측 정렬 유지) */
+      '[data-ratio="r381"] .rs-body{max-width:1200px}[data-ratio="r381"] .rs-stsub{max-width:1300px}' +
+      '[data-ratio="r381"] .rs-sttcols{grid-template-columns:420px 1fr}' +
+      '[data-ratio="r381"] .rs-bars{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:13px}' +   /* 게이지 행이 2000px면 라벨↔값이 멀어 읽기가 끊긴다 — 2열 */
+      '[data-ratio="r381"] .rs-card.bar:last-child:nth-child(odd){grid-column:1/-1}' +       /* 홀수 개(3개)면 마지막 게이지를 전폭으로 — 우하단 빈 칸 제거 */
+      '[data-ratio="r381"] .rs-donut{width:280px;height:280px}[data-ratio="r381"] .rs-hole{width:208px;height:208px}' +   /* 도넛은 이 장의 좌측 앵커 — 420px 카드 안에서 220px은 헐렁하다 */
+      '[data-ratio="r381"] .rs-mdcols{grid-template-columns:620px 1fr}' +                    /* 이미지가 2000px까지 늘어나면 object-fit:cover 크롭이 심하다 — 스펙 열을 넓혀 완화 */
+      '[data-ratio="r381"] .rs-brcols{grid-template-columns:520px 1fr}[data-ratio="r381"] .rs-brname{width:220px}[data-ratio="r381"] .rs-brhead{width:340px}' +
+      '[data-ratio="r381"] .rs-grid.c3.hasp{grid-template-columns:1fr 1fr 1fr 560px}[data-ratio="r381"] .rs-grid.c2.hasp{grid-template-columns:1fr 1fr 560px}' +   /* 보드 사이드 패널 347px은 초와이드에서 실오라기 */
+
+      /* --- 초광폭 정돈 ① 리스트를 "긴 띠"에서 "칸"으로 — 2400px 한 줄 행은 번호↔설명이 멀어 읽기가 끊기고 우측이 방치돼 보인다 --- */
+      '[data-ratio="r381"] .rs-list{display:grid;grid-template-columns:1fr 1fr;column-gap:110px;grid-auto-rows:1fr}' +   /* 번호 행 2열 — 칸당 1150px로 16:9 행 비례에 근접 */
+      '[data-ratio="r381"] .rs-row{gap:32px}[data-ratio="r381"] .rs-row:last-child{border-bottom:0}' +   /* 2열에선 마지막 칸만 밑줄이 생겨 비대칭 — 상단 규칙선만 남긴다 */
+      '[data-ratio="r381"] .rs-row:last-child:nth-child(odd){grid-column:1/-1}' +            /* 홀수 개(3개 등)면 마지막 행을 전폭으로 — 우하단이 빈 칸으로 남지 않는다 */
+      '[data-ratio="r381"] .rs-no{width:110px;font-size:56px}' +                             /* 대형 번호는 디스플레이 요소 — 각 칸의 좌측 앵커로 키운다 */
+      '[data-ratio="r381"] .rs-rhead{width:300px}[data-ratio="r381"] .rs-rtext{max-width:none}' +
+      '[data-ratio="r381"] .rs-tlist{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:24px}' +   /* 목차: 전폭 띠 3개 → 세로 카드 N개(장 수만큼 반복) — 초광폭에서 우측 여백이 사라진다 */
+      '[data-ratio="r381"] .rs-trow{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:18px;padding:44px 46px;border-radius:24px}' +
+      '[data-ratio="r381"] .rs-tno{width:auto;font-size:32px}[data-ratio="r381"] .rs-tlabel{width:auto}' +
+      '[data-ratio="r381"] .rs-tdesc{flex:none;max-width:none}[data-ratio="r381"] .rs-tpages{margin-top:auto}' +   /* 페이지 수는 카드 하단에 고정 — 카드 세로를 끝까지 쓰는 두 번째 앵커 */
+      '[data-ratio="r381"] .rs-cklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:16px}' +   /* 항목 수 적응 — auto-fit이 빈 트랙을 접어 3개면 3열, 4개면 4열(빈 칸 없음) */
+      '[data-ratio="r381"] .rs-cklist.two{grid-template-columns:repeat(3,1fr)}' +            /* 5개 이상은 3열 고정(6개=2행 정렬) */
+      '[data-ratio="r381"] .rs-card.ck{padding:34px 38px;gap:22px;min-height:150px}[data-ratio="r381"] .rs-ckic{width:34px;height:34px}' +   /* 체크 카드는 고정 높이 — 카드·체크 원을 캔버스 비례로 키워 100px 띠가 넓은 화면에 뜨는 것 방지 */
+
+      /* --- 초광폭 정돈 ② 텍스트 희소 장표는 양극 구성(좌 텍스트 앵커 + 우 시각/수치 앵커) --- */
+      '[data-ratio="r381"] .slide.st:has(>.rs-stcols){display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:auto 1fr;column-gap:130px;row-gap:30px}' +
+      '[data-ratio="r381"] .slide.st>.rs-run{grid-column:1/-1}' +
+      '[data-ratio="r381"] .slide.st>.rs-stmid{grid-column:1;grid-row:2}' +
+      '[data-ratio="r381"] .slide.st>.rs-stcols{grid-column:2;grid-row:2;grid-template-columns:1fr;align-content:center;gap:28px}' +   /* 선언: 대형 타이틀(좌) ↔ 비교 카드 2장 세로 스택(우) — 하단 전폭 띠보다 초광폭에서 균형이 잡힌다 */
+      '[data-ratio="r381"] .rs-qtbody{max-width:none}[data-ratio="r381"] .rs-qtx{font-size:88px;max-width:1950px}' +   /* 인용은 디스플레이 타이포 — 46px은 2736 캔버스에서 메모처럼 읽힌다. 글줄만 1950px로 제한 */
+      '[data-ratio="r381"] .rs-card.stc{padding:40px 46px;gap:16px}' +                       /* 선언 비교 카드가 우측 기둥이 되려면 두께가 필요(23px 패딩은 띠) */
+      '[data-ratio="r381"] .rs-qbar{width:140px;height:6px}' +                               /* 액센트 바도 같은 비례로(기존 자산 확대) */
+      '[data-ratio="r381"] .rs-qby{align-self:flex-end;font-size:20px}' +                    /* 출처를 우측 끝으로 — 인용문(좌)과 짝을 이루는 우측 앵커 */
+      '[data-ratio="r381"] .rs-bsnum{font-size:220px}[data-ratio="r381"] .rs-bscap{max-width:900px}' +   /* 단독 수치는 이 장의 유일한 주인공 — 120px은 초광폭에서 존재감이 사라진다 */
+      '[data-ratio="r381"] .rs-dvind{align-self:flex-end;gap:16px}[data-ratio="r381"] .rs-ind{width:34px;height:36px}' +   /* 간지: 큐브 진행 인디케이터를 우하단으로 + 확대 — 좌상단 대형 타이틀과 대각 균형 */
+      '[data-ratio="r381"] .rs-card.tbl{max-width:2000px}' +                                 /* 표 칸이 800px씩 벌어지면 값이 흩어진다 — 카드 폭 상한(좌측 정렬 유지) */
+      '[data-ratio="r381"] .rs-tbrow{padding:26px 0}' +
+      '[data-ratio="r381"] .rs-play{width:56px;height:56px}[data-ratio="r381"] .rs-play svg{width:26px;height:26px}' +   /* 하이라이트 행의 우측 재생 버튼 = 행마다의 우측 앵커. 40px은 2400px 행에서 점 */
+      '[data-ratio="r381"] .rs-months{gap:32px}[data-ratio="r381"] .rs-mbar{height:5px}' +   /* 3px 진행 바는 2736 폭에서 실선처럼 사라진다 */
+      '[data-ratio="r381"] .rs-srow{padding:22px 0}' +
+
+      /* --- 초광폭 정돈 ③ 디스플레이 타이포·시각 앵커 재보정(본문·카드·리스트 폰트는 불변) --- */
+      '[data-ratio="r381"] .rs-cvmid{grid-template-columns:1fr 620px;gap:130px}[data-ratio="r381"] .rs-clmid{grid-template-columns:1fr 760px;gap:130px}' +   /* 표지·클로징의 큐브(시각 앵커)를 키워 텍스트와 무게를 맞춘다 */
+      '[data-ratio="r381"] .rs-cvtitle{font-size:140px}[data-ratio="r381"] .rs-dvtitle{font-size:160px}' +
+      '[data-ratio="r381"] .rs-sttitle{font-size:92px}[data-ratio="r381"] .rs-cltitle{font-size:88px}' +
+      '[data-ratio="r381"] .rs-clsub{max-width:900px}' +                                    /* 클로징 본문 560px 상한이 좌측 기둥을 가늘게 만들어 중앙이 비었다(폰트는 그대로, 폭만) */
+      '[data-ratio="r381"] .rs-hhl{font-size:60px}[data-ratio="r381"] .slide.hl .rs-hl{font-size:64px}';
   }
 
   /* [시연 잠금] 표지·선언·클로징 문구 고정 — 누가 언제 뽑아도 동일(언어별, 편집·생성값보다 우선) */
@@ -770,8 +883,9 @@
     data = data || {};
     CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
-    slides = lockDemo(slides, data._clang, data._userTouched);
-    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + '</style></head><body>' +
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    var cv = canvasOf(data);   /* 비율 계약 v1 — 루트 data-ratio가 --slide-w/h와 오버라이드 스코프를 동시에 켠다 */
+    return '<!doctype html><html lang="ko" data-ratio="' + cv.slug + '"><head><meta charset="utf-8"><style>' + css() + '</style></head><body>' +
       '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + stateScript(slides) + cjkHead(slides, data._clang) + '</body></html>';
   }
 
@@ -780,7 +894,8 @@
     data = data || {}; opts = opts || {};
     CLANG = data._clang || 'ko';
     var slides = (data.slides && data.slides.length) ? JSON.parse(JSON.stringify(data.slides)) : JSON.parse(JSON.stringify(DEFAULT_DECK.slides));
-    slides = lockDemo(slides, data._clang, data._userTouched);
+    // [시연 잠금 해제] 재잠금 시: slides = lockDemo(slides, data._clang, data._userTouched);
+    var cv = canvasOf(data);   /* 비율 계약 v1 — 뷰어도 같은 캔버스로 */
     var vcss =
       'html,body{height:100%}body{background:#0a0a0e;overflow:hidden}' +
       '.vwrap{position:fixed;inset:0;display:flex;justify-content:center;align-items:flex-start}' +
@@ -804,8 +919,9 @@
       'var p=null;try{p=rq&&rq.call(de2)}catch(e){}' +
       'if(p&&p.then)p.then(null,function(){});' +
       'setTimeout(function(){if(!document.fullscreenElement&&!pseudo)setPseudo(true);},600);}' +
-      'function fit(){var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/1280,area/720)*(fs()?1:0.97);' +
-      'var ty=Math.max(0,(area-720*sc)/2);' +
+      'function fit(){var CW=' + cv.w + ',CH=' + cv.h + ';' +   /* 캔버스는 비율 계약에서 — 뷰어 축소율에 1280/720 리터럴 금지 */
+      'var bh=fs()?0:84;var area=innerHeight-bh;var sc=Math.min(innerWidth*0.97/CW,area/CH)*(fs()?1:0.97);' +
+      'var ty=Math.max(0,(area-CH*sc)/2);' +
       'document.querySelector(".vbar").style.display=fs()?"none":"flex";' +
       'var v=document.querySelector(".vscale");v.style.transform="translateY("+ty+"px) scale("+sc+")";}' +
       'function show(i){var prev=n;n=Math.max(0,Math.min(s.length-1,i));if(n===prev)return;' +
@@ -835,7 +951,7 @@
       'else if(e.key==="f"||e.key==="F")toggleFs();' +
       'else if(e.key==="Escape"&&!document.fullscreenElement)setPseudo(false);});' +
       '})();';
-    return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + vcss + '</style></head><body>' +
+    return '<!doctype html><html lang="ko" data-ratio="' + cv.slug + '"><head><meta charset="utf-8"><style>' + css() + vcss + '</style></head><body>' +
       '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount"></span><button class="vbtn vnext">›</button><button class="vbtn vfs">⛶</button></div>' +
       stateScript(slides) +
@@ -983,7 +1099,7 @@
   window.RAMS_MV_SEL = MV_SEL;
   window.RAMS_DEFAULT_DECK = DEFAULT_DECK;
   window.RAMS_CATALOG = CATALOG;
-  window.RAMS_STYLE = { id: 'rams', name: 'Modern', desc: '웜그레이 · 라운드 카드 · 버밀리언 액센트 · 16:9', swatch: 'linear-gradient(135deg,#F5F5F3 55%,#FF4D00 55%)' };
+  window.RAMS_STYLE = { id: 'rams', name: 'Modern', desc: '웜그레이 · 라운드 카드 · 버밀리언 액센트 · 비율 선택', swatch: 'linear-gradient(135deg,#F5F5F3 55%,#FF4D00 55%)' };
   window.RAMS_SLIDE_TYPES = CATALOG.map(function (c) { return { type: c.type, label: c.label }; });
   window.ramsNewSlide = function (type) { return JSON.parse(JSON.stringify(STARTERS[type] || STARTERS.section)); };
 })();

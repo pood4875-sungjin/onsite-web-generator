@@ -191,7 +191,8 @@
   .dl{border:1px solid var(--line);background:var(--surf);color:var(--tx);border-radius:999px;padding:5px 13px;font-size:12px}
   /* 콘텐츠 언어 스위처 — 누르면 UI+출력물이 그 언어로 */
   #stLangBtn b{font-size:11px;font-weight:700;letter-spacing:.05em}
-  .stlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:136px;background:var(--surf);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.16);padding:5px;z-index:60;display:flex;flex-direction:column}
+  /* 배경은 불투명(surface-solid) — 반투명(--surf)이면 뒤 장표가 비쳐서 메뉴가 안 읽힌다(사용자 신고) */
+  .stlangmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:136px;background:var(--surface-solid,#fff);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(10,12,20,.16);padding:5px;z-index:60;display:flex;flex-direction:column}
   .stlangmenu[hidden]{display:none}
   .stlangmenu button{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 11px;border:0;background:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--tx);cursor:pointer;text-align:left}
   .stlangmenu button:hover{background:var(--line)}
@@ -199,6 +200,13 @@
   .stlangmenu button i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--tx2)}
   .stlangmenu .note{font-size:11px;color:var(--tx2);padding:7px 11px 5px;border-top:1px solid var(--line);margin-top:3px}
   @keyframes stlspin{to{transform:rotate(360deg)}}
+  /* 화면 비율 스위처 — 언어 스위처와 같은 결(같은 드롭다운 규칙 재사용). 미리보기는 비율 모양의 작은 사각형 */
+  #stRatioBtn b{font-size:11px;font-weight:700;letter-spacing:.02em}
+  .stratmenu button .pv{flex:0 0 auto;width:26px;border:1.5px solid var(--tx2);border-radius:3px}
+  /* 라벨('와이드' 등)이 언어 메뉴 최소폭(136px)에 눌려 음절 단위로 꺾이던 문제 — 전용 폭 + 줄바꿈 금지 */
+  .stratmenu{min-width:208px}
+  .stratmenu button, .stratmenu button i{white-space:nowrap}
+  .stratmenu .note{word-break:keep-all;line-height:1.5}
   /* 링크 만들기 — 시안(V3-05)의 다크 필 강조 버튼 + 결과 모달 */
   .dl.dark{background:#14161f;color:#fff;border-color:#14161f;font-weight:600}
   .dl.dark:disabled{opacity:.6}
@@ -250,8 +258,9 @@
   .pempty{color:var(--tx3);font-size:12px;text-align:center;padding:16px}
   /* PPT 썸네일 스트립 — 프리뷰 좌측(젠스파크식). 클릭=해당 장, 현재 장 하이라이트 */
   .thumbrail{position:absolute;left:0;top:0;bottom:0;width:150px;z-index:6;display:flex;flex-direction:column;gap:8px;padding:10px 8px;overflow-y:auto;background:color-mix(in srgb,#0a0d16 82%,transparent);border-right:1px solid rgba(255,255,255,.08);backdrop-filter:blur(8px)}
-  /* 16:9 고정 — border가 박스에 더해져 비율 깨지지 않게 box-sizing:border-box */
-  .thumb{position:relative;flex:0 0 auto;box-sizing:border-box;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#11141f;transition:border-color var(--dur) var(--ease)}
+  /* 액자 비율 = 덱의 화면 비율(계약 v1). --thumb-* 는 rebuildThumbRail/paintLiveRail이 #thumbRail에 세팅(기본 16:9).
+     border가 박스에 더해져 비율 깨지지 않게 box-sizing:border-box */
+  .thumb{position:relative;flex:0 0 auto;box-sizing:border-box;aspect-ratio:var(--thumb-ar,16/9);border-radius:8px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#11141f;transition:border-color var(--dur) var(--ease)}
   /* 라이브 생성 — 아직 안 그려진 장은 스켈레톤(쉬머), 완성되는 순서대로 실물로 교체 */
   .thumb.skel{border:2px dashed rgba(255,255,255,.22);cursor:default;
     background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:skelShine 1.4s linear infinite;opacity:.85}
@@ -285,7 +294,7 @@
   .thumb:hover{border-color:rgba(255,255,255,.28)}
   .thumb.cur{border-color:var(--accent)}
   .thumb .tnum{position:absolute;left:5px;top:4px;z-index:2;font-size:9.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);border-radius:5px;padding:1px 5px}
-  .thumb iframe{width:1280px;height:720px;border:0;transform-origin:0 0;pointer-events:none;display:block}
+  .thumb iframe{width:var(--thumb-w,1280px);height:var(--thumb-h,720px);border:0;transform-origin:0 0;pointer-events:none;display:block}
   .thumb .tdel{position:absolute;right:4px;top:4px;z-index:3;width:20px;height:20px;border:none;border-radius:6px;background:rgba(10,10,16,.7);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;place-items:center}
   .thumb:hover .tdel{display:grid} .thumb .tdel:hover{background:rgba(230,60,60,.95)}
   .thumb .tdup{position:absolute;right:28px;top:4px;z-index:3;width:20px;height:20px;border:none;border-radius:6px;background:rgba(10,10,16,.7);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;place-items:center}
@@ -472,6 +481,11 @@
           <button class="dl" id="stLangBtn" title="Language"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg><b id="stLangCur">KO</b></button>
           <div class="stlangmenu" id="stLangMenu" hidden></div>
         </div>
+        <!-- 화면 비율 스위처(PPT 전용) — 생성 후에도 16:9 / 4:3 / 3.8:1 로 갈아끼운다 -->
+        <div class="strat" style="position:relative;display:none" id="stRatioWrap">
+          <button class="dl" id="stRatioBtn" data-i18n-title="화면 비율" title="화면 비율"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="2.5" y="6" width="19" height="12" rx="1.5"/></svg><b id="stRatioCur">16:9</b></button>
+          <div class="stlangmenu stratmenu" id="stRatioMenu" hidden></div>
+        </div>
         <button class="dl" id="editBtn" data-i18n-title="텍스트·이미지 편집" title="텍스트·이미지 편집" data-i18n="편집">편집</button>
         <button class="dl" id="scriptBtn" style="display:none" data-i18n-title="AI가 장표별 발표 대본을 써드려요" title="AI가 장표별 발표 대본을 써드려요">🎤 <span data-i18n="대본">대본</span></button>
         <button class="dl" id="previewBtn" data-i18n-title="생성된 페이지를 새 창에서 미리보기" title="생성된 페이지를 새 창에서 미리보기" data-i18n="미리보기">미리보기</button>
@@ -585,18 +599,24 @@
   const VW = 1280; // 가상 데스크탑 폭 — 페이지를 이 폭으로 렌더 후 프리뷰 칸에 맞게 축소
   const DEVICE_W = { desktop: VW, tablet: 820, mobile: 390 }; // 태블릿·모바일은 실제 폭 → 미디어쿼리 반응형 발동
   let device = 'desktop';
+  /* 화면 비율(계약 v1 — docs/RATIO_CONTRACT.md) — 현재 덱/페이지의 캔버스 스펙.
+     data._ratio가 없으면 16:9(1280×720) — 기존 프로젝트 하위호환. 리터럴 1280/720은 여기서만 나온다. */
+  const RATIO_FB = { ratio:'16:9', w:1280, h:720, slug:'r169', inW:1280/96, inH:720/96, ar:'1280/720' };   // RATIO 전역 미로드 시 폴백
+  function canvasOf(){ try{ return window.RATIO ? RATIO.of(data) : RATIO_FB; }catch(e){ return RATIO_FB; } }
   function fitPreview(){
     const box = frame.parentElement;
     // PPT 썸네일 스트립(좌측 150px)이 떠 있으면 그만큼 오른쪽으로 밀어 렌더
     const tr = document.getElementById('thumbRail');
     const railOff = (tr && tr.style.display!=='none') ? 150 : 0;
     const bw = box.clientWidth - railOff, bh = box.clientHeight;
-    const targetW = DEVICE_W[device] || VW;
+    const cv = canvasOf();
+    // 고정 포맷(PPT)은 슬라이드 캔버스 폭이 곧 뷰포트 폭 — 3.8:1(2736px)에서 가로 스크롤이 생기지 않게
+    const targetW = curMode().slides ? cv.w : (DEVICE_W[device] || VW);
     let s, left, top;
     if(device === 'desktop'){
       s = bw / targetW; left = railOff; top = 0;         // 폭 맞춤 축소(기존 동작)
     } else {
-      s = Math.min((bw - 40) / targetW, (bh - 24) / 720, 1); // 폭·높이 여유에 맞춰, 업스케일 금지
+      s = Math.min((bw - 40) / targetW, (bh - 24) / cv.h, 1); // 폭·높이 여유에 맞춰, 업스케일 금지
       left = (bw - targetW * s) / 2;                     // 가로 중앙
       top = 12;                                          // 상단 여백(레터박스)
     }
@@ -631,6 +651,9 @@
   // 팩별 출력 — KRDS는 계약 렌더(renderKrdsPage), 그 외는 darkglow(renderComposed)
   function renderWith(d, pt, vol, nav, mot){
     const rd = Object.assign({}, d, nav?{nav}:{}, {pageType: d.pageType || pt});   // 팩이 PAGE_TYPES 구성표를 찾는 키
+    // 화면 비율(계약 v1) — 본문 렌더도 정규화된 _ratio를 받는다. renderDeckFor(썸네일·라이브)와 반드시 같은 값.
+    // 기준은 인자로 받은 데이터(d) — 다른 페이지 미리보기(renderProjectPage)에서도 그 페이지의 비율을 쓴다
+    if(curMode().slides) rd._ratio = (window.RATIO ? RATIO.of(d).ratio : (d._ratio || '16:9'));
     if (window.LLM && LLM.fixBrand) LLM.fixBrand(rd);   // 제품명 표기 자가치유 — 과거 저장분의 'GEN NX'도 렌더 시 'MIDAS GEN NX'로
     if(pack && pack.id==='edm' && typeof renderEdmPage==='function') return renderEdmPage(rd);
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
@@ -694,6 +717,7 @@
     frame.srcdoc = pageHtml();
     badge.textContent = `${pack.name} ${tL('스타일')}`;
     try{ const sb=document.getElementById('scriptBtn'); if(sb) sb.style.display=(curMode().slides&&generated)?'':'none'; }catch(e){}
+    try{ syncRatioUI(); }catch(e){}   // 화면 비율 스위처 노출·라벨 (프로젝트 로드 후 팩이 확정되는 시점 대응)
     empty.classList.toggle('hide', generated);
     fitPreview();
   }
@@ -725,8 +749,10 @@
   // 슬라이드 덱 렌더 — 팩에 따라 렌더러가 갈린다(썸네일 레일·내보내기 공용)
   function renderDeckFor(slides){
     const sp = project ? project.stylePack : (pack && pack.id);
-    // _clang 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로 떨어져 리스트/본문 언어가 어긋난다
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '', _clang: data._clang, _userTouched: data._userTouched };
+    // _clang·_ratio 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로,
+    // 화면 비율이 기본 16:9로 떨어져 본문과 썸네일이 어긋난다(_clang이 실제로 겪은 사고 — 같은 실수 반복 금지)
+    // _ratio는 정규화해서 넣는다 — 옛 프로젝트(필드 없음)도 팩이 undefined를 받지 않게(본문·썸네일 동일값 보장)
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'?sp:'ax'), accent: data.accent || '', _clang: data._clang, _ratio: canvasOf().ratio, _userTouched: data._userTouched };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
     if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='rams' && typeof renderRamsDeck==='function') return renderRamsDeck(payload);
@@ -1047,6 +1073,49 @@
       } else if(window.uiAlert){ await uiAlert(tL('콘텐츠 번역에 실패했어요. 잠시 후 다시 시도해주세요.')); }
     }
   })();
+
+  /* ---- 화면 비율 스위처(계약 v1 — docs/RATIO_CONTRACT.md) ----
+     data._ratio를 바꾸고 저장한 뒤 본문·썸네일을 함께 재렌더. 팩이 _ratio를 읽어
+     data-ratio 스코프와 --slide-w/h를 세팅하므로 앱은 "값 전달 + 재렌더"만 책임진다.
+     PPT(슬라이드 팩)에서만 노출 — 웹/eDM은 고정 비율 개념이 없다. */
+  const RATIO_LABEL={ '16:9':'와이드', '4:3':'클래식', '3.8:1':'초와이드' };
+  function syncRatioLabel(){
+    const c=document.getElementById('stRatioCur'); if(!c) return;
+    c.textContent=canvasOf().ratio;
+    const menu=document.getElementById('stRatioMenu');
+    if(menu) menu.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.__ratio===canvasOf().ratio));
+  }
+  (function(){
+    const wrap=document.getElementById('stRatioWrap'), btn=document.getElementById('stRatioBtn'), menu=document.getElementById('stRatioMenu');
+    if(!wrap||!btn||!menu) return;
+    (window.RATIO?RATIO.LIST:['16:9']).forEach(r=>{
+      const cv=(window.RATIO?RATIO.canvas(r):null); if(!cv) return;
+      const b=document.createElement('button'); b.__ratio=r;
+      // 미리보기 사각형 — 실제 비율 그대로(높이는 폭÷비율). 라벨보다 모양이 빠르게 읽힌다
+      b.innerHTML='<span style="display:flex;align-items:center;gap:9px"><i class="pv" style="height:'+(26*cv.h/cv.w).toFixed(1)+'px"></i><span>'+r+'</span></span><i>'+tL(RATIO_LABEL[r]||'')+'</i>';
+      b.onclick=e=>{ e.stopPropagation(); menu.hidden=true; switchRatio(r); };
+      menu.appendChild(b);
+    });
+    const nt=document.createElement('div'); nt.className='note'; nt.textContent=tL('장표 지면 비율을 바꿉니다 (내보내기 규격도 함께)'); menu.appendChild(nt);
+    btn.onclick=e=>{ e.stopPropagation(); syncRatioLabel(); menu.hidden=!menu.hidden; };
+    document.addEventListener('pointerdown',e=>{ if(!e.target.closest('.strat')) menu.hidden=true; }, true);
+    // 노출 판정은 데이터 로드 후 — syncRatioUI()가 render 경로에서 다시 호출한다
+    syncRatioUI();
+  })();
+  function syncRatioUI(){
+    const wrap=document.getElementById('stRatioWrap'); if(!wrap) return;
+    wrap.style.display = curMode().slides ? 'inline-flex' : 'none';
+    syncRatioLabel();
+  }
+  function switchRatio(to){
+    const nr=(window.RATIO?RATIO.norm(to):'16:9');
+    if(nr===canvasOf().ratio) return;
+    if(typeof _liveComposing!=='undefined' && _liveComposing){ if(window.uiAlert) uiAlert(tL('생성이 끝난 뒤에 바꿀 수 있어요.')); return; }
+    data._ratio=nr; persist();
+    render(); refreshPptPanel();   // 본문(뷰어)·썸네일 레일 — 라이브 레일은 생성 중에만 쓰이므로 여기선 대상 아님
+    syncRatioLabel();
+    botBubble('🖥 '+tL('화면 비율을 바꿨어요.')+' → '+nr);
+  }
 
   editBtn.onclick=()=>{
     if(!generated){ editBtn.textContent=tL('먼저 생성하세요'); setTimeout(()=>editBtn.textContent=tL('편집'),1200); return; }
@@ -1456,15 +1525,25 @@
   // 한 장만 가볍게 다시 그림 — 텍스트 blur·툴바 조작 후 좌측 썸네일 즉시 반영(사용자 지시)
   function refreshThumbAt(i){ const t=document.querySelectorAll('#thumbRail .thumb')[i]; if(!t||typeof renderDeckFor!=='function'||!(data.slides&&data.slides[i])) return;
     const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]); }
+  /* 썸네일 레일에 현재 캔버스 스펙을 CSS 변수로 심는다 — .thumb(aspect-ratio)·.thumb iframe(폭/높이)이 상속받는다.
+     레일 하나에만 세팅하면 자식 전체에 적용(커스텀 프로퍼티 상속). 반환값으로 스케일 계산도 같이 쓴다. */
+  function applyRailCanvas(rail){
+    const cv=canvasOf();
+    rail.style.setProperty('--thumb-ar', cv.ar);
+    rail.style.setProperty('--thumb-w', cv.w+'px');
+    rail.style.setProperty('--thumb-h', cv.h+'px');
+    return cv;
+  }
   function rebuildThumbRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     if(!curMode().slides || typeof renderPptDeck!=='function'){ rail.style.display='none'; return; }
     rail.style.display='flex'; rail.innerHTML='';
-    const W=132, sc=(W-4)/1280;   // 테두리 2px×2 제외한 내부 폭 기준 — 위아래 빈틈 없이 꽉 채움
+    const cv=applyRailCanvas(rail);
+    const W=132, sc=(W-4)/cv.w;   // 테두리 2px×2 제외한 내부 폭 기준 — 위아래 빈틈 없이 꽉 채움
     wireThumbRailDnd(rail);
     (data.slides||[]).forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdup" title="'+tL('복제')+'">⧉</button><button class="tdel" title="'+tL('삭제')+'">✕</button>');
-      t.style.width=W+'px';   // 높이는 aspect-ratio 16/9가 결정(비율 정확)
+      t.style.width=W+'px';   // 높이는 aspect-ratio(--thumb-ar)가 결정(비율 정확)
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
       f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]);
       f.style.transform='scale('+sc+')';
@@ -1518,7 +1597,8 @@
   function paintLiveRail(){
     const rail=document.getElementById('thumbRail'); if(!rail) return;
     rail.style.display='flex'; rail.innerHTML='';
-    const W=132, sc=(W-4)/1280;
+    const cv=applyRailCanvas(rail);
+    const W=132, sc=(W-4)/cv.w;
     const done=(data.slides||[]).slice(0, _liveShownN);
     done.forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
@@ -1545,11 +1625,12 @@
     c.style.transform='translate('+x+'px,'+y+'px)';
     if(click){ c.classList.remove('click'); void c.offsetWidth; c.classList.add('click'); }
   }
-  // 뷰어 초기 스켈레톤 — 16:9 "빈 장표 카드" 한 장만 (뷰어 전체로 늘어지지 않게)
+  // 뷰어 초기 스켈레톤 — "빈 장표 카드" 한 장만 (뷰어 전체로 늘어지지 않게). 액자는 현재 화면 비율
   function skeletonSlideHtml(){
+    const cv=canvasOf();
     const bar=(w,h)=>'<div style="height:'+h+'%;width:'+w+'%;border-radius:10px;background:linear-gradient(100deg,#e9edf4 40%,#f7f9fc 50%,#e9edf4 60%);background-size:200% 100%;animation:s 1.4s linear infinite"></div>';
     return '<!doctype html><html><body style="margin:0;background:#0b0e16;display:flex;justify-content:center;align-items:flex-start;padding:18px 14px;box-sizing:border-box">'
-      + '<div style="width:min(96vw,1280px);aspect-ratio:16/9;background:#fff;border-radius:10px;box-sizing:border-box;padding:6% 7%;display:flex;flex-direction:column;gap:5%;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
+      + '<div style="width:min(96vw,'+cv.w+'px);aspect-ratio:'+cv.ar+';background:#fff;border-radius:10px;box-sizing:border-box;padding:6% 7%;display:flex;flex-direction:column;gap:5%;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
       // 첫 장이 완결되기 전에도 스트리밍으로 도착하는 제목 글자를 여기 실시간으로 쓴다
       + '<div id="skTitle" style="min-height:14%;font:600 46px/1.3 Pretendard,\'Apple SD Gothic Neo\',sans-serif;color:#141a2a;letter-spacing:-.5px"></div>'
       + bar(66,6) + '<div style="flex:1"></div>' + bar(88,5) + bar(78,5) + bar(56,5)
@@ -1597,7 +1678,7 @@
     // 골격 선등장 — 빈 지면에 도형·박스가 위에서부터 빠르게 깔린 뒤 텍스트가 써진다
     skel.forEach((e,k)=>{ setTimeout(()=>{ e.style.visibility='visible'; }, Math.min(k*(fast?8:16), fast?260:600)); });
     const fr=frame.getBoundingClientRect(), pr=frame.parentElement.getBoundingClientRect();
-    const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || 1280, sc=fr.width/iw;
+    const iw=(frame.contentWindow && frame.contentWindow.innerWidth) || canvasOf().w, sc=fr.width/iw;
     let i=0, typedN=0;
     const unhide=()=>{ try{ const st=doc.getElementById('lvhide'); if(st) st.remove(); }catch(e){} };   // 통짜 숨김 해제 — 이후엔 전부 기본 표시
     _revealCleanup=()=>{ clearTimeout(_revealTimer);
@@ -1670,7 +1751,8 @@
       if(!stack || doc.getElementById('liveSkel')) return;
       if(!doc.getElementById('liveSkelKf')){ const st=doc.createElement('style'); st.id='liveSkelKf'; st.textContent='@keyframes lsq{to{background-position:-200% 0}}'; doc.head.append(st); }
       const d=doc.createElement('div'); d.id='liveSkel';
-      d.style.cssText='width:var(--slide-w,1280px);height:var(--slide-h,720px);flex:none;border-radius:6px;opacity:.5;background:linear-gradient(100deg,#141926 40%,#1d2436 50%,#141926 60%);background-size:200% 100%;animation:lsq 1.4s linear infinite';
+      const cv=canvasOf();   // 팩이 --slide-w/h를 세팅하지만, 폴백도 현재 비율로 맞춘다
+      d.style.cssText='width:var(--slide-w,'+cv.w+'px);height:var(--slide-h,'+cv.h+'px);flex:none;border-radius:6px;opacity:.5;background:linear-gradient(100deg,#141926 40%,#1d2436 50%,#141926 60%);background-size:200% 100%;animation:lsq 1.4s linear infinite';
       stack.append(d);
       d.scrollIntoView({behavior:'smooth', block:'end'});
     }catch(e){}
@@ -1710,6 +1792,8 @@
       if(brief && (!brief.pack || !PK[brief.pack]) && pack && PK[pack.id]) brief.pack=pack.id; }catch(e){}
     // 생성 언어로 덱 언어 기록 갱신 — 프로젝트 생성 때 박힌 옛 기록이 남아 표지 잠금 언어가 어긋나는 것 방지
     try{ data._clang = (window.I18N && I18N.getLang()) || localStorage.getItem('midas-lang') || data._clang || 'ko'; }catch(e){}
+    // 화면 비율(계약 v1) — 덱 데이터가 진실. 브리프에 동봉해야 워커가 비율에 맞는 분량으로 쓴다
+    try{ data._ratio = canvasOf().ratio; if(brief) brief.ratio = data._ratio; }catch(e){}
     try{ data._userTouched=false; data._touched={}; }catch(e){}   // 재생성 = 잠금 원복
     _liveComposing=true; generated=true; idx=STEPS.indexOf('done');
     botBubble('🪄 '+tL('네, 장표를 만들기 시작할게요! 오른쪽에서 한 장씩 그려지는 걸 지켜보세요.'));
@@ -1744,7 +1828,7 @@
           }
           deck=await LLM.composeDeck(brief, onText);
           // 잘린 덱 방어 — 잠금 팩(정확히 10장)이 10장 미만이면 스트림이 끊긴 것. "완성 2장"으로 끝내지 말고 재시도.
-          const LOCK10={naver:1,rams:1,machine:1};
+          const LOCK10={};   // 시연 잠금 해제로 비움 — 재잠금 시 {naver:1,rams:1,machine:1} 복원
           if(att===0 && deck && LOCK10[brief&&brief.pack] && (deck.slides||[]).length<10){
             console.warn('[live compose 짧은 덱 '+(deck.slides||[]).length+'장 → 재시도]');
             deck=null; continue;
@@ -2787,8 +2871,9 @@
     botBubble(PROMPT.kind); mountWidget('kind'); render();
   }
 
-  // 고정 포맷(PPT 16:9 · eDM 760px): 디바이스 토글 숨김 + PC 기준 고정
+  // 고정 포맷(PPT = data._ratio 캔버스 · eDM 760px): 디바이스 토글 숨김 + PC 기준 고정
   if(curMode().device==='fixed'){ const vp=document.getElementById('vpseg'); if(vp) vp.style.display='none'; setDevice('desktop'); }
+  try{ syncRatioUI(); }catch(e){}   // 프로젝트 로드 후 팩 확정 — 비율 스위처 노출 판정
 
   // 템플릿에서 시작 → 편집모드 자동 진입
   if(window.I18N) I18N.apply(document);   // 정적 마크업(data-i18n) 로컬라이징
@@ -2838,8 +2923,10 @@
     function pickSlides(idxs){ return idxs? idxs.map(i=>data.slides[i]).filter(Boolean) : (data.slides||[]); }
     function doPdf(idxs){
       let html=renderDeckFor(pickSlides(idxs));
-      html=html.replace('</head>','<style>@page{size:13.333in 7.5in;margin:0}html,body{background:#fff}.ppt-stack{display:block;padding:0;gap:0}.ppt-stack>.slide{margin:0;box-shadow:none;page-break-after:always;break-inside:avoid}</style></head>');
-      const f=document.createElement('iframe'); f.style.cssText='position:fixed;left:-99999px;width:1280px;height:720px;border:0';
+      // @page 용지 = 슬라이드 캔버스(px/96 = 인치). 비율이 바뀌면 용지도 같이 바뀌어야 여백·잘림이 안 생긴다
+      const cv=canvasOf();
+      html=html.replace('</head>','<style>@page{size:'+cv.inW.toFixed(3)+'in '+cv.inH.toFixed(3)+'in;margin:0}html,body{background:#fff}.ppt-stack{display:block;padding:0;gap:0}.ppt-stack>.slide{margin:0;box-shadow:none;page-break-after:always;break-inside:avoid}</style></head>');
+      const f=document.createElement('iframe'); f.style.cssText='position:fixed;left:-99999px;width:'+cv.w+'px;height:'+cv.h+'px;border:0';
       f.srcdoc=html; document.body.append(f);
       f.onload=()=>{ setTimeout(()=>{ try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} setTimeout(()=>f.remove(),60000); },400); };
     }

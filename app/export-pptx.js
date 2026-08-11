@@ -4,6 +4,10 @@
    PptxGenJS로 각 요소 좌표/폰트/색 읽어 편집 가능한 텍스트 상자·도형 생성. CDN 지연 로드. */
 (function () {
   var PT = 0.75, IN = 1 / 96;
+  /* 화면 비율 계약 v1(docs/RATIO_CONTRACT.md) — 슬라이드 규격은 "실측 rect × IN"으로 파생한다.
+     px = 인치 × 96 이 계약의 제약(IN=1/96)이라 1280×720(16:9)·1280×960(4:3)·2736×720(3.8:1) 전부
+     정수 인치 좌표로 떨어진다. FALLBACK_W/H는 rect를 못 잴 때만 쓰는 16:9 기본값. */
+  var FALLBACK_W = 1280, FALLBACK_H = 720;
   function loadScript(src) {
     return new Promise(function (res, rej) {
       if ([].slice.call(document.scripts).some(function (s) { return s.src === src; })) return res();
@@ -139,7 +143,9 @@
     var explicitLines = txt.split('\n').length, renderedLines = Math.max(1, Math.round(r.h / lhPx));
     var oneLine = renderedLines <= explicitLines;
     var baseW = Math.max(r.w, 6);
-    var slackW = Math.min(baseW * (oneLine ? 0.16 : 0.06), Math.max(0, (origin.width || 1280) - r.x - baseW));
+    // 여유 폭 상한 = 슬라이드 오른쪽 끝까지. origin은 그 장의 실측 rect라 비율(16:9·4:3·3.8:1)이 뭐든 정확하다.
+    // rect를 못 재는 예외 상황에서만 기본 캔버스 폭(16:9=1280)으로 폴백
+    var slackW = Math.min(baseW * (oneLine ? 0.16 : 0.06), Math.max(0, (origin.width || FALLBACK_W) - r.x - baseW));
     var boxW = baseW + slackW, boxX = r.x;
     if (align === 'right') boxX = r.x - slackW;
     else if (align === 'center') boxX = r.x - slackW / 2;
@@ -215,7 +221,15 @@
         await new Promise(function (res, rej) { var el = doc.createElement('script'); el.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'; el.onload = res; el.onerror = rej; doc.head.appendChild(el); });
       } catch (e) {}
     }
-    var pptx = new PptxGenJS(); pptx.layout = 'LAYOUT_WIDE';
+    /* 슬라이드 규격 = 첫 장의 실측 rect(= 팩이 --slide-w/h로 그린 캔버스) → 커스텀 레이아웃.
+       defineLayout은 addSlide보다 먼저 1회만 가능하므로 루프 밖에서 첫 장을 미리 잰다.
+       LAYOUT_WIDE(13.333×7.5) 고정이던 것을 이걸로 대체 — 16:9는 값이 같아 결과 동일(하위호환). */
+    var first = slides[0].getBoundingClientRect();
+    var layW = (first.width > 10 ? first.width : FALLBACK_W) * IN;
+    var layH = (first.height > 10 ? first.height : FALLBACK_H) * IN;
+    var pptx = new PptxGenJS();
+    try { pptx.defineLayout({ name: 'CUSTOM', width: layW, height: layH }); pptx.layout = 'CUSTOM'; }
+    catch (e) { pptx.layout = 'LAYOUT_WIDE'; }
     for (var i = 0; i < slides.length; i++) {
       if (onProgress) onProgress(i + 1, slides.length);
       var slide = slides[i], origin = slide.getBoundingClientRect();
