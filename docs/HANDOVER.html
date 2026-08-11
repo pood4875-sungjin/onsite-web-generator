@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIDAS DRS — 인수인계 문서</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
+    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --code-bg:#f6f6f8; --code-tx:#41415a;
+    --ok:#0d8a54; --warn-bg:#fff7ed; --warn-line:#f5c97b; --warn-tx:#8a5a00;
+    --danger-bg:#fdf0ef; --danger-line:#f0b1ab; --danger-tx:#a33a30;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
+      --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+      --code-bg:#221e33; --code-tx:#cfc4f5;
+      --ok:#4ecb8f; --warn-bg:#2b2210; --warn-line:#6b5320; --warn-tx:#e8bb62;
+      --danger-bg:#2e1a18; --danger-line:#6b332d; --danger-tx:#ef9a8f;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--tx);
+    font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+    font-size:15.5px; line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:flex; max-width:1180px; margin:0 auto}
+
+  /* ── 좌측 목차 ── */
+  nav{
+    width:236px; flex:none; position:sticky; top:0; align-self:flex-start;
+    height:100vh; overflow-y:auto; padding:36px 20px 36px 28px;
+    border-right:1px solid var(--line); font-size:13px;
+  }
+  nav .logo{font-weight:800; letter-spacing:-.01em; margin-bottom:4px}
+  nav .logo b{color:var(--brand)}
+  nav .sub{color:var(--tx3); font-size:11.5px; margin-bottom:22px}
+  nav a{display:block; color:var(--tx2); text-decoration:none; padding:4px 8px; border-radius:6px; margin:1px 0}
+  nav a:hover{background:var(--brand-soft); color:var(--tx)}
+  nav a .n{display:inline-block; width:22px; color:var(--tx3); font-variant-numeric:tabular-nums; font-size:11px}
+  @media (max-width:900px){ nav{display:none} }
+
+  /* ── 본문 ── */
+  main{flex:1; min-width:0; padding:48px 40px 120px}
+  @media (max-width:900px){ main{padding:28px 18px 80px} }
+  .doc{max-width:760px}
+
+  header.cover{margin-bottom:56px}
+  .eyebrow{font-size:12px; font-weight:700; letter-spacing:.14em; color:var(--brand); text-transform:uppercase; margin-bottom:10px}
+  h1{font-size:34px; line-height:1.25; letter-spacing:-.02em; font-weight:800; text-wrap:balance}
+  .cover p.lead{margin-top:14px; font-size:16.5px; color:var(--tx2); text-wrap:pretty}
+  .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px}
+  .meta span{font-size:12px; background:var(--brand-soft); color:var(--brand-deep); border-radius:99px; padding:4px 12px; font-weight:600}
+
+  section{margin-top:64px; scroll-margin-top:24px}
+  h2{font-size:23px; letter-spacing:-.015em; font-weight:800; padding-bottom:10px; border-bottom:2px solid var(--line); margin-bottom:20px}
+  h2 .n{color:var(--brand); margin-right:10px; font-variant-numeric:tabular-nums}
+  h3{font-size:16.5px; font-weight:700; margin:30px 0 10px}
+  h4{font-size:14.5px; font-weight:700; margin:20px 0 8px; color:var(--tx)}
+  p{margin:10px 0; text-wrap:pretty}
+  p+p{margin-top:12px}
+  ul,ol{margin:10px 0 10px 22px}
+  li{margin:5px 0}
+  b,strong{font-weight:700}
+  .dim{color:var(--tx2)}
+  a{color:var(--brand)}
+
+  code{
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.86em;
+    background:var(--code-bg); color:var(--code-tx); padding:2px 6px; border-radius:5px;
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; overflow-x:auto; margin:14px 0; line-height:1.6;
+  }
+  pre code{background:none; padding:0; font-size:12.8px; color:var(--code-tx)}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px}
+  th{white-space:nowrap; text-align:left; font-weight:700; color:var(--tx2); font-size:12px; letter-spacing:.03em; padding:8px 12px; border-bottom:2px solid var(--line)}
+  td{padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tblwrap{overflow-x:auto}
+  td code{white-space:nowrap}
+
+  .callout{border-radius:10px; padding:14px 18px; margin:16px 0; font-size:14px}
+  .callout .t{font-weight:800; font-size:12.5px; letter-spacing:.05em; margin-bottom:6px}
+  .rule{background:var(--brand-soft); border:1px solid transparent}
+  .rule .t{color:var(--brand-deep)}
+  .warn{background:var(--warn-bg); border:1px solid var(--warn-line)}
+  .warn .t{color:var(--warn-tx)}
+  .accident{background:var(--danger-bg); border:1px solid var(--danger-line)}
+  .accident .t{color:var(--danger-tx)}
+
+  /* 점검 항목 카드 — 표로 하면 6열이 세로로 쪼개져서 카드로 */
+  .fixlist{display:flex; flex-direction:column; gap:12px; margin:16px 0}
+  .fix{border:1px solid var(--line); border-left:3px solid var(--tx3); border-radius:10px; padding:14px 16px; background:var(--panel)}
+  .fix.me{border-left-color:#d4574a}
+  .fix.them{border-left-color:var(--brand)}
+  .fix .fh{display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin-bottom:4px}
+  .fix .fh .id{font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:13.5px; font-weight:700}
+  .fix .fh .who{font-size:11px; font-weight:700; letter-spacing:.03em; border-radius:99px; padding:2px 9px; white-space:nowrap}
+  .fix.me .who{background:var(--danger-bg); color:var(--danger-tx); border:1px solid var(--danger-line)}
+  .fix.them .who{background:var(--brand-soft); color:var(--brand-deep)}
+  .fix .what{font-size:13px; color:var(--tx2); margin-bottom:9px}
+  .fix dl{display:grid; grid-template-columns:max-content 1fr; gap:5px 12px; margin:0; font-size:13.5px}
+  .fix dt{font-weight:700; color:var(--tx2); font-size:12.5px; white-space:nowrap}
+  .fix dd{margin:0}
+  .fix dd code{font-size:12.5px}
+  @media (max-width:620px){ .fix dl{grid-template-columns:1fr; gap:2px} .fix dt{margin-top:6px} }
+
+  .prompt{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--brand);
+    border-radius:0 10px 10px 0; padding:12px 16px; margin:10px 0; font-size:14px;
+  }
+  .prompt .who{font-size:11px; font-weight:700; color:var(--brand); letter-spacing:.06em; margin-bottom:3px}
+
+  .timeline{list-style:none; margin:16px 0 0; padding:0; border-left:2px solid var(--line)}
+  .timeline li{margin:0; padding:0 0 22px 22px; position:relative}
+  .timeline li::before{
+    content:""; position:absolute; left:-6px; top:7px; width:10px; height:10px;
+    border-radius:50%; background:var(--brand); border:2px solid var(--bg);
+  }
+  .timeline .when{font-size:12px; font-weight:700; color:var(--brand); letter-spacing:.04em}
+  .timeline .what{font-weight:700; margin:2px 0 3px}
+  .timeline p{margin:0; font-size:13.5px; color:var(--tx2)}
+
+  .tree{font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:12.6px; line-height:1.85}
+  .tree .c{color:var(--tx3)}
+  .tree .hl{color:var(--brand); font-weight:700}
+
+  kbd{
+    font-family:inherit; font-size:.82em; background:var(--panel); border:1px solid var(--line);
+    border-bottom-width:2px; border-radius:5px; padding:1px 7px; font-weight:600;
+  }
+  .steps{counter-reset:st; list-style:none; margin-left:0}
+  .steps>li{counter-increment:st; position:relative; padding-left:38px; margin:12px 0}
+  .steps>li::before{
+    content:counter(st); position:absolute; left:0; top:2px; width:24px; height:24px;
+    background:var(--brand); color:#fff; border-radius:50%; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  @media print{
+    nav{display:none} main{padding:0} body{font-size:12px}
+    section{margin-top:32px} pre{white-space:pre-wrap}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="logo">MIDAS <b>DRS</b></div>
+  <div class="sub">인수인계 · 2026-08-11</div>
+  <a href="#s1"><span class="n">01</span>이 프로젝트는 무엇인가</a>
+  <a href="#s2"><span class="n">02</span>작업 방식 — 디자이너 × Claude</a>
+  <a href="#s3"><span class="n">03</span>인계자 가이드 — 시작하기</a>
+  <a href="#s4"><span class="n">04</span>폴더 구조</a>
+  <a href="#s5"><span class="n">05</span>팩 시스템 (핵심)</a>
+  <a href="#s6"><span class="n">06</span>팩을 만든 실제 과정</a>
+  <a href="#s7"><span class="n">07</span>AI 배선 — 워커</a>
+  <a href="#s8"><span class="n">08</span>다국어 (4개 언어)</a>
+  <a href="#s9"><span class="n">09</span>스킬 &amp; 훅</a>
+  <a href="#s10"><span class="n">10</span>배포</a>
+  <a href="#s11"><span class="n">11</span>절대 규칙 &amp; 사고 사례</a>
+  <a href="#s12"><span class="n">12</span>현재 상태 &amp; 백로그</a>
+  <a href="#s13"><span class="n">13</span>비용·계정 — 넘기는 법</a>
+  <a href="#s14"><span class="n">14</span>개발 히스토리</a>
+  <a href="#s15"><span class="n">15</span>부록 — 다른 프로젝트</a>
+</nav>
+
+<main><div class="doc">
+
+<header class="cover">
+  <div class="eyebrow">Handover Document</div>
+  <h1>MIDAS DRS / AX Design Generator<br>인수인계 문서</h1>
+  <p class="lead">
+    디자이너가 Claude Code(AI 페어)와 함께 기획부터 배포까지 만든 AI 디자인 생성 도구입니다.
+    이 문서는 인계자(디자이너)가 <b>같은 방식 — 클로드와 한국어로 대화 — 으로 이어서 작업</b>할 수 있도록,
+    무엇을 어떻게 만들었고 어디를 조심해야 하는지 전부 담았습니다.
+    개발 용어는 <b>전부 풀어서</b> 썼고, 어려운 말은 §1 끝의 <b>용어 사전</b>에 모아 뒀습니다.
+  </p>
+  <p class="lead" style="margin-top:10px">
+    <b>처음 받으셨다면 순서는 이렇습니다.</b>
+    ① <code>docs/START_HERE.html</code>(5분 시작 가이드)로 앱을 켜 보고 →
+    ② 이 문서의 <b><a href="#s3">§3 인계자 가이드</a></b>부터 읽으세요. 나머지 절은 필요할 때 찾아보는 참고서입니다.
+  </p>
+  <div class="meta">
+    <span>기간 2026-07-14 ~ 진행 중</span>
+    <span>커밋 411개</span>
+    <span>스타일팩 17종</span>
+    <span>레포 ~/onsite-web-generator</span>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<section id="s1">
+<h2><span class="n">01</span>이 프로젝트는 무엇인가</h2>
+<p><b>한 줄</b>: 자료(텍스트·PPT·PDF·워드)를 넣으면 AI가 <b>PPT 장표 / 랜딩 웹사이트 / eDM</b>을
+회사 스타일로 자동 생성하고, 그 자리에서 편집·번역·PPTX 추출·공유까지 되는 웹 도구.</p>
+
+<div class="tblwrap"><table>
+  <tr><th>항목</th><th>주소</th></tr>
+  <tr><td>실서비스(프로드)</td><td><a href="https://midas-drs.pages.dev">https://midas-drs.pages.dev</a> (Cloudflare Pages)</td></tr>
+  <tr><td>AI 프록시(워커)</td><td>https://webgen-ppt-proxy.ksj0225.workers.dev (Cloudflare Worker)</td></tr>
+  <tr><td>레포</td><td><code>~/onsite-web-generator</code> — GitHub 원격 있음, 푸시·배포 전부 수동</td></tr>
+</table></div>
+
+<h3>사용자 여정 (전체 흐름)</h3>
+<ol class="steps">
+  <li><b>인테이크(자료 접수)</b> — 홈 화면에서 대화하듯 자료를 넣는다. PPT·워드·PDF를 끌어다 놓으면
+    어디로 업로드되는 게 아니라 <b>브라우저가 그 자리에서 파일을 열어 내용을 읽는다</b>
+    (파일 여는 부품 3종이 <code>app/vendor/</code>에 내장 — 인터넷 막힌 사내망에서도 첨부 동작).
+    이어서 AI 중계 서버(<b>워커</b> — 클라우드에 떠 있는 작은 심부름 서버)가 자료를 요약하고 부족한 정보를 되묻는다.
+    이 단계는 빠른 모델(haiku)을 써서 몇 초면 끝난다.
+    되묻는 카드 중에 <b>분량</b>과 <b>화면 비율</b>(16:9 · 4:3 · 3.8:1)도 있다 — 비율은 스타일 카드보다 먼저 물어야
+    썸네일이 그 비율로 그려진다.</li>
+  <li><b>생성</b> — 워커에 주문이 접수된다. 주문 창구가 결과물별로 나뉘어 있어서 PPT는 <code>/compose</code>,
+    랜딩은 <code>/compose-web</code>이라는 창구를 쓴다(이름은 외울 필요 없음 — 고장 신고 때 에러 메시지에 떠서
+    어느 창구 문제인지 알려주는 표지판). AI가 써 내려가는 내용을 실시간으로 흘려받아 <b>장표가 한 장씩 눈앞에서 그려진다</b>.</li>
+  <li><b>스튜디오 편집</b> — 채팅으로 수정("3장 제목 바꿔줘"), 장표 위를 클릭해 글자를 그 자리에서 고치는 인라인 편집,
+    이미지 피커(AI 이미지 생성 포함), 섹션 순서변경·숨김. 화면 비율도 상단 스위처로 <b>만든 뒤에 바꿀 수 있다</b>.</li>
+  <li><b>번역</b> — 한국어·영어·일본어·중국어 4개 언어 전환. 3장씩 잘라 병렬 번역.</li>
+  <li><b>발표 대본</b> — 🎤 버튼. AI가 장표별 대본·시간·전환멘트 작성(진행바 실시간 표시).</li>
+  <li><b>추출/공유</b> — 완성본을 PPTX 파일로 내려받거나 링크 하나로 공유한다. 내려받는 PPTX는
+    고른 화면 비율 그대로 나간다(파워포인트에서 열었을 때 지면 크기가 맞는다).
+    공유 시엔 내 컴퓨터에만 있는 이미지 경로를 인터넷에서 열리는 주소로 자동 교체한다
+    (안 하면 받는 사람 화면에서 이미지가 깨져서).</li>
+</ol>
+
+<div class="callout rule"><div class="t">화면 비율 3종 — 지면 크기 고르기</div>
+PPT는 지면 비율을 <b>16:9(와이드·기본)</b> · <b>4:3(클래식)</b> · <b>3.8:1(초와이드)</b> 중에서 고른다.
+<b>생성 전</b>에는 인테이크 카드에서, <b>생성 후</b>에는 스튜디오 상단 스위처에서 언제든 바꾼다 — 바꾸면 본문·썸네일이 다시 그려진다.
+PPTX로 뽑을 때도 그 규격이 그대로 따라간다.
+<p style="margin:8px 0 0">비율이 없는 옛 프로젝트는 자동으로 16:9로 본다(하위호환). 규격의 원본 문서는
+<code>docs/RATIO_CONTRACT.md</code> — 새 PPT 팩을 만들 땐 여기 체크리스트를 따라야 한다.</p></div>
+
+<div class="callout rule"><div class="t">기술 정체성 — "조립 공정이 없다"</div>
+보통 웹 프로젝트는 코드를 완성품으로 바꾸는 <b>조립 공정(빌드)</b>을 거치는데, 이 프로젝트는 그 공정이 아예 없다.
+폴더 안의 파일이 곧 완성품이라 <b>파일을 고치고 새로고침하면 결과가 바로 보인다</b>
+(전문 용어로 buildless — 빌드 도구·프레임워크 없이 클래식 <code>&lt;script&gt;</code>만 사용).
+비개발자도 다룰 수 있게 하려는 의도된 설계이니 이 단순함을 지키길 권장.</div>
+
+<h3>용어 사전 — 막히면 여기로 돌아온다</h3>
+<p>이 문서에 나오는 개발 용어를 전부 한 줄로 풀었다. <b>지금 외울 필요 없다.</b>
+읽다가 모르는 말이 나오면 이 표로 돌아오면 된다. 정확한 명칭은 괄호에 남겨 뒀다 —
+클로드에게 말할 땐 괄호 쪽 단어를 쓰면 더 정확히 알아듣는다.</p>
+
+<h4>A. 일반 개발 용어</h4>
+<div class="tblwrap"><table>
+  <tr><td><b>레포</b></td><td>이 프로젝트 <b>폴더</b>를 부르는 개발 용어(repository의 준말)</td></tr>
+  <tr><td><b>커밋</b></td><td>작업 내용을 버전 기록장에 <b>저장</b>하는 것 — 게임 세이브와 비슷. 언제든 그 시점으로 되돌릴 수 있다</td></tr>
+  <tr><td><b>푸시</b></td><td>저장한 기록을 온라인 보관소(GitHub)에 <b>올리는</b> 것 — 백업 겸 공유</td></tr>
+  <tr><td><b>클론</b></td><td>온라인 보관소의 폴더를 <b>내 컴퓨터로 통째 복사</b>해 오는 것(clone)</td></tr>
+  <tr><td><b>배포</b></td><td>내 컴퓨터의 파일을 <b>인터넷 주소로 올려서</b> 남들도 접속하게 만드는 일. 푸시와 다르다(§10)</td></tr>
+  <tr><td><b>워커<br>· 프록시</b></td><td>클라우드에 떠 있는 작은 <b>중계 서버</b>. 여기선 AI 주문을 대신 접수하는 창구(<code>proxy/worker.js</code>).
+    "프록시(proxy)"도 같은 것을 가리키는 다른 이름 — 내 대신 심부름 가는 사람</td></tr>
+  <tr><td><b>프롬프트</b></td><td>AI에게 주는 <b>지시문</b>. 이 프로젝트에선 워커 안에 들어 있다</td></tr>
+  <tr><td><b>렌더<br>· 렌더러</b></td><td><b>그려내는 것</b>. 데이터(제목·문장·숫자)를 받아 실제 화면 모양으로 바꾸는 일이 렌더,
+    그 일을 하는 코드가 렌더러. "렌더 경로"= 화면이 그려지는 길목들(본문·썸네일·미리보기 등)</td></tr>
+  <tr><td><b>토큰</b></td><td><b>뜻이 두 개다.</b> ① <b>디자인 토큰</b> = 색·글자크기·간격 같은 <b>정해 둔 값 묶음</b>(팩 이야기에 나오면 이쪽)
+    ② <b>AI 토큰</b> = AI가 글을 세는 단위 겸 <b>요금 단위</b>(글자 몇 개 단위. "토큰 초과"는 한 번에 보낸 글이 너무 길다는 뜻)</td></tr>
+  <tr><td><b>폴백</b></td><td><b>안 될 때 대신 쓰는 값</b>(fallback). 예: 이미지가 안 열리면 대신 띄우는 그림, 비율 값이 없으면 16:9로 보기</td></tr>
+  <tr><td><b>하드코딩</b></td><td>값을 <b>코드 안에 글자 그대로 박아 넣는 것</b>. 편하지만 나중에 못 바꿔서 사고가 난다(§11의 한국어 폴백 금지)</td></tr>
+  <tr><td><b>JSON</b></td><td>컴퓨터끼리 주고받는 <b>표 형식의 글</b>. AI가 만든 장표 내용도 이 형식으로 온다.
+    괄호 하나만 틀려도 못 읽어서, 이 앱엔 <b>자가수리</b>(깨진 괄호·따옴표를 고쳐 다시 읽기) 코드가 들어 있다</td></tr>
+  <tr><td><b>스키마</b></td><td><b>빈칸이 정해진 서식</b>. "제목은 여기, 부제는 여기" 하고 AI가 채워야 할 칸 목록을 미리 정해 둔 것</td></tr>
+  <tr><td><b>스트리밍</b></td><td>결과를 <b>다 쓸 때까지 기다리지 않고 써지는 대로 받는 것</b>. 그래서 장표가 한 장씩 눈앞에서 그려진다(정확한 명칭 SSE)</td></tr>
+  <tr><td><b>페이로드</b></td><td>서버로 <b>실어 보내는 짐</b>. 짐이 무거우면(이미지가 섞이면) 토큰 초과로 실패한다</td></tr>
+  <tr><td><b>청크</b></td><td><b>덩어리</b>. 번역은 덱을 3장씩 잘라(청크) 동시에 돌린다 — 그래서 빠르다</td></tr>
+  <tr><td><b>dataURI</b></td><td>이미지 <b>파일 자체를 긴 글자로 바꿔 넣은 것</b>. 서버 없이 이미지를 붙일 수 있지만 용량이 커진다</td></tr>
+  <tr><td><b>curl</b></td><td>터미널에서 <b>서버를 직접 한 번 불러보는 도구</b>. "말로만 고쳤다" 금지의 증거 수집용(§2)</td></tr>
+  <tr><td><b>localStorage</b></td><td>브라우저가 <b>이 컴퓨터에만</b> 저장해 두는 작은 메모장. API 키·프로젝트가 여기 들어간다 — 어디로도 전송되지 않는다</td></tr>
+  <tr><td><b>KV</b></td><td>Cloudflare가 주는 아주 단순한 <b>보관함</b>(이름표 하나에 값 하나). 호출 횟수 세기·공유 링크 보관에 쓴다</td></tr>
+  <tr><td><b>시크릿</b></td><td>서버 <b>금고</b>(secret). API 키처럼 남이 보면 안 되는 값을 여기 넣는다. 파일에는 안 들어간다</td></tr>
+  <tr><td><b>훅</b></td><td><b>어떤 일이 일어날 때 자동으로 끼어드는 장치</b>(hook). 여기선 커밋할 때마다 자동으로 도는 검수기(§9)</td></tr>
+  <tr><td><b>E2E</b></td><td><b>끝에서 끝까지 실제로 돌려보는 검사</b>(end-to-end). 부품 하나가 아니라 주문→생성→화면까지 전 구간 확인</td></tr>
+  <tr><td><b>캐시</b></td><td>브라우저가 <b>예전 파일을 기억해 두는 것</b>. 고쳤는데 화면이 안 바뀌면 대개 이것 — 강력 새로고침으로 지운다</td></tr>
+  <tr><td><b>프로드</b></td><td><b>실제로 서비스 중인 인터넷 주소</b>(production의 줄임). "내 컴퓨터에서만 도는 것"의 반대말</td></tr>
+  <tr><td><b>레거시</b></td><td><b>지금은 안 쓰지만 지우면 안 되는 것</b>. 옛 프로젝트를 열려면 필요해서 남겨 둔다</td></tr>
+  <tr><td><b>파이프라인</b></td><td>여러 단계를 <b>정해진 순서로 통과시키는 처리 흐름</b>. 공장 컨베이어와 비슷하다</td></tr>
+</table></div>
+
+<h4>B. 이 프로젝트에서만 쓰는 말</h4>
+<div class="tblwrap"><table>
+  <tr><td><b>팩<br>(스타일팩)</b></td><td>디자인 한 벌이 통째로 든 <b>파일 하나</b>. 프린터의 잉크 카트리지처럼 갈아끼운다(§5)</td></tr>
+  <tr><td><b>배선</b></td><td>새로 만든 것을 <b>앱 여기저기에 연결해 주는 작업</b>. 전기 배선과 같은 비유 —
+    한 가닥만 빠져도 그 화면에서만 조용히 안 나온다. 이 프로젝트 최다 사고 지점(§6)</td></tr>
+  <tr><td><b>실측</b></td><td>소스(PDF·Figma·실사이트)에서 <b>색·글꼴·간격을 눈대중이 아니라 실제 값으로 뽑아내는 것</b>. "추측 금지"의 짝</td></tr>
+  <tr><td><b>인테이크</b></td><td>홈 화면의 <b>자료 접수 단계</b>. 대화하듯 자료를 넣고 AI가 부족한 걸 되묻는다</td></tr>
+  <tr><td><b>포크</b></td><td>기존 팩을 <b>복사해서 새 팩의 출발점으로 삼는 것</b>(fork). rams는 naver 포크, honors는 pitch 포크</td></tr>
+  <tr><td><b>스킬</b></td><td>클로드용 <b>작업 절차서</b>. "배포해줘" 같은 말을 하면 관련 절차서를 알아서 꺼내 읽는다(§9)</td></tr>
+  <tr><td><b>하네스</b></td><td>확인만 하려고 <b>잠깐 만들었다 지우는 시험 페이지</b>(<code>_verify….html</code>). 실험대 비슷한 것</td></tr>
+  <tr><td><b>계약</b></td><td>"이 값은 이런 형태여야 한다"고 <b>문서로 못 박아 둔 약속</b>. 팩 계약·데이터 계약·비율 계약이 있다</td></tr>
+  <tr><td><b>시연 잠금</b></td><td>발표 때 <b>누가 뽑아도 똑같이 나오게</b> 출력을 고정해 두는 것. 지금은 풀려 있다(§12)</td></tr>
+</table></div>
+</section>
+<!-- ============================================================ -->
+<section id="s2">
+<h2><span class="n">02</span>작업 방식 — 디자이너 × Claude</h2>
+<p>이 프로젝트는 코드를 직접 짜서 만든 게 아니라, <b>디자이너가 Claude Code에게 대화로 요청</b>하고
+Claude가 구현·검증·커밋·배포까지 수행하는 방식으로 만들어졌다. 핵심은 "요청을 잘 하는 법"과
+"규칙을 레포에 쌓아두는 법"이다.</p>
+
+<h3>역할 분담</h3>
+<div class="tblwrap"><table>
+  <tr><th>디자이너(나)가 한 것</th><th>Claude가 한 것</th></tr>
+  <tr>
+    <td>방향과 우선순위 결정, 소스 제공(PDF·Figma·실사이트), <b>눈으로 검수</b>("이 색 아냐", "간격이 넓어"),
+      시연 시나리오, 배포 타이밍 결정, API 키를 터미널에서 직접 등록</td>
+    <td>소스에서 색·글꼴·간격 실측, 코드 구현, 실제로 돌려보는 검증, 저장(커밋), 배포 명령 실행,
+      규칙 문서화(<code>CLAUDE.md</code>·절차서)</td>
+  </tr>
+</table></div>
+
+<h3>요청 패턴 — 실제로 이렇게 시켰다</h3>
+<p>대화는 전부 한국어, 개발 용어 없이 했다. 클로드가 알아서 기술로 옮긴다. 실제로 반복된 패턴 4가지:</p>
+
+<div class="prompt"><div class="who">패턴 1 — 소스 주고 실측 요구</div>
+"이 PDF(네이버스타일.pdf) 그대로 PPT 팩으로 만들어줘. <b>소스에 있는 것만, 추측하지 말고.</b>"
+<p class="dim" style="margin:6px 0 0">→ 팩 제작의 기본형. "추측 금지"가 붙으면 Claude는 소스에 없는 값을 만들지 않고, 막히면 멈추고 물어본다.</p></div>
+
+<div class="prompt"><div class="who">패턴 2 — 증상 그대로 신고</div>
+"생성이 하다 말아" / "번역이 안 돼" / "일본어 글자가 얇아 보여" / "이미지가 사라졌어"
+<p class="dim" style="margin:6px 0 0">→ 원인을 짐작해 말할 필요 없다. 증상만 말하면 <code>debug-generation</code> 절차서가
+AI 서버 → 브라우저 → 화면 순서로 <b>층을 하나씩 짚어 범인을 좁힌다.</b></p></div>
+
+<div class="prompt"><div class="who">패턴 3 — UX 감각 전달</div>
+"기다리는 과정이 조금 보여도 좋구. 프로그레스라던지" / "3.8:1은 레이아웃이나 여백이 벙벙한데 디자인적으로 조정 잘 해줬으면"
+<p class="dim" style="margin:6px 0 0">→ 감각·의도 수준의 요청도 됨. 전자는 대본 생성 진행바가, 후자는 초와이드 비율의 레이아웃 재설계가 됐다.</p></div>
+
+<div class="prompt"><div class="who">패턴 4 — 규칙 선언 (한 번 말하면 영구 반영)</div>
+"push는 내가 말할 때만 해" / "API 키는 채팅에 절대 안 붙일 거야" / "완료되면 비유로 설명해줘"
+<p class="dim" style="margin:6px 0 0">→ Claude가 CLAUDE.md(레포 규칙서)나 자기 메모리에 기록해서 다음 세션에도 지킨다.</p></div>
+
+<h3>검증 문화 — "될 겁니다" 금지</h3>
+<p>이 프로젝트에서 가장 중요한 문화. AI가 "고쳤어요, 될 겁니다"라고 <b>말로만 끝내는 것을 금지</b>하고,
+항상 실제로 돌려본 증거를 보여달라고 했다:</p>
+<ul>
+  <li><b>AI 서버를 고쳤으면</b> — 진짜 주문을 하나 넣어보고 답이 제대로 오는지 확인한다
+    (터미널에서 서버를 직접 불러보는 <code>curl</code>이라는 도구 사용)</li>
+  <li><b>화면을 고쳤으면</b> — 임시 시험 페이지(<code>_verify…html</code>)를 만들어 브라우저에 띄우고
+    스크린샷으로 확인한다. <b>시험 페이지는 확인이 끝나면 삭제</b>(폴더에 쓰레기 안 남기기)</li>
+  <li><b>이미지·디자인은 눈으로</b> — 클로드가 스크린샷을 찍어 보여주면, 사람이 원본과 나란히 놓고 대조한다</li>
+  <li><b>코드를 고쳤으면</b> — 오타 검사기(<code>node --check</code>)부터 돌려 문법 실수를 걸러낸다</li>
+</ul>
+<p>이 습관은 나중에 자동화됐다 — "검증해줘" 한 마디면 위 과정을 알아서 도는 절차서(<code>verify-e2e</code> 스킬)가 생겼고,
+저장(커밋)할 때마다 검사기가 자동으로 돌아서 불합격이면 <b>저장 자체가 막힌다</b>(§9의 커밋 자동 검수).</p>
+
+<h3>지식이 쌓이는 구조 (3층)</h3>
+<div class="tblwrap"><table>
+  <tr><th>층</th><th>무엇이 적혀 있나</th><th>클로드가 언제 읽나</th></tr>
+  <tr><td><b>CLAUDE.md</b><br><span class="dim">(폴더 맨 위의 규칙서)</span></td><td>프로젝트 규칙 전부 — 폴더 구조, 배포 방법, 언어 규칙, 표기법, 검증 습관. <b>사고가 날 때마다 규칙이 한 줄씩 늘었다</b>(같은 사고 재발 방지)</td><td>이 폴더에서 클로드를 켜면 자동으로 읽는다</td></tr>
+  <tr><td><b>.claude/skills/</b><br><span class="dim">(절차서 7종)</span></td><td>반복 작업 매뉴얼 — 새 스타일 추가, 검증, 배포, 고장 진단 등. 각 매뉴얼에 <b>과거에 밟았던 실수 목록</b>까지 적혀 있다</td><td>"배포해줘" 같은 관련 요청이 오면 알아서 꺼내 읽는다</td></tr>
+  <tr><td><b>클로드 메모리</b><br><span class="dim">(개인 수첩)</span></td><td>클로드가 자기 계정에 따로 적어두는 기억 — 프로젝트 진행 상황, 사용자 취향(비개발자라 비유로 설명하기 등)</td><td>대화를 시작할 때 자동</td></tr>
+</table></div>
+<div class="callout warn"><div class="t">인계자에게 중요</div>
+CLAUDE.md와 스킬은 <b>레포에 있으므로</b> 누가 클론해서 Claude를 켜도 같은 규칙으로 작동한다.
+반면 "Claude 메모리"는 내 계정에 있으므로 인계자의 Claude는 백지에서 시작 — 대신 이 문서와 CLAUDE.md를 읽히면 된다(§3).</div>
+</section>
+<!-- ============================================================ -->
+<section id="s3">
+<h2><span class="n">03</span>인계자 가이드 — 여기서부터 시작</h2>
+<p>이 문서를 처음부터 끝까지 읽을 필요는 없다. <b>이 절만 읽고 바로 시작해도 된다</b> —
+나머지 절은 필요할 때 찾아보는 참고서다(끝에 안내 표를 뒀다).</p>
+<p>당신도 나처럼 코드를 몰라도 된다. <b>이 폴더에서 Claude Code를 켜면 규칙서(CLAUDE.md)를 자동으로 읽고</b>,
+상황에 맞는 작업 절차서(스킬)도 알아서 꺼내 쓴다. 사람이 할 일은 <b>무엇을 원하는지 한국어로 말하는 것</b>뿐이다.</p>
+
+<h3>첫 30분 — 이 순서로</h3>
+<ol class="steps">
+  <li><b>앱부터 한 번 띄워 본다</b> — 터미널에서 <code>python3 serve.py</code> 실행 후 브라우저로
+    <code>http://localhost:4788/app/index.html</code> 접속.
+    <span class="dim">(AI 생성까지 해보려면 설정 화면에 본인 API 키를 넣어야 한다 — <code>docs/START_HERE.html</code> 2단계에 5분 절차가 있다)</span></li>
+  <li><b>아무 자료나 넣고 PPT를 하나 만들어 본다</b> — 자료 접수(인테이크)부터 편집·번역·PPTX 내려받기까지
+    한 바퀴 돌면 이 문서의 절반은 저절로 이해된다.</li>
+  <li><b>클로드를 켜고 첫 마디를 건넨다</b> — 이 폴더에서 Claude Code를 실행하고:
+    <div class="prompt" style="margin-top:8px">"docs/HANDOVER.html이랑 CLAUDE.md 읽고 이 프로젝트 파악해줘."</div></li>
+  <li><b>커밋 검수기를 켠다</b>(폴더를 새로 내려받았다면 1회) — 터미널에 <code>git config core.hooksPath .githooks</code>.
+    <span class="dim">저장(커밋)할 때마다 자동으로 오류를 잡아 주는 장치다(§9).</span></li>
+  <li><b>디자인 자산을 훑어본다</b> — <code>docs/packs/README.md</code>로 스타일팩 목록을 보고,
+    팩 파일 하나(<code>packs/ppt/packs.naver.js</code>)를 열어 생김새만 구경한다. 읽어서 이해할 필요는 없다.</li>
+</ol>
+
+<h3>이렇게 요청하면 된다 — 프롬프트 예문</h3>
+<p>개발 용어를 쓸 필요 없다. <b>원하는 결과와 조건</b>만 말하면 된다.</p>
+<div class="prompt"><div class="who">새 스타일팩</div>
+"이 PDF 첨부할게. 이 스타일 그대로 새 PPT 팩으로 만들어줘. 소스에 있는 것만, 추측 금지."</div>
+<div class="prompt"><div class="who">장표 한 종류 추가</div>
+"machine 팩에 이런 비교표 장표 하나 추가해줘." <span class="dim">(<code>add-slide-type</code> 절차서가 연결 작업 7단계까지 알아서 처리)</span></div>
+<div class="prompt"><div class="who">고장 신고 — 증상만</div>
+"영어로 번역했는데 버튼에 한국어가 남아 있어." <span class="dim">(원인을 짐작해 말할 필요 없다. <code>debug-generation</code> 절차서가 서버→화면 순서로 범인을 좁힌다)</span></div>
+<div class="prompt"><div class="who">확인 요구</div>
+"방금 고친 거 실제로 되는지 검증해줘." <span class="dim">(<code>verify-e2e</code> 절차서 — 서버를 직접 불러보고, 화면을 띄워 스크린샷까지 증거로 가져온다)</span></div>
+<div class="prompt"><div class="who">배포</div>
+"배포해줘." <span class="dim">(<code>deploy</code> 절차서 — 사이트와 AI 서버를 올리고, 실제로 떴는지까지 확인)</span></div>
+<div class="prompt"><div class="who">발표용 고정 / 해제</div>
+"다음 주 시연이야. 누가 뽑아도 똑같이 나오게 고정해줘." / "시연 끝났어, 잠금 풀어줘."
+<span class="dim">(<code>demo-lock</code> 절차서. 지금은 <b>풀려 있는</b> 상태 — §12)</span></div>
+<div class="prompt"><div class="who">감각·의도 전달도 된다</div>
+"3.8:1 비율은 여백이 벙벙한데 디자인적으로 조정 잘 해줬으면." / "기다리는 과정이 조금 보여도 좋겠어, 프로그레스 같은 거."</div>
+
+<h3>첫 세션에 한 번 선언해 두면 좋은 것</h3>
+<ul>
+  <li>"push는 내가 말할 때만. 커밋은 로컬까지만." <span class="dim">— 온라인 보관소에 함부로 올리지 않게</span></li>
+  <li>"API 키 필요하면 터미널 명령을 알려줘 — 채팅에 키 붙여넣게 하지 마."</li>
+  <li>"완료 선언 전에 실제로 돌려본 증거(스크린샷 등)를 보여줘."</li>
+  <li>"(선택) 나 비개발자니까 완료되면 개발용어 없이 비유로 설명해줘."</li>
+</ul>
+<p class="dim">앞의 두 개는 CLAUDE.md에도 적혀 있어 클로드가 이미 지킨다. 그래도 한 번 소리 내어 확인하면 확실하다.</p>
+
+<h3>하지 말 것 (3개만 기억하면 된다)</h3>
+<ul>
+  <li><code>app/bundle.js</code>는 <b>손대지 않는다</b>(클로드에게도 시키지 않는다) — 자동으로 만들어지는 파일이라
+    직접 고쳐도 다음 번에 덮어써져 사라진다. 고칠 일이 있으면 <code>core/</code> 쪽을 고치고 다시 만든다.</li>
+  <li><b>푸시했다고 배포된 게 아니다</b> — 인터넷에 반영하려면 별도 명령이 필요하다(§10).</li>
+  <li>워커에 보존해 둔 <b>잠금본 프롬프트</b>(이름 끝이 <code>_LOCKED</code>)를 지우지 않는다 — 발표용으로 다시 고정할 때 쓰는 원본이다.</li>
+</ul>
+
+<h3>그다음엔 어디를 읽나 — 목적별 안내</h3>
+<div class="tblwrap"><table>
+  <tr><th>하고 싶은 일</th><th>읽을 곳</th></tr>
+  <tr><td>파일이 어디에 뭐가 있는지 알고 싶다</td><td>§4 폴더 구조</td></tr>
+  <tr><td>디자인 스타일을 새로 추가하고 싶다</td><td>§5 팩 시스템 → §6 만드는 과정</td></tr>
+  <tr><td>AI가 이상한 결과를 낸다 / 생성이 안 된다</td><td>§7 AI 배선 → 클로드에게 증상 신고</td></tr>
+  <tr><td>영어·일본어·중국어가 이상하다</td><td>§8 다국어</td></tr>
+  <tr><td>인터넷에 올리고 싶다</td><td>§10 배포</td></tr>
+  <tr><td>지금 뭐가 남아 있는지 알고 싶다</td><td>§12 현재 상태 &amp; 백로그</td></tr>
+  <tr><td>요금이 누구 계정에서 나가는지, 내 계정으로 바꾸려면</td><td>§13 비용·계정</td></tr>
+</table></div>
+</section>
+<!-- ============================================================ -->
+<section id="s4">
+<h2><span class="n">04</span>폴더 구조</h2>
+<p>전부 외울 필요는 없다. <b>굵게 표시된 네 군데</b>만 알면 된다 —
+규칙서(<code>CLAUDE.md</code>) · 화면(<code>app/</code>) · 디자인 자산(<code>packs/</code>) · AI 서버(<code>proxy/</code>).
+<code>#</code> 뒤는 설명이다.</p>
+<pre class="tree"><code>onsite-web-generator/
+├─ CLAUDE.md              <span class="hl">← 상시 규칙서. 사람이든 AI든 여기부터</span>
+├─ README.md
+├─ serve.py               <span class="c"># 로컬 서버(캐시 끔): python3 serve.py [포트, 기본 4788]</span>
+│
+├─ app/                   <span class="hl">← 화면 전부 (제품 본체)</span>
+│  ├─ index.html          <span class="c"># 홈 + 대화형 인테이크(자료→생성 시작)</span>
+│  ├─ studio/studio.html  <span class="c"># 편집 스튜디오: 채팅수정·인라인편집·번역·대본·PPTX·공유</span>
+│  ├─ dashboard.html / projects.html / resources.html / settings.html / icons.html
+│  ├─ llm.js              <span class="c"># 브라우저 쪽 AI 담당 — 생성·수정·번역·이미지·대본 + 실패 시 재시도 전부</span>
+│  ├─ export-pptx.js      <span class="c"># 화면 → .pptx 파일 추출(텍스트 런·도형 분해)</span>
+│  ├─ charts.js           <span class="c"># 차트 12종 렌더러(바·라인·게이지·링…)</span>
+│  ├─ i18n.js             <span class="c"># UI 4개 언어 사전 — MAP={'한국어키':[en,ja,zh]}</span>
+│  ├─ pagetypes.js        <span class="c"># 페이지 10유형 × 섹션 21어휘 계약</span>
+│  ├─ store.js / theme.js / modal.js / shell.js   <span class="c"># 저장·테마·공용 UI</span>
+│  ├─ bundle.js           <span class="hl"># ⚠️ 자동 생성 — 직접 편집 절대 금지(core/ 수정→재생성)</span>
+│  ├─ bg/                 <span class="c"># 이미지 자산. 프로드: https://midas-drs.pages.dev/app/bg/...</span>
+│  └─ vendor/             <span class="c"># 첨부 파일(PPT·워드·PDF) 여는 부품 3종 — 내장이라 인터넷 막혀도 동작</span>
+│
+├─ packs/                 <span class="hl">← 스타일팩 = 독립 디자인 자산 (§5)</span>
+│  ├─ ppt/                <span class="c"># naver rams machine pastel sfmi pitch honors ppt (8종)</span>
+│  ├─ web/                <span class="c"># mbm axday orbit toss saturn aether krds midas (8종)</span>
+│  └─ edm/                <span class="c"># edm + promo01(템플릿 데이터)</span>
+│     <span class="c">각 팩 = packs.X.js(실행) + packs.X.md(규칙·디자인 DNA) + 주요 6팩 sample.html(실물 표본)</span>
+│
+├─ proxy/
+│  ├─ worker.js           <span class="hl"># Cloudflare Worker — 프롬프트·모델·토큰 통제. API 키는 여기 secret에만</span>
+│  └─ wrangler.toml
+│
+├─ core/ + scripts/build.cjs   <span class="c"># → app/bundle.js 생성 소스(darkglow 세대)</span>
+├─ scripts/               <span class="c"># check.cjs(커밋 검수) · check-i18n.cjs · pack-spec.cjs(표본 추출) · build-*.cjs</span>
+├─ docs/                  <span class="c"># PRD.md · packs/README.md(팩 목록) · RATIO_CONTRACT.md(화면 비율 규격) · 디자인 문서</span>
+├─ sources/               <span class="c"># 팩 실측 원본(PDF·캡처 등) — 로컬 전용, gitignore</span>
+├─ .claude/skills/        <span class="hl"># 작업 절차 스킬 7종 (§9)</span>
+└─ .githooks/pre-commit   <span class="hl"># 커밋 자동 검수 훅 (§9)</span></code></pre>
+
+<div class="callout warn"><div class="t">배선 7페이지 주의 — 이 프로젝트 최다 사고 지점</div>
+스타일팩은 <b>7개 화면</b>(index · studio · dashboard · projects · resources · settings · icons)에서
+각각 따로 불러온다. 그래서 팩 파일의 이름이나 위치를 바꾸면 <b>7곳을 전부</b> 고쳐야 한다.
+<b>한 곳만 빠뜨려도 그 화면에서만 조용히 안 나온다</b> — 에러 메시지조차 안 뜬다.
+"어떤 화면에서만 스타일이 안 보인다"면 십중팔구 이것이다.
+<p style="margin:8px 0 0" class="dim">팩이 폴더 맨 위(루트)에 있어서 이미지 경로는 팩이 스스로 자기 위치를 되짚어 계산한다
+(<code>currentScript</code> 기반 BASE 복원). 상세는 <code>docs/packs/README.md</code>.</p></div>
+</section>
+<!-- ============================================================ -->
+<section id="s5">
+<h2><span class="n">05</span>팩 시스템 (이 프로젝트의 핵심)</h2>
+
+<h3>철학 — 팩은 잉크 카트리지</h3>
+<p>앱은 "프린터", 팩은 "잉크 카트리지". 같은 내용(자료)이라도 팩만 바꾸면 완전히 다른 스타일로 출력된다.
+그래서 팩 하나에 <b>색·글꼴·간격부터 부품 모양·그리는 방식·등장 애니메이션·PPTX로 뽑는 규칙까지 전부</b> 들어 있다
+(파일 하나로 자기완결). 앱은 팩을 갈아끼우고 자료를 넘겨주는 <b>얇은 진행자</b>일 뿐이다 —
+디자인 판단은 전부 팩 안에서 끝난다.</p>
+<p>덕분에 부수 효과가 하나 생겼다. 팩 파일(<code>.js</code>)과 짝꿍 설명서(<code>.md</code>)만 꺼내서
+다른 도구나 다른 AI 대화에 첨부하면 스타일이 그대로 옮겨간다. <b>팩 = 재사용 가능한 디자인 자산</b>.</p>
+
+<div class="callout rule"><div class="t">왜 팩을 js(코드 파일)로 만들었나 — md(문서)로는 안 되나?</div>
+역할이 달라서 <b>둘 다</b> 쓴다. <b>md는 레시피 카드</b> — 무슨 색·글꼴·간격인지 사람과 AI가 <b>읽는</b> 설명서.
+읽을 수는 있지만 뭔가를 만들어내진 못한다. <b>js는 요리사</b> — 재료(제목·문장·수치 데이터)를 받으면
+실제로 화면을 <b>만들어내는</b> 실행 기계다. 브라우저는 md를 실행하지 못하고 js만 실행할 수 있어서,
+"실제로 그리는 일"은 js여야만 한다. 그래서 모든 팩이 <code>packs.X.js</code>(요리사)+<code>packs.X.md</code>(레시피)
+짝꿍 구조 — 스타일만 다른 도구에 이식할 땐 md를 첨부하고, 이 앱에서 실제로 돌릴 땐 js까지 쌍으로 가져간다.</div>
+
+<h3>PPT 팩 하나를 열어보면 — 6층 + 비율</h3>
+<p>파일 하나(<code>packs.X.js</code>) 안에 아래가 순서대로 들어 있다. 위쪽이 "무엇으로 그리나", 아래쪽이 "어떻게 내보내나".</p>
+<div class="tblwrap"><table>
+  <tr><th>층</th><th>쉽게 말하면</th><th>정확히는</th></tr>
+  <tr><td><b>토큰</b></td><td>이 스타일이 쓰는 <b>색·글자크기·간격 값 목록</b></td><td>팔레트·타이포 스케일·스페이싱. 실측 소스에서 뽑은 값만 넣는다</td></tr>
+  <tr><td><b>CSS</b></td><td>실제 <b>생김새 규칙</b> 전부 + 등장 애니메이션</td><td>팩끼리 안 섞이게 이름 앞에 표식을 붙인다(machine은 <code>nx-</code>, pastel은 <code>pg-</code>)</td></tr>
+  <tr><td><b>타입 어휘</b></td><td>이 팩이 그릴 수 있는 <b>장표 종류 목록</b> — 표지·목차·간지·카드·표·차트·실화면 캡처·일정표 등</td><td>팩마다 11~24종</td></tr>
+  <tr><td><b>렌더러</b></td><td><b>실제로 그리는 부분</b>. 내용을 받아 화면 모양으로 바꾼다</td><td>타입별 함수. 모든 글자에 편집용 좌표(<code>data-edit</code>)를 심고, 이미지가 안 열릴 때 쓸 대체 그림도 지정</td></tr>
+  <tr><td><b>데이터 계약</b></td><td>AI가 채워야 할 <b>빈칸 서식</b></td><td>팩·워커 프롬프트·채팅 수정 해석기 <b>세 곳이 똑같아야</b> 한다(§7)</td></tr>
+  <tr><td><b>PPTX 규칙</b></td><td>파워포인트 파일로 뽑을 때 <b>도형·글자로 분해하는 방법</b></td><td><code>app/export-pptx.js</code>가 이 규칙을 읽는다</td></tr>
+  <tr><td><b>비율 대응</b></td><td>16:9 · 4:3 · 3.8:1 <b>지면 크기별 레이아웃 조정</b></td><td>팩이 지면 크기 표를 자체 보유하고 비율별로 여백·글자크기를 다시 잡는다(<code>docs/RATIO_CONTRACT.md</code>)</td></tr>
+</table></div>
+
+<h3>웹 팩은 만드는 방식이 다르다</h3>
+<p>PPT 팩은 "장표 종류를 골라 끼우는" 방식인데, 웹/랜딩 팩은 <b>완성된 페이지 골격이 통째로 정해져 있고
+그 안의 글자·이미지만 갈아 끼운다</b>. 랜딩 페이지는 정체성이 강해서, 자유롭게 조립하게 두는 것보다
+골격을 고정하는 쪽이 결과가 훨씬 좋았기 때문이다.</p>
+<p class="dim">정확한 구조: <code>renderXPage(shared, {volume, motion})</code> 함수가 완성된 페이지 HTML을 통째로 반환.
+섹션 순서변경·숨김·추가는 <code>X_SECTION_SPEC</code>으로 앱에 노출한다.</p>
+
+<h3>팩 목록 전체 (17종)</h3>
+<p>표 보는 법. <b>"피커"</b> = 홈 화면에서 스타일을 고르는 카드 목록이다.
+<b>피커 노출</b>은 사용자가 직접 고를 수 있다는 뜻, <b>피커 밖</b>은 팩은 살아 있지만 목록에 안 띄운다는 뜻
+(그 팩으로 만든 기존 프로젝트는 정상적으로 열린다).
+<b>레거시</b>는 지금은 안 쓰지만 <b>옛 프로젝트를 열려면 필요해서 남겨 둔 것</b> — 지우면 안 된다.</p>
+<div class="tblwrap"><table>
+  <tr><th>팩</th><th>종류</th><th>피커 표시명</th><th>실측 소스</th><th>상태 (2026-08-11)</th></tr>
+  <tr><td><b>naver</b></td><td>PPT</td><td>Minimal</td><td>네이버 스타일 PDF 실측 — 독자 11타입(이후 24), 챕터컬러 5종 자동상속, 아이소메트릭 SVG</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td><b>rams</b></td><td>PPT</td><td>Modern</td><td>naver 포크 — 웜그레이·라운드 카드·버밀리언 단일 액센트, 일정표(간트)</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td><b>machine</b></td><td>PPT</td><td>Premium Dark</td><td>네이버스타일(3).pdf 19장 실측 — 다크·포토커버·게이지, 독자 18타입, 액센트 주황 #FF5500</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td><b>pastel</b></td><td>PPT</td><td>Pastel Gradient</td><td>삼성화재 폴더 — 키밴드·팔레트 4변형</td><td><b>활성 · 피커 노출</b> <span class="dim">(시연 때 잠시 숨겼다가 복원)</span></td></tr>
+  <tr><td><b>sfmi</b></td><td>PPT</td><td>SFMI Report</td><td>삼성화재 폴더 — 원 모티프·스트로크 간지</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td>pitch</td><td>PPT</td><td>Creatable Pitch</td><td>Figma 5장 — 그린, 14타입, 차트 12종의 출발점</td><td>활성 · 피커 밖</td></tr>
+  <tr><td>honors</td><td>PPT</td><td>MIDAS Honors</td><td>pitch 포크 — 블루, 배경 이미지 5종, 발표용(Q&amp;A·클로징 끝 강제)</td><td>활성 · 피커 밖</td></tr>
+  <tr><td>ppt</td><td>PPT</td><td>기본(ax)</td><td>—</td><td>레거시 폴백</td></tr>
+  <tr><td><b>mbm</b></td><td>웹</td><td>Civil Blue</td><td>Figma 236-54126 실측 — 상단 메뉴·기능소개·신청 폼</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td><b>axday</b></td><td>웹</td><td>Ensol MBM</td><td>실사이트 contents.h.place/seminar/ax-day 톤앤매너 추출</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td><b>orbit</b></td><td>웹</td><td>Global MBM</td><td>회전 지구본 히어로(캔버스 HD 텍스처)</td><td><b>활성 · 피커 노출</b></td></tr>
+  <tr><td>toss</td><td>웹</td><td>챌린지 화이트</td><td>Toss Designer Challenge 2026 톤</td><td>유지 · 피커 밖</td></tr>
+  <tr><td>saturn</td><td>웹</td><td>—</td><td>Figma 38:12 실측 — 블루 웹/랜딩</td><td>레거시(기존 프로젝트 열람용)</td></tr>
+  <tr><td>aether · krds · midas</td><td>웹</td><td>—</td><td>초기 세대</td><td>레거시</td></tr>
+  <tr><td>edm</td><td>eDM</td><td>—</td><td>promo01 템플릿 데이터 동봉</td><td>활성</td></tr>
+</table></div>
+<p class="dim">현재 피커에 보이는 건 <b>PPT 5종</b>(naver·rams·machine·pastel·sfmi)과 <b>웹 3종</b>(mbm·axday·orbit)이다.
+2026-08-11 <b>시연 잠금이 전부 해제</b>돼 잠금 팩 6종이 자유 구성으로 돌아왔다(§12).
+다시 고정하려면 클로드에게 "시연 잠금 걸어줘"라고 하면 된다 — 잠금본은 전부 보존돼 있다.</p>
+<p class="dim">팩 목록의 원본 문서는 <code>docs/packs/README.md</code>이지만,
+<b>잠금 상태만큼은 코드가 진실</b>이다(그 문서에는 아직 잠금 시절 표기가 남아 있다).</p>
+</section>
+<!-- ============================================================ -->
+<section id="s6">
+<h2><span class="n">06</span>팩을 만든 실제 과정 — "디자인팩은 이렇게 만들었다"</h2>
+<p>팩 17종은 전부 같은 공정으로 만들어졌다. 인계자가 새 팩을 만들 때도 이 공정 그대로 가면 된다
+(Claude에게는 <code>new-ppt-pack</code>/<code>new-web-pack</code> 스킬이 이 공정을 자동으로 태운다).</p>
+
+<ol class="steps">
+  <li><b>소스 확보</b> — 4가지 유형을 다 써봤다:
+    <ul>
+      <li><b>PDF 장표</b>: machine = 네이버스타일(3).pdf 19장을 장별로 캡처·실측</li>
+      <li><b>Figma</b>: saturn = 노드 38:12, mbm = 노드 236-54126 — Claude가 Figma MCP로 직접 값(색·간격·폰트) 추출</li>
+      <li><b>실서비스 사이트</b>: axday = contents.h.place/seminar/ax-day 를 열어 톤앤매너 추출</li>
+      <li><b>디자인 폴더</b>: pastel·sfmi = 삼성화재 시안 폴더</li>
+    </ul>
+    원본은 <code>sources/</code>에 보관(로컬 전용, git에 안 올라감).</li>
+  <li><b>실측</b> — Claude가 소스에서 팔레트·타이포·간격·모티프를 추출. <b>철칙: 소스에 있는 것만.</b>
+    추측값 금지, 소스에 없는 요소는 만들지 않고, 애매하면 멈추고 나에게 질문.
+    이 규칙 덕에 팩이 원본과 "닮은 느낌"이 아니라 "같은 계열"이 나온다.</li>
+  <li><b>타입 어휘 설계</b> — 소스 장표들을 유형 분류(커버·목차·간지·카드·그리드·차트·실화면·간트…).
+    기존 팩 포크가 기본 전략: rams는 naver 포크, honors는 pitch 포크. 완전 신규는 machine(독자 18타입)뿐.</li>
+  <li><b>구현</b> — 파일 하나(<code>packs.X.js</code>)에 전부 담는다. 모든 글자에 편집용 좌표를 심고,
+    이미지가 안 열릴 때 쓸 대체 그림을 지정하고, <b>한국어 문구를 코드에 박아 넣지 않는다</b>(§11 — 번역 사고의 원인).</li>
+  <li><b>배선</b> — 새 팩을 앱 곳곳에 연결하는 단계. <b>빼먹으면 에러 없이 조용히 안 나오는</b> 지점들이다:
+    <ul>
+      <li>팩을 불러오는 <b>7개 화면</b>(§4)</li>
+      <li><b>AI가 채울 빈칸 서식 3곳</b>: 워커의 생성 지시문 · <code>app/llm.js</code> ·
+        스튜디오의 채팅 수정 해석기(<code>_parseEdit</code>) — 팩의 데이터 계약까지 <b>네 곳이 전부 같아야</b> 한다</li>
+      <li>홈 화면 스타일 카드 + 그 미리보기 썸네일(실제로 축소 렌더해서 만든다)</li>
+      <li>PPTX 추출 규칙, 등장 애니메이션</li>
+      <li><b>화면 비율 3종 대응</b> — 4:3·3.8:1에서 여백·글자크기가 무너지지 않게 조정(<code>docs/RATIO_CONTRACT.md</code> 체크리스트)</li>
+    </ul></li>
+  <li><b>검증</b> — 원본과 나란히 놓고 눈으로 대조(사람 몫), AI 서버를 실제로 호출해 결과 확인,
+    브라우저에 띄워 렌더 확인, 4개 언어 전부 돌려 한국어가 새는지 검사, PPTX로 뽑아서 열어보기.</li>
+  <li><b>문서화·표본</b> — 짝꿍 설명서 <code>packs.X.md</code>(실측 소스·장표 종류·데이터 계약·함정·배선 지점.
+    주요 6팩은 "디자인 DNA" 절에 실측 팔레트·타이포 명세까지) + <code>scripts/pack-spec.cjs</code>로
+    실물 표본(<code>sample.html</code>) 자동 추출.</li>
+  <li><b>커밋</b> — 자동 검수를 통과해야 저장된다(§9).</li>
+</ol>
+
+<div class="callout accident"><div class="t">반복 사고 — 새 팩에서 실제로 여러 번 밟은 것</div>
+① 편집용 좌표(<code>data-edit</code>) 오타 → 글자를 고쳤는데 <b>엉뚱한 자리</b>가 바뀐다<br>
+② 스튜디오는 폴더 한 단계 안쪽이라 경로에 <code>../</code>를 빠뜨림 → <b>스튜디오에서만</b> 팩이 사라진다<br>
+③ AI 빈칸 서식 3곳 중 한 곳 누락 → 생성은 되는데 <b>그 팩만 채팅 수정이 실패</b><br>
+④ 등장 애니메이션 누락 → <b>그 팩만</b> 밋밋하게 나타난다<br>
+⑤ PPTX 추출 규칙 누락 → 화면엔 잘 보이는데 <b>뽑으면 빈 장</b>.<br>
+전부 <code>new-ppt-pack</code> 절차서의 체크리스트에 박아 뒀다 — 그래서 같은 실수가 반복되지 않는다.</div>
+</section>
+<!-- ============================================================ -->
+<section id="s7">
+<h2><span class="n">07</span>AI 배선 — 워커 (proxy/worker.js)</h2>
+<p><b>AI에 대한 결정권은 전부 서버(워커)에 있다.</b> AI에게 주는 지시문, 어떤 모델을 쓸지,
+한 번에 얼마나 길게 쓸지 — 전부 <code>proxy/worker.js</code> 한 파일 안이다.
+브라우저 쪽 코드를 누가 손대도 결과 품질이 흔들리지 않는 구조다.
+그리고 <b>API 키는 이 서버의 금고에만</b> 있다 — 코드에도, 이 폴더에도, 브라우저에도 없다.</p>
+<p class="dim">아래 "창구"는 정확히는 <b>라우트</b>라고 부른다. 하나의 서버가 여러 창구를 두고
+용건별로 다른 접수를 받는 것이라고 보면 된다. 이름을 외울 필요는 없고, 고장 신고 때 에러 메시지에 떠서
+어느 창구가 문제인지 알려주는 표지판 역할을 한다.</p>
+
+<div class="tblwrap"><table>
+  <tr><th>창구</th><th>하는 일</th><th>쓰는 모델</th><th>실시간 표시</th></tr>
+  <tr><td><code>/intake</code></td><td>넣은 자료를 요약하고 부족한 정보를 되묻는다</td><td>haiku <span class="dim">(빠른 모델 — 21.5초→4.2초로 줄인 이력)</span></td><td>—</td></tr>
+  <tr><td><code>/compose</code></td><td>PPT 덱 생성</td><td>sonnet <span class="dim">(품질 모델)</span></td><td>✅ 한 장씩</td></tr>
+  <tr><td><code>/compose-web</code></td><td>랜딩·웹 생성</td><td>sonnet</td><td>✅</td></tr>
+  <tr><td><code>/edit</code> · <code>/edit-web</code></td><td>"3장 제목 바꿔줘" 같은 채팅 수정을 받아 고칠 부분만 돌려준다</td><td>sonnet</td><td>—</td></tr>
+  <tr><td><code>/translate</code></td><td>번역(3장씩 잘라 동시에)</td><td>haiku <span class="dim">(30초→3.9초 이력)</span></td><td>—</td></tr>
+  <tr><td><code>/genimage</code></td><td>AI 이미지 생성(나노바나나)</td><td>Google Gemini</td><td>— <span class="dim">(하루 30장 한도)</span></td></tr>
+  <tr><td><code>/script</code></td><td>발표 대본 — 장별 대본·소요 시간·전환 멘트</td><td>sonnet</td><td>✅ <span class="dim">(진행바용)</span></td></tr>
+</table></div>
+<p>브라우저 쪽 짝꿍은 <code>app/llm.js</code>다. 여기에 <b>실패를 되살리는 장치</b>가 몰려 있다 —
+결과가 중간에 끊겼는지 판정해 다시 요청하고, AI가 만든 표 형식(JSON)이 깨져 있으면 스스로 고쳐서 다시 읽는다.</p>
+
+<h3>발표용 고정(시연 잠금)은 어떻게 만들어져 있나</h3>
+<p><b>지금은 전부 풀려 있다</b>(2026-08-11). 다만 다시 걸 수 있게 구조가 남아 있다.</p>
+<p>팩마다 AI 지시문이 <b>두 벌</b>이다. 현재 쓰는 <b>자유 구성본</b>(<code>NAVER_SYSTEM</code> 같은 이름)과,
+발표 때 쓰던 <b>고정본</b>(이름 끝에 <code>_LOCKED</code>가 붙은 것). 고정본은 "정확히 10장, 이 순서, 이 문구"까지
+못 박아 둔 지시문이다. <b>다시 고정하려면 두 이름을 맞바꾸면 끝</b>이라 복원이 안전하다.
+팩 파일 쪽에도 문구를 강제로 덮어쓰는 함수(<code>lockDemo</code>)가 호출만 꺼진 채 남아 있다.</p>
+<p class="dim">전체 절차는 <code>demo-lock</code> 절차서에 있다. 클로드에게 "시연 잠금 걸어줘"라고 하면 그대로 따라간다.
+<b>이 잔재를 지우지 말 것</b> — 지우면 다시 만들어야 한다.</p>
+
+<h3>키·사용량 관리</h3>
+<ul>
+  <li><b>키 등록·교체</b>는 사람이 직접 한다 — 터미널에서
+    <code>cd proxy && npx wrangler secret put ANTHROPIC_API_KEY</code> 를 실행하거나 Cloudflare 대시보드에서.
+    <b>키를 채팅창에 붙여넣지 않는 것이 원칙</b>이고, 클로드도 키를 요구하지 않게 설정돼 있다.</li>
+  <li><b>하루 호출 한도</b>(<code>DAILY_LIMIT</code>)가 예상 밖 과금을 막는 안전핀이다.
+    지금은 시연용으로 <b>999</b>까지 올려 둔 상태 → 운영 전환 시 되돌릴 것(§12).</li>
+</ul>
+</section>
+<!-- ============================================================ -->
+<section id="s8">
+<h2><span class="n">08</span>다국어 — 4개 언어 (ko·en·ja·zh)</h2>
+<p><b>번역할 것이 두 겹이라 헷갈리기 쉽다.</b> 하나는 <b>앱 자체의 말</b>(버튼·메뉴 — 미리 만들어 둔 사전으로 교체),
+다른 하나는 <b>만들어낸 결과물의 내용</b>(장표·사이트 본문 — AI가 그때그때 번역).
+"영어로 바꿨는데 한국어가 남아 있다"는 신고가 오면 <b>둘 중 어느 겹인지부터</b> 가려야 한다.</p>
+
+<h3>겹 ①  앱의 말 — 미리 만든 사전</h3>
+<p><code>app/i18n.js</code>에 <code>'한국어 문구' → [영어, 일본어, 중국어]</code> 짝이 통째로 들어 있고,
+화면의 글자에 표식을 달아두면 언어를 바꿀 때 그 자리에서 갈아 끼운다.
+<b>새 문구를 화면에 추가했으면 사전에도 등록해야 한다</b> — 안 하면 영어 화면에 그 버튼만 한국어로 남는다.
+빠진 게 없는지 검사하는 도구가 <code>scripts/check-i18n.cjs</code>.</p>
+
+<h3>겹 ②  결과물의 내용 — AI 번역</h3>
+<p>순서는 이렇다. <b>①무거운 이미지 데이터를 먼저 뺀다</b>(안 그러면 분량 초과로 통째 실패)
+→ <b>②3장씩 잘라 동시에 번역</b>(빠르다) → <b>③번역된 글자만 원본에 다시 끼워 넣는다</b>(이미지·설정은 원본 유지)
+→ <b>④회사 표기법을 자동 교정</b>. 실패하면 부분·전체 각각 한 번씩 자동으로 재시도한다.</p>
+
+<div class="callout accident"><div class="t">번역 실패 3대 전과 — 재발하면 여기부터 의심</div>
+① 업로드한 이미지가 통째로 짐에 섞여 <b>분량 초과</b> → 이미지를 먼저 빼는 처리로 해결<br>
+② 한 번에 쓸 수 있는 길이를 줄였다가 <b>웹 번역이 중간에 잘림</b> → 원래 값(16000)으로 복원<br>
+③ AI가 결과를 한 겹 더 감싸서 줄 때도 있고 아닐 때도 있었다(빠른 모델이 지시를 흘림) → <b>양쪽 다 받아들이게</b> 수정</div>
+
+<div class="callout accident"><div class="t">중국어·일본어 글꼴 함정</div>
+기본 글꼴(Pretendard)이 흔한 한자를 <b>일부만</b> 갖고 있다. 그래서 한 문장 안에서 <b>글자마다 글꼴이 달라 보인다</b>
+→ 중국어·일본어는 Noto Sans SC/JP를 <b>1순위 글꼴</b>로 지정해 해결.
+그리고 가는 굵기(300)는 한자에서 실낱처럼 보여서 → 랜딩 500 · PPT 400으로 올렸다. 이미 전 팩에 적용돼 있다.</div>
+
+<div class="callout rule"><div class="t">언어 꼬리표(<code>_clang</code>) — 사고 최다 지역</div>
+프로젝트마다 "이 결과물은 무슨 언어다"라는 <b>꼬리표</b>가 붙어 있다(<code>_clang</code>).
+문제는 화면이 그려지는 길목이 <b>네 군데</b>(본문·썸네일·생성 중 미리보기·공유 뷰어)라는 것.
+<b>한 군데라도 꼬리표를 안 딸려 보내면 목록과 본문의 언어가 어긋난다</b> — 실제로 여러 번 났다.
+새 렌더 경로를 만들면 꼬리표 동봉을 반드시 확인할 것.
+<p style="margin:8px 0 0">그리고 고정 문구의 언어를 정할 땐 <b>꼬리표보다 내용이 우선</b>이다.
+영어 덱에 한국어 인명 몇 글자가 있다고 한국어로 판정하면 안 되므로 <b>비율로</b> 따진다.</p></div>
+</section>
+<!-- ============================================================ -->
+<section id="s9">
+<h2><span class="n">09</span>스킬 &amp; 훅 — 자동화된 작업 절차</h2>
+
+<h3>작업 절차서(스킬) 7종 — <code>.claude/skills/</code></h3>
+<p>스킬 = <b>클로드 전용 작업 매뉴얼</b>. 관련된 말을 꺼내면 클로드가 알아서 해당 매뉴얼을 꺼내 읽고 그대로 작업한다.
+사람이 "○○ 스킬 써"라고 지정할 필요 없다.
+각 매뉴얼에는 <b>과거에 실제로 밟았던 실수 목록</b>까지 적혀 있어서 같은 사고가 되풀이되지 않는다.</p>
+<div class="tblwrap"><table>
+  <tr><th>절차서</th><th>이렇게 말하면 발동</th><th>해주는 것</th></tr>
+  <tr><td><code>new-ppt-pack</code></td><td>"새 PPT 팩 만들어줘", "이 팩 복사해서"</td><td>팩 규격·연결 체크리스트·AI 빈칸 서식 3곳·검증 루틴·반복 사고 목록</td></tr>
+  <tr><td><code>new-web-pack</code></td><td>"새 랜딩 팩", "세미나 페이지 팩"</td><td>페이지 골격 짜기·기본 예시 데이터·4개 언어 라벨·섹션 조절·연결 7곳</td></tr>
+  <tr><td><code>add-slide-type</code></td><td>"이런 장표 넣어줘", "차트 장 추가"</td><td>장표 한 종류 추가 7단계 — 그리기+스타일+문서+AI 서식+PPTX까지</td></tr>
+  <tr><td><code>verify-e2e</code></td><td>"검증해", "확인해봐"</td><td>서버 직접 호출·브라우저 실렌더·4개 언어 검사·한국어 누수 검사</td></tr>
+  <tr><td><code>deploy</code></td><td>"배포해", "인터넷에 반영해"</td><td>배포 명령·반영 대기·실제로 떴는지 확인·사용자 새로고침 안내</td></tr>
+  <tr><td><code>debug-generation</code></td><td>"생성이 안 돼", "번역 실패", "글자가 얇아"</td><td>증상별 진단 순서 — 서버→브라우저→화면 순으로 범인을 좁힌다</td></tr>
+  <tr><td><code>demo-lock</code></td><td>"시연 잠금", "잠금 풀어"</td><td>고정 지점 지도(워커·PPT 팩·랜딩 팩)·우선순위 규칙·해제 체크리스트</td></tr>
+</table></div>
+
+<h3>커밋 자동 검수 — <code>.githooks/pre-commit</code></h3>
+<p>저장(커밋)할 때마다 <b>검사기가 자동으로 돌고, 불합격이면 저장 자체가 막힌다.</b>
+"고쳤다고 생각했는데 안 고쳐진 것"을 저장 단계에서 걸러내는 장치다. 검사하는 것 3가지:</p>
+<ul>
+  <li>폴더 전체 코드에 <b>문법 오타</b>가 없는지</li>
+  <li>지금 쓰는 팩에 <b>한국어 문구가 박혀 있지 않은지</b> — 영어·일본어·중국어 결과물에 한국어가 새는 원인</li>
+  <li>핵심 부품 동작 테스트</li>
+</ul>
+<pre><code># 폴더를 새로 내려받았다면 1회 실행해야 검수기가 켜진다
+git config core.hooksPath .githooks
+
+# 정말 급할 때만 우회(권장하지 않음): git commit --no-verify</code></pre>
+</section>
+<!-- ============================================================ -->
+<section id="s10">
+<h2><span class="n">10</span>배포 — "푸시 ≠ 배포"</h2>
+<p><b>가장 자주 오해하는 부분이다.</b> 이 프로젝트는 GitHub에 올린다고 사이트가 갱신되지 않는다.
+<b>푸시</b>는 온라인 보관소에 백업하는 것이고, <b>배포</b>는 인터넷 주소에 올려 남들이 보게 하는 것 — 완전히 다른 일이다.
+배포는 아래 명령을 직접 실행해야 일어난다.</p>
+<pre><code># ① 사이트 (폴더 맨 위에서 실행)
+npx wrangler pages deploy . --project-name=midas-drs --commit-dirty=true
+
+# ② AI 중계 서버(워커)
+cd proxy && npx wrangler deploy</code></pre>
+<p class="dim">둘은 별개다. 화면만 고쳤으면 ①만, AI 지시문을 고쳤으면 ②만 하면 된다.
+클로드에게 "배포해줘"라고 하면 어느 쪽이 필요한지 판단해 실행하고, 실제로 떴는지까지 확인한다.</p>
+<ul>
+  <li>배포 직후엔 <b>반영에 30초쯤 걸린다</b>. 바로 확인해서 안 바뀌었다고 놀라지 말 것 —
+    <code>deploy</code> 절차서가 이 대기와 확인까지 처리한다.</li>
+  <li><b>내 컴퓨터에서 확인하는 두 방법</b>:
+    ① <code>python3 serve.py</code>로 서버를 띄우고 접속(기본 포트 4788, 이전 파일을 기억하지 않게 설정돼 있음)
+    ② <code>app/index.html</code> 파일을 브라우저로 그냥 열기.
+    ②는 파일을 고치는 즉시 반영되지만, 브라우저가 옛 파일을 기억하고 있어서
+    <b>강력 새로고침</b>(<kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>)이 필요하다.</li>
+  <li>커밋은 내 컴퓨터까지만. <b>푸시는 사람이 명시적으로 요청할 때만</b> — 클로드도 그렇게 설정돼 있다.</li>
+</ul>
+</section>
+<!-- ============================================================ -->
+<section id="s11">
+<h2><span class="n">11</span>절대 규칙 &amp; 사고 사례</h2>
+<p>전부 <b>실제로 사고가 나서</b> 생긴 규칙이다. CLAUDE.md(규칙서)에도 들어 있어 클로드가 자동으로 지키지만,
+여기엔 <b>왜 그런 규칙이 생겼는지</b>까지 적는다. 이유를 알면 새 상황에서도 판단할 수 있다.</p>
+
+<div class="tblwrap"><table>
+  <tr><th>규칙</th><th>왜 — 실제 사고</th></tr>
+  <tr><td><b><code>app/bundle.js</code>는 손대지 않는다</b></td><td>자동으로 만들어지는 파일이라 <b>직접 고쳐도 다음에 덮어써져 사라진다</b>. 고칠 일이 있으면 <code>core/</code>를 고치고 다시 만든다</td></tr>
+  <tr><td><b>저장할 때 파일을 통째로 담지 않는다</b><br><span class="dim">(<code>git add -A</code> 금지)</span></td><td>실험용 임시 파일까지 딸려 들어간 적이 있다. <b>고친 파일만 하나씩 지정</b>해서 담는다</td></tr>
+  <tr><td><b>API 키는 서버 금고에만</b></td><td>채팅에도, 코드에도, 이 폴더에도 키를 두지 않는다. 등록은 <b>사람이 직접 터미널에서</b></td></tr>
+  <tr><td><b>한국어 문구를 코드에 박지 않는다</b></td><td>영어·일본어·중국어 결과물에 <b>한국어가 새는 최대 원인</b>. 저장할 때 검사기가 자동으로 잡는다</td></tr>
+  <tr><td><b>화면 그리는 길목마다 언어 꼬리표를 동봉</b></td><td>빼먹으면 목록과 본문의 언어가 어긋난다(실제로 여러 번, §8)</td></tr>
+  <tr><td><b>중국어·일본어는 Noto 글꼴 1순위 · 가는 굵기 금지</b></td><td>한 문장에서 글꼴이 섞이고 글자가 실낱처럼 보이던 사고(§8)</td></tr>
+  <tr><td><b>덮어쓰기 우선순위:<br>AI &lt; 고정 문구 &lt; 사용자 편집</b></td><td>발표용 고정과 사용자의 직접 수정이 충돌하던 문제를 이 순서로 정리했다.
+    <b>사람이 손댄 곳은 무엇도 덮지 않는다.</b> 단 처음부터 다시 생성하면 고정 상태로 돌아간다</td></tr>
+  <tr><td><b>표기 고정</b></td><td><b>MIDAS GEN NX</b>(GEN NX 단독 금지) · 신해경화(신제경화 ✕) · 라강림(뤄장린 ✕) · 사람 이름은 첨부 원문 그대로.
+    자동 교정 장치가 있지만 <b>처음부터 맞게 쓰는 것</b>이 원칙</td></tr>
+  <tr><td><b>소스에 있는 것만 — 추측 금지</b></td><td>추측한 값이 섞이면 원본과 "닮은 짝퉁"이 된다. <b>막히면 멈추고 사람에게 묻는 것</b>이 원칙</td></tr>
+  <tr><td><b>확인 없이 "됐습니다" 금지</b></td><td>실제로 돌려본 증거를 본 뒤에만 완료 선언. <b>"고쳤는데 또 안 되네"의 반복을 이 문화가 끊었다</b></td></tr>
+</table></div>
+</section>
+<!-- ============================================================ -->
+<section id="s12">
+<h2><span class="n">12</span>현재 상태 &amp; 백로그</h2>
+<div class="callout rule"><div class="t">✅ 시연 잠금은 전부 해제됐다 (2026-08-11)</div>
+발표 때 걸어 뒀던 출력 고정을 <b>PPT 3팩(naver·rams·machine)과 랜딩 3팩(mbm·axday·orbit) 전부 풀었다.</b>
+이제 자료를 넣는 대로 자유롭게 구성된다. 홈 화면 스타일 목록도 활성 팩 전체(PPT 5종·웹 3종)로 돌아왔다.
+<p style="margin:8px 0 0"><b>다시 걸 수 있다.</b> 클로드에게 <b>"시연 잠금 걸어줘"</b>라고 하면 <code>demo-lock</code> 절차서대로 복원한다.
+잠금본이 지워지지 않고 그대로 보존돼 있기 때문이다 —
+워커에는 이름 끝이 <code>_LOCKED</code>인 지시문으로, 팩에는 <code>lockDemo</code> 함수가 호출만 꺼진 채로 남아 있다.
+<b>이 잔재를 지우지 말 것.</b></p></div>
+
+<div class="tblwrap"><table>
+  <tr><th>항목</th><th>내용</th><th>급함</th></tr>
+  <tr><td>저장·백업 안 된 작업</td><td>온라인 보관소에 아직 안 올라간 커밋 4개(AI 이미지·피커 개편·대본·진행바)와,
+    아직 저장(커밋)조차 안 한 작업분(화면 비율 기능·시연 잠금 해제)이 <b>이 컴퓨터에만</b> 있다. 커밋+푸시 권장</td><td>높음</td></tr>
+  <tr><td>비용·계정 이관</td><td>AI 요금이 개인 계정에서 나가는 중 — 회사 키/계정으로 교체(§13 절차)</td><td>높음</td></tr>
+  <tr><td>워커 하루 한도</td><td><code>DAILY_LIMIT</code>이 시연용 999인 상태 → 운영값으로 되돌릴 것. <b>남은 시연 잔무는 이것 하나</b></td><td>운영 전</td></tr>
+  <tr><td>업로드 이미지 처리 방식</td><td>지금은 이미지를 긴 글자로 바꿔 프로젝트 안에 통째로 넣는다(dataURI) — 용량이 크고 번역할 때 짐이 무거워진다.
+    서버에 올려두고 주소만 참조하는 방식으로 바꾸는 것을 검토 중</td><td>중</td></tr>
+  <tr><td>팩 문서 표기 정리</td><td><code>docs/packs/README.md</code>의 상태 칸에 <b>잠금 시절 표기</b>가 남아 있다 — 해제 사실에 맞게 갱신 필요</td><td>낮음</td></tr>
+  <tr><td>darkglow 정리</td><td><code>core/darkglow</code>(<code>bundle.js</code>의 원천) 세대 정리 예정</td><td>낮음</td></tr>
+  <tr><td>팩 만드는 공정 다듬기</td><td>새 팩을 만들 때의 반복 사고를 더 줄이는 방향</td><td>낮음</td></tr>
+  <tr><td>대본 장수 관찰</td><td>대본 항목이 장표보다 1개 적게 나올 수 있다(간지를 합쳐서). 현재는 허용 — 불만이 나오면 개수를 맞추게 수정</td><td>관찰</td></tr>
+</table></div>
+
+<h3>다음 단계 — 회사 도입 로드맵 (추후 계획)</h3>
+<p>지금은 <b>각자 컴퓨터의 브라우저에서 도는 구조</b>다(개인 검증용으론 이걸로 충분).
+회사 서비스로 올리려면 아래 순서로 간다 — 각 단계마다 클로드에게 "○번 진행하자"라고 하면 같이 해준다.</p>
+<div class="tblwrap"><table>
+  <tr><th>순서</th><th>할 일</th><th>누구에게/어디서</th><th>비고</th></tr>
+  <tr><td><b>1</b></td><td><b>Claude API 키 발급 요청</b></td><td>회사 플랫폼개발팀</td><td>발급받으면 워커 금고에 등록(§13) → AI 요금이 회사 계정으로 나감</td></tr>
+  <tr><td><b>2</b></td><td><b>이미지 생성 계정 확인</b> — 회사에 Google AI(Gemini) 계정·사용 정책이 있는지 파악</td><td>플랫폼개발팀/보안팀</td><td>있으면 회사 키 등록, 없으면 정책 협의. <b>없어도 이미지 생성만 빠지고 나머지는 전부 동작</b></td></tr>
+  <tr><td><b>3</b></td><td><b>서버 연결(전사 배포)</b> — 회사 Cloudflare(또는 사내 인프라)에 AI 중계 서버(워커)와 사이트를 배포</td><td>인프라 담당</td><td>절차는 §13. 이때부터 전 직원이 같은 주소로 접속하고, 대본·AI 이미지·공유 링크까지 전 기능</td></tr>
+  <tr><td><b>4</b></td><td><b>운영 안전핀</b> — 일일 사용 한도를 운영값으로 되돌리고 사용량 모니터링</td><td>운영 담당</td><td>예상 밖 과금 방지(<code>proxy/worker.js</code> 상단 상수)</td></tr>
+  <tr><td>5</td><td>(선택) 회사 도메인 연결</td><td>Cloudflare 대시보드</td><td>midas 계열 주소로 서비스</td></tr>
+</table></div>
+</section>
+<!-- ============================================================ -->
+<section id="s13">
+<h2><span class="n">13</span>비용·계정 — 내 돈으로 나가는 것과 넘기는 법</h2>
+<p>서비스가 물려 있는 외부 계정이 전부 <b>개인 명의</b>다. 이 절은 세 가지에 답한다:
+<b>①</b> 뭐가 어디서 얼마나 나가나 <b>②</b> 넘길 때 뭘 빼야 하나 <b>③</b> 인계자가 자기 것으로 어떻게 갈아끼우나.</p>
+<div class="callout rule"><div class="t">3줄 요약</div>
+API 키는 파일에 <b>없다</b> — 폴더를 통째로 넘겨도 키는 안 딸려간다.<br>
+대신 <b>내 워커 주소</b>가 박혀 있어서, 그대로 넘기면 인계자 테스트가 내 카드로 결제된다.<br>
+넘기기 전 <code>node scripts/handover-check.cjs --clean</code> 한 줄이면 끊긴다.</div>
+
+<h3>지금 내 계정에 물려 있는 것</h3>
+<div class="tblwrap"><table>
+  <tr><th>항목</th><th>어디에 있나</th><th>비용 성격</th><th>교체</th></tr>
+  <tr><td><b>Anthropic API 키</b><br><span class="dim">(글 쓰는 AI)</span></td><td>워커 금고 <code>ANTHROPIC_API_KEY</code></td><td><b>쓴 만큼 내는 방식 — 비용의 대부분.</b> 생성·수정·번역·대본을 부를 때마다 과금</td><td>명령 1줄 (아래 A)</td></tr>
+  <tr><td><b>Google Gemini 키</b><br><span class="dim">(그림 그리는 AI)</span></td><td>워커 금고 <code>GEMINI_API_KEY</code></td><td>AI 이미지 생성용. 접속자 한 명당 <b>하루 30장</b> 안전핀이 걸려 있다</td><td>명령 1줄 (아래 A)</td></tr>
+  <tr><td>Cloudflare 계정 (ksj0225)</td><td>AI 서버 + 사이트 + 보관함 2개(호출 횟수 세기·공유 링크) + AI 게이트웨이</td><td>현재 <b>무료 범위 안</b> — 돈 문제가 아니라 <b>소유권</b> 문제</td><td>반나절 이관 (아래 B)</td></tr>
+  <tr><td>구글 지도</td><td>랜딩 팩(mbm·axday·orbit)에 끼워 넣은 지도</td><td><b>무료 · 키 필요 없음</b> — 비용 0, 교체 불필요</td><td>—</td></tr>
+</table></div>
+
+<h3 style="margin-top:26px">넘기는 날 — 3분 절차</h3>
+<ol class="steps">
+  <li><b>점검</b> — 내 계정으로 돈이 샐 구멍이 있는지 기계가 확인한다.
+<pre style="margin:8px 0 0"><code>node scripts/handover-check.cjs</code></pre></li>
+  <li><b>차단</b> — ✗가 떴으면(=내 워커 주소가 남아 있음) 한 줄로 끊는다.
+    앱은 <b>각자 자기 키를 넣어 쓰는 모드</b>(BYOK — Bring Your Own Key)가 된다.
+<pre style="margin:8px 0 0"><code>node scripts/handover-check.cjs --clean</code></pre></li>
+  <li><b>전달</b> — <b>GitHub 초대 권장</b>(개인 폴더가 자동으로 빠지고 작업 이력도 함께 간다).
+    zip으로 줄 거면 아래 명령 그대로 — 빼야 할 폴더가 전부 제외된다.
+<pre style="margin:8px 0 0"><code>cd ~ && zip -r onsite-web-generator.zip onsite-web-generator \
+  -x "*/.git/*" "*/sources/*" "*/.wrangler/*" "*/node_modules/*" "*/.DS_Store" "*/.gstack/*"</code></pre>
+    <span class="dim">실측: 5.4MB. 앱·팩·워커·문서·스킬은 전부 포함되고 개인 폴더 5종만 빠진다(2026-08-10 검증).</span></li>
+  <li><b>안내</b> — 받는 사람에게 <code>docs/START_HERE.html</code>(5분 시작 가이드)부터 열어보라고 알려준다.</li>
+</ol>
+
+<div class="tblwrap"><table>
+  <tr><th>zip에서 빼는 것</th><th>왜</th></tr>
+  <tr><td><code>sources/</code></td><td>팩 실측 원본 28MB — 내부·외부 디자인 자료</td></tr>
+  <tr><td><code>.wrangler/</code></td><td>내 Cloudflare 로그인 캐시(계정 ID·계정명)</td></tr>
+  <tr><td><code>.git/</code></td><td>커밋 이력·용량. <span class="dim">이력을 같이 주고 싶으면 zip 대신 GitHub 초대</span></td></tr>
+  <tr><td><code>node_modules/</code> · <code>.DS_Store</code> · <code>.gstack/</code></td><td>불필요한 캐시·부산물</td></tr>
+</table></div>
+
+<div class="callout accident"><div class="t">⚠️ 진짜 위험은 API 키가 아니라 "워커 주소"다</div>
+<b>키는 파일에 한 글자도 없다</b>(2026-08-10 전수 검색 검증 — 검색되는 건 설정 화면의 입력 힌트 문구뿐).
+키는 Cloudflare 서버 금고(secret)에만 있다. 즉 <b>폴더 = 설계도, 금고 비밀번호는 설계도에 없다</b>.
+<p style="margin:8px 0 0">그런데 <code>app/llm.js</code>에 <b>내 워커 주소</b>가 박혀 있다. 이걸 그대로 넘기면
+인계자가 테스트로 PPT를 뽑을 때마다 <b>내 Anthropic 계정에서 결제된다</b> — 파일만 갖고도 내 AI를 쓸 수 있는 상태.
+위 2단계(<code>--clean</code>)가 이걸 끊는 것이고, 인계에서 <b>유일하게 필수인 조치</b>다.</p></div>
+
+<h3>점검에 뜨는 항목 6가지 — 각각 어떻게</h3>
+<p>스크립트가 알려주는 항목마다 <b>누가 처리하는지가 다르다</b>. ✗ 하나만 내 몫이고, ⚠는 인계자가 자기 계정을
+붙일 때(T2) 손보거나 zip으로 줄 때만 해당된다.</p>
+<div class="fixlist">
+
+  <div class="fix me">
+    <div class="fh"><span class="id">✗ app/llm.js — PROXY_URL</span><span class="who">내가 · 넘기기 직전</span></div>
+    <div class="what">내 워커 주소. <b>인계에서 유일하게 필수인 조치.</b></div>
+    <dl>
+      <dt>어떻게</dt><dd><code>node scripts/handover-check.cjs --clean</code><br><span class="dim">수동으로 하려면 <code>app/llm.js</code> 9행 따옴표 안을 비운다</span></dd>
+      <dt>안 하면</dt><dd><b>인계자가 테스트할 때마다 내 카드로 결제된다</b></dd>
+    </dl>
+  </div>
+
+  <div class="fix them">
+    <div class="fh"><span class="id">⚠ proxy/worker.js — ACCOUNT_ID</span><span class="who">인계자 · 자기 워커 띄울 때(T2)</span></div>
+    <div class="what">내 Cloudflare 계정 번호. 비밀번호가 아니라 <b>주소의 일부</b>라 내가 지울 필요는 없다.</div>
+    <dl>
+      <dt>어떻게</dt><dd><code>npx wrangler whoami</code>로 자기 계정 ID 확인 → <code>proxy/worker.js</code> 643행 교체</dd>
+      <dt>안 하면</dt><dd>자기 워커를 띄워도 AI 호출이 내 게이트웨이 경로로 나가서 실패</dd>
+    </dl>
+  </div>
+
+  <div class="fix them">
+    <div class="fh"><span class="id">⚠ proxy/wrangler.toml — KV id 2개</span><span class="who">인계자 · T2</span></div>
+    <div class="what">내 계정에 있는 저장소 번호(호출 카운트용 <code>RATE_KV</code>, 공유 링크용 <code>PUB</code>).</div>
+    <dl>
+      <dt>어떻게</dt><dd><code>npx wrangler kv namespace create RATE_KV</code> 실행 → 출력된 id를 toml에 붙여넣기. <code>PUB</code>도 똑같이 1회 더</dd>
+      <dt>안 하면</dt><dd>배포 자체가 실패(남의 계정 저장소를 가리키므로)</dd>
+    </dl>
+  </div>
+
+  <div class="fix them">
+    <div class="fh"><span class="id">⚠ midas-drs.pages.dev — 8개 파일</span><span class="who">인계자 · 자기 도메인 배포 후</span></div>
+    <div class="what">내 사이트 주소가 이미지 폴백·문서·스킬에 박혀 있다.</div>
+    <dl>
+      <dt>어떻게</dt><dd>Claude에게 "프로드 주소 ○○로 전부 바꿔줘"<br><span class="dim">직접: <code>grep -rln "midas-drs.pages.dev" app/ packs/</code> 후 치환</span></dd>
+      <dt>안 하면</dt><dd>당장은 정상(내 사이트가 살아 있으면 이미지가 그쪽에서 로드됨) → <b>내 사이트를 지우는 순간 이미지가 깨진다</b></dd>
+    </dl>
+  </div>
+
+  <div class="fix me">
+    <div class="fh"><span class="id">⚠ sources/ 폴더 (28MB)</span><span class="who">내가 · zip으로 줄 때만</span></div>
+    <div class="what">팩 실측 원본 — 네이버·pastel·rams 시안, KRDS 참고 자료.</div>
+    <dl>
+      <dt>어떻게</dt><dd>GitHub 전달이면 <b>자동 제외</b>(gitignore). zip이면 폴더 빼고 압축</dd>
+      <dt>안 하면</dt><dd>내부·외부 디자인 원본이 의도치 않게 함께 전달됨</dd>
+    </dl>
+  </div>
+
+  <div class="fix me">
+    <div class="fh"><span class="id">⚠ .wrangler/ 폴더</span><span class="who">내가 · zip으로 줄 때만</span></div>
+    <div class="what">내 Cloudflare 로그인 캐시 — 계정 ID·계정명만 들어 있고 <b>토큰·비밀번호는 없다</b>.</div>
+    <dl>
+      <dt>어떻게</dt><dd>위와 동일 — GitHub면 자동, zip이면 빼고 압축</dd>
+      <dt>안 하면</dt><dd>내 계정 식별정보가 딸려감(악용 위험은 낮지만 불필요)</dd>
+    </dl>
+  </div>
+
+</div>
+<p class="dim">요약: <b>내가 할 건 ✗ 하나(+zip이면 폴더 2개 빼기)</b>. 나머지 ⚠ 3개는 인계자가 자기 Cloudflare를 붙일 때의 할 일 목록이다.</p>
+
+<h3>인계자가 자기 것으로 갈아끼우는 3단계</h3>
+<p>인계자는 받자마자 테스트해야 한다. Cloudflare를 쓸지 말지는 나중에 정해도 되고, 아래 순서로 올라가면 된다.
+<b>실측 확인: 아래 T1은 브라우저에서 실제로 전환되는 것까지 확인했다</b>(설정 화면에 API 키 입력창이 나타남).</p>
+<div class="tblwrap"><table>
+  <tr><th>단계</th><th>필요한 것</th><th>되는 기능</th><th>방법</th></tr>
+  <tr>
+    <td><b>T0. 그냥 열기</b><br><span class="dim">0분</span></td>
+    <td>없음</td>
+    <td>기존 프로젝트 열람·편집·PPTX 내려받기·스타일 구경. <b>AI 생성 ✕</b></td>
+    <td><code>python3 serve.py</code> 후 접속. 넘기기 전 <code>--clean</code>을 돌렸다면 AI만 꺼져 있는 상태</td>
+  </tr>
+  <tr>
+    <td><b>T1. 자기 API 키만</b><br><span class="dim">5분 · 권장 시작점</span></td>
+    <td>본인 Anthropic 키</td>
+    <td>PPT·웹 생성, 채팅 수정, 번역, 화면 비율 <b>전부 ○</b><br>발표 대본·AI 이미지 ✕(중계 서버가 있어야 되는 기능)</td>
+    <td>설정 화면 → API 키 입력 → 저장. <b>Cloudflare 전혀 불필요</b></td>
+  </tr>
+  <tr>
+    <td><b>T2. 자기 Cloudflare</b><br><span class="dim">30분</span></td>
+    <td>Cloudflare 계정 + 키 2개</td>
+    <td><b>전 기능</b> — 대본·AI 이미지·공유 링크 포함</td>
+    <td>아래 B 8단계</td>
+  </tr>
+</table></div>
+<div class="callout rule"><div class="t">파일을 안 고치고 AI 서버를 끄거나 바꾸는 스위치</div>
+브라우저 개발자 도구의 <b>콘솔</b>(명령 입력창)에 한 줄만 치면 전환된다 — 코드를 건드릴 필요가 없다.
+<pre style="margin:10px 0 0"><code>localStorage.setItem('onsite-ai-proxy','off')          // 중계 서버 끄기 → 각자 자기 키를 쓰는 모드
+localStorage.setItem('onsite-ai-proxy','https://내워커...')  // 내가 배포한 서버로 연결
+localStorage.removeItem('onsite-ai-proxy')             // 원래대로</code></pre>
+<p style="margin:8px 0 0">입력 후 새로고침하면 적용된다. 여러 명이 각자 다른 키로 테스트할 때 유용하다.
+<span class="dim">(콘솔 여는 법: <kbd>F12</kbd> 또는 <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>I</kbd> → Console 탭)</span></p></div>
+
+<h3>A. 키만 회사 것으로 교체 (5분 — 과금 이전은 이걸로 끝)</h3>
+<p>계정·주소는 그대로 두고 <b>돈 나가는 주체만</b> 바꾸는 방법. 회사에서 Anthropic 키와
+Google AI Studio(Gemini) 키를 발급받은 뒤:</p>
+<pre><code>cd proxy
+npx wrangler secret put ANTHROPIC_API_KEY   # 실행하면 입력창이 뜸 — 거기에 회사 키 붙여넣기
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler deploy</code></pre>
+<p>터미널이 필수는 아니다. <b>Cloudflare 대시보드</b>에서도 된다:
+Workers &amp; Pages → <code>webgen-ppt-proxy</code> → Settings → Variables and Secrets →
+해당 secret Edit → 새 키 붙여넣기 → Save. 결과는 위 명령과 동일하다(대시보드는 저장 즉시 반영돼 재배포 불필요).</p>
+<div class="callout rule"><div class="t">키 취급 원칙</div>
+키는 채팅·코드·레포 어디에도 붙여넣지 않는다 — <b>터미널 입력창이나 대시보드 입력칸에만</b>. Claude에게
+"키 교체할래"라고 하면 위 절차를 안내해 주고, 키 자체는 절대 요구하지 않는다(그렇게 세팅돼 있음).</div>
+
+<h3>B. Cloudflare 계정까지 통째 이관 (회사 계정으로)</h3>
+<p>Claude에게 <b>"회사 Cloudflare 계정으로 이관하자"</b>라고 하면 아래 순서로 같이 진행된다:</p>
+<ol class="steps">
+  <li>회사 계정으로 <code>npx wrangler login</code></li>
+  <li>보관함(KV) 2개 새로 만들기(<code>wrangler kv namespace create RATE_KV</code> / <code>PUB</code>) → <code>proxy/wrangler.toml</code>의 id 교체
+    <span class="dim">— 각각 호출 횟수 세기용·공유 링크 보관용</span></li>
+  <li>Cloudflare 대시보드에서 AI 게이트웨이 <b>"webgen"</b> 생성 —
+    Anthropic이 홍콩 등 일부 지역에서 온 요청을 막기 때문에 이 <b>우회 통로</b>를 거쳐 나간다.
+    <b>빼먹으면 한국에서 간헐적으로 거부(403)당한다</b></li>
+  <li><code>proxy/worker.js</code>의 <code>ACCOUNT_ID</code>(643행)를 <b>본인 Cloudflare 계정 ID</b>로 교체 — 위 게이트웨이 주소에 쓰인다. 계정 ID는 대시보드 우측 사이드바 또는 <code>npx wrangler whoami</code>로 확인</li>
+  <li><code>cd proxy && npx wrangler deploy</code> → 새 워커 주소가 나옴</li>
+  <li>secret 2개 등록(위 A 명령)</li>
+  <li><code>app/llm.js</code> 상단 <code>PROXY_URL</code>을 새 워커 주소로 교체 — <b>교체 지점은 이 한 곳뿐</b>(파일에 주석으로 표시해 둠)</li>
+  <li>Pages 새 프로젝트로 사이트 배포: <code>npx wrangler pages deploy . --project-name=새이름</code></li>
+  <li>내 사이트 주소(<code>midas-drs.pages.dev</code>)가 코드에 <b>글자 그대로 박혀 있는 곳</b>을 전부 새 주소로 교체 —
+    이미지가 안 열릴 때의 대체 경로·공유 링크용으로 5개 파일(스튜디오 + 팩 4종)에 들어 있다.
+    클로드에게 "프로드 주소 ○○로 전부 바꿔줘" 하면 교체와 확인까지 해준다. 직접 찾으려면:
+<pre><code>grep -rln "midas-drs.pages.dev" app/ packs/ --include="*.js" --include="*.html"</code></pre></li>
+</ol>
+<div class="callout warn"><div class="t">이관하면 잃는 것 — 기존 공유 링크</div>
+이미 뿌린 공유 링크는 <b>옛 계정의 보관함에 들어 있어서</b>(90일 보관) 계정을 옮기면 <b>전부 안 열리게 된다</b>.
+살아 있는 공유 링크가 중요한 기간(시연 등)을 피해서 이관할 것.</div>
+
+<h3>C. 실제 인계 시나리오 — 상황별로 이 중 하나</h3>
+<div class="tblwrap"><table>
+  <tr><th>상황</th><th>할 일</th><th>내 계정에서 나가는 돈</th></tr>
+  <tr>
+    <td><b>① 서비스는 계속 살려두고 인계자만 개발</b><br><span class="dim">(가장 흔한 경우)</span></td>
+    <td>폴더/GitHub만 넘김. 워커·Pages는 그대로. 인계자는 배포 권한만 받으면 됨(Cloudflare 계정 초대 또는 배포는 나에게 요청)</td>
+    <td><b>계속 나감</b> — 그래서 A(키 교체)를 같이 하는 게 맞다</td>
+  </tr>
+  <tr>
+    <td><b>② 과금만 회사로</b><br><span class="dim">(권장 · 5분)</span></td>
+    <td>폴더 넘김 + <b>A</b>(secret 2개를 회사 키로 교체). 주소·계정은 그대로라 사용자는 아무 변화 못 느낌</td>
+    <td><b>0원</b> — Cloudflare 무료 티어만 남음</td>
+  </tr>
+  <tr>
+    <td><b>③ 완전 분리</b><br><span class="dim">(내 계정과 인연 끊기)</span></td>
+    <td>폴더 넘김 + <b>B</b> 8단계(회사 Cloudflare로 워커·Pages·KV 재구축 + 주소 교체)</td>
+    <td><b>0원</b> · 내 계정에 아무것도 안 남음</td>
+  </tr>
+</table></div>
+<p>①로 시작해서 나중에 ②·③으로 올라가도 된다 — 순서 의존성 없음. 다만 <b>①을 오래 방치하면 개인 카드로 계속 결제</b>되니
+넘기는 날 A(5분)까지는 같이 끝내는 걸 권한다.</p>
+
+<h3>인계 당일 체크리스트</h3>
+<ul>
+  <li>☐ 아직 저장·백업 안 된 작업 커밋+푸시(§12) — 안 하면 최근 작업이 내 노트북에만 남는다</li>
+  <li>☐ <code>node scripts/handover-check.cjs</code> 실행 → ✗ 있으면 <code>--clean</code>으로 워커 주소 끊기</li>
+  <li>☐ 인계자에게 GitHub 초대(또는 <code>sources/</code>·<code>.wrangler/</code> 뺀 zip)</li>
+  <li>☐ <code>docs/START_HERE.html</code>(인계자 5분 시작 가이드) 먼저 열어보라고 안내</li>
+  <li>☐ 이 문서(<code>docs/HANDOVER.html</code>) + <code>CLAUDE.md</code> 위치 알려주기</li>
+  <li>☐ 시나리오 ②/③ 중 택1 실행 — 회사 Anthropic·Gemini 키 발급이 선행 조건</li>
+  <li>☐ 교체 후 실동작 확인: 사이트에서 PPT 1개 생성 + AI 이미지 1장 생성(둘 다 되면 키 2개 정상)</li>
+  <li>☐ (③인 경우) 살아있는 공유 링크가 있으면 미리 공지 — 이관하면 끊긴다</li>
+  <li>☐ 내 계정 정리: 이관 완료 확인 후 옛 워커·Pages 삭제, <b>옛 API 키는 발급처(Anthropic·Google AI Studio)에서 폐기</b></li>
+</ul>
+
+<h3>예상 밖 과금 방지 — 하루 한도 안전핀</h3>
+<p>AI 서버가 <b>접속자 한 명당 하루 사용 횟수</b>를 제한한다. 값은 <code>proxy/worker.js</code> 맨 위에 있다.</p>
+<ul>
+  <li><code>DAILY_LIMIT</code> — 글 생성 호출 횟수. <b>지금은 시연용으로 999</b>까지 올려 둔 상태다.
+    <b>운영 전에 반드시 되돌릴 것</b>(§12에 남아 있는 유일한 시연 잔무).</li>
+  <li><code>IMG_DAILY_LIMIT</code> — AI 이미지 <b>하루 30장</b>. 이미지가 상대적으로 비싸서 걸어 둔 안전핀.</li>
+</ul>
+</section>
+<!-- ============================================================ -->
+<section id="s14">
+<h2><span class="n">14</span>개발 히스토리 — 4주의 궤적</h2>
+<p>지금 당장 필요한 정보는 아니다. 다만 <b>"왜 이런 모양이 됐는지"</b>가 궁금할 때,
+그리고 <b>"이 정도 규모를 이 방식으로 만들 수 있구나"</b>를 가늠할 때 참고가 된다.</p>
+<ul class="timeline">
+  <li><span class="when">7/14 — 시작</span><div class="what">첫 뼈대 · 섹션 빌더</div>
+    <p>끌어다 놓아 섹션을 쌓는 빌더로 출발했다. 지금 모습과 전혀 달랐다.</p></li>
+  <li><span class="when">7월 중순</span><div class="what">핵심 엔진 · "팩" 개념 확정</div>
+    <p><b>"팩 = 자기완결 디자인 자산"</b>이라는 이 프로젝트의 뼈대 개념이 여기서 정해졌다. 기획 합의는 <code>docs/PRD.md</code>.</p></li>
+  <li><span class="when">7월 하순</span><div class="what">PPT 파이프라인 + 대화형 자료 접수</div>
+    <p>PPT 생성·스튜디오 편집·PPTX 내려받기·채팅 수정·인라인 편집. 자료 접수를 단계별 입력폼에서
+    <b>전면 대화형으로 갈아엎었다.</b> 장표가 한 장씩 그려지는 실시간 생성도 이때.</p></li>
+  <li><span class="when">7월 말 ~ 8월 초</span><div class="what">팩 대량 생산기</div>
+    <p>PPT: pitch(차트 12종 포함) → naver → rams → pastel → sfmi → machine → honors.
+    웹: saturn → mbm·axday·toss·orbit. 팩마다 실측→구현→배선→검증 공정을 반복했다.</p></li>
+  <li><span class="when">8월 초</span><div class="what">4개 언어 · 공유 링크 · 스토리보드</div>
+    <p>언어 전환과 번역 파이프라인, 링크 하나로 공유하기. 시연 영상용 Figma 스토리보드 20프레임.</p></li>
+  <li><span class="when">8/4 ~ 8/6</span><div class="what">폴더 대청소 + 지식을 폴더에 쌓기</div>
+    <p><code>packs/</code>를 독립 자산으로 재구성하고 죽은 세대를 삭제. <b>CLAUDE.md와 절차서 7종을 작성</b>하고
+    커밋 자동 검수를 도입했다. 이 문서가 말하는 "지식이 쌓이는 구조"(§2)가 여기서 완성됐다.</p></li>
+  <li><span class="when">8/6 ~ 8/7</span><div class="what">시연 스프린트</div>
+    <p>발표용 출력 고정, 공식 제품 정보 주입, 중국어·일본어 글꼴 수리, 속도 개선,
+    AI 이미지 생성 + 이미지 피커 개편, 발표 대본 기능과 실시간 진행바.</p></li>
+  <li><span class="when">8/11 — 현재</span><div class="what">시연 잠금 해제 · 화면 비율 3종</div>
+    <p>발표가 끝나 <b>고정을 전부 풀었고</b>(잠금본은 보존), 스타일 목록도 원복.
+    PPT 지면 비율 <b>16:9 · 4:3 · 3.8:1</b> 선택 기능을 추가했다(생성 전 선택 + 사후 변경 + PPTX 규격 연동).</p></li>
+</ul>
+<p class="dim">더 자세한 이력은 <code>git log</code>에 있다 — 커밋 메시지를 전부 한국어로,
+무엇을 왜 했는지까지 남겨 뒀다. 클로드에게 "이 기능 언제 왜 만들었는지 찾아줘"라고 하면 여기서 찾아준다.</p>
+</section>
+<!-- ============================================================ -->
+<section id="s15">
+<h2><span class="n">15</span>부록 — 같은 홈 디렉토리의 다른 프로젝트</h2>
+<p>이 레포 외에 병행하던 작업들. 각 폴더의 CLAUDE.md·docs 참조.</p>
+<div class="tblwrap"><table>
+  <tr><th>폴더</th><th>내용</th></tr>
+  <tr><td><code>~/mbm-design-agent</code></td><td>MBM 캠페인 디자인 실행 에이전트(AX 과제). 개념·결정 14개 확정, 개발 전 단계</td></tr>
+  <tr><td><code>~/ppt-template</code></td><td>MIDAS AX 토큰 기반 장표 템플릿</td></tr>
+  <tr><td><code>~/midas-design-agent</code></td><td>기획→디자인시스템→멀티페이지 UI 생성 에이전트 + 온사이트 제품 DS</td></tr>
+  <tr><td><code>~/onsite-ds</code></td><td>ONSITE 실서비스 실측 추출 기반 독립 DS 문서 사이트(로컬 포트 4599)</td></tr>
+  <tr><td><code>~/uxgen</code> (구 ds-ui-gen)</td><td>UX 원칙 기반 UI/UX 자동생성 실험</td></tr>
+  <tr><td><code>~/뉴로우</code></td><td>Neurow 모바일앱 DS — component-contracts 파이프라인으로 Figma variables 등록</td></tr>
+</table></div>
+
+<p class="dim" style="margin-top:40px; border-top:1px solid var(--line); padding-top:16px">
+작성: 김성진 × Claude Code · 최종 갱신 2026-08-11 · 이 문서의 원본은 <code>docs/HANDOVER.html</code>.<br>
+문서와 코드가 어긋나면 <b>코드가 진실</b>이다. 그 다음이 <code>CLAUDE.md</code>,
+그 다음이 <code>docs/packs/README.md</code>. 어긋난 곳을 발견하면 클로드에게
+"이 문서 ○○ 부분이 코드랑 다른데 확인해줘"라고 하면 된다.</p>
+</section>
+
+</div></main>
+</div>
+</body>
+</html>
