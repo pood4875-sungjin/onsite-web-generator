@@ -37,6 +37,7 @@
   var PROXY_URL = 'https://webgen-ppt-proxy.ksj0225.workers.dev';
 
   var KEY_LS = 'onsite-ai-key', MODEL_LS = 'onsite-ai-model', PROXY_LS = 'onsite-ai-proxy';
+  var GKEY_LS = 'onsite-ai-gkey';   // 구글(Gemini) 키 — 개인 모드 이미지 생성용. Claude 키와 동일하게 이 브라우저에만 저장
   var DEFAULT_MODEL = 'claude-sonnet-5';
   var MODELS = [
     { id: 'claude-sonnet-5', name: 'Sonnet 5 · 균형(권장)' },
@@ -49,6 +50,10 @@
   function getModel() { try { return localStorage.getItem(MODEL_LS) || DEFAULT_MODEL; } catch (e) { return DEFAULT_MODEL; } }
   function setModel(v) { try { v ? localStorage.setItem(MODEL_LS, v) : localStorage.removeItem(MODEL_LS); } catch (e) {} }
   function hasKey() { return !!getKey(); }
+  function getGKey() { try { return localStorage.getItem(GKEY_LS) || ''; } catch (e) { return ''; } }
+  function setGKey(v) { try { v ? localStorage.setItem(GKEY_LS, v) : localStorage.removeItem(GKEY_LS); } catch (e) {} }
+  function hasGKey() { return !!getGKey(); }
+  function maskGKey() { return maskKey(getGKey()); }
   function maskKey(k) { k = k || getKey(); if (!k) return ''; return k.length <= 12 ? '••••' : k.slice(0, 7) + '…' + k.slice(-4); }
   // UI 언어 — 되묻기 질문·수정 결과 메시지를 이 언어로 받는다(초안 콘텐츠 언어는 brief.lang)
   function uiLang() { try { return (window.I18N ? I18N.getLang() : localStorage.getItem('midas-lang')) || 'ko'; } catch (e) { return 'ko'; } }
@@ -488,16 +493,37 @@
     throw lastErr;
   }
 
-  /* AI 이미지 생성(나노바나나) — 프록시 전용. 성공 시 dataURI 반환 */
+  /* AI 이미지 생성(나노바나나) — 팀 프록시 또는 개인 구글 키(설정에서 등록). 성공 시 dataURI 반환 */
   async function genImage(prompt, ratio) {
-    if (!usingProxy()) throw new Error('이미지 생성은 팀 프록시 연결이 필요해요.');
-    var r = await fetch(proxyUrl() + '/genimage', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, ratio: ratio || '16:9' }),
-    });
-    var j = null; try { j = await r.json(); } catch (e) {}
-    if (!r.ok || !j || !j.image) throw new Error((j && j.message) || _proxyErrMsg(j, r.status));
-    return j.image;
+    ratio = ({ '16:9': 1, '4:3': 1, '1:1': 1, '3:4': 1, '9:16': 1 })[ratio] ? ratio : '16:9';
+    if (usingProxy()) {
+      var r = await fetch(proxyUrl() + '/genimage', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt, ratio: ratio }),
+      });
+      var j = null; try { j = await r.json(); } catch (e) {}
+      if (!r.ok || !j || !j.image) throw new Error((j && j.message) || _proxyErrMsg(j, r.status));
+      return j.image;
+    }
+    /* 개인 모드(BYOK) — 자기 구글 키로 브라우저에서 직접 호출. 자기 키=자기 요금이라 서버 한도 불필요.
+       호출 형태는 워커 /genimage와 동일하게 유지(구버전 imageConfig 폴백 포함) */
+    var gk = getGKey();
+    if (!gk) throw new Error('이미지 생성은 팀 프록시 또는 구글 키가 필요해요. 설정에서 구글 키를 등록해주세요.');
+    var gemUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + encodeURIComponent(gk);
+    var call = function (b) { return fetch(gemUrl, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }); };
+    var gres = await call({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { imageConfig: { aspectRatio: ratio } } });
+    if (!gres.ok) {
+      var t1 = ''; try { t1 = await gres.text(); } catch (e2) {}
+      if (/imageConfig|aspect/i.test(t1)) gres = await call({ contents: [{ parts: [{ text: prompt + ' (aspect ratio ' + ratio + ')' }] }] });
+      if (!gres.ok) throw new Error('이미지 생성에 실패했어요. 구글 키가 유효한지 확인해주세요.');
+    }
+    var gj = null; try { gj = await gres.json(); } catch (e3) {}
+    var parts = (gj && gj.candidates && gj.candidates[0] && gj.candidates[0].content && gj.candidates[0].content.parts) || [];
+    var ip = null;
+    for (var pi2 = 0; pi2 < parts.length; pi2++) { var pp = parts[pi2]; if ((pp.inlineData && pp.inlineData.data) || (pp.inline_data && pp.inline_data.data)) { ip = pp; break; } }
+    var dd = ip && (ip.inlineData || ip.inline_data);
+    if (!dd) throw new Error('이미지가 만들어지지 않았어요. 문구를 조금 바꿔 다시 시도해주세요.');
+    return 'data:' + (dd.mimeType || dd.mime_type || 'image/png') + ';base64,' + dd.data;
   }
 
   async function translatePayload(payload, to) {
@@ -775,6 +801,7 @@
     editDeck: editDeck, recordDur: recordDur, estimateDur: estimateDur,
     MODELS: MODELS, DEFAULT_MODEL: DEFAULT_MODEL,
     getKey: getKey, setKey: setKey, getModel: getModel, setModel: setModel,
+    setGKey: setGKey, hasGKey: hasGKey, maskGKey: maskGKey,
     hasKey: hasKey, maskKey: maskKey, messages: messages, composeDeck: composeDeck, composeSite: composeSite, editSite: editSite, translatePayload: translatePayload, intake: intake, parseDeck: parseDeck, fixBrand: _fixBrand, genImage: genImage, genScript: genScript,
     proxyUrl: proxyUrl, usingProxy: usingProxy, aiAvailable: aiAvailable,
   };

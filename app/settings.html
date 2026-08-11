@@ -73,6 +73,13 @@
         <p class="note" id="aiKeyState"></p>
         <label data-i18n="모델">모델</label>
         <div class="orgchips" id="aiModels"></div>
+        <label data-i18n="구글 키 (이미지 생성 · 선택)">구글 키 (이미지 생성 · 선택)</label>
+        <div class="ai-keyrow">
+          <input class="ds-input" id="aiGKey" type="password" placeholder="AIza…" autocomplete="off">
+          <button class="ds-btn" id="aiGKeySave" data-i18n="저장">저장</button>
+          <button class="ds-btn" id="aiGKeyDel" data-i18n="삭제" style="display:none">삭제</button>
+        </div>
+        <p class="note" id="aiGKeyState"></p>
       </div>
     </div>
 
@@ -126,6 +133,19 @@
     LLM.MODELS.forEach(m=>{ const b=document.createElement('button'); b.className='ds-chip'+(m.id===LLM.getModel()?' on':''); b.textContent=m.name;
       b.onclick=()=>{ LLM.setModel(m.id); chips.querySelectorAll('.ds-chip').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }; chips.append(b); });
     refresh();
+    // 구글(Gemini) 키 — 개인 모드 이미지 생성용. Claude 키와 동일 취급(이 브라우저에만 저장)
+    const gi=document.getElementById('aiGKey'), gst=document.getElementById('aiGKeyState');
+    const gSave=document.getElementById('aiGKeySave'), gDel=document.getElementById('aiGKeyDel');
+    function grefresh(){
+      const has=LLM.hasGKey();
+      gst.textContent = has ? LL('등록됨')+' · '+LLM.maskGKey() : LL('없으면 이미지 생성만 쉬고, 나머지 기능은 전부 동작해요.');
+      gDel.style.display = has?'':'none';
+      gi.value=''; gi.placeholder = has ? LLM.maskGKey() : 'AIza…';
+    }
+    gSave.onclick=()=>{ const v=gi.value.trim(); if(!v){ gst.textContent=LL('키를 입력해주세요.'); return; } LLM.setGKey(v); grefresh(); };
+    gi.onkeydown=(e)=>{ if(e.isComposing || e.keyCode===229) return; if(e.key==='Enter') gSave.onclick(); };
+    gDel.onclick=()=>{ uiConfirm(LL('저장된 구글 키를 삭제할까요?'),{title:LL('키 삭제'),okText:LL('삭제'),danger:true}).then(ok=>{ if(ok){ LLM.setGKey(''); grefresh(); } }); };
+    grefresh();
   })();
 
   function lsUsedKB(){ let n=0; try{ for(const k in localStorage){ if(Object.prototype.hasOwnProperty.call(localStorage,k)) n+=(k.length+(localStorage.getItem(k)||'').length); } }catch(e){} return n/1024; }
