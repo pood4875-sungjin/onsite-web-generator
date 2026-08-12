@@ -36,16 +36,29 @@
     --warn-bg:#fff7ed; --warn-line:#f5c97b; --warn-tx:#8a5a00;
   }
   *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
   body{
     background:var(--bg); color:var(--tx); font-size:16px; line-height:1.75;
     font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
   .doc{max-width:720px; margin:0 auto; padding:56px 24px 120px}
-  .eyebrow{font-size:12px; font-weight:700; letter-spacing:.14em; color:var(--brand); text-transform:uppercase}
+  .eyebrow{font-size:14px; font-weight:700; letter-spacing:.05em; color:var(--brand); text-transform:uppercase}
   h1{font-size:32px; line-height:1.28; letter-spacing:-.02em; font-weight:800; margin:10px 0 14px; text-wrap:balance}
   .lead{font-size:17px; color:var(--tx2); text-wrap:pretty}
-  h2{font-size:21px; font-weight:800; letter-spacing:-.015em; margin:52px 0 14px; padding-bottom:9px; border-bottom:2px solid var(--line)}
+  h2{font-size:21px; font-weight:800; letter-spacing:-.015em; margin:52px 0 14px; padding-bottom:9px; border-bottom:2px solid var(--line); scroll-margin-top:58px}
+
+  .topnav{position:sticky; top:0; z-index:50; background:var(--bg); border-bottom:1px solid var(--line);
+    padding:8px 16px; display:flex; gap:2px; align-items:center; overflow-x:auto}
+  .topnav a{font-size:12.5px; font-weight:600; color:var(--tx2); text-decoration:none;
+    padding:5px 9px; border-radius:7px; white-space:nowrap}
+  .topnav a:hover{background:var(--brand-soft); color:var(--brand)}
+  .topnav a b{color:var(--brand); font-weight:800; margin-right:3px}
+  .topnav .logo{font-weight:800; letter-spacing:-.01em; font-size:14.5px; color:var(--tx); margin-right:10px; white-space:nowrap}
+  .topnav .logo b{font-weight:800}
+  .topnav .sp{flex:1; min-width:8px}
+  .topnav a.hand{color:var(--brand); font-weight:700; border:1px solid var(--line)}
+  @media print{ .topnav{display:none} }
   h3{font-size:15.5px; font-weight:700; margin:24px 0 8px}
   p{margin:10px 0; text-wrap:pretty}
   ul,ol{margin:10px 0 10px 22px}
@@ -81,6 +94,18 @@
 </style>
 </head>
 <body>
+<div class="topnav">
+  <span class="logo">MIDAS <b>DRS</b></span>
+  <a href="#map">전체 그림</a>
+  <a href="#st1"><b>1</b>열어보기</a>
+  <a href="#st2"><b>2</b>맛보기</a>
+  <a href="#st3"><b>3</b>클로드</a>
+  <a href="#st4"><b>4</b>AI 탑재</a>
+  <a href="#st5"><b>5</b>GitHub</a>
+  <a href="#apxa">부록</a>
+  <span class="sp"></span>
+  <a class="hand" data-hand href="HANDOVER.html">인수인계 문서 ↗</a>
+</div>
 <div class="doc">
 
 <div class="eyebrow">Start Here</div>
@@ -99,7 +124,7 @@
 안 끊으면 여러분이 테스트할 때마다 <b>전달자 카드로 결제</b>되니까요.
 <b>아래 2단계에서 임시로 살려 볼 수 있고, 4단계 탑재로 정식으로 켭니다.</b></div>
 
-<h2>전체 그림 — 딱 다섯 걸음</h2>
+<h2 id="map">전체 그림 — 딱 다섯 걸음</h2>
 <p>이 문서는 아래 순서 그대로 쓰여 있습니다. <b>지금 몇 단계인지만 기억하면</b> 됩니다.</p>
 <div class="tblwrap"><table>
   <tr><th>단계</th><th>할 일</th><th>시간</th><th>한 줄 설명</th></tr>
@@ -113,10 +138,10 @@
 키를 서비스 자체에 심어서, 누가 접속하든 키 입력 없이 전 기능(<b>발표 대본·공유 링크</b> 포함)이 도는 상태입니다.
 3단계를 탑재보다 먼저 하는 이유는 하나 — <b>4단계에서 파일 고치는 일은 전부 클로드가 대신</b>하기 때문입니다.
 겁먹지 않으셔도 됩니다: 오늘 당장은 2단계까지만 해도 충분히 써 볼 수 있고, 4단계는 마음이 준비되면 30~40분이면 끝납니다.
-더 깊은 내용이 궁금할 때만 인수인계 문서(<code>docs/HANDOVER.html</code>)를 펴면 됩니다.</p>
+더 깊은 내용이 궁금할 때만 인수인계 문서(<a data-hand href="HANDOVER.html"><code>docs/HANDOVER.html</code></a>)를 펴면 됩니다.</p>
 
 <!-- ───────────── 1 ───────────── -->
-<h2>1단계 · 일단 열어보기 (0분)</h2>
+<h2 id="st1">1단계 · 일단 열어보기 (0분)</h2>
 <div class="step">
   <div class="no"><b>1</b> 0분 · 준비물 없음</div>
   <h3>AI 없이 화면부터 구경하기</h3>
@@ -152,7 +177,7 @@
 </div>
 
 <!-- ───────────── 2 ───────────── -->
-<h2>2단계 · 임시로 맛보기 — 내 브라우저에만 키 넣기 (10분)</h2>
+<h2 id="st2">2단계 · 임시로 맛보기 — 내 브라우저에만 키 넣기 (10분)</h2>
 <div class="step">
   <div class="no"><b>2</b> 10분 · 본인 Claude 키 1개 (+ 구글 키는 선택)</div>
   <h3>정식 세팅 전에, 오늘 바로 돌려보기</h3>
@@ -200,7 +225,7 @@
 </div>
 
 <!-- ───────────── 3 ───────────── -->
-<h2>3단계 · 클로드 붙이기 — 작업 파트너 설치 (10분)</h2>
+<h2 id="st3">3단계 · 클로드 붙이기 — 작업 파트너 설치 (10분)</h2>
 <div class="step">
   <div class="no"><b>3</b> 10분 · Claude 계정</div>
   <h3>파일 고치는 일을 대신해 줄 AI 비서</h3>
@@ -223,11 +248,11 @@
   <div class="chat">"이 PDF 스타일 그대로 새 PPT 팩 만들어줘. 소스에 있는 것만, 추측 금지."</div>
   <div class="chat">"영어로 바꿨는데 버튼에 한국어가 남아 있어." <span class="dim">— 증상만 말하면 원인을 찾아 줍니다</span></div>
   <div class="chat">"방금 고친 거 실제로 되는지 검증해줘." <span class="dim">— "될 겁니다"로 끝내지 않고 증거를 가져옵니다</span></div>
-  <p class="dim">더 많은 예문과 배경은 인수인계 문서(<code>docs/HANDOVER.html</code>)의 <b>§3 인계자 가이드</b>에 있습니다.</p>
+  <p class="dim">더 많은 예문과 배경은 인수인계 문서(<a data-hand href="HANDOVER.html"><code>docs/HANDOVER.html</code></a>)의 <b>§3 인계자 가이드</b>에 있습니다.</p>
 </div>
 
 <!-- ───────────── 4 ───────────── -->
-<h2>4단계 · AI 탑재 — 이 서비스의 정식 경로 <span class="dim">(메인 · 30~40분)</span></h2>
+<h2 id="st4">4단계 · AI 탑재 — 이 서비스의 정식 경로 <span class="dim">(메인 · 30~40분)</span></h2>
 <p>여기가 <b>본 궤도</b>입니다. 2단계는 내 브라우저에만 사는 임시 연결이었고,
 탑재는 <b>서비스 자체가 AI를 갖게 만드는</b> 작업입니다. 한 번 해 두면 그 뒤로는 아무도 키를 만질 일이 없습니다.</p>
 
@@ -534,7 +559,7 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 위 13장을 외울 필요는 없습니다. 이 폴더에서 클로드를 켜고 아래 한 마디만 던지면
 <b>어느 단계에 있는지 물어보며 처음부터 끝까지 같이</b> 갑니다. 에러가 나면 그 화면을 그대로 보여 주기만 하면 돼요.
 <div class="chat" style="margin-top:10px">"docs/START_HERE.html 4단계 보고, 내 Cloudflare 계정으로 AI 탑재 같이 하자. 지금 1번부터야."</div>
-<span class="dim">더 깊은 배경(비용·계정 이관·기존 링크 처리)은 <code>docs/HANDOVER.html</code> §13에 있습니다.</span></div>
+<span class="dim">더 깊은 배경(비용·계정 이관·기존 링크 처리)은 <a data-hand href="HANDOVER.html"><code>docs/HANDOVER.html</code></a> §13에 있습니다.</span></div>
 
 <div class="box warn"><div class="t">API 키를 채팅창에 붙여넣지 마세요</div>
 키는 <b>터미널 입력창(11번)이나 Cloudflare 대시보드에만</b> 입력합니다.
@@ -542,7 +567,7 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 <b>계정 번호·보관함 id·서버 주소는 비밀이 아니니</b> 채팅에 붙여넣어도 괜찮습니다.</div>
 
 <!-- ───────────── 5 ───────────── -->
-<h2>5단계 · 내 GitHub에 올리기 (선택)</h2>
+<h2 id="st5">5단계 · 내 GitHub에 올리기 (선택)</h2>
 <p>이 폴더에는 <b>버전 관리(git) 연결이 없습니다</b> — 전달자의 GitHub 계정과 작업 이력이
 전부 제거된 순수 파일 뭉치입니다.
 <span class="dim">(버전 관리 = 작업을 저장해 두고 언제든 그 시점으로 되돌릴 수 있게 하는 것. 게임 세이브와 비슷합니다.)</span>
@@ -554,12 +579,12 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 <b>저장할 때마다 자동으로 오류를 잡아 주는 검수기</b>도 켜집니다.</p>
 
 <!-- ───────────── 부록 ───────────── -->
-<h2>부록 A · 어디에 뭐가 있나</h2>
+<h2 id="apxa">부록 A · 어디에 뭐가 있나</h2>
 <p>폴더를 열면 파일이 많지만, <b>알아야 할 건 아래 일곱 개</b>가 전부입니다.
 <span class="dim">(세팅 중에는 볼 일이 없습니다 — 세팅이 끝나고 작업을 시작할 때 펴 보세요.)</span></p>
 <div class="tblwrap"><table>
   <tr><th>파일/폴더</th><th>내용</th></tr>
-  <tr><td><b><code>docs/HANDOVER.html</code></b></td><td><b>인수인계 문서 — 제일 중요합니다.</b> 구조·스타일 만드는 법·비용·규칙이 전부 들어 있고,
+  <tr><td><b><a data-hand href="HANDOVER.html"><code>docs/HANDOVER.html</code></a></b></td><td><b>인수인계 문서 — 제일 중요합니다.</b> 구조·스타일 만드는 법·비용·규칙이 전부 들어 있고,
     <b>어려운 용어는 §1 끝의 용어 사전</b>에 풀어 뒀습니다</td></tr>
   <tr><td><code>CLAUDE.md</code></td><td>프로젝트 규칙서 — 클로드가 <b>자동으로 읽는</b> 파일입니다</td></tr>
   <tr><td><code>app/</code></td><td>화면 전부 — 홈·편집 스튜디오·설정 등. AI 연결 주소는 <code>app/llm.js</code> 한 곳에만 있습니다(4단계 12번)</td></tr>
@@ -577,7 +602,7 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 없는 게 아니라 숨어 있는 것 — <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>.</kbd> 을 누르면 나타납니다.
 숨겨져 있어도 이 폴더에서 클로드를 켜면 자동으로 인식하니 평소엔 신경 쓰지 않으셔도 됩니다.</div>
 
-<h2>부록 B · 막히면</h2>
+<h2 id="apxb">부록 B · 막히면</h2>
 <ul>
   <li><b>탑재(4단계) 중에 막혔을 때</b> — 각 카드 맨 아래 <b>"막히면"</b> 칸을 먼저 보세요.
     거기 없는 증상이면 <b>터미널에 뜬 빨간 글씨를 그대로 복사해</b> 클로드에게 보여 주면 됩니다.
@@ -602,9 +627,17 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 </ul>
 
 <p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:16px">
-이 문서는 시작용 요약입니다. 자세한 내용은 전부 <code>docs/HANDOVER.html</code> 에 있습니다.<br>
+이 문서는 시작용 요약입니다. 자세한 내용은 전부 <a data-hand href="HANDOVER.html"><code>docs/HANDOVER.html</code></a> 에 있습니다.<br>
 최종 갱신 2026-08-12.</p>
 
 </div>
+<script>
+(function(){
+  var inDocs = //docs//.test(decodeURIComponent(location.pathname));
+  document.querySelectorAll("a[data-hand]").forEach(function(a){
+    a.setAttribute("href", (inDocs ? "" : "docs/") + "HANDOVER.html");
+  });
+})();
+</script>
 </body>
 </html>
