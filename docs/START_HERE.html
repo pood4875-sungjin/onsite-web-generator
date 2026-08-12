@@ -42,23 +42,30 @@
     font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  .doc{max-width:720px; margin:0 auto; padding:56px 24px 120px}
+  .wrap{display:flex; max-width:1200px; margin:0 auto}
+
+  /* ── 좌측 목차 (HANDOVER와 동일 포맷) ── */
+  nav{
+    width:270px; flex:none; position:sticky; top:0; align-self:flex-start;
+    height:100vh; overflow-y:auto; padding:32px 32px 36px 30px;
+    border-right:1px solid var(--line); font-size:13px;
+  }
+  nav .logo{font-weight:800; letter-spacing:-.01em; margin-bottom:4px; font-size:20px}
+  nav .logo b{color:var(--tx); font-weight:800}
+  nav .sub{color:var(--tx3); font-size:11.5px; margin-bottom:22px}
+  nav a{display:block; color:var(--tx2); text-decoration:none; padding:4px 8px; border-radius:6px; margin:1px 0}
+  nav a:hover{background:var(--brand-soft); color:var(--tx)}
+  nav a .n{display:inline-block; width:22px; color:var(--tx3); font-variant-numeric:tabular-nums; font-size:11px}
+  @media (max-width:900px){ nav{display:none} }
+
+  main{flex:1; min-width:0; padding:44px 56px 120px}
+  @media (max-width:900px){ main{padding:28px 18px 80px} }
+  .doc{max-width:100%}
   .eyebrow{font-size:14px; font-weight:700; letter-spacing:.05em; color:var(--brand); text-transform:uppercase}
   h1{font-size:32px; line-height:1.28; letter-spacing:-.02em; font-weight:800; margin:10px 0 14px; text-wrap:balance}
   .lead{font-size:17px; color:var(--tx2); text-wrap:pretty}
-  h2{font-size:21px; font-weight:800; letter-spacing:-.015em; margin:52px 0 14px; padding-bottom:9px; border-bottom:2px solid var(--line); scroll-margin-top:58px}
+  h2{font-size:21px; font-weight:800; letter-spacing:-.015em; margin:52px 0 14px; padding-bottom:9px; border-bottom:2px solid var(--line); scroll-margin-top:16px}
 
-  .topnav{position:sticky; top:0; z-index:50; background:var(--bg); border-bottom:1px solid var(--line);
-    padding:8px 16px; display:flex; gap:2px; align-items:center; overflow-x:auto}
-  .topnav a{font-size:12.5px; font-weight:600; color:var(--tx2); text-decoration:none;
-    padding:5px 9px; border-radius:7px; white-space:nowrap}
-  .topnav a:hover{background:var(--brand-soft); color:var(--brand)}
-  .topnav a b{color:var(--brand); font-weight:800; margin-right:3px}
-  .topnav .logo{font-weight:800; letter-spacing:-.01em; font-size:14.5px; color:var(--tx); margin-right:10px; white-space:nowrap}
-  .topnav .logo b{font-weight:800}
-  .topnav .sp{flex:1; min-width:8px}
-  .topnav a.hand{color:var(--brand); font-weight:700; border:1px solid var(--line)}
-  @media print{ .topnav{display:none} }
   h3{font-size:15.5px; font-weight:700; margin:24px 0 8px}
   p{margin:10px 0; text-wrap:pretty}
   ul,ol{margin:10px 0 10px 22px}
@@ -94,18 +101,22 @@
 </style>
 </head>
 <body>
-<div class="topnav">
-  <span class="logo">MIDAS <b>DRS</b></span>
-  <a href="#map">전체 그림</a>
-  <a href="#st1"><b>1</b>열어보기</a>
-  <a href="#st2"><b>2</b>맛보기</a>
-  <a href="#st3"><b>3</b>클로드</a>
-  <a href="#st4"><b>4</b>AI 탑재</a>
-  <a href="#st5"><b>5</b>GitHub</a>
-  <a href="#apxa">부록</a>
-  <span class="sp"></span>
-  <a class="hand" data-hand href="HANDOVER.html">인수인계 문서 ↗</a>
-</div>
+<div class="wrap">
+<nav>
+  <div class="logo">MIDAS <b>DRS</b></div>
+  <div class="sub">시작 가이드 · 2026-08-12</div>
+  <a data-hand href="HANDOVER.html" style="border:1px solid var(--line); border-radius:8px; font-weight:700; margin:2px 0 10px; text-align:center">인수인계 문서(사전) ⟶</a>
+  <a href="#map"><span class="n">00</span>전체 그림 — 딱 다섯 걸음</a>
+  <a href="#st1"><span class="n">01</span>일단 열어보기</a>
+  <a href="#st2"><span class="n">02</span>임시로 맛보기</a>
+  <a href="#st3"><span class="n">03</span>클로드 붙이기</a>
+  <a href="#st4"><span class="n">04</span>AI 탑재 (메인)</a>
+  <a href="#st5"><span class="n">05</span>GitHub에 올리기</a>
+  <a href="#apxa"><span class="n">A</span>부록 · 어디에 뭐가 있나</a>
+  <a href="#apxb"><span class="n">B</span>부록 · 막히면</a>
+</nav>
+
+<main>
 <div class="doc">
 
 <div class="eyebrow">Start Here</div>
@@ -631,11 +642,15 @@ var PROXY_URL = 'https://webgen-ppt-proxy.○○.workers.dev';   ← 고친 뒤<
 최종 갱신 2026-08-12.</p>
 
 </div>
+</main>
+</div>
 <script>
 (function(){
-  var inDocs = //docs//.test(decodeURIComponent(location.pathname));
-  document.querySelectorAll("a[data-hand]").forEach(function(a){
-    a.setAttribute("href", (inDocs ? "" : "docs/") + "HANDOVER.html");
+  // 이 파일은 두 위치에 산다: docs/START_HERE.html(원본·사본) / 루트의 여기부터-시작.html(사본).
+  // 루트 사본만 HANDOVER가 docs/ 아래에 있으므로, 파일명으로 위치를 판별해 경로를 보정한다.
+  var atRoot = decodeURIComponent(location.pathname).indexOf('여기부터') !== -1;
+  document.querySelectorAll('a[data-hand]').forEach(function(a){
+    a.setAttribute('href', (atRoot ? 'docs/' : '') + 'HANDOVER.html');
   });
 })();
 </script>
