@@ -74,6 +74,8 @@
     opts = opts || {};
     var key = getKey();
     if (!key) throw new Error('NO_KEY');
+    // onText 주면 스트리밍(SSE) — 개인 키 직통도 프록시와 같은 라이브 연출을 받는다.
+    var wantStream = typeof opts.onText === 'function';
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -87,6 +89,7 @@
         max_tokens: opts.maxTokens || 4000,
         system: opts.system || '',
         messages: [{ role: 'user', content: opts.user || '' }],
+        stream: wantStream || undefined,
       }),
     });
     if (!res.ok) {
@@ -94,6 +97,16 @@
       var msg = 'HTTP ' + res.status;
       try { var j = JSON.parse(t); if (j && j.error && j.error.message) msg += ' · ' + j.error.message; } catch (e) { if (t) msg += ' · ' + t.slice(0, 160); }
       throw new Error(msg);
+    }
+    var ctype = (res.headers.get('content-type') || '');
+    if (wantStream && ctype.indexOf('event-stream') >= 0 && res.body) {
+      try { return await _readSse(res.body, opts.onText); }
+      catch (se) {
+        // 스트림이 중간에 끊기면 잘린 JSON → 비스트림으로 1회 재시도(라이브 연출만 포기, 생성은 살림)
+        console.warn('[ai] BYOK 스트림 실패 → 비스트림 재시도', se);
+        var o2 = {}; for (var k in opts) if (k !== 'onText') o2[k] = opts[k];
+        return messages(o2);
+      }
     }
     var data = await res.json();
     return (data.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
@@ -292,7 +305,7 @@
         '모든 장 title에 핵심 어구 **굵게** 강약(영문 타이틀은 앞 라이트·뒤 **볼드** 또는 __딤__ 조합). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=18~22, 없으면 6~12. ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
-      var mtxt = await messages({ system: msys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000 });
+      var mtxt = await messages({ system: msys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var md2 = parseDeck(mtxt, 'machine'); md2.style = 'machine'; return md2;
     }
     // BYOK 직접 호출 — sfmi 팩(SFMI Report): 원형 모티프·스트로크 간지
@@ -307,7 +320,7 @@
         '수치는 stats(링 도넛)/kpi로(값은 plan의 실제 수치). 모든 장 title에 핵심 어구 **굵게** 강약. 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
-      var ftxt = await messages({ system: fsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000 });
+      var ftxt = await messages({ system: fsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var fd2 = parseDeck(ftxt, 'sfmi'); fd2.style = 'sfmi'; return fd2;
     }
     // BYOK 직접 호출 — pastel 팩(Pastel Gradient): 챕터 그라데이션·키밴드
@@ -322,7 +335,7 @@
         '수치는 stats/kpi로(값은 plan의 실제 수치, 지어내기 금지). 모든 장 title에 핵심 어구 **굵게** 강약. 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
-      var ptxt2 = await messages({ system: psys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000 });
+      var ptxt2 = await messages({ system: psys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var pd3 = parseDeck(ptxt2, 'pastel'); pd3.style = 'pastel'; return pd3;
     }
     // BYOK 직접 호출 — rams 팩(Rams Report): 다크/오렌지 간지 교대·단일 액센트
@@ -337,7 +350,7 @@
         '수치는 stats/kpi로(값은 plan의 실제 수치, 지어내기 금지). 마무리 문장(note)에 **강조** 1회. 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
-      var rtxt = await messages({ system: rsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000 });
+      var rtxt = await messages({ system: rsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var rd2 = parseDeck(rtxt, 'rams'); rd2.style = 'rams'; return rd2;
     }
     // BYOK 직접 호출 — naver 팩(Design AX Line): 챕터 컬러·간지 구조
@@ -353,7 +366,7 @@
         '수치는 stats로 시각화(값은 plan의 실제 수치, 지어내기 금지). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처(footnote), 추정은 표기.';
-      var ntxt = await messages({ system: nsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
+      var ntxt = await messages({ system: nsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000, onText: onText });
       var nd = parseDeck(ntxt, 'naver'); nd.style = 'naver'; return nd;
     }
     // BYOK 직접 호출 — honors 팩: pitch 레이아웃 + 목차/간지 규칙
@@ -368,7 +381,7 @@
         '수치는 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). 마지막 closing. ' +
         '총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12(목차·간지 포함). ' +
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처(footnote), 추정은 표기.';
-      var htxt = await messages({ system: hsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
+      var htxt = await messages({ system: hsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000, onText: onText });
       var hd = parseDeck(htxt, 'honors'); hd.style = 'honors'; return hd;
     }
     // BYOK 직접 호출 — pitch 팩이면 카탈로그 기반 프롬프트(팩이 노출한 문서 사용)
@@ -380,7 +393,7 @@
         '각 타입의 필드: ' + window.PITCH_FIELD_DOC + '\n' +
         '규칙: 첫 장 statement(bg green), 마지막 closing. 수치는 stats/bigstat/chart로 시각화(값은 plan의 실제 수치). ' +
         'bg는 white/grey 교대, green은 전환점 1~3장. 총 장수: short=5~8, std=10~15, deep=20~24, 없으면 6~12.';
-      var ptxt = await messages({ system: psys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000 });
+      var ptxt = await messages({ system: psys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 4000, onText: onText });
       var pd = parseDeck(ptxt, 'pitch'); pd.style = 'pitch'; return pd;
     }
     var sys =
@@ -398,7 +411,7 @@
       purpose: brief.purpose || '', plan: brief.plan || '', length: brief.length || '',
       outline: (brief.outline || []),
     }, null, 2);
-    var txt = await messages({ system: sys + _LR, user: user, maxTokens: 4000 });
+    var txt = await messages({ system: sys + _LR, user: user, maxTokens: 4000, onText: onText });
     var deck = parseDeck(txt);
     deck.style = brief.style || deck.style || 'ax';
     deck.accent = deck.accent || 'blue';
@@ -667,7 +680,7 @@
         return await _attemptW(false);
       }
     } else {
-      txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000 });
+      txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000, onText: onText });
     }
     return _parseSite(txt);
   }
