@@ -35,11 +35,15 @@ const hit = (lv, msg) => { if (lv === 'x') { danger++; console.log('  ✗ ' + ms
 /* 1) 실제 API 키 — 있으면 절대 넘기면 안 됨 */
 console.log('\n[1/3] API 키 유출 검사');
 const KEY_RE = [/sk-ant-[A-Za-z0-9_-]{20,}/, /AIza[A-Za-z0-9_-]{30,}/];
+const PLACEHOLDER_RE = /X{8,}|YOUR_/; // 문서 예시(sk-ant-api03-XXXX…, YOUR_…)는 실키 아님
 let keyFound = 0;
 for (const f of files) {
   const txt = read(f);
   txt.split('\n').forEach((line, i) => {
-    for (const re of KEY_RE) if (re.test(line)) { hit('x', `실제 키로 보이는 문자열: ${rel(f)}:${i + 1}`); keyFound++; }
+    for (const re of KEY_RE) {
+      const m = line.match(re);
+      if (m && !PLACEHOLDER_RE.test(m[0])) { hit('x', `실제 키로 보이는 문자열: ${rel(f)}:${i + 1}`); keyFound++; }
+    }
   });
 }
 if (!keyFound) console.log('  ✓ 실제 키 없음 — 파일을 통째로 넘겨도 키는 딸려가지 않는다');
