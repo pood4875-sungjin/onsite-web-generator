@@ -796,11 +796,20 @@
         });
       } else {
         const glow=(typeof DARK_PACK_BY_ID!=='undefined'&&DARK_PACK_BY_ID.aether)||{swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)'};
-        const STYLES=[
+        // 랜딩(단장·집객) = 세미나 3종(사용자 지정 유지) / 웹사이트(멀티페이지) = 사이트형 팩만.
+        // 세미나 팩은 페이지 유형·GNB 페이지 연동을 구현하지 않아 multi에 노출하면 "모든 페이지가 같은 템플릿" 회귀가 난다(2026-08-12 수리).
+        const LANDING_STYLES=[
           { id:'mbm', name:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.name:'Civil Blue'), swatch:(typeof MBM_STYLE!=='undefined'?MBM_STYLE.swatch:'linear-gradient(135deg,#1E56A8,#00BDDE)') },
           { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'Ensol MBM'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
           { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'Global MBM'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
-        ];   // 웹 스타일은 3종만 노출(사용자 지정) — 구 팩(aether·saturn·krds·midas·aglass)은 기존 프로젝트 열람용으로만 유지
+        ];
+        const SITE_STYLES=[
+          { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn Blue'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0B1F4B,#2E6BFF)') },
+          { id:'krds', name:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.name:'KRDS'), swatch:(typeof KRDS_STYLE!=='undefined'?KRDS_STYLE.swatch:'linear-gradient(135deg,#003675,#256EF4)') },
+          { id:'midas', name:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.name:'MIDAS'), swatch:(typeof MIDAS_STYLE!=='undefined'?MIDAS_STYLE.swatch:'linear-gradient(135deg,#101828,#2970FF)') },
+          { id:'aglass', name:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.name:'Aether Glass'), swatch:(typeof AETHER_STYLE!=='undefined'?AETHER_STYLE.swatch:'linear-gradient(135deg,#0a0e1a,#22d3ee)') },
+        ];
+        const STYLES=(kind==='multi')?SITE_STYLES:LANDING_STYLES;
         const recStyle=(ORGS.find(o=>o.id===S.org)||{}).rec;
         STYLES.forEach(p=>{
           if(skip(p.id)) return;
@@ -820,6 +829,9 @@
     if(id==='toss' && window.renderTossPage) return renderTossPage({}, {motion:false});
     if(id==='orbit' && window.renderOrbitPage) return renderOrbitPage({}, {motion:false});
     if(id==='saturn' && window.renderSaturnPage) return renderSaturnPage({pageType:'landing'}, {volume:'heavy', motion:'none'});
+    if(id==='krds' && window.renderKrdsPage) return renderKrdsPage({pageType:'main'}, {volume:'heavy', motion:'none'});
+    if(id==='midas' && window.renderMidasPage) return renderMidasPage({pageType:'main'}, {volume:'heavy', motion:'none'});
+    if(id==='aglass' && window.renderAetherPage) return renderAetherPage({pageType:'main'}, {volume:'heavy', motion:'none'});
     throw new Error('no self-demo thumb: '+id);
   }
 
