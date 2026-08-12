@@ -9,7 +9,7 @@
 
 const MODEL = 'claude-sonnet-5';   // 서버 고정 — 클라이언트가 못 바꿈
 const MAX_TOKENS = 16000;   // deep(20~24장) 덱 + 문서 첨부 브리프 여유 — 8000에서 잘리던 문제 상향
-const DAILY_LIMIT = 9;             // IP당 하루 글 생성 한도 — 예상 밖 과금을 막는 안전핀 (시연 종료로 운영값 복귀 2026-08-12)
+const DAILY_LIMIT = Infinity;      // 무제한(사용자 결정 2026-08-12) — 한도 걸려면 숫자로 바꾸면 됨(IP당 하루 글 생성 횟수)
 const IMG_DAILY_LIMIT = 30;        // AI 이미지 생성(나노바나나) — IP당 하루 장수. 비용 안전핀
 
 const CORS = {

@@ -661,7 +661,7 @@ CLAUDE.md와 스킬은 <b>레포에 있으므로</b> 누가 클론해서 Claude�
     <code>cd proxy && npx wrangler secret put ANTHROPIC_API_KEY</code> 를 실행하거나 Cloudflare 대시보드에서.
     <b>키를 채팅창에 붙여넣지 않는 것이 원칙</b>이고, 클로드도 키를 요구하지 않게 설정돼 있다.</li>
   <li><b>하루 호출 한도</b>(<code>DAILY_LIMIT</code>)가 예상 밖 과금을 막는 안전핀이다.
-    <b>운영값 9회</b>로 복귀·배포된 상태다(2026-08-12). 팀 규모에 맞게 조절하면 된다.</li>
+    지금은 <b>무제한으로 꺼 둔 상태</b>다(사용자 결정 2026-08-12). 걸고 싶으면 <code>proxy/worker.js</code>의 <code>DAILY_LIMIT</code>을 숫자(예: 9)로 바꾸고 워커를 재배포하면 된다.</li>
 </ul>
 </section>
 <!-- ============================================================ -->
@@ -794,7 +794,7 @@ cd proxy && npx wrangler deploy</code></pre>
   <tr><td>저장·백업 안 된 작업</td><td>온라인 보관소에 아직 안 올라간 커밋 4개(AI 이미지·피커 개편·대본·진행바)와,
     아직 저장(커밋)조차 안 한 작업분(화면 비율 기능·시연 잠금 해제)이 <b>이 컴퓨터에만</b> 있다. 커밋+푸시 권장</td><td>높음</td></tr>
   <tr><td>비용·계정 이관</td><td>AI 요금이 개인 계정에서 나가는 중 — 회사 키/계정으로 교체(§13 절차)</td><td>높음</td></tr>
-  <tr><td>워커 하루 한도</td><td><code>DAILY_LIMIT</code> 운영값 9회 복귀·배포 완료 — <b>시연 잔무 전부 해소</b></td><td>✅ 2026-08-12</td></tr>
+  <tr><td>워커 하루 한도</td><td><code>DAILY_LIMIT</code> 무제한 운영(사용자 결정) — 걸려면 숫자로 바꿔 재배포</td><td>✅ 2026-08-12</td></tr>
   <tr><td>업로드 이미지 처리 방식</td><td>지금은 이미지를 긴 글자로 바꿔 프로젝트 안에 통째로 넣는다(dataURI) — 용량이 크고 번역할 때 짐이 무거워진다.
     서버에 올려두고 주소만 참조하는 방식으로 바꾸는 것을 검토 중</td><td>중</td></tr>
   <tr><td>팩 문서 표기 정리</td><td><code>docs/packs/README.md</code>의 상태 칸에 <b>잠금 시절 표기</b>가 남아 있다 — 해제 사실에 맞게 갱신 필요</td><td>낮음</td></tr>
@@ -1033,7 +1033,7 @@ Workers &amp; Pages → <code>webgen-ppt-proxy</code> → Settings → Variables
 <h3>예상 밖 과금 방지 — 하루 한도 안전핀</h3>
 <p>AI 서버가 <b>접속자 한 명당 하루 사용 횟수</b>를 제한한다. 값은 <code>proxy/worker.js</code> 맨 위에 있다.</p>
 <ul>
-  <li><code>DAILY_LIMIT</code> — 글 생성 호출 횟수. <b>기본 9회</b>다(시연 종료로 복귀).
+  <li><code>DAILY_LIMIT</code> — 글 생성 호출 횟수. 현재 <b>무제한</b>(사용자 결정 2026-08-12).
     <b>운영 전에 반드시 되돌릴 것</b>(§12에 남아 있는 유일한 시연 잔무).</li>
   <li><code>IMG_DAILY_LIMIT</code> — AI 이미지 <b>하루 30장</b>. 이미지가 상대적으로 비싸서 걸어 둔 안전핀.</li>
 </ul>
