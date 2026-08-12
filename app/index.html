@@ -178,7 +178,9 @@
   .hero[hidden]{display:none}
   /* 히어로 탑바 — 좌 워드마크 · 우 언어 스위처 (Figma 79-8487) */
   .htop{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:22px 30px}
-  .hlogo{font-family:'Poppins','Pretendard Variable',Pretendard,sans-serif;font-weight:600;font-size:20px;letter-spacing:-.02em;color:var(--ink)}
+  .hlogo{font-family:'Poppins','Pretendard Variable',Pretendard,sans-serif;font-weight:600;font-size:20px;letter-spacing:-.02em;color:var(--ink);text-decoration:none;cursor:pointer;transition:opacity var(--dur) var(--ease)}
+  .hlogo:hover{opacity:.72}
+  .hlogo:focus{outline:none}.hlogo:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:6px}
   .hlang{position:relative}
   .hlangbtn{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--hairline-strong);border-radius:var(--r-pill);background:var(--surface-solid,#fff);color:var(--body);cursor:pointer;font-family:inherit;transition:var(--dur) var(--ease)}
   .hlangbtn:hover{border-color:var(--body-mid)}
@@ -295,7 +297,7 @@
 <!-- 홈 히어로 — 센터 타이틀 + 큰 입력창 + 샘플 (Genspark 홈 패턴). 첫 전송 시 챗으로 전환 -->
 <div class="hero" id="hero">
   <div class="htop">
-    <span class="hlogo">DesignRS</span>
+    <a class="hlogo" href="dashboard.html" data-i18n-title="대시보드로" title="대시보드로" onclick="return leaveGuard(event)">DesignRS</a>
     <div class="hlang">
       <button class="hlangbtn" id="hlangBtn" title="Language" aria-haspopup="true">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3z"/></svg>
