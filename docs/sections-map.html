@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>웹 섹션 계약 한눈에 — MIDAS DRS</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
+    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --code-bg:#f6f6f8; --code-tx:#41415a;
+    --ok-bg:#eefaf3; --ok-line:#a8dfc4; --ok-tx:#0d7a4a;
+    --warn-bg:#fff7ed; --warn-line:#f5c97b; --warn-tx:#8a5a00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
+      --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+      --code-bg:#221e33; --code-tx:#cfc4f5;
+      --ok-bg:#12291f; --ok-line:#2c5c43; --ok-tx:#5fd39b;
+      --warn-bg:#2b2210; --warn-line:#6b5320; --warn-tx:#e8bb62;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
+    --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+    --code-bg:#221e33; --code-tx:#cfc4f5;
+    --ok-bg:#12291f; --ok-line:#2c5c43; --ok-tx:#5fd39b;
+    --warn-bg:#2b2210; --warn-line:#6b5320; --warn-tx:#e8bb62;
+  }
+  :root[data-theme="light"]{
+    --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
+    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --code-bg:#f6f6f8; --code-tx:#41415a;
+    --ok-bg:#eefaf3; --ok-line:#a8dfc4; --ok-tx:#0d7a4a;
+    --warn-bg:#fff7ed; --warn-line:#f5c97b; --warn-tx:#8a5a00;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg); color:var(--tx); font-size:15.5px; line-height:1.7;
+    font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .doc{max-width:980px; margin:0 auto; padding:52px 28px 120px}
+  .eyebrow{font-size:14px; font-weight:700; letter-spacing:.05em; color:var(--brand); text-transform:uppercase}
+  h1{font-size:30px; line-height:1.28; letter-spacing:-.02em; font-weight:800; margin:10px 0 12px; text-wrap:balance}
+  .lead{font-size:16px; color:var(--tx2); text-wrap:pretty; max-width:760px}
+  h2{font-size:20px; font-weight:800; letter-spacing:-.015em; margin:52px 0 6px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+  h2 .n{color:var(--brand); margin-right:10px; font-variant-numeric:tabular-nums; letter-spacing:-2px}
+  .sub{color:var(--tx2); font-size:13.5px; margin:0 0 14px}
+  p{margin:10px 0; text-wrap:pretty}
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.84em; background:var(--code-bg); color:var(--code-tx); padding:2px 6px; border-radius:5px}
+  table{width:100%; border-collapse:collapse; margin:12px 0; font-size:13.5px}
+  th{text-align:left; font-size:11.5px; letter-spacing:.03em; color:var(--tx2); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap}
+  td{padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tblwrap{overflow-x:auto}
+  .tag{display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; white-space:nowrap}
+  .t-core{background:var(--brand-soft); color:var(--brand-deep)}
+  .t-mid{background:var(--code-bg); color:var(--tx2)}
+  .t-rich{background:var(--code-bg); color:var(--tx3)}
+  .t-ok{background:var(--ok-bg); color:var(--ok-tx); border:1px solid var(--ok-line)}
+  .t-part{background:var(--warn-bg); color:var(--warn-tx); border:1px solid var(--warn-line)}
+  .t-new{background:var(--brand); color:#fff}
+  .grp{font-weight:800; font-size:12px; color:var(--tx3); letter-spacing:.04em; white-space:nowrap}
+  .box{border-radius:10px; padding:13px 16px; margin:14px 0; font-size:14px}
+  .info{background:var(--brand-soft)} .info b.t{color:var(--brand-deep)}
+  .seq{font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--code-tx)}
+  .seq b{color:var(--brand); font-weight:700}
+  .seq i{font-style:normal; color:var(--tx3)}
+  .dim{color:var(--tx2)}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<div class="eyebrow">Sections Map</div>
+<h1>웹 섹션 계약 한눈에</h1>
+<p class="lead">웹/랜딩 생성이 쓰는 <b>섹션 어휘 · 페이지 유형 조립표 · 표현 변형 · 행사 필드</b>를
+실제 코드(<code>app/pagetypes.js</code> · 세미나 팩 4종)에서 그대로 뽑아 정리한 지도입니다.
+맨 아래 §5에 <b>고정형 배너 12블록 표와의 대조</b>가 있습니다. <span class="dim">기준일 2026-08-12.</span></p>
+
+<div class="box info"><b class="t">웹 팩은 두 갈래</b> —
+<b>랜딩형</b>(Civil Blue·Ensol·Global MBM·Toss: 골격 고정, 글자·이미지만 교체, 섹션은 순서·숨김·추가만)과
+<b>사이트형</b>(Saturn·KRDS·MIDAS AX·Aether Glass: 아래 어휘로 <b>조립</b>, 여러 페이지+GNB 연동).
+이 문서의 §1~§3은 사이트형의 계약, §4는 랜딩형(행사)의 계약입니다.</div>
+
+<h2><span class="n">01</span>섹션 어휘 22종 — 팩이 구비하는 렌더러</h2>
+<p class="sub">각 팩은 이 어휘를 자기 디자인으로 구현. 없는 타입은 대체 순서(폴백)로 비슷한 걸 렌더 — 깨지지 않는 게 우선.</p>
+<div class="tblwrap"><table>
+  <tr><th>묶음</th><th>섹션</th><th>역할</th><th>표현 변형(AI가 내용 보고 선택)</th></tr>
+  <tr><td class="grp" rowspan="2">도입부</td><td><code>hero</code></td><td>첫 화면 — 타이틀·서브·CTA</td><td>center · split · screenshot · stat</td></tr>
+  <tr><td><code>pagehero</code></td><td>하위 페이지 표제(제목+설명)</td><td>banner · breadcrumb</td></tr>
+  <tr><td class="grp" rowspan="2">소개</td><td><code>overview</code></td><td>개요 — 무엇·왜, 포인트 3개</td><td>split · center · problem</td></tr>
+  <tr><td><code>intro</code></td><td>목적·대상 소개</td><td>center · quote</td></tr>
+  <tr><td class="grp" rowspan="5">기능·콘텐츠</td><td><code>feature</code></td><td>기능 카드 그리드</td><td>icons · cards · bento · list</td></tr>
+  <tr><td><code>featurerows</code></td><td>기능 상세 좌우 교차</td><td>zigzag · numbered · checks</td></tr>
+  <tr><td><code>gallery</code></td><td>화면·이미지 모음</td><td>grid · mosaic</td></tr>
+  <tr><td><code>showcase</code></td><td>대표 화면 크게</td><td>—</td></tr>
+  <tr><td><code>compare</code></td><td>우리 vs 기존 비교</td><td>table · beforeafter · cards</td></tr>
+  <tr><td class="grp" rowspan="2">신뢰·수치</td><td><code>stats</code></td><td>지표 숫자</td><td>numbers · kpi · big</td></tr>
+  <tr><td><code>testimonial</code></td><td>고객 후기·로고</td><td>cards · single · logos</td></tr>
+  <tr><td class="grp" rowspan="3">전환</td><td><code>cta</code></td><td>행동 유도 배너</td><td>banner · simple · cards</td></tr>
+  <tr><td><code>form</code></td><td>문의·신청 폼 <span class="dim">(정적 데모 — 제출 비활성)</span></td><td>center · split</td></tr>
+  <tr><td><code>pricing</code></td><td>요금 플랜</td><td>cards · table</td></tr>
+  <tr><td class="grp" rowspan="6">안내</td><td><code>faq</code></td><td>자주 묻는 질문</td><td>accordion · twocol · category</td></tr>
+  <tr><td><code>infocards</code></td><td>연락처·절차 카드</td><td>—</td></tr>
+  <tr><td><code>notice</code></td><td>유의사항·참가 안내</td><td>—</td></tr>
+  <tr><td><code>steps</code></td><td>절차 스텝</td><td>horizontal · vertical · cards</td></tr>
+  <tr><td><code>doclist</code></td><td>가이드 문서 목록</td><td>cards · list</td></tr>
+  <tr><td><code>bloglist</code></td><td>소식·아티클 목록</td><td>cards · list · featured</td></tr>
+  <tr><td class="grp" rowspan="2">행사</td><td><code>agenda</code></td><td>세션 시간표</td><td>timeline · table</td></tr>
+  <tr><td><code>speakers</code></td><td>연사 소개</td><td>—</td></tr>
+</table></div>
+<p class="dim">폴백 예: <code>pagehero→hero</code> · <code>gallery→showcase→feature</code> · <code>agenda→steps→feature</code> — 팩에 그 타입이 없으면 왼쪽부터 대체.</p>
+
+<h2><span class="n">02</span>페이지 유형 10종 — 조립표</h2>
+<p class="sub"><span class="tag t-core">core</span> 항상 · <span class="tag t-mid">mid</span> 중간 분량 이상 · <span class="tag t-rich">rich</span> 풍성 분량만. 굵은 것이 그 페이지의 대표(lead) 섹션.</p>
+<div class="tblwrap"><table>
+  <tr><th>유형</th><th>용도</th><th>섹션 순서</th></tr>
+  <tr><td><b>main</b> 메인홈</td><td>핵심 가치 + 전체 요약</td><td class="seq">hero → feature → <i>stats</i> → <i>showcase</i> → <i>testimonial</i> → cta</td></tr>
+  <tr><td><b>product</b> 제품소개</td><td>제품 하나 깊게</td><td class="seq">pagehero → featurerows → <i>gallery</i> → <i>compare</i> → cta</td></tr>
+  <tr><td><b>features</b> 기능소개</td><td>기능 카탈로그</td><td class="seq">pagehero → <b>feature</b> → <i>featurerows</i> → <i>faq</i> → cta</td></tr>
+  <tr><td><b>pricing</b> 요금</td><td>플랜 비교</td><td class="seq">pagehero → <b>pricing</b> → <i>faq</i> → cta</td></tr>
+  <tr><td><b>faq</b> FAQ</td><td>질문 + 문의 유도</td><td class="seq">pagehero → <b>faq</b> → <i>infocards</i> → cta</td></tr>
+  <tr><td><b>contact</b> 도입문의</td><td>폼 + 연락처</td><td class="seq">pagehero → <b>form</b> → <i>infocards</i></td></tr>
+  <tr><td><b>manual</b> 메뉴얼</td><td>가이드 입구</td><td class="seq">pagehero → <b>doclist</b> → <i>steps</i> → cta</td></tr>
+  <tr><td><b>blog</b> 블로그</td><td>소식 목록</td><td class="seq">pagehero → <b>bloglist</b> → <i>cta</i></td></tr>
+  <tr><td><b>landing</b> 제품 랜딩</td><td>전환 하나 집중(한 장)</td><td class="seq">hero → <i>feature</i> → <i>stats</i> → <i>testimonial</i> → cta</td></tr>
+  <tr><td><b>event</b> 이벤트</td><td>행사 랜딩(한 장)</td><td class="seq">hero → overview → <i>intro</i> → agenda → speakers → <i>notice</i> → cta</td></tr>
+</table></div>
+<p class="dim">동작: 페이지를 만들면 유형별 <b>스캐폴드</b>(기본 콘텐츠)가 깔려 빈 화면이 없고, AI(compose-web)가 브리프·첨부 근거로 실제 내용과 변형(variants)을 채운다. 대표 섹션은 pagehero가 표제를 대신하므로 자체 표제를 생략(중복 방지).</p>
+
+<h2><span class="n">03</span>표현 변형(variants) — 같은 섹션, 다른 얼굴</h2>
+<p class="sub">18개 섹션 × 2~4변형 = 총 47변형. AI 규칙: "콘텐츠 성격에 맞게 — 수치 강조면 hero:stat, 기능 많으면 feature:bento. 페이지마다 똑같은 조합 반복 금지." 팩이 미구현인 변형은 기본형으로 렌더(깨짐 금지).</p>
+
+<h2><span class="n">04</span>행사(세미나) 필드 — 랜딩형 팩의 데이터 계약</h2>
+<p class="sub">세미나 팩 4종(mbm·axday·toss·orbit)이 소비. AI가 첨부 기획서에서 그대로 추출한다.</p>
+<div class="tblwrap"><table>
+  <tr><th>필드</th><th>내용</th><th>비고</th></tr>
+  <tr><td><code>sessions[]</code></td><td>시간표 — {time, title, by}</td><td>agenda 섹션에 렌더</td></tr>
+  <tr><td><code>eventDate</code> · <code>eventPlace</code></td><td>일시 문구 · 장소(지도 핀은 axday)</td><td>근거 있을 때만</td></tr>
+  <tr><td><code>deadline</code></td><td>신청 마감(ISO8601) — 카운트다운</td><td>근거 있을 때만</td></tr>
+  <tr><td><code>faq[]</code> · <code>ctaTitle/ctaSub</code></td><td>사전 문의 · 신청 유도 카피</td><td></td></tr>
+  <tr><td>섹션 컨트롤</td><td>순서변경 · 숨김 · 추가</td><td><code>X_SECTION_SPEC</code>으로 앱에 노출</td></tr>
+</table></div>
+
+<h2><span class="n">05</span>고정형 배너 12블록 표와의 대조</h2>
+<p class="sub">네가 가져온 표(1920×유동 이벤트 페이지 블록 규격) ↔ 이 시스템. <span class="tag t-ok">있음</span> 그대로 대응 · <span class="tag t-part">부분</span> 비슷하나 속성 차이 · <span class="tag t-new">신규</span> 어휘에 없음.</p>
+<div class="tblwrap"><table>
+  <tr><th>#</th><th>표의 블록</th><th>대응 어휘</th><th>판정</th><th>차이·메모</th></tr>
+  <tr><td>1</td><td>Hero 배너</td><td><code>hero</code></td><td><span class="tag t-ok">있음</span></td><td>title·subtitle·date·location·cta — 1:1</td></tr>
+  <tr><td>2</td><td>띠배너 (Marquee)</td><td>—</td><td><span class="tag t-new">신규</span></td><td>흐르는 전광판 텍스트 — 어휘·팩 모두 없음</td></tr>
+  <tr><td>3</td><td>소개영역 (Intro)</td><td><code>intro</code>·<code>overview</code></td><td><span class="tag t-ok">있음</span></td><td></td></tr>
+  <tr><td>4</td><td>핵심포인트 (Key Point)</td><td><code>feature</code>·<code>infocards</code></td><td><span class="tag t-part">부분</span></td><td>반복 카드는 있음 — <b>카드별 CTA 선택 삽입</b>은 없음</td></tr>
+  <tr><td>5</td><td>이벤트 (혜택·경품)</td><td>—</td><td><span class="tag t-new">신규</span></td><td>프로모션 하이라이트 섹션 — notice와 성격 다름</td></tr>
+  <tr><td>6</td><td>연사소개 (Speaker)</td><td><code>speakers</code></td><td><span class="tag t-ok">있음</span></td><td>name·role·desc·photo — 1:1</td></tr>
+  <tr><td>7</td><td>아젠다 (Agenda)</td><td><code>agenda</code>·<code>sessions[]</code></td><td><span class="tag t-ok">있음</span></td><td>time·title·speaker — 1:1</td></tr>
+  <tr><td>8</td><td>행사요약 (Event Summary)</td><td><code>overview</code> points</td><td><span class="tag t-ok">있음</span></td><td>대상·장소·일정 포인트로 대응</td></tr>
+  <tr><td>9</td><td>신청 양식 (Registration)</td><td><code>form</code></td><td><span class="tag t-part">부분</span></td><td>폼 UI는 있으나 <b>정적 데모</b> — 표의 <code>submit_type</code>·<code>success_msg</code>(실제 제출·완료 처리)는 서버가 필요한 신규 계약</td></tr>
+  <tr><td>10</td><td>장소안내 (Location)</td><td>axday 팩 내 표+지도 핀</td><td><span class="tag t-part">부분</span></td><td>공용 어휘엔 없음 — map_image·parking_info 미지원</td></tr>
+  <tr><td>11</td><td>질문답변 (FAQ)</td><td><code>faq</code></td><td><span class="tag t-ok">있음</span></td><td>q·a 반복 — 1:1</td></tr>
+  <tr><td>12</td><td>안내문구 (Info)</td><td><code>notice</code></td><td><span class="tag t-ok">있음</span></td><td>title·text_list — 1:1</td></tr>
+</table></div>
+
+<div class="box info"><b class="t">요약</b> — 12블록 중 <b>7개는 그대로 있음</b>, 3개는 부분(카드 CTA · 실제 제출 폼 · 장소 섹션), <b>2개는 신규</b>(띠배너 · 이벤트 프로모션).
+블록보다 큰 차이는 계약 2가지: ① 표는 폼이 <b>실제 제출</b>되는 걸 전제(현재는 데모 — 서버 수신이 필요) ② 반복(1~N)·CTA 유무를 블록 속성으로 명시(현재는 섹션 종류에 내재).
+이 표대로 가려면: 어휘에 <code>marquee</code>·<code>event</code>·<code>location</code> 추가 + 카드 CTA 옵션 + 폼 제출 계약이 작업 단위다.</div>
+
+<p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:14px">
+근거: <code>app/pagetypes.js</code>(PAGE_TYPES·SECTION_VARIANTS·SECTION_FALLBACK·pageScaffold) ·
+<code>proxy/worker.js</code> WEB_SYSTEM · 세미나 팩 4종. 자세한 배경은 <a href="HANDOVER.html">인수인계 문서</a> §5.<br>
+최종 갱신 2026-08-12.</p>
+
+</div>
+</body>
+</html>
