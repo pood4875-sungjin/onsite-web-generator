@@ -3,16 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AX Day 스타일 — 전 섹션 베리에이션</title>
+<title>AX Day 스타일 — 전 섹션 베리에이션 v2</title>
 <style>
-/* ── AX Day 팩 실측 토큰 (packs.axday.js 2026-08-05 실측 그대로) ── */
-:root{ --ink:#030712; --orange:#FF5500; --blue:#00A3FE; --gray:#4B5563; --soft:#9AA0A6; --alt:#F7F9FB; --line:rgba(3,7,18,.09) }
+/* ── AX Day 팩 실측 토큰 ── */
+:root{ --ink:#030712; --orange:#FF5500; --gray:#4B5563; --soft:#9AA0A6; --alt:#F7F9FB; --line:rgba(3,7,18,.09) }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased}
 ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inherit;cursor:pointer}
+/* 규칙 1 — 콘텐츠 폭 단일 규격: 전 섹션 .wrap(1180) 하나 */
 .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
 
-/* ── 카탈로그 크롬(라벨·목차) — 시안 밖 UI ── */
+/* ── 카탈로그 크롬 ── */
 .cat-head{padding:64px 0 8px}
 .cat-head .eb{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--orange);text-transform:uppercase}
 .cat-head h1{font-size:40px;font-weight:300;letter-spacing:-.02em;margin-top:10px}
@@ -24,32 +25,32 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 .lbl{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;padding:9px 30px;display:flex;gap:14px;align-items:baseline}
 .lbl b{color:#FFB38A;font-weight:700}
 .lbl span{color:rgba(255,255,255,.62);font-family:Pretendard,sans-serif}
-.grp-h{background:var(--orange);color:#fff;padding:20px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;scroll-margin-top:0}
+.grp-h{background:var(--orange);color:#fff;padding:20px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .blk{border-bottom:1px solid var(--line)}
 
-/* ── 포토 자리표시(외부 이미지 없이 추상 모형 — .ax-ph 문법) ── */
-.ph{position:relative;overflow:hidden;background:linear-gradient(135deg,#E8ECF1,#D6DCE4)}
-.ph .s1,.ph .s2,.ph .s3{content:"";position:absolute;border-radius:50%}
-.ph .s1{width:46%;padding-top:46%;background:rgba(255,85,0,.16);left:-10%;top:24%}
-.ph .s2{width:30%;padding-top:30%;background:rgba(3,7,18,.10);right:-6%;top:-12%}
-.ph .s3{width:20%;padding-top:20%;background:rgba(0,163,254,.16);right:16%;bottom:-10%}
-.ph.dark{background:linear-gradient(160deg,#1B2130,#030712)}
-.ph.dark .s1{background:rgba(255,85,0,.30)} .ph.dark .s2{background:rgba(255,255,255,.07)} .ph.dark .s3{background:rgba(0,163,254,.22)}
+/* 규칙 4 — 예시 이미지 자리 = 플랫 회색 */
+.ph{position:relative;overflow:hidden;background:#E7EAEE}
+.ph:before{content:"▦";position:absolute;inset:0;display:grid;place-items:center;color:#B7BEC8;font-size:26px}
+.ph.dark{background:linear-gradient(160deg,#4A5058,#23272E)}
+.ph.dark:before{color:rgba(255,255,255,.28)}
 
-/* ── AX Day 컴포넌트(팩 CSS 이식) ── */
+/* ── AX Day 컴포넌트 ── */
 .ax-eb{font-size:19px;font-weight:800;letter-spacing:-.01em;color:var(--orange)}
 .ax-ht{margin-top:16px;font-size:64px;font-weight:300;letter-spacing:-.02em;line-height:1.12;word-break:keep-all;text-wrap:balance}
 .ax-ht b{font-weight:700}
 .ax-hsub{margin:24px auto 0;font-size:19px;line-height:1.6;color:var(--gray);max-width:600px;word-break:keep-all}
+/* 규칙 2 — 포인트 컬러 = 오렌지 단일 · 버튼 = 잉크 필(다크 위=화이트) */
 .pill{background:var(--ink);color:#fff;font-size:16px;font-weight:700;padding:14px 30px;border-radius:999px;border:0;display:inline-block}
-.pill.w{background:#fff;color:var(--ink)} .pill.b{background:var(--blue)} .pill.o{background:var(--orange)}
+.pill.w{background:#fff;color:var(--ink)}
 .pill.line{background:transparent;color:var(--ink);border:1.5px solid rgba(3,7,18,.25)}
 .ax-sec{padding:96px 0}
 .ax-sec.alt{background:var(--alt)}
+/* 규칙 3 — 전 섹션 공통 표제: 센터 타이틀 + 서브텍스트 */
 .ax-tt{text-align:center;font-size:38px;font-weight:800;letter-spacing:-.035em;word-break:keep-all}
-.ax-sub{text-align:center;margin-top:14px;color:var(--gray);font-size:16.5px}
-.cards3{margin-top:54px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.cards2{margin-top:54px;display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.ax-sub{text-align:center;margin:14px auto 0;color:var(--gray);font-size:16.5px;line-height:1.6;max-width:640px;word-break:keep-all}
+.bodyc{margin-top:54px}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cards2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
 .ax-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
 .ax-card .ph{height:190px}
 .ax-card .bd{padding:24px 24px 26px}
@@ -65,36 +66,63 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 .onum{font-size:44px;font-weight:800;color:var(--orange);letter-spacing:-.03em;line-height:1}
 .inum{font-size:52px;font-weight:800;letter-spacing:-.04em;line-height:1}
 .field{display:block;width:100%;border:1px solid rgba(3,7,18,.16);border-radius:10px;padding:15px 16px;font-size:15px;color:var(--soft);background:#fff}
-.field+.field{margin-top:12px}
+.stepdot{width:52px;height:52px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;margin:0 auto}
+.okdot{width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900;flex:none}
+/* GNB·푸터·카운트다운 — 팩 실측 */
+.ax-nav{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.ax-nav .wrap{position:relative;display:flex;align-items:center;justify-content:center;gap:34px;height:60px;font-size:14.5px;color:#6B7280}
+.ax-nav .brand{position:absolute;left:30px;font-weight:900;font-size:19px;color:var(--ink)}
+.ax-nav .on{color:var(--ink);font-weight:700}
+.ax-navcta{position:absolute;right:30px;background:var(--ink);color:#fff;font-weight:700;font-size:13.5px;padding:9px 18px;border-radius:999px;white-space:nowrap}
+.ax-count{background:var(--ink);color:#fff;padding:16px 0}
+.ax-count .wrap{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+.ax-count .lb{font-size:14.5px;color:var(--soft);font-weight:600}
+.ax-count .seg{display:flex;align-items:baseline;gap:5px}
+.ax-count .seg b{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.1);border-radius:8px;padding:2px 7px;min-width:36px;text-align:center;display:inline-block}
+.ax-count .seg span{font-size:13px;color:var(--soft)}
+.ax-foot{background:#F5F6F7;padding:30px 0;font-size:13px;color:var(--soft)}
+.ax-foot .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media (max-width:900px){ .cards3,.cards2{grid-template-columns:1fr} .ax-ht{font-size:42px} }
 </style>
 </head>
 <body>
 
 <div class="wrap cat-head">
-  <div class="eb">AX Day Style · Sections Catalog</div>
+  <div class="eb">AX Day Style · Sections Catalog v2</div>
   <h1>이 스타일로, <b>전 섹션 베리에이션</b></h1>
-  <p>AX Day 팩의 실측 디자인 언어(화이트 + 잉크 #030712 · 오렌지 임팩트 #FF5500 · 블루 CTA #00A3FE ·
-  pill r999 · 라이트 300+볼드 믹스 타이포)로 섹션 어휘 22종 × 변형 47종을 전부 그린 시안.
-  사진 자리는 팩의 추상 모형(.ax-ph) 규약 그대로 — 실사진은 피커로 교체된다.</p>
+  <p>AX Day 팩 실측 디자인 언어로 GNB·푸터 포함 전 섹션을 그린 시안.
+  규격 v2: 콘텐츠 폭 1180 단일 · 포인트 컬러 오렌지 #FF5500 단일(버튼=잉크 필) ·
+  전 섹션 타이틀+서브텍스트 · 이미지 자리 플랫 회색(실사진은 피커로 교체).</p>
   <div class="toc">
-    <a href="#g1">도입부</a><a href="#g2">소개</a><a href="#g3">기능·콘텐츠</a><a href="#g4">신뢰·수치</a>
-    <a href="#g5">전환</a><a href="#g6">안내</a><a href="#g7">행사</a>
+    <a href="#g0">프레임</a><a href="#g1">도입부</a><a href="#g2">소개</a><a href="#g3">기능·콘텐츠</a>
+    <a href="#g4">신뢰·수치</a><a href="#g5">전환</a><a href="#g6">안내</a><a href="#g7">행사</a><a href="#g8">마감 프레임</a>
   </div>
 </div>
+
+<!-- ════════ 프레임(상단) ════════ -->
+<div class="grp-h" id="g0">00 · 프레임 — GNB</div>
+
+<div class="lbl"><b>gnb</b><span>상단 내비 — 좌 브랜드 · 센터 링크 · 우 잉크 pill CTA (팩 실측)</span></div>
+<div class="blk"><div class="ax-nav">
+  <div class="wrap">
+    <span class="brand">AX DAY</span>
+    <span class="on">소개</span><span>세션</span><span>일정·장소</span><span>FAQ</span>
+    <span class="ax-navcta">신청하기</span>
+  </div>
+</div></div>
 
 <!-- ════════ 도입부 ════════ -->
 <div class="grp-h" id="g1">01 · 도입부</div>
 
-<div class="lbl"><b>hero:center</b><span>중앙 정렬 타이포 — 팩 기본형(아이브로+라이트/볼드 믹스+와이드 포토)</span></div>
+<div class="lbl"><b>hero:center</b><span>중앙 정렬 타이포 — 팩 기본형</span></div>
 <div class="blk"><section class="ax-sec" style="padding:84px 0 0;text-align:center">
   <div class="wrap">
     <div class="ax-eb">채용, 에이전트로 완성하다</div>
     <h1 class="ax-ht">AI 시대의 HR,<br><b>AX DAY</b>에서 확인하세요</h1>
     <p class="ax-hsub">채용 에이전트로 완전히 달라질 HR의 변화.<br>현장 시연과 인사이트를 한자리에서.</p>
     <div style="margin-top:34px"><span class="pill">신청하기</span></div>
+    <div class="ph" style="height:380px;margin-top:56px"></div>
   </div>
-  <div class="ph" style="height:380px;margin-top:56px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
 </section></div>
 
 <div class="lbl"><b>hero:split</b><span>텍스트 좌 / 이미지 우 분할</span></div>
@@ -106,7 +134,7 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
       <p class="ax-hsub" style="margin-left:0;font-size:17px">기업 맞춤 시나리오로 채용 과정이 어떻게 바뀌는지, 실시간 시연으로 보여드립니다.</p>
       <div style="margin-top:30px;display:flex;gap:12px"><span class="pill">신청하기</span><span class="pill line">세션 보기</span></div>
     </div>
-    <div class="ph" style="height:400px;border-radius:16px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+    <div class="ph" style="height:400px;border-radius:16px"></div>
   </div>
 </section></div>
 
@@ -114,14 +142,14 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec" style="text-align:center;padding-bottom:0">
   <div class="wrap">
     <h1 class="ax-ht" style="font-size:52px">에이전트가 일하는 화면,<br><b>그대로 보여드립니다</b></h1>
-    <div style="margin-top:30px"><span class="pill b">데모 신청</span></div>
-    <div class="ph" style="height:430px;margin-top:52px;border-radius:18px 18px 0 0;border:1.5px solid var(--line);border-bottom:0"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+    <p class="ax-hsub">공고 작성부터 합격 안내까지, 실제 화면으로 확인하세요.</p>
+    <div style="margin-top:30px"><span class="pill">데모 신청</span></div>
+    <div class="ph" style="height:430px;margin-top:52px;border-radius:18px 18px 0 0;border:1.5px solid var(--line);border-bottom:0"></div>
   </div>
 </section></div>
 
 <div class="lbl"><b>hero:bgimage</b><span>배경 사진 풀블리드 + 오버레이 타이포 (신설 변형)</span></div>
 <div class="blk"><section class="ph dark" style="padding:150px 0 170px;text-align:center">
-  <span class="s1"></span><span class="s2"></span><span class="s3"></span>
   <div class="wrap" style="position:relative;z-index:2">
     <div class="ax-eb" style="color:#FFB38A">채용, 에이전트로 완성하다</div>
     <h1 class="ax-ht" style="color:#fff">HR의 다음 10년을<br><b>먼저 만나는 날</b></h1>
@@ -144,6 +172,7 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
   <div class="wrap">
     <div style="font-size:13.5px;color:var(--soft);font-weight:600">홈 · 프로그램 · <span style="color:var(--orange)">세션</span></div>
     <h1 style="margin-top:14px;font-size:44px;font-weight:800;letter-spacing:-.03em">세션 안내</h1>
+    <p style="margin-top:12px;color:var(--gray);font-size:16.5px">하루 일정의 전체 프로그램을 확인하세요.</p>
   </div>
 </section></div>
 
@@ -152,14 +181,18 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>overview:split</b><span>좌 제목 / 우 설명+포인트 — 기본형</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;grid-template-columns:1fr 1.3fr;gap:64px">
-    <h2 style="font-size:38px;font-weight:800;letter-spacing:-.035em;line-height:1.25">왜 지금<br>AX DAY인가</h2>
-    <div>
-      <p style="font-size:17px;line-height:1.7;color:var(--gray)">AI 에이전트 시대, HR의 업무 방식도 이제 달라져야 합니다. 도입을 고민하는 담당자를 위해 검증된 사례와 실행 전략을 준비했습니다.</p>
-      <div style="margin-top:28px;display:grid;gap:14px">
-        <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">01</b><span style="font-weight:600">실시간 에이전트 시연</span></div>
-        <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">02</b><span style="font-weight:600">현장 적용 전략과 사례</span></div>
-        <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">03</b><span style="font-weight:600">HR 네트워킹과 액티비티</span></div>
+  <div class="wrap">
+    <h2 class="ax-tt">왜 지금 AX DAY인가</h2>
+    <p class="ax-sub">AI 에이전트 시대, HR의 업무 방식도 이제 달라져야 합니다.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1fr 1.3fr;gap:64px">
+      <h3 style="font-size:30px;font-weight:800;letter-spacing:-.035em;line-height:1.3">하루에 확인하는<br>도입의 근거</h3>
+      <div>
+        <p style="font-size:17px;line-height:1.7;color:var(--gray)">도입을 고민하는 담당자를 위해 검증된 사례와 실행 전략을 준비했습니다. 시연·전략·네트워킹을 한 자리에서.</p>
+        <div style="margin-top:28px;display:grid;gap:14px">
+          <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">01</b><span style="font-weight:600">실시간 에이전트 시연</span></div>
+          <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">02</b><span style="font-weight:600">현장 적용 전략과 사례</span></div>
+          <div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--orange);font-size:15px">03</b><span style="font-weight:600">HR 네트워킹과 액티비티</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -168,23 +201,29 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="lbl"><b>overview:center</b><span>중앙 대형 문장</span></div>
 <div class="blk"><section class="ax-sec alt" style="text-align:center">
   <div class="wrap">
-    <p style="font-size:34px;font-weight:300;letter-spacing:-.03em;line-height:1.4;max-width:860px;margin:0 auto;word-break:keep-all">
+    <h2 class="ax-tt">우리가 그리는 HR</h2>
+    <p class="ax-sub">AX DAY가 제안하는 방향을 한 문장으로.</p>
+    <p class="bodyc" style="font-size:34px;font-weight:300;letter-spacing:-.03em;line-height:1.4;word-break:keep-all">
     채용의 반복 업무는 에이전트에게,<br>사람은 <b style="color:var(--orange)">사람에게 집중</b>하는 HR로.</p>
   </div>
 </section></div>
 
 <div class="lbl"><b>overview:problem</b><span>Problem / Solution 대비</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap cards2" style="margin-top:0">
-    <div style="border:1px solid var(--line);border-radius:16px;padding:36px">
-      <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">PROBLEM</div>
-      <h3 style="margin-top:12px;font-size:24px;font-weight:800;letter-spacing:-.03em">서류 검토에 하루가 다 간다</h3>
-      <p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--gray)">지원자는 늘고, 검토·일정 조율·안내 메일은 전부 수작업. 정작 후보자와의 대화 시간은 부족합니다.</p>
-    </div>
-    <div style="border:1.5px solid var(--orange);border-radius:16px;padding:36px;background:rgba(255,85,0,.04)">
-      <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--orange)">SOLUTION</div>
-      <h3 style="margin-top:12px;font-size:24px;font-weight:800;letter-spacing:-.03em">에이전트가 과정 전체를 실행</h3>
-      <p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--gray)">스크리닝부터 일정·안내까지 에이전트가 알아서. 담당자는 판단과 대화에만 집중하면 됩니다.</p>
+  <div class="wrap">
+    <h2 class="ax-tt">무엇이 문제이고, 어떻게 푸나</h2>
+    <p class="ax-sub">지금의 채용 업무와 에이전트 도입 후를 나란히 놓고 봅니다.</p>
+    <div class="bodyc cards2">
+      <div style="border:1px solid var(--line);border-radius:16px;padding:36px">
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">PROBLEM</div>
+        <h3 style="margin-top:12px;font-size:24px;font-weight:800;letter-spacing:-.03em">서류 검토에 하루가 다 간다</h3>
+        <p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--gray)">지원자는 늘고, 검토·일정 조율·안내 메일은 전부 수작업. 정작 후보자와의 대화 시간은 부족합니다.</p>
+      </div>
+      <div style="border:1.5px solid var(--orange);border-radius:16px;padding:36px;background:rgba(255,85,0,.04)">
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--orange)">SOLUTION</div>
+        <h3 style="margin-top:12px;font-size:24px;font-weight:800;letter-spacing:-.03em">에이전트가 과정 전체를 실행</h3>
+        <p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--gray)">스크리닝부터 일정·안내까지 에이전트가 알아서. 담당자는 판단과 대화에만 집중하면 됩니다.</p>
+      </div>
     </div>
   </div>
 </section></div>
@@ -193,18 +232,22 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec" style="text-align:center">
   <div class="wrap">
     <h2 class="ax-tt">이런 분들을 위해 준비했어요</h2>
-    <p class="ax-sub" style="max-width:640px;margin-left:auto;margin-right:auto">채용 자동화를 검토 중인 HR 리더,
-    에이전트 도입을 앞둔 실무 담당자, AI 시대의 HR 전략이 궁금한 모든 분.</p>
+    <p class="ax-sub">채용 자동화를 검토 중인 HR 리더, 에이전트 도입을 앞둔 실무 담당자,
+    AI 시대의 HR 전략이 궁금한 모든 분.</p>
   </div>
 </section></div>
 
 <div class="lbl"><b>intro:quote</b><span>인용문형</span></div>
 <div class="blk"><section class="ax-sec alt" style="text-align:center">
   <div class="wrap">
-    <div style="font-size:64px;font-weight:900;color:var(--orange);line-height:.6">“</div>
-    <p style="margin-top:18px;font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.45;max-width:760px;margin-left:auto;margin-right:auto;word-break:keep-all">
-    작년 AX DAY에서 본 시연이 계기가 되어, 올해 채용 리드타임을 절반으로 줄였습니다.</p>
-    <div style="margin-top:20px;font-size:14.5px;color:var(--soft);font-weight:600">2025 참가 기업 HR 팀장</div>
+    <h2 class="ax-tt">참가자의 한마디</h2>
+    <p class="ax-sub">작년 AX DAY가 남긴 것.</p>
+    <div class="bodyc">
+      <div style="font-size:64px;font-weight:900;color:var(--orange);line-height:.6">“</div>
+      <p style="margin-top:18px;font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.45;word-break:keep-all">
+      작년 AX DAY에서 본 시연이 계기가 되어,<br>올해 채용 리드타임을 절반으로 줄였습니다.</p>
+      <div style="margin-top:20px;font-size:14.5px;color:var(--soft);font-weight:600">2025 참가 기업 HR 팀장</div>
+    </div>
   </div>
 </section></div>
 
@@ -215,7 +258,8 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">참여해야 하는 이유</h2>
-    <div class="cards3">
+    <p class="ax-sub">시연·인사이트·네트워킹, 세 가지를 하루에 담았습니다.</p>
+    <div class="bodyc cards3">
       <div><div style="width:56px;height:56px;border-radius:50%;background:rgba(255,85,0,.12);display:grid;place-items:center;color:var(--orange);font-weight:800;font-size:20px">◆</div>
         <h3 style="margin-top:18px;font-size:21px;font-weight:800;letter-spacing:-.03em">실시간 시연</h3>
         <p style="margin-top:10px;font-size:15px;line-height:1.6;color:var(--gray)">우리 기업 시나리오에 맞춘 에이전트 시연을 현장에서 바로.</p></div>
@@ -229,20 +273,21 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
   </div>
 </section></div>
 
-<div class="lbl"><b>feature:cards</b><span>포토 카드 + 캡션 + 태그 칩 — 팩의 시그니처(이유 3카드)</span></div>
+<div class="lbl"><b>feature:cards</b><span>포토 카드 + 캡션 + 태그 칩 — 팩의 시그니처</span></div>
 <div class="blk"><section class="ax-sec alt">
   <div class="wrap">
     <h2 class="ax-tt">AX DAY에서 만나는 것</h2>
-    <div class="cards3">
-      <div class="ax-card"><div class="ph"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+    <p class="ax-sub">경험·인사이트·액티비티, 세 갈래 프로그램.</p>
+    <div class="bodyc cards3">
+      <div class="ax-card"><div class="ph"></div>
         <div class="bd"><div class="cap">Experience</div><div class="ct">채용이 바뀌는 순간</div>
         <div class="ds">에이전트가 공개하는 최신 기능. 우리 기업 시나리오로 채용 과정이 어떻게 바뀌는지 확인하세요.</div>
         <div class="chips"><span>실시간 시연</span><span>에이전트 활용법</span><span>1:1 컨설팅</span></div></div></div>
-      <div class="ax-card"><div class="ph"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+      <div class="ax-card"><div class="ph"></div>
         <div class="bd"><div class="cap">Insight</div><div class="ct">AI가 바꾸는 2026</div>
         <div class="ds">AI 시대, HR 담당자의 역할과 업무 방식은 어떻게 달라질까요? 현장에서 즉시 활용할 전략.</div>
         <div class="chips"><span>키노트</span><span>인사이트</span><span>활용사례</span></div></div></div>
-      <div class="ax-card"><div class="ph"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+      <div class="ax-card"><div class="ph"></div>
         <div class="bd"><div class="cap">Activity</div><div class="ct">함께 즐기는 액티비티</div>
         <div class="ds">HR 동료들을 만나 인사이트를 나누고, 특별한 이벤트와 풍성한 선물까지.</div>
         <div class="chips"><span>이벤트</span><span>네트워킹</span><span>플레이그라운드</span></div></div></div>
@@ -252,15 +297,19 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>feature:bento</b><span>벤토 — 대표 1(2칸) + 보조 스택</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">
-    <div class="ax-card" style="display:flex;flex-direction:column"><div class="ph" style="height:250px;flex:none"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
-      <div class="bd"><div class="cap">Main</div><div class="ct" style="font-size:26px">에이전트 라이브 시연</div>
-      <div class="ds">공고 작성부터 합격 안내까지 — 실제 채용 한 사이클을 무대에서 끝까지 돌립니다.</div></div></div>
-    <div style="display:grid;gap:22px">
-      <div class="ax-card"><div class="bd"><div class="cap">Sub</div><div class="ct" style="font-size:19px">도입 로드맵 세션</div>
-        <div class="ds" style="font-size:14px">우리 회사 규모에 맞는 단계별 도입 전략.</div></div></div>
-      <div class="ax-card"><div class="bd"><div class="cap">Sub</div><div class="ct" style="font-size:19px">1:1 컨설팅 부스</div>
-        <div class="ds" style="font-size:14px">현장에서 바로 받는 맞춤 상담.</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">핵심 프로그램</h2>
+    <p class="ax-sub">대표 세션 하나를 크게, 나머지를 곁들여.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">
+      <div class="ax-card" style="display:flex;flex-direction:column"><div class="ph" style="height:250px;flex:none"></div>
+        <div class="bd"><div class="cap">Main</div><div class="ct" style="font-size:26px">에이전트 라이브 시연</div>
+        <div class="ds">공고 작성부터 합격 안내까지 — 실제 채용 한 사이클을 무대에서 끝까지 돌립니다.</div></div></div>
+      <div style="display:grid;gap:22px">
+        <div class="ax-card"><div class="bd"><div class="cap">Sub</div><div class="ct" style="font-size:19px">도입 로드맵 세션</div>
+          <div class="ds" style="font-size:14px">우리 회사 규모에 맞는 단계별 도입 전략.</div></div></div>
+        <div class="ax-card"><div class="bd"><div class="cap">Sub</div><div class="ct" style="font-size:19px">1:1 컨설팅 부스</div>
+          <div class="ds" style="font-size:14px">현장에서 바로 받는 맞춤 상담.</div></div></div>
+      </div>
     </div>
   </div>
 </section></div>
@@ -268,8 +317,9 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="lbl"><b>feature:list</b><span>아이콘 리스트(밀도형) — 2열</span></div>
 <div class="blk"><section class="ax-sec alt">
   <div class="wrap">
-    <h2 class="ax-tt" style="text-align:left">하루에 다 담았습니다</h2>
-    <div class="cards2" style="margin-top:40px;gap:14px 48px;grid-template-columns:repeat(2,1fr)">
+    <h2 class="ax-tt">하루에 다 담았습니다</h2>
+    <p class="ax-sub">프로그램 전체를 한눈에.</p>
+    <div class="bodyc cards2" style="gap:14px 48px">
       <div style="display:flex;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)"><span style="color:var(--orange);font-weight:900">—</span><div><b>키노트</b> <span style="color:var(--gray);font-size:14.5px">— AI가 바꾸는 HR의 10년</span></div></div>
       <div style="display:flex;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)"><span style="color:var(--orange);font-weight:900">—</span><div><b>라이브 데모</b> <span style="color:var(--gray);font-size:14.5px">— 채용 전 과정 시연</span></div></div>
       <div style="display:flex;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)"><span style="color:var(--orange);font-weight:900">—</span><div><b>사례 발표</b> <span style="color:var(--gray);font-size:14.5px">— 도입 기업의 실제 수치</span></div></div>
@@ -280,55 +330,64 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>featurerows:zigzag</b><span>이미지 좌우 교차 — 기본형</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;gap:72px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
-      <div class="ph" style="height:300px;border-radius:16px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
-      <div><div class="ax-eb" style="font-size:14px">SCREENING</div>
-        <h3 style="margin-top:10px;font-size:28px;font-weight:800;letter-spacing:-.03em">서류 검토, 에이전트가 먼저</h3>
-        <p style="margin-top:14px;font-size:15.5px;line-height:1.7;color:var(--gray)">직무 요건에 맞춰 지원서를 분석하고 추천 순위를 제안합니다. 담당자는 결과를 검토하고 승인만 하면 됩니다.</p></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
-      <div><div class="ax-eb" style="font-size:14px">SCHEDULING</div>
-        <h3 style="margin-top:10px;font-size:28px;font-weight:800;letter-spacing:-.03em">면접 조율은 자동으로</h3>
-        <p style="margin-top:14px;font-size:15.5px;line-height:1.7;color:var(--gray)">면접관과 후보자의 일정을 맞추고 안내까지 발송. 조율 왕복 메일이 사라집니다.</p></div>
-      <div class="ph" style="height:300px;border-radius:16px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+  <div class="wrap">
+    <h2 class="ax-tt">에이전트가 일하는 방식</h2>
+    <p class="ax-sub">채용의 각 구간에서 무엇이 자동화되는지 화면과 함께.</p>
+    <div class="bodyc" style="display:grid;gap:72px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
+        <div class="ph" style="height:300px;border-radius:16px"></div>
+        <div><div class="ax-eb" style="font-size:14px">SCREENING</div>
+          <h3 style="margin-top:10px;font-size:28px;font-weight:800;letter-spacing:-.03em">서류 검토, 에이전트가 먼저</h3>
+          <p style="margin-top:14px;font-size:15.5px;line-height:1.7;color:var(--gray)">직무 요건에 맞춰 지원서를 분석하고 추천 순위를 제안합니다. 담당자는 결과를 검토하고 승인만 하면 됩니다.</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
+        <div><div class="ax-eb" style="font-size:14px">SCHEDULING</div>
+          <h3 style="margin-top:10px;font-size:28px;font-weight:800;letter-spacing:-.03em">면접 조율은 자동으로</h3>
+          <p style="margin-top:14px;font-size:15.5px;line-height:1.7;color:var(--gray)">면접관과 후보자의 일정을 맞추고 안내까지 발송. 조율 왕복 메일이 사라집니다.</p></div>
+        <div class="ph" style="height:300px;border-radius:16px"></div>
+      </div>
     </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>featurerows:numbered</b><span>번호 + 제목 교차</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap" style="display:grid;gap:0">
-    <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid var(--line)">
-      <div class="onum">01</div>
-      <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">공고 작성</h3>
-      <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">직무 정보만 넣으면 에이전트가 공고 초안과 평가 기준을 함께 만듭니다.</p></div>
-    </div>
-    <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid var(--line)">
-      <div class="onum">02</div>
-      <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">스크리닝</h3>
-      <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">기준에 따라 전 지원서를 분석하고 추천 리스트를 제안합니다.</p></div>
-    </div>
-    <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0">
-      <div class="onum">03</div>
-      <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">면접·안내</h3>
-      <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">일정 조율부터 결과 안내까지, 커뮤니케이션 전체를 실행합니다.</p></div>
+  <div class="wrap">
+    <h2 class="ax-tt">채용 한 사이클, 세 단계</h2>
+    <p class="ax-sub">에이전트가 실행하는 순서 그대로.</p>
+    <div class="bodyc" style="display:grid;gap:0">
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid var(--line)">
+        <div class="onum">01</div>
+        <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">공고 작성</h3>
+        <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">직무 정보만 넣으면 에이전트가 공고 초안과 평가 기준을 함께 만듭니다.</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid var(--line)">
+        <div class="onum">02</div>
+        <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">스크리닝</h3>
+        <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">기준에 따라 전 지원서를 분석하고 추천 리스트를 제안합니다.</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0">
+        <div class="onum">03</div>
+        <div><h3 style="font-size:24px;font-weight:800;letter-spacing:-.03em">면접·안내</h3>
+        <p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--gray)">일정 조율부터 결과 안내까지, 커뮤니케이션 전체를 실행합니다.</p></div>
+      </div>
     </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>featurerows:checks</b><span>체크리스트 교차</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
-    <div>
-      <h3 style="font-size:28px;font-weight:800;letter-spacing:-.03em">도입 전 이것부터 확인</h3>
-      <div style="margin-top:24px;display:grid;gap:14px">
-        <div style="display:flex;gap:12px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900">✓</span><span style="font-weight:600">현재 채용 프로세스 진단</span></div>
-        <div style="display:flex;gap:12px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900">✓</span><span style="font-weight:600">자동화 우선 구간 선정</span></div>
-        <div style="display:flex;gap:12px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900">✓</span><span style="font-weight:600">보안·개인정보 정책 점검</span></div>
+  <div class="wrap">
+    <h2 class="ax-tt">도입 전 이것부터 확인</h2>
+    <p class="ax-sub">체크리스트 세 줄이면 준비 끝.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">
+      <div style="display:grid;gap:14px">
+        <div style="display:flex;gap:12px;align-items:center"><span class="okdot">✓</span><span style="font-weight:600">현재 채용 프로세스 진단</span></div>
+        <div style="display:flex;gap:12px;align-items:center"><span class="okdot">✓</span><span style="font-weight:600">자동화 우선 구간 선정</span></div>
+        <div style="display:flex;gap:12px;align-items:center"><span class="okdot">✓</span><span style="font-weight:600">보안·개인정보 정책 점검</span></div>
       </div>
+      <div class="ph" style="height:300px;border-radius:16px"></div>
     </div>
-    <div class="ph" style="height:300px;border-radius:16px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
   </div>
 </section></div>
 
@@ -336,24 +395,25 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec alt">
   <div class="wrap">
     <h2 class="ax-tt">지난 AX DAY 현장</h2>
-    <div class="cards3" style="gap:14px">
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s2"></span><span class="s3"></span></div>
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s1"></span><span class="s3"></span></div>
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s3"></span><span class="s1"></span></div>
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s2"></span><span class="s1"></span></div>
-      <div class="ph" style="height:200px;border-radius:12px"><span class="s1"></span><span class="s2"></span></div>
+    <p class="ax-sub">2025 행사 스케치.</p>
+    <div class="bodyc cards3" style="gap:14px">
+      <div class="ph" style="height:200px;border-radius:12px"></div><div class="ph" style="height:200px;border-radius:12px"></div><div class="ph" style="height:200px;border-radius:12px"></div>
+      <div class="ph" style="height:200px;border-radius:12px"></div><div class="ph" style="height:200px;border-radius:12px"></div><div class="ph" style="height:200px;border-radius:12px"></div>
     </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>gallery:mosaic</b><span>대표 1장 크게 + 보조</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
-    <div class="ph" style="height:414px;border-radius:14px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
-    <div style="display:grid;gap:14px">
-      <div class="ph" style="height:200px;border-radius:14px"><span class="s2"></span><span class="s3"></span></div>
-      <div class="ph" style="height:200px;border-radius:14px"><span class="s3"></span><span class="s1"></span></div>
+  <div class="wrap">
+    <h2 class="ax-tt">현장 하이라이트</h2>
+    <p class="ax-sub">대표 컷 하나, 곁들이는 순간들.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+      <div class="ph" style="height:414px;border-radius:14px"></div>
+      <div style="display:grid;gap:14px">
+        <div class="ph" style="height:200px;border-radius:14px"></div>
+        <div class="ph" style="height:200px;border-radius:14px"></div>
+      </div>
     </div>
   </div>
 </section></div>
@@ -362,15 +422,17 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec alt" style="text-align:center">
   <div class="wrap">
     <h2 class="ax-tt">에이전트 대시보드</h2>
-    <div class="ph" style="height:420px;margin-top:44px;border-radius:18px;border:1.5px solid var(--line)"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+    <p class="ax-sub">채용 현황이 한 화면에 모입니다.</p>
+    <div class="bodyc"><div class="ph" style="height:420px;border-radius:18px;border:1.5px solid var(--line)"></div></div>
   </div>
 </section></div>
 
 <div class="lbl"><b>compare:table</b><span>비교표 — 기본형</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="max-width:900px">
+  <div class="wrap">
     <h2 class="ax-tt">도입 전후, 무엇이 달라지나</h2>
-    <table style="width:100%;margin-top:48px;border-collapse:collapse;font-size:15.5px">
+    <p class="ax-sub">같은 일, 다른 속도.</p>
+    <table class="bodyc" style="width:100%;border-collapse:collapse;font-size:15.5px">
       <tr style="border-bottom:2px solid var(--ink)"><th style="text-align:left;padding:14px 10px;color:var(--soft);font-size:13px">구분</th><th style="text-align:left;padding:14px 10px;color:var(--orange)">에이전트 도입</th><th style="text-align:left;padding:14px 10px;color:var(--soft)">기존 방식</th></tr>
       <tr style="border-bottom:1px solid var(--line)"><td style="padding:14px 10px;color:var(--soft)">서류 검토</td><td style="padding:14px 10px;font-weight:700">수 분 내 전건 분석</td><td style="padding:14px 10px;color:var(--gray)">건당 수작업</td></tr>
       <tr style="border-bottom:1px solid var(--line)"><td style="padding:14px 10px;color:var(--soft)">일정 조율</td><td style="padding:14px 10px;font-weight:700">자동 매칭·발송</td><td style="padding:14px 10px;color:var(--gray)">왕복 메일</td></tr>
@@ -381,27 +443,35 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>compare:beforeafter</b><span>좌우 Before / After 패널</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards2" style="margin-top:0">
-    <div style="border-radius:16px;padding:36px;background:#EDEFF2">
-      <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">BEFORE</div>
-      <ul style="margin-top:18px;display:grid;gap:12px;font-size:15.5px;color:var(--gray)">
-        <li>— 서류 검토에 주당 12시간</li><li>— 면접 조율 왕복 메일 평균 6통</li><li>— 불합격 안내 지연·누락</li></ul>
-    </div>
-    <div style="border-radius:16px;padding:36px;background:var(--ink);color:#fff">
-      <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:#FFB38A">AFTER</div>
-      <ul style="margin-top:18px;display:grid;gap:12px;font-size:15.5px">
-        <li>— 전건 자동 분석 + 추천 순위</li><li>— 일정 자동 매칭·안내</li><li>— 전 단계 응대 자동화</li></ul>
+  <div class="wrap">
+    <h2 class="ax-tt">Before / After</h2>
+    <p class="ax-sub">도입 3개월, 팀의 하루가 이렇게 바뀝니다.</p>
+    <div class="bodyc cards2">
+      <div style="border-radius:16px;padding:36px;background:#EDEFF2">
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">BEFORE</div>
+        <ul style="margin-top:18px;display:grid;gap:12px;font-size:15.5px;color:var(--gray)">
+          <li>— 서류 검토에 주당 12시간</li><li>— 면접 조율 왕복 메일 평균 6통</li><li>— 불합격 안내 지연·누락</li></ul>
+      </div>
+      <div style="border-radius:16px;padding:36px;background:var(--ink);color:#fff">
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:#FFB38A">AFTER</div>
+        <ul style="margin-top:18px;display:grid;gap:12px;font-size:15.5px">
+          <li>— 전건 자동 분석 + 추천 순위</li><li>— 일정 자동 매칭·안내</li><li>— 전 단계 응대 자동화</li></ul>
+      </div>
     </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>compare:cards</b><span>카드 비교</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap cards2" style="margin-top:0">
-    <div class="ax-card"><div class="bd"><div class="cap">기존 방식</div><div class="ct">사람이 전 과정</div>
-      <div class="ds">검토·조율·안내 전부 수작업. 채용이 커질수록 사람이 갈립니다.</div></div></div>
-    <div class="ax-card" style="border:1.5px solid var(--orange)"><div class="bd"><div class="cap" style="color:var(--orange)">에이전트</div><div class="ct">사람은 판단만</div>
-      <div class="ds">실행은 에이전트, 판단은 사람. 채용 규모와 무관하게 일정한 속도.</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">두 가지 방식</h2>
+    <p class="ax-sub">사람이 전부 하던 일과, 판단만 하는 일.</p>
+    <div class="bodyc cards2">
+      <div class="ax-card"><div class="bd"><div class="cap">기존 방식</div><div class="ct">사람이 전 과정</div>
+        <div class="ds">검토·조율·안내 전부 수작업. 채용이 커질수록 사람이 갈립니다.</div></div></div>
+      <div class="ax-card" style="border:1.5px solid var(--orange)"><div class="bd"><div class="cap" style="color:var(--orange)">에이전트</div><div class="ct">사람은 판단만</div>
+        <div class="ds">실행은 에이전트, 판단은 사람. 채용 규모와 무관하게 일정한 속도.</div></div></div>
+    </div>
   </div>
 </section></div>
 
@@ -410,27 +480,39 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>stats:numbers</b><span>숫자 나열 — 기본형</span></div>
 <div class="blk"><section class="ax-sec" style="text-align:center">
-  <div class="wrap cards3" style="margin-top:0">
-    <div><div class="inum">1,200<span style="color:var(--orange)">+</span></div><div style="margin-top:10px;color:var(--gray);font-weight:600">누적 참가 HR 담당자</div></div>
-    <div><div class="inum">96<span style="color:var(--orange)">%</span></div><div style="margin-top:10px;color:var(--gray);font-weight:600">재참가 의향</div></div>
-    <div><div class="inum">1/2</div><div style="margin-top:10px;color:var(--gray);font-weight:600">평균 채용 리드타임</div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">숫자로 보는 AX DAY</h2>
+    <p class="ax-sub">지난 행사가 남긴 기록.</p>
+    <div class="bodyc cards3">
+      <div><div class="inum">1,200<span style="color:var(--orange)">+</span></div><div style="margin-top:10px;color:var(--gray);font-weight:600">누적 참가 HR 담당자</div></div>
+      <div><div class="inum">96<span style="color:var(--orange)">%</span></div><div style="margin-top:10px;color:var(--gray);font-weight:600">재참가 의향</div></div>
+      <div><div class="inum">1/2</div><div style="margin-top:10px;color:var(--gray);font-weight:600">평균 채용 리드타임</div></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>stats:kpi</b><span>KPI 카드</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards3" style="margin-top:0">
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">-58%</div><div style="margin-top:10px;font-weight:700">서류 검토 시간</div><div class="ds" style="margin-top:6px">도입 3개월 평균</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">×3</div><div style="margin-top:10px;font-weight:700">후보 응답 속도</div><div class="ds" style="margin-top:6px">24시간 자동 응대</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">+31%</div><div style="margin-top:10px;font-weight:700">면접 노쇼 감소</div><div class="ds" style="margin-top:6px">리마인드 자동화</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">도입 기업의 변화</h2>
+    <p class="ax-sub">참가 후 도입한 기업들의 3개월 평균.</p>
+    <div class="bodyc cards3">
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">-58%</div><div style="margin-top:10px;font-weight:700">서류 검토 시간</div><div class="ds" style="margin-top:6px">도입 3개월 평균</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">×3</div><div style="margin-top:10px;font-weight:700">후보 응답 속도</div><div class="ds" style="margin-top:6px">24시간 자동 응대</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:40px">+31%</div><div style="margin-top:10px;font-weight:700">면접 노쇼 감소</div><div class="ds" style="margin-top:6px">리마인드 자동화</div></div></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>stats:big</b><span>대형 숫자 하나 강조</span></div>
 <div class="blk"><section class="ax-sec" style="text-align:center">
   <div class="wrap">
-    <div style="font-size:120px;font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--orange)">96%</div>
-    <p style="margin-top:18px;font-size:19px;color:var(--gray);font-weight:600">참가자 96%가 "동료에게 추천하겠다"고 답했습니다</p>
+    <h2 class="ax-tt">참가자 만족도</h2>
+    <p class="ax-sub">행사 직후 설문 결과.</p>
+    <div class="bodyc">
+      <div style="font-size:120px;font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--orange)">96%</div>
+      <p style="margin-top:18px;font-size:19px;color:var(--gray);font-weight:600">"동료에게 추천하겠다"고 답했습니다</p>
+    </div>
   </div>
 </section></div>
 
@@ -438,7 +520,8 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec alt">
   <div class="wrap">
     <h2 class="ax-tt">참가자들의 이야기</h2>
-    <div class="cards3">
+    <p class="ax-sub">2025 참가자 후기에서 골랐습니다.</p>
+    <div class="bodyc cards3">
       <div class="ax-card"><div class="bd"><div style="font-size:34px;font-weight:900;color:var(--orange);line-height:.7">“</div>
         <p style="margin-top:12px;font-size:15px;line-height:1.65;color:var(--gray)">시연을 보고 나서야 '이게 진짜 되는구나' 싶었어요. 돌아가서 바로 도입 검토를 시작했습니다.</p>
         <div style="margin-top:16px;font-size:13.5px;color:var(--soft);font-weight:600">제조업 · HR 팀장</div></div></div>
@@ -455,24 +538,31 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="lbl"><b>testimonial:single</b><span>단일 대형 인용</span></div>
 <div class="blk"><section class="ax-sec" style="text-align:center">
   <div class="wrap">
-    <p style="font-size:30px;font-weight:600;letter-spacing:-.03em;line-height:1.5;max-width:820px;margin:0 auto;word-break:keep-all">
-    "반복 업무가 사라지니, <b style="color:var(--orange)">사람을 보는 시간</b>이 돌아왔습니다."</p>
-    <div style="margin-top:22px;font-size:14.5px;color:var(--soft);font-weight:600">2025 참가 기업 · CHRO</div>
+    <h2 class="ax-tt">가장 많이 들은 말</h2>
+    <p class="ax-sub">참가 기업 CHRO의 후기.</p>
+    <div class="bodyc">
+      <p style="font-size:30px;font-weight:600;letter-spacing:-.03em;line-height:1.5;word-break:keep-all">
+      "반복 업무가 사라지니, <b style="color:var(--orange)">사람을 보는 시간</b>이 돌아왔습니다."</p>
+      <div style="margin-top:22px;font-size:14.5px;color:var(--soft);font-weight:600">2025 참가 기업 · CHRO</div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>testimonial:logos</b><span>고객사 로고 그리드 + 수치</span></div>
 <div class="blk"><section class="ax-sec alt" style="text-align:center">
   <div class="wrap">
-    <p style="font-size:15px;color:var(--soft);font-weight:600">함께한 기업들</p>
-    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">ALPHA</span>
-      <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">BRAVO</span>
-      <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">CHARLIE</span>
-      <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">DELTA</span>
-      <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">ECHO</span>
+    <h2 class="ax-tt">함께한 기업들</h2>
+    <p class="ax-sub">업종을 가리지 않고 모입니다.</p>
+    <div class="bodyc">
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">ALPHA</span>
+        <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">BRAVO</span>
+        <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">CHARLIE</span>
+        <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">DELTA</span>
+        <span style="border:1px solid var(--line);border-radius:999px;padding:12px 28px;font-weight:800;color:var(--gray)">ECHO</span>
+      </div>
+      <div style="margin-top:28px;font-size:22px;font-weight:800">누적 <span style="color:var(--orange)">320개 기업</span>이 참가했습니다</div>
     </div>
-    <div style="margin-top:28px;font-size:22px;font-weight:800">누적 <span style="color:var(--orange)">320개 기업</span>이 참가했습니다</div>
   </div>
 </section></div>
 
@@ -492,63 +582,77 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec" style="text-align:center">
   <div class="wrap">
     <h2 class="ax-tt">자리가 얼마 남지 않았어요</h2>
+    <p class="ax-sub">선착순 마감 전에 신청하세요.</p>
     <div style="margin-top:30px"><span class="pill">지금 신청하기</span></div>
   </div>
 </section></div>
 
 <div class="lbl"><b>cta:cards</b><span>2단 카드 CTA — 문의 / 자료 분리</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards2" style="margin-top:0">
-    <div class="ax-card" style="background:var(--ink);color:#fff;border:0"><div class="bd" style="padding:34px">
-      <div class="ct" style="font-size:24px">참가 신청</div>
-      <div class="ds" style="color:rgba(255,255,255,.72)">현장에서 시연과 컨설팅까지 한 번에.</div>
-      <div style="margin-top:22px"><span class="pill o">신청하기</span></div></div></div>
-    <div class="ax-card"><div class="bd" style="padding:34px">
-      <div class="ct" style="font-size:24px">소개 자료 받기</div>
-      <div class="ds">참석이 어렵다면 에이전트 소개서를 먼저.</div>
-      <div style="margin-top:22px"><span class="pill line">자료 요청</span></div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">두 가지 방법으로 시작하세요</h2>
+    <p class="ax-sub">현장 참가 또는 자료 먼저 — 편한 쪽으로.</p>
+    <div class="bodyc cards2">
+      <div class="ax-card" style="background:var(--ink);color:#fff;border:0"><div class="bd" style="padding:34px">
+        <div class="ct" style="font-size:24px">참가 신청</div>
+        <div class="ds" style="color:rgba(255,255,255,.72)">현장에서 시연과 컨설팅까지 한 번에.</div>
+        <div style="margin-top:22px"><span class="pill w">신청하기</span></div></div></div>
+      <div class="ax-card"><div class="bd" style="padding:34px">
+        <div class="ct" style="font-size:24px">소개 자료 받기</div>
+        <div class="ds">참석이 어렵다면 에이전트 소개서를 먼저.</div>
+        <div style="margin-top:22px"><span class="pill line">자료 요청</span></div></div></div>
+    </div>
   </div>
 </section></div>
 
-<div class="lbl"><b>form:center</b><span>중앙 단일 폼 — 기본형 (블루 제출 버튼)</span></div>
+<div class="lbl"><b>form:center</b><span>중앙 단일 폼 — 기본형(폭 규격에 맞춘 2열 필드)</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="max-width:560px">
+  <div class="wrap">
     <h2 class="ax-tt">참가 신청</h2>
     <p class="ax-sub">신청 후 참석 확정 안내를 보내드립니다.</p>
-    <div style="margin-top:40px">
-      <span class="field">회사명</span><span class="field">담당자 이름</span><span class="field">이메일</span>
-      <span class="field" style="height:110px">기대하는 내용 (선택)</span>
-      <span class="pill b" style="display:block;text-align:center;margin-top:18px">신청하기</span>
+    <div class="bodyc" style="border:1px solid var(--line);border-radius:16px;padding:36px">
+      <div class="cards2" style="gap:12px">
+        <span class="field">회사명</span><span class="field">담당자 이름</span>
+        <span class="field">이메일</span><span class="field">연락처</span>
+      </div>
+      <span class="field" style="height:110px;margin-top:12px">기대하는 내용 (선택)</span>
+      <div style="text-align:center;margin-top:22px"><span class="pill" style="padding:14px 56px">신청하기</span></div>
     </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>form:split</b><span>좌 설명 / 우 폼</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap" style="display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:start">
-    <div><h2 style="font-size:34px;font-weight:800;letter-spacing:-.035em;line-height:1.3">도입 문의</h2>
-      <p style="margin-top:16px;font-size:15.5px;line-height:1.7;color:var(--gray)">우리 회사 채용 규모에 맞는 도입 방안을 안내해 드립니다. 남겨주시면 1영업일 안에 연락드려요.</p>
-      <div style="margin-top:24px;display:grid;gap:10px;font-size:14.5px;color:var(--gray)">
-        <div>— 평균 응답 1영업일</div><div>— 규모별 요금 안내 포함</div><div>— 보안 검토 자료 제공</div></div></div>
-    <div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px">
-      <span class="field">회사명</span><span class="field">이메일</span><span class="field" style="height:96px">문의 내용</span>
-      <span class="pill b" style="display:block;text-align:center;margin-top:16px">문의 보내기</span></div>
+  <div class="wrap">
+    <h2 class="ax-tt">도입 문의</h2>
+    <p class="ax-sub">우리 회사 채용 규모에 맞는 도입 방안을 안내해 드립니다.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:start">
+      <div><p style="font-size:15.5px;line-height:1.7;color:var(--gray)">남겨주시면 1영업일 안에 연락드려요.</p>
+        <div style="margin-top:24px;display:grid;gap:10px;font-size:14.5px;color:var(--gray)">
+          <div style="display:flex;gap:10px"><span style="color:var(--orange);font-weight:900">·</span>평균 응답 1영업일</div>
+          <div style="display:flex;gap:10px"><span style="color:var(--orange);font-weight:900">·</span>규모별 요금 안내 포함</div>
+          <div style="display:flex;gap:10px"><span style="color:var(--orange);font-weight:900">·</span>보안 검토 자료 제공</div></div></div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px">
+        <span class="field">회사명</span><span class="field" style="margin-top:12px">이메일</span><span class="field" style="margin-top:12px;height:96px">문의 내용</span>
+        <span class="pill" style="display:block;text-align:center;margin-top:16px">문의 보내기</span></div>
+    </div>
   </div>
 </section></div>
 
-<div class="lbl"><b>pricing:cards</b><span>플랜 카드 — 기본형(중앙 강조=잉크 다크)</span></div>
+<div class="lbl"><b>pricing:cards</b><span>플랜 카드 — 기본형(중앙 강조)</span></div>
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">참가권</h2>
-    <div class="cards3">
+    <p class="ax-sub">필요한 만큼만 고르세요.</p>
+    <div class="bodyc cards3">
       <div class="ax-card"><div class="bd" style="text-align:center;padding:34px 24px">
         <div class="cap">Basic</div><div class="inum" style="font-size:40px;margin-top:10px">무료</div>
         <div class="ds" style="margin-top:14px">전 세션 참관<br>네트워킹 라운지</div>
         <div style="margin-top:22px"><span class="pill line" style="font-size:14px;padding:11px 24px">신청</span></div></div></div>
-      <div class="ax-card" style="background:var(--ink);color:#fff;border:0;transform:translateY(-8px)"><div class="bd" style="text-align:center;padding:38px 24px">
-        <div class="cap" style="color:#FFB38A">Pro</div><div class="inum" style="font-size:40px;margin-top:10px">5만원</div>
-        <div class="ds" style="margin-top:14px;color:rgba(255,255,255,.75)">1:1 컨설팅 30분<br>핸즈온 워크숍 + 굿즈</div>
-        <div style="margin-top:22px"><span class="pill o" style="font-size:14px;padding:11px 24px">신청</span></div></div></div>
+      <div class="ax-card" style="border:1.5px solid var(--orange);transform:translateY(-8px)"><div class="bd" style="text-align:center;padding:38px 24px">
+        <div class="cap" style="color:var(--orange)">Pro</div><div class="inum" style="font-size:40px;margin-top:10px">5만원</div>
+        <div class="ds" style="margin-top:14px">1:1 컨설팅 30분<br>핸즈온 워크숍 + 굿즈</div>
+        <div style="margin-top:22px"><span class="pill" style="font-size:14px;padding:11px 24px">신청</span></div></div></div>
       <div class="ax-card"><div class="bd" style="text-align:center;padding:34px 24px">
         <div class="cap">Team</div><div class="inum" style="font-size:40px;margin-top:10px">문의</div>
         <div class="ds" style="margin-top:14px">5인 이상 단체<br>전용 컨설팅 세션</div>
@@ -559,9 +663,10 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>pricing:table</b><span>요금 비교표</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap" style="max-width:860px">
+  <div class="wrap">
     <h2 class="ax-tt">플랜 비교</h2>
-    <table style="width:100%;margin-top:44px;border-collapse:collapse;font-size:15px;background:#fff;border-radius:14px;overflow:hidden">
+    <p class="ax-sub">포함 항목을 한눈에.</p>
+    <table class="bodyc" style="width:100%;border-collapse:collapse;font-size:15px;background:#fff;border-radius:14px;overflow:hidden">
       <tr style="border-bottom:2px solid var(--ink)"><th style="text-align:left;padding:16px;color:var(--soft);font-size:13px">항목</th><th style="padding:16px">Basic</th><th style="padding:16px;color:var(--orange)">Pro</th><th style="padding:16px">Team</th></tr>
       <tr style="border-bottom:1px solid var(--line)"><td style="padding:14px 16px;color:var(--gray)">전 세션 참관</td><td style="text-align:center">✓</td><td style="text-align:center;color:var(--orange);font-weight:800">✓</td><td style="text-align:center">✓</td></tr>
       <tr style="border-bottom:1px solid var(--line)"><td style="padding:14px 16px;color:var(--gray)">1:1 컨설팅</td><td style="text-align:center;color:var(--soft)">—</td><td style="text-align:center;color:var(--orange);font-weight:800">30분</td><td style="text-align:center">전용 세션</td></tr>
@@ -575,12 +680,13 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>faq:accordion</b><span>미니멀 아코디언('+') — 팩의 시그니처</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="max-width:900px">
+  <div class="wrap">
     <h2 class="ax-tt">자주 묻는 질문</h2>
-    <div style="margin-top:44px">
+    <p class="ax-sub">신청 전 가장 많이 묻는 것들.</p>
+    <div class="bodyc">
       <div style="border-bottom:1px solid rgba(3,7,18,.1);padding:24px 6px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:18.5px;font-weight:600;letter-spacing:-.02em">세미나에 참가비가 있나요?</span><span style="font-size:22px;color:var(--soft)">+</span></div>
       <div style="border-bottom:1px solid rgba(3,7,18,.1);padding:24px 6px">
-        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18.5px;font-weight:600;letter-spacing:-.02em">신청은 언제까지 할 수 있나요?</span><span style="font-size:22px;color:var(--ink);transform:rotate(45deg);display:inline-block">+</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18.5px;font-weight:600;letter-spacing:-.02em">신청은 언제까지 할 수 있나요?</span><span style="font-size:22px;color:var(--orange);transform:rotate(45deg);display:inline-block">+</span></div>
         <p style="margin-top:12px;font-size:16px;line-height:1.6;color:var(--gray)">좌석이 마감되기 전까지 신청할 수 있습니다. 조기 마감될 수 있어요.</p></div>
       <div style="border-bottom:1px solid rgba(3,7,18,.1);padding:24px 6px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:18.5px;font-weight:600;letter-spacing:-.02em">주차 지원이 가능한가요?</span><span style="font-size:22px;color:var(--soft)">+</span></div>
     </div>
@@ -589,42 +695,55 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>faq:twocol</b><span>2단 그리드</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards2" style="margin-top:0;gap:40px 56px;grid-template-columns:repeat(2,1fr)">
-    <div><h4 style="font-size:17px;font-weight:700">참가비가 있나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">무료입니다. 사전 신청 후 확정 안내를 받으시면 됩니다.</p></div>
-    <div><h4 style="font-size:17px;font-weight:700">현장 등록이 되나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">사전 신청자 우선이며 잔여석이 있으면 가능합니다.</p></div>
-    <div><h4 style="font-size:17px;font-weight:700">발표 자료를 받을 수 있나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">행사 후 신청자 전원에게 메일로 보내드립니다.</p></div>
-    <div><h4 style="font-size:17px;font-weight:700">주차가 가능한가요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">공간이 제한적이라 대중교통을 권장드립니다.</p></div>
+  <div class="wrap">
+    <h2 class="ax-tt">궁금한 것들</h2>
+    <p class="ax-sub">짧은 질문은 짧게 답합니다.</p>
+    <div class="bodyc cards2" style="gap:40px 56px">
+      <div><h4 style="font-size:17px;font-weight:700">참가비가 있나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">무료입니다. 사전 신청 후 확정 안내를 받으시면 됩니다.</p></div>
+      <div><h4 style="font-size:17px;font-weight:700">현장 등록이 되나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">사전 신청자 우선이며 잔여석이 있으면 가능합니다.</p></div>
+      <div><h4 style="font-size:17px;font-weight:700">발표 자료를 받을 수 있나요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">행사 후 신청자 전원에게 메일로 보내드립니다.</p></div>
+      <div><h4 style="font-size:17px;font-weight:700">주차가 가능한가요?</h4><p style="margin-top:8px;font-size:15px;line-height:1.6;color:var(--gray)">공간이 제한적이라 대중교통을 권장드립니다.</p></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>faq:category</b><span>카테고리 묶음</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap cards2" style="margin-top:0;gap:56px;grid-template-columns:repeat(2,1fr)">
-    <div><div class="ax-eb" style="font-size:14px">신청</div>
-      <div style="margin-top:16px;display:grid;gap:14px;font-size:15.5px">
-        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>마감은 언제인가요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">10/13(화) 18:00, 조기 마감될 수 있습니다.</p></div>
-        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>단체 신청이 되나요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">5인 이상은 별도 문의 주세요.</p></div></div></div>
-    <div><div class="ax-eb" style="font-size:14px">현장</div>
-      <div style="margin-top:16px;display:grid;gap:14px;font-size:15.5px">
-        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>주차가 가능한가요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">공간이 제한적입니다. 대중교통 권장.</p></div>
-        <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>점심이 제공되나요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">오후 행사로 다과와 커피가 준비됩니다.</p></div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">주제별로 찾아보세요</h2>
+    <p class="ax-sub">신청과 현장, 두 갈래로 정리했습니다.</p>
+    <div class="bodyc cards2" style="gap:56px">
+      <div><div class="ax-eb" style="font-size:14px">신청</div>
+        <div style="margin-top:16px;display:grid;gap:14px;font-size:15.5px">
+          <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>마감은 언제인가요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">10/13(화) 18:00, 조기 마감될 수 있습니다.</p></div>
+          <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>단체 신청이 되나요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">5인 이상은 별도 문의 주세요.</p></div></div></div>
+      <div><div class="ax-eb" style="font-size:14px">현장</div>
+        <div style="margin-top:16px;display:grid;gap:14px;font-size:15.5px">
+          <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>주차가 가능한가요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">공간이 제한적입니다. 대중교통 권장.</p></div>
+          <div style="padding-bottom:14px;border-bottom:1px solid var(--line)"><b>점심이 제공되나요?</b><p style="margin-top:6px;color:var(--gray);font-size:14.5px">오후 행사로 다과와 커피가 준비됩니다.</p></div></div></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>infocards</b><span>연락처·절차 카드 — 단일형</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards3" style="margin-top:0">
-    <div class="ax-card"><div class="bd"><div class="cap">이메일</div><div class="ct" style="font-size:19px">axday@midas.com</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="cap">전화</div><div class="ct" style="font-size:19px">02-000-0000</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="cap">절차</div><div class="ct" style="font-size:19px">신청 → 확정 안내 → 참석</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">문의 안내</h2>
+    <p class="ax-sub">궁금한 점은 편한 채널로 연락 주세요.</p>
+    <div class="bodyc cards3">
+      <div class="ax-card"><div class="bd"><div class="cap">이메일</div><div class="ct" style="font-size:19px">axday@midas.com</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="cap">전화</div><div class="ct" style="font-size:19px">02-000-0000</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="cap">절차</div><div class="ct" style="font-size:19px">신청 → 확정 안내 → 참석</div></div></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>notice</b><span>유의사항 — 단일형</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="max-width:820px">
-    <h2 class="ax-tt" style="text-align:left;font-size:28px">참가 안내</h2>
-    <div style="margin-top:28px;display:grid;gap:16px;font-size:15.5px;line-height:1.6;color:var(--gray)">
+  <div class="wrap">
+    <h2 class="ax-tt">참가 안내</h2>
+    <p class="ax-sub">오시기 전에 확인해 주세요.</p>
+    <div class="bodyc" style="display:grid;gap:16px;font-size:15.5px;line-height:1.6;color:var(--gray)">
       <div style="display:flex;gap:12px"><span style="color:var(--orange);font-weight:900">·</span>사전 등록 필수, 선착순 마감입니다.</div>
       <div style="display:flex;gap:12px"><span style="color:var(--orange);font-weight:900">·</span>행사장 주차 공간이 제한적입니다. 대중교통 이용을 권장드립니다.</div>
       <div style="display:flex;gap:12px"><span style="color:var(--orange);font-weight:900">·</span>현장 사진·영상이 홍보 자료로 활용될 수 있습니다.</div>
@@ -636,12 +755,13 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec alt" style="text-align:center">
   <div class="wrap">
     <h2 class="ax-tt">참가까지 3단계</h2>
-    <div class="cards3" style="margin-top:48px">
-      <div><div style="width:52px;height:52px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;margin:0 auto">1</div>
+    <p class="ax-sub">신청부터 입장까지 5분이면 충분해요.</p>
+    <div class="bodyc cards3">
+      <div><div class="stepdot">1</div>
         <h4 style="margin-top:16px;font-size:18px;font-weight:800">신청서 제출</h4><p style="margin-top:8px;font-size:14.5px;color:var(--gray)">1분이면 끝나요</p></div>
-      <div><div style="width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;margin:0 auto">2</div>
+      <div><div class="stepdot">2</div>
         <h4 style="margin-top:16px;font-size:18px;font-weight:800">확정 안내 수신</h4><p style="margin-top:8px;font-size:14.5px;color:var(--gray)">메일·문자로 발송</p></div>
-      <div><div style="width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px;margin:0 auto">3</div>
+      <div><div class="stepdot">3</div>
         <h4 style="margin-top:16px;font-size:18px;font-weight:800">현장 체크인</h4><p style="margin-top:8px;font-size:14.5px;color:var(--gray)">QR로 바로 입장</p></div>
     </div>
   </div>
@@ -649,13 +769,15 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>steps:vertical</b><span>세로 타임라인</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="max-width:640px">
-    <div style="display:grid;gap:0">
+  <div class="wrap">
+    <h2 class="ax-tt">신청 절차</h2>
+    <p class="ax-sub">순서대로 따라오시면 됩니다.</p>
+    <div class="bodyc" style="display:grid">
       <div style="display:flex;gap:22px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:var(--orange)"></span><span style="flex:1;width:2px;background:var(--line)"></span></div>
         <div style="padding-bottom:34px"><b style="font-size:17px">신청서 제출</b><p style="margin-top:6px;font-size:14.5px;color:var(--gray)">회사·담당자 정보만 입력하면 됩니다.</p></div></div>
-      <div style="display:flex;gap:22px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:var(--ink)"></span><span style="flex:1;width:2px;background:var(--line)"></span></div>
+      <div style="display:flex;gap:22px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:var(--orange)"></span><span style="flex:1;width:2px;background:var(--line)"></span></div>
         <div style="padding-bottom:34px"><b style="font-size:17px">확정 안내</b><p style="margin-top:6px;font-size:14.5px;color:var(--gray)">참석 확정과 상세 안내를 보내드립니다.</p></div></div>
-      <div style="display:flex;gap:22px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:var(--ink)"></span></div>
+      <div style="display:flex;gap:22px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:var(--orange)"></span></div>
         <div><b style="font-size:17px">현장 체크인</b><p style="margin-top:6px;font-size:14.5px;color:var(--gray)">QR 코드로 입장, 웰컴 키트 수령.</p></div></div>
     </div>
   </div>
@@ -663,10 +785,14 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>steps:cards</b><span>카드 스텝</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap cards3" style="margin-top:0">
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px">1</div><b style="display:block;margin-top:12px;font-size:18px">신청</b><div class="ds" style="margin-top:6px">신청서 제출, 1분 소요</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px;color:var(--ink)">2</div><b style="display:block;margin-top:12px;font-size:18px">확정</b><div class="ds" style="margin-top:6px">참석 확정 안내 수신</div></div></div>
-    <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px;color:var(--ink)">3</div><b style="display:block;margin-top:12px;font-size:18px">참석</b><div class="ds" style="margin-top:6px">QR 체크인 후 입장</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">이렇게 진행돼요</h2>
+    <p class="ax-sub">세 장의 카드로 보는 참가 절차.</p>
+    <div class="bodyc cards3">
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px">1</div><b style="display:block;margin-top:12px;font-size:18px">신청</b><div class="ds" style="margin-top:6px">신청서 제출, 1분 소요</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px">2</div><b style="display:block;margin-top:12px;font-size:18px">확정</b><div class="ds" style="margin-top:6px">참석 확정 안내 수신</div></div></div>
+      <div class="ax-card"><div class="bd"><div class="onum" style="font-size:32px">3</div><b style="display:block;margin-top:12px;font-size:18px">참석</b><div class="ds" style="margin-top:6px">QR 체크인 후 입장</div></div></div>
+    </div>
   </div>
 </section></div>
 
@@ -674,7 +800,8 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">미리 보면 좋은 자료</h2>
-    <div class="cards2" style="grid-template-columns:repeat(2,1fr)">
+    <p class="ax-sub">참가 전에 읽어두면 세션이 두 배로 들립니다.</p>
+    <div class="bodyc cards2">
       <div class="ax-card"><div class="bd"><div class="cap">GUIDE</div><div class="ct" style="font-size:19px">에이전트 시작 가이드</div><div class="ds">설치와 첫 설정까지 10분 코스.</div></div></div>
       <div class="ax-card"><div class="bd"><div class="cap">GUIDE</div><div class="ct" style="font-size:19px">채용 시나리오 설계</div><div class="ds">우리 회사 프로세스에 맞추는 법.</div></div></div>
       <div class="ax-card"><div class="bd"><div class="cap">GUIDE</div><div class="ct" style="font-size:19px">보안·개인정보 백서</div><div class="ds">도입 검토 부서용 자료.</div></div></div>
@@ -685,8 +812,10 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>doclist:list</b><span>컴팩트 리스트</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap" style="max-width:760px">
-    <div style="display:grid">
+  <div class="wrap">
+    <h2 class="ax-tt">자료실</h2>
+    <p class="ax-sub">필요한 문서를 바로 내려받으세요.</p>
+    <div class="bodyc" style="display:grid">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-bottom:1px solid var(--line)"><div><b>에이전트 시작 가이드</b><span style="margin-left:12px;font-size:13px;color:var(--soft)">10분 코스</span></div><span style="color:var(--orange);font-weight:900">→</span></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-bottom:1px solid var(--line)"><div><b>채용 시나리오 설계</b><span style="margin-left:12px;font-size:13px;color:var(--soft)">실무 가이드</span></div><span style="color:var(--orange);font-weight:900">→</span></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px"><div><b>보안·개인정보 백서</b><span style="margin-left:12px;font-size:13px;color:var(--soft)">검토 부서용</span></div><span style="color:var(--orange);font-weight:900">→</span></div>
@@ -698,12 +827,13 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">AX 소식</h2>
-    <div class="cards3">
-      <div class="ax-card"><div class="ph" style="height:160px"><span class="s1"></span><span class="s3"></span></div>
+    <p class="ax-sub">행사와 제품의 최근 소식.</p>
+    <div class="bodyc cards3">
+      <div class="ax-card"><div class="ph" style="height:160px"></div>
         <div class="bd"><div class="cap">NEWS · 2026.08</div><div class="ct" style="font-size:18px">AX DAY 2026 개최 확정</div></div></div>
-      <div class="ax-card"><div class="ph" style="height:160px"><span class="s2"></span><span class="s1"></span></div>
+      <div class="ax-card"><div class="ph" style="height:160px"></div>
         <div class="bd"><div class="cap">CASE · 2026.07</div><div class="ct" style="font-size:18px">제조사 A, 리드타임 절반</div></div></div>
-      <div class="ax-card"><div class="ph" style="height:160px"><span class="s3"></span><span class="s2"></span></div>
+      <div class="ax-card"><div class="ph" style="height:160px"></div>
         <div class="bd"><div class="cap">TIP · 2026.06</div><div class="ct" style="font-size:18px">시나리오 설계 체크리스트</div></div></div>
     </div>
   </div>
@@ -711,23 +841,31 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 
 <div class="lbl"><b>bloglist:list</b><span>썸네일 리스트</span></div>
 <div class="blk"><section class="ax-sec alt">
-  <div class="wrap" style="max-width:820px;display:grid;gap:18px">
-    <div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:10px"><span class="s1"></span></div>
-      <div><div style="font-size:12.5px;color:var(--soft);font-weight:700">NEWS · 2026.08</div><b style="display:block;margin-top:6px;font-size:18px">AX DAY 2026 개최 확정 — 신청 오픈</b></div></div>
-    <div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:10px"><span class="s2"></span></div>
-      <div><div style="font-size:12.5px;color:var(--soft);font-weight:700">CASE · 2026.07</div><b style="display:block;margin-top:6px;font-size:18px">제조사 A, 채용 리드타임을 절반으로</b></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">최근 소식</h2>
+    <p class="ax-sub">시간순으로 정리했습니다.</p>
+    <div class="bodyc" style="display:grid;gap:18px">
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:10px"></div>
+        <div><div style="font-size:12.5px;color:var(--soft);font-weight:700">NEWS · 2026.08</div><b style="display:block;margin-top:6px;font-size:18px">AX DAY 2026 개최 확정 — 신청 오픈</b></div></div>
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:10px"></div>
+        <div><div style="font-size:12.5px;color:var(--soft);font-weight:700">CASE · 2026.07</div><b style="display:block;margin-top:6px;font-size:18px">제조사 A, 채용 리드타임을 절반으로</b></div></div>
+    </div>
   </div>
 </section></div>
 
 <div class="lbl"><b>bloglist:featured</b><span>대표 1 + 일반</span></div>
 <div class="blk"><section class="ax-sec">
-  <div class="wrap" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">
-    <div class="ax-card"><div class="ph" style="height:250px"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
-      <div class="bd"><div class="cap" style="color:var(--orange)">FEATURED</div><div class="ct" style="font-size:24px">AX DAY 2026, 무엇이 달라지나</div>
-      <div class="ds">올해의 키노트·세션 구성과 관전 포인트 총정리.</div></div></div>
-    <div style="display:grid;gap:22px">
-      <div class="ax-card"><div class="bd"><div class="cap">CASE</div><div class="ct" style="font-size:17px">제조사 A 도입기</div></div></div>
-      <div class="ax-card"><div class="bd"><div class="cap">TIP</div><div class="ct" style="font-size:17px">시나리오 설계 체크리스트</div></div></div>
+  <div class="wrap">
+    <h2 class="ax-tt">이번 달 읽을거리</h2>
+    <p class="ax-sub">대표 아티클 하나, 곁들일 두 편.</p>
+    <div class="bodyc" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">
+      <div class="ax-card"><div class="ph" style="height:250px"></div>
+        <div class="bd"><div class="cap" style="color:var(--orange)">FEATURED</div><div class="ct" style="font-size:24px">AX DAY 2026, 무엇이 달라지나</div>
+        <div class="ds">올해의 키노트·세션 구성과 관전 포인트 총정리.</div></div></div>
+      <div style="display:grid;gap:22px">
+        <div class="ax-card"><div class="bd"><div class="cap">CASE</div><div class="ct" style="font-size:17px">제조사 A 도입기</div></div></div>
+        <div class="ax-card"><div class="bd"><div class="cap">TIP</div><div class="ct" style="font-size:17px">시나리오 설계 체크리스트</div></div></div>
+      </div>
     </div>
   </div>
 </section></div>
@@ -739,16 +877,17 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">세션 안내</h2>
-    <div class="cards3">
-      <div class="dkcard"><div class="ph dark"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div>
+    <p class="ax-sub">13:30 입장 · 세 개의 세션으로 진행됩니다.</p>
+    <div class="bodyc cards3">
+      <div class="dkcard"><div class="ph dark"></div>
         <div style="font-size:14px;opacity:.85">14:10 - 14:50</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.32">채용,<br>에이전트로 완성하다</div>
         <div style="margin-top:12px;font-size:14px;opacity:.85">마이다스그룹 기획자</div></div>
-      <div class="dkcard"><div class="ph dark"><span class="s2"></span><span class="s3"></span></div>
+      <div class="dkcard"><div class="ph dark"></div>
         <div style="font-size:14px;opacity:.85">14:50 - 15:30</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.32">경험을 넘어 실행까지:<br>체험/컨설팅</div>
         <div style="margin-top:12px;font-size:14px;opacity:.85">마이다스 컨설턴트</div></div>
-      <div class="dkcard"><div class="ph dark"><span class="s3"></span><span class="s1"></span></div>
+      <div class="dkcard"><div class="ph dark"></div>
         <div style="font-size:14px;opacity:.85">15:30 - 16:00</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.32">에이전트 200% 활용한<br>마이다스 사례</div>
         <div style="margin-top:12px;font-size:14px;opacity:.85">마이다스그룹 HR 담당자</div></div>
@@ -756,11 +895,12 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
   </div>
 </section></div>
 
-<div class="lbl"><b>agenda:table</b><span>시간표 행 + 일정·장소 카드(지도 핀) — 팩 고유 정보 블록 포함</span></div>
+<div class="lbl"><b>agenda:table</b><span>시간표 + 일정·장소 카드(지도 핀) — 팩 고유 정보 블록</span></div>
 <div class="blk"><section class="ax-sec alt">
   <div class="wrap">
     <h2 class="ax-tt">일정 · 장소</h2>
-    <div style="margin-top:48px;background:#F5F6F7;border-radius:16px;display:grid;grid-template-columns:1fr 1.4fr;overflow:hidden;background:#fff;border:1px solid var(--line)">
+    <p class="ax-sub">오시는 길과 마감 일정을 확인하세요.</p>
+    <div class="bodyc" style="border-radius:16px;display:grid;grid-template-columns:1fr 1.4fr;overflow:hidden;background:#fff;border:1px solid var(--line)">
       <div style="padding:40px">
         <div style="font-size:30px;font-weight:900;letter-spacing:-.02em">AX DAY</div>
         <table style="margin-top:26px;border-collapse:collapse;font-size:16px">
@@ -784,16 +924,17 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
 <div class="blk"><section class="ax-sec">
   <div class="wrap">
     <h2 class="ax-tt">연사 소개</h2>
-    <div class="cards3">
-      <div class="dkcard" style="min-height:340px"><div class="ph dark"><span class="s1"></span><span class="s2"></span></div>
+    <p class="ax-sub">현장에서 만날 세 팀.</p>
+    <div class="bodyc cards3">
+      <div class="dkcard" style="min-height:340px"><div class="ph dark"></div>
         <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:#FFB38A">KEYNOTE</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800">신해경화</div>
         <div style="margin-top:8px;font-size:14px;opacity:.85">마이다스그룹 · AX 총괄<br>채용 에이전트 프로덕트 리드</div></div>
-      <div class="dkcard" style="min-height:340px"><div class="ph dark"><span class="s2"></span><span class="s3"></span></div>
+      <div class="dkcard" style="min-height:340px"><div class="ph dark"></div>
         <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:#FFB38A">SESSION</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800">라강림</div>
         <div style="margin-top:8px;font-size:14px;opacity:.85">마이다스 컨설팅 · 수석<br>도입 전략·핸즈온 담당</div></div>
-      <div class="dkcard" style="min-height:340px"><div class="ph dark"><span class="s3"></span><span class="s1"></span></div>
+      <div class="dkcard" style="min-height:340px"><div class="ph dark"></div>
         <div style="font-size:13px;font-weight:800;letter-spacing:.06em;color:#FFB38A">CASE</div>
         <div style="margin-top:8px;font-size:24px;font-weight:800">사례 발표 기업</div>
         <div style="margin-top:8px;font-size:14px;opacity:.85">도입 6개월의 실제 수치 공개</div></div>
@@ -801,9 +942,33 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
   </div>
 </section></div>
 
+<!-- ════════ 프레임(하단) ════════ -->
+<div class="grp-h" id="g8">08 · 프레임 — 마감</div>
+
+<div class="lbl"><b>countdown</b><span>마감 카운트다운 스트립 — 팩 실측(잉크 다크, deadline 소비)</span></div>
+<div class="blk"><div class="ax-count">
+  <div class="wrap">
+    <span class="lb">신청 마감까지</span>
+    <span class="seg"><b>01</b><span>일</span></span>
+    <span class="seg"><b>08</b><span>시간</span></span>
+    <span class="seg"><b>42</b><span>분</span></span>
+    <span class="seg"><b>17</b><span>초</span></span>
+    <span class="pill w" style="font-size:13.5px;padding:9px 18px">신청하기</span>
+  </div>
+</div></div>
+
+<div class="lbl"><b>footer</b><span>푸터 — 팩 실측(라이트 그레이 · 좌 카피라이트 / 우 제품명)</span></div>
+<div class="blk"><footer class="ax-foot">
+  <div class="wrap">
+    <span>© 2026. JAINWON Inc. All rights reserved.</span>
+    <span>MIDAS GEN NX Seminar 2026</span>
+  </div>
+</footer></div>
+
 <div style="padding:56px 30px;color:var(--soft);font-size:13px;line-height:1.7;border-top:1px solid var(--line)">
-전 블록 = AX Day 팩 실측 토큰(잉크 #030712 · 오렌지 #FF5500 · 블루 #00A3FE · pill r999 · Pretendard)으로 작성한 정적 시안.
-사진 자리 = 팩의 추상 모형(.ax-ph) 규약. 채택할 변형을 고르면 팩(packs.axday.js) 렌더러로 이식한다.
+전 블록 규격 v2 — 콘텐츠 폭 1180 단일 · 액센트 오렌지 #FF5500 단일(버튼=잉크 필) ·
+전 섹션 타이틀+서브 · 이미지 자리 플랫 회색 · GNB·카운트다운·푸터 프레임 포함.
+채택할 변형을 고르면 팩(packs.axday.js) 렌더러로 이식한다.
 계약 기준: <a href="sections-map.html" style="color:var(--orange)">sections-map</a> · 최종 갱신 2026-08-12.
 </div>
 
