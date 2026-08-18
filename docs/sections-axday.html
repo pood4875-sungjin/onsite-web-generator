@@ -92,12 +92,67 @@ ul{list-style:none} a{text-decoration:none;color:inherit} button{font-family:inh
   <h1>이 스타일로, <b>전 섹션 베리에이션</b></h1>
   <p>AX Day 팩 실측 디자인 언어로 GNB·푸터 포함 전 섹션을 그린 시안.
   규격 v2: 콘텐츠 폭 1180 단일 · 포인트 컬러 오렌지 #FF5500 단일(버튼=잉크 필) ·
-  전 섹션 타이틀+서브텍스트 · 이미지 자리 플랫 회색(실사진은 피커로 교체).</p>
+  전 섹션 타이틀+서브텍스트 · 이미지 자리 플랫 회색(실사진은 피커로 교체) ·
+  배경은 섹션 고유값이 아니라 <b>조립 순서가 결정</b>(아래 배경 리듬 규칙).</p>
   <div class="toc">
-    <a href="#g0">프레임</a><a href="#g1">도입부</a><a href="#g2">소개</a><a href="#g3">기능·콘텐츠</a>
+    <a href="#gr">배경 리듬</a><a href="#g0">프레임</a><a href="#g1">도입부</a><a href="#g2">소개</a><a href="#g3">기능·콘텐츠</a>
     <a href="#g4">신뢰·수치</a><a href="#g5">전환</a><a href="#g6">안내</a><a href="#g7">행사</a><a href="#g8">마감 프레임</a>
   </div>
 </div>
+
+<!-- ════════ 규칙 · 배경 리듬 ════════ -->
+<div class="grp-h" id="gr">규칙 · 배경 리듬 — 블루그레이 스케일</div>
+
+<div class="lbl"><b>rule:bg-rhythm</b><span>배경은 섹션 속성이 아니라 조립 순서가 결정 — 흰색↔블루그레이 교차, 같은 배경 연속 금지</span></div>
+<div class="blk"><section class="ax-sec" style="padding:64px 0 72px">
+  <div class="wrap">
+    <div class="ax-eb" style="text-align:center">BACKGROUND RHYTHM</div>
+    <h2 class="ax-tt">배경은 순서가 정한다</h2>
+    <p class="ax-sub">섹션이 순서대로 조립될 때 배경은 블루그레이 스케일 안에서 교차 반복됩니다.
+    같은 배경이 연속되면 섹션 경계가 사라집니다. 카탈로그 각 블록의 배경은 예시일 뿐, 실제 배경은 조립 위치가 결정합니다.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 400px;gap:56px;margin-top:48px;align-items:start">
+      <div>
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">SCALE — 섹션면 2단 + 표면 3단</div>
+        <div style="display:flex;gap:12px;margin-top:14px">
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:#fff;border:1px solid var(--line);"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BG-0 #FFFFFF</div><div style="font-size:12px;color:var(--soft)">기본 섹션면</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:#F7F9FB;border:1px solid var(--line);"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BG-1 #F7F9FB</div><div style="font-size:12px;color:var(--soft)">교차 섹션면(.alt)</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:#F2F4F7;"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BG-2 #F2F4F7</div><div style="font-size:12px;color:var(--soft)">폼 필드·면</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:#EDEFF2;"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BG-3 #EDEFF2</div><div style="font-size:12px;color:var(--soft)">패널·플랜 카드</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:#E7EAEE;"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BG-4 #E7EAEE</div><div style="font-size:12px;color:var(--soft)">이미지 자리(.ph)</div></div>
+        </div>
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft);margin-top:32px">BREAK — 리듬을 끊는 악센트</div>
+        <div style="display:flex;gap:12px;margin-top:14px">
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:var(--ink);"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">INK #030712</div><div style="font-size:12px;color:var(--soft)">다크 섹션·카운트다운</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:var(--orange);"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">ORANGE #FF5500</div><div style="font-size:12px;color:var(--soft)">CTA 배너</div></div>
+          <div style="flex:1;min-width:0"><div style="height:64px;border-radius:10px;background:linear-gradient(160deg,#4A5058,#23272E);"></div><div style="margin-top:8px;font-size:12.5px;font-weight:700">BGIMAGE</div><div style="font-size:12px;color:var(--soft)">hero:bgimage 풀블리드</div></div>
+        </div>
+        <div style="margin-top:36px;display:grid;gap:14px">
+          <div style="display:flex;gap:12px"><span class="okdot">1</span><p style="font-size:14.5px;line-height:1.65;color:var(--gray)"><b style="color:var(--ink)">교차 반복</b> — 섹션면은 BG-0과 BG-1 두 단만 씁니다. 인접 섹션이 같은 배경을 갖지 않게 번갈아 배치합니다.</p></div>
+          <div style="display:flex;gap:12px"><span class="okdot">2</span><p style="font-size:14.5px;line-height:1.65;color:var(--gray)"><b style="color:var(--ink)">브레이크 후 재시작</b> — 다크·오렌지·풀블리드 이미지 섹션은 리듬을 끊는 악센트. 브레이크 다음 섹션은 BG-0(흰색)부터 다시 시작합니다.</p></div>
+          <div style="display:flex;gap:12px"><span class="okdot">3</span><p style="font-size:14.5px;line-height:1.65;color:var(--gray)"><b style="color:var(--ink)">표면은 한 단 위</b> — BG-1 섹션 안의 카드·필드는 흰색, BG-0 섹션 안의 필드는 BG-2, 카드는 보더로 구분. 섹션면과 표면이 같은 값을 갖지 않게 합니다.</p></div>
+          <div style="display:flex;gap:12px"><span class="okdot">4</span><p style="font-size:14.5px;line-height:1.65;color:var(--gray)"><b style="color:var(--ink)">브레이크는 아껴서</b> — 한 페이지에 브레이크 1~2회. 연속 배치 금지, 페이지 중반(수치·전환)과 끝(CTA)에 하나씩이 기본입니다.</p></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--soft)">조립 예 — 10섹션 시퀀스</div>
+        <div style="margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:#fff;border-bottom:1px solid var(--line)">hero<span style="font-weight:600;font-size:12px;opacity:.65">BG-0</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:var(--alt);">intro<span style="font-weight:600;font-size:12px;opacity:.65">BG-1</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">feature<span style="font-weight:600;font-size:12px;opacity:.65">BG-0</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:var(--ink);color:#fff;">stats<span style="font-weight:600;font-size:12px;opacity:.65">INK · 브레이크</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:#fff;border-bottom:1px solid var(--line)">speakers<span style="font-weight:600;font-size:12px;opacity:.65">BG-0 재시작</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:var(--alt);">agenda<span style="font-weight:600;font-size:12px;opacity:.65">BG-1</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:var(--orange);color:#fff;">cta<span style="font-weight:600;font-size:12px;opacity:.65">ORANGE · 브레이크</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:#fff;border-bottom:1px solid var(--line)">faq<span style="font-weight:600;font-size:12px;opacity:.65">BG-0 재시작</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:var(--alt);">form<span style="font-weight:600;font-size:12px;opacity:.65">BG-1</span></div>
+          <div style="height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:13px;font-weight:700;background:#F5F6F7;color:var(--soft)">footer<span style="font-weight:600;font-size:12px;opacity:.65">#F5F6F7</span></div>
+        </div>
+        <p style="margin-top:12px;font-size:12.5px;color:var(--soft);line-height:1.6">브레이크(잉크·오렌지)가 리듬을 리셋 — 지나가면 다시 흰색부터.</p>
+      </div>
+    </div>
+  </div>
+</section></div>
 
 <!-- ════════ 프레임(상단) ════════ -->
 <div class="grp-h" id="g0">00 · 프레임 — GNB</div>
