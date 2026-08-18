@@ -103,7 +103,7 @@
      데이터 계약: data.variants = { hero:'split', feature:'bento', ... } (없으면 팩 기본형).
      각 팩은 자기 DS로 변형을 해석해 구현 — 미구현 변형은 기본형으로 렌더(깨짐 금지). ---- */
   var SECTION_VARIANTS = {
-    hero:        { center: '중앙 정렬 타이포', split: '텍스트 좌 / 이미지 우 분할', screenshot: '하단 대형 제품 화면 강조', stat: '숫자·성과 강조 타이포' },
+    hero:        { center: '중앙 정렬 타이포', split: '텍스트 좌 / 이미지 우 분할', screenshot: '하단 대형 제품 화면 강조' },
     pagehero:    { banner: '제목+설명 배너(기본)', breadcrumb: '제목+Breadcrumb 경로' },
     overview:    { split: '좌 제목 / 우 설명(기본)', center: '중앙 대형 문장', problem: 'Problem/Solution 대비' },
     intro:       { center: '중앙(기본)', quote: '인용문형' },
@@ -124,7 +124,7 @@
   };
   var VARIANT_DOC = 'variants(섹션 표현 변형, 선택): {' + Object.keys(SECTION_VARIANTS).map(function (k) {
     return k + ':"' + Object.keys(SECTION_VARIANTS[k]).join('|') + '"';
-  }).join(', ') + '} — 콘텐츠 성격에 맞게 골라라(예: 수치 강조 브리프면 hero:stat, 기능 많으면 feature:bento).';
+  }).join(', ') + '} — 콘텐츠 성격에 맞게 골라라(예: 제품 화면 강조 브리프면 hero:screenshot, 기능 많으면 feature:bento).';
 
   /* AI(compose-web) 프롬프트용 — 페이지 유형과 신규 섹션 필드 스키마 */
   var PAGE_SECTION_DOC =
