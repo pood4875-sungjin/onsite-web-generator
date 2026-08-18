@@ -168,6 +168,13 @@
           '<div class="s-hero-cta up d2">' + ctas + '</div>' +
           '<div class="s-hero-stats up d3">' + hrow + '</div></div></section>';
       }
+      /* bgimage — 배경 사진 풀블리드 + 어두운 오버레이 + 화이트 타이포. 이미지는 images.hero 재사용(편집 모드 클릭=피커) */
+      if (v === 'bgimage') {
+        var hbg = (d.images && d.images.hero) ? ' style="background-image:url(' + esc(d.images.hero) + ')"' : '';
+        return '<section class="s-hero s-hero--bg' + (hbg ? '' : ' ph') + '"' + hbg + ' data-img="hero">' +
+          '<div class="s-hero-bgov"></div><div class="wrap s-hero-bgin">' + title + sub +
+          '<div class="s-hero-cta up d2">' + ctas + '</div></div></section>';
+      }
       var img = (d.images && d.images.hero)
         ? '<img class="s-hero-img up d3" src="' + esc(d.images.hero) + '" alt="" data-img="hero">'
         : '<div class="s-hero-img ph up d3" data-img="hero"><span>PRODUCT SCREENSHOT</span></div>';
@@ -697,6 +704,14 @@
       '.sat .s-hero-img{width:100%;height:640px;margin-top:128px;object-fit:cover;display:block}',
       '.sat .s-hero-img.ph{background:var(--bg-2);border:var(--bw) solid var(--line);display:grid;place-items:center}',
       '.sat .s-hero-img.ph span{font-size:14px;letter-spacing:.08em;color:var(--soft)}',
+      /* hero:bgimage — 풀블리드 배경 + 오버레이. 이미지 전 폴백=브랜드 그라데이션 */
+      '.sat .s-hero--bg{position:relative;padding:0;background-size:cover;background-position:center}',
+      '.sat .s-hero--bg.ph{background-image:linear-gradient(135deg,#0B1F4B,#2E6BFF)}',
+      '.sat .s-hero-bgov{position:absolute;inset:0;background:rgba(6,13,31,.55)}',
+      '.sat .s-hero-bgin{position:relative;z-index:1;padding:150px 0 170px}',
+      '.sat .s-hero--bg .s-hero-t{color:#fff}',
+      '.sat .s-hero--bg .s-hero-s{color:rgba(255,255,255,.82)}',
+      '.sat .s-hero--bg .btn--out{border-color:rgba(255,255,255,.55);color:#fff}',
       /* 공통 헤딩 */
       '.sat .s-h2{font-size:var(--fs-h56);line-height:64px;font-weight:600;margin-top:24px;max-width:842px}',
       '.sat .s-grid{display:grid;gap:64px;margin-top:64px}',

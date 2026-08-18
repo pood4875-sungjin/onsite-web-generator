@@ -79,7 +79,7 @@
 
 <div class="eyebrow">Sections Visual</div>
 <h1>섹션 변형 와이어프레임 — 같은 섹션, 다른 얼굴</h1>
-<p class="lead">섹션 22종과 표현 변형 46종의 <b>레이아웃 뼈대</b>를 그림으로 정리.
+<p class="lead">섹션 22종과 표현 변형 47종의 <b>레이아웃 뼈대</b>를 그림으로 정리.
 색·폰트는 팩이 입히므로 여기선 구조만 본다(보라 = CTA·강조 위치).
 계약 전체는 <a href="sections-map.html">섹션 계약 지도</a> 참조. <span style="color:var(--tx3)">기준: app/pagetypes.js SECTION_VARIANTS · 2026-08-12</span></p>
 
@@ -101,6 +101,7 @@ var WF = {
   'hero.center': '<div class="c ctr">'+T(56)+t(40)+r(BTN+BTN)+'</div>',
   'hero.split': r( c(T(80)+t(65)+t(50)+r(BTN)) + img(70,44) ),
   'hero.screenshot': '<div class="c ctr">'+T(46)+r(BTN)+img(52,78)+'</div>',
+  'hero.bgimage': '<div class="c ctr grow" style="background:linear-gradient(135deg,#413a6b,#6c2bff88);border-radius:6px;justify-content:center"><div class="T" style="width:52%;background:#fff;opacity:.92"></div><div class="t" style="width:38%;background:#fff;opacity:.55"></div><div class="btn" style="background:#fff;opacity:.95"></div></div>',
   'pagehero.banner': '<div class="c">'+T(38)+t(58)+'</div>',
   'pagehero.breadcrumb': '<div class="c">'+r(t(8)+t(8)+t(12,1))+T(38)+'</div>',
   'overview.split': r( c(T(60)) + c(t(90)+t(84)+t(70)) ),
@@ -155,7 +156,7 @@ var WF = {
 /* 카탈로그 데이터 — sections-map §1과 동일 묶음, 변형 설명=SECTION_VARIANTS 원문 */
 var CAT = [
   ['도입부', [
-    ['hero','첫 화면 — 타이틀·서브·CTA', [['center','중앙 정렬 타이포','기본'],['split','텍스트 좌 / 이미지 우 분할'],['screenshot','하단 대형 제품 화면 강조']]],
+    ['hero','첫 화면 — 타이틀·서브·CTA', [['center','중앙 정렬 타이포','기본'],['split','텍스트 좌 / 이미지 우 분할'],['screenshot','하단 대형 제품 화면 강조'],['bgimage','배경 사진 풀블리드 + 오버레이 타이포']]],
     ['pagehero','하위 페이지 표제', [['banner','제목+설명 배너','기본'],['breadcrumb','제목+Breadcrumb 경로']]],
   ]],
   ['소개', [
