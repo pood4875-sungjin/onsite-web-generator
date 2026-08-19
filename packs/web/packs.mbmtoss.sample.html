@@ -47,8 +47,8 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .pill.w{background:#fff;color:var(--brand)}
 
 /* 소프트 CTA + 원형 화살표 배지 — toss 시그니처 버튼 [텍스트 (●→)] */
-.cta2{display:inline-flex;align-items:center;gap:12px;background:rgba(7,25,76,.05);color:var(--ink);font-size:17px;font-weight:600;padding:12px 12px 12px 26px;border-radius:100px;text-decoration:none;cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s}
-.cta2 .arr{width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700}
+.cta2{display:inline-flex;align-items:center;gap:10px;background:rgba(7,25,76,.05);color:var(--ink);font-size:17px;font-weight:600;padding:16px 26px;border-radius:100px;text-decoration:none;cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s}
+.cta2 .arr{font-size:18px;font-weight:700;line-height:1}
 .cta2:hover{background:rgba(7,25,76,.09);transform:translateY(-2px)}
 .cta2.w{background:#fff;box-shadow:0 12px 28px rgba(10,5,40,.22)}
 .cta2.w:hover{background:#fff;box-shadow:0 16px 34px rgba(10,5,40,.3)}
@@ -100,10 +100,10 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .kv-photo{position:absolute;inset:0;overflow:hidden;background:linear-gradient(150deg,var(--kv0),var(--kv1));will-change:transform,border-radius}
 .kv-photo .kimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .kv-photo .ov{position:absolute;inset:0;background:linear-gradient(160deg,rgba(52,27,115,.78),rgba(75,50,150,.55))}
-.kv-sub{position:absolute;left:56px;bottom:52px;z-index:4;color:#fff;opacity:0;text-align:left;will-change:opacity,transform}
-.kv-sub .cap{font-size:15px;font-weight:600;color:var(--lav)}
-.kv-sub h3{margin-top:10px;font-size:40px;font-weight:700;line-height:1.3;letter-spacing:-.02em}
-.kv-sub p{margin-top:12px;font-size:16.5px;line-height:1.6;color:rgba(255,255,255,.78)}
+.kv-sub{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;opacity:0;text-align:center;will-change:opacity,transform}
+.kv-sub .cap{font-size:16px;font-weight:600;color:var(--lav)}
+.kv-sub h3{margin-top:14px;font-size:64px;font-weight:700;line-height:1.25;letter-spacing:-.02em}
+.kv-sub p{margin-top:16px;font-size:18px;line-height:1.65;color:rgba(255,255,255,.8)}
 .kv-sub .cta2{margin-top:26px}
 .kv-badge{position:absolute;z-index:4;display:flex;align-items:center;gap:10px;padding:13px 20px 13px 13px;border-radius:16px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(14px);color:#fff;font-size:14.5px;font-weight:600;opacity:0;will-change:opacity,transform}
 .kv-badge .ck{width:26px;height:26px;border-radius:50%;background:var(--lav);color:#4B2AAF;display:grid;place-items:center;font-size:13px;font-weight:800}
@@ -171,7 +171,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 
 /* 다크 세션 */
 .dark{background:var(--dark);color:#fff}
-.scard{background:var(--dark-card);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1.5fr 1fr;gap:36px;align-items:center}
+.scard{background:#241B47;border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
 .scard+.scard{margin-top:20px}
 .scard .cap{font-size:14px;font-weight:600;color:var(--lav)}
 .scard h3{margin-top:12px;font-size:30px;font-weight:700;line-height:1.35;letter-spacing:-.02em}
@@ -179,7 +179,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .scard li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.55;padding-left:14px;position:relative}
 .scard li:before{content:"·";position:absolute;left:0;color:var(--lav)}
 .scard .who{margin-top:22px;font-size:13.5px;color:rgba(255,255,255,.45)}
-.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,#2A2D36,#181A20);display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}
+.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,#2F2458,#1B1438);display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}
 
 /* 지그재그 */
 .zig{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
@@ -200,8 +200,8 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .ecard .lnk:hover{color:var(--g2)}
 
 /* 지그재그 비주얼 — 광고 카드 래핑(흰 카드 + 인셋 그래픽) */
-.zcard{background:#fff;border-radius:26px;border:0;box-shadow:0 12px 36px rgba(3,7,18,.06),0 2px 8px rgba(3,7,18,.04);padding:16px}
-.zcard .ph{height:100%;border-radius:18px}
+.zcard{border-radius:26px;overflow:hidden;box-shadow:0 12px 36px rgba(3,7,18,.08),0 2px 8px rgba(3,7,18,.04);padding:0}
+.zcard .ph,.zcard .photo{height:100%;border-radius:26px}
 
 /* 오브젝트 드롭 — toss 상품 판매 장면: 회전하며 떨어져 통통 안착 */
 .obj{width:88px;height:88px;border-radius:22px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:36px;font-weight:800;box-shadow:0 18px 36px rgba(103,53,230,.32)}
@@ -242,7 +242,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .mapsvg{position:absolute;inset:0;width:100%;height:100%}
 
 /* 던 푸터 — toss: 지구본 장면이 새벽 그라데이션으로 밝아지며 푸터로 이어짐 */
-.dawnfoot{position:relative;overflow:hidden;background:linear-gradient(180deg,#0B0F26 0%,#16204B 30%,#3A3576 58%,#8A6E93 80%,#E3BBA4 100%);color:#fff;padding:46vh 0 64px}
+.dawnfoot{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--brand) 0%,#3B2687 14%,#1A1C4E 34%,#232A5E 52%,#3A3576 66%,#8A6E93 84%,#E3BBA4 100%);color:#fff;padding:46vh 0 64px}
 .dawnfoot #globe{position:absolute;left:0;top:0;width:100%;height:52vh}
 .dawnfoot .in{position:relative;max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:40px;align-items:start}
 .dawnfoot .slog{font-size:30px;font-weight:700;line-height:1.45;letter-spacing:-.02em}
@@ -288,7 +288,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .frow span{color:var(--g4);font-size:22px}
 
 /* CTA 밴드 */
-.cta-band{background:var(--brand);color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}
+.cta-band{background:var(--brand);color:#fff;padding:120px 0 140px;text-align:center;position:relative;overflow:hidden}
 .cta-band .deco{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--brand-deep);filter:blur(60px);opacity:.7;right:-90px;top:-120px}
 .cta-band h2{position:relative;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.35}
 .cta-band p{position:relative;margin-top:14px;font-size:18px;color:rgba(255,255,255,.75)}
@@ -306,8 +306,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   .nline{font-size:26px}
   .srow b{font-size:18px}
   .srow.on b{font-size:24px}
-  .kv-sub{left:24px;bottom:24px;right:24px}
-  .kv-sub h3{font-size:26px}
+  .kv-sub h3{font-size:32px}
   .kv-sub p{font-size:14px}
   .kv-badge.b1{right:20px;top:52px;font-size:13px}
   .kv-badge.b2{display:none}
@@ -443,7 +442,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </div>
 
 <!-- SESSION — 다크 스테이지 -->
-<section class="sec dark" id="session">
+<section class="sec" id="session" style="background:#191233;color:#fff">
   <div class="wrap">
     <div class="center">
       <h2 class="tt rv">SESSION</h2>
@@ -455,21 +454,21 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
           <h3>AI 시대를 위한<br>HR 성과&평가 Re:boot</h3>
           <ul><li>전략 재설계 — AI 기술을 접목한 성과관리 패러다임 전환</li><li>정교한 평가 — 조직 맞춤 평가 프로세스 구축 & 실전 사례</li></ul>
           <div class="who">에이치닷 ㅣ 시니어 컨설턴트</div></div>
-        <div class="photo" style="height:200px;border-radius:14px"><img src="../../app/bg/mbmtoss-session.jpg" alt="세션 발표" onerror="this.parentNode.outerHTML='<div class=ph style=height:200px>◆</div>'"></div>
+        <div class="photo" style="height:248px;border-radius:14px"><img src="../../app/bg/mbmtoss-session.jpg" alt="세션 발표" onerror="this.parentNode.outerHTML='<div class=ph style=height:200px>◆</div>'"></div>
       </div>
       <div class="scard rv">
         <div><div class="cap">Growth 02. 진단 / 교육</div>
           <h3>AI로 연결하는<br>진단부터 실전 교육까지</h3>
           <ul><li>AI 데이터 진단 — 올바른 성장 방향을 정립하는 진단</li><li>조직 성장 가이드 — 진단 데이터 바탕 구성원 맞춤 가이드</li><li>AI 롤플레잉 — 실무 적용력을 높이는 체계적인 성장 훈련</li></ul>
           <div class="who">에이치닷 ㅣ 시니어 컨설턴트</div></div>
-        <div class="photo" style="height:200px;border-radius:14px"><img src="../../app/bg/mbmtoss-mic.jpg" alt="강연" onerror="this.parentNode.outerHTML='<div class=ph style=height:200px>◈</div>'"></div>
+        <div class="photo" style="height:248px;border-radius:14px"><img src="../../app/bg/mbmtoss-mic.jpg" alt="강연" onerror="this.parentNode.outerHTML='<div class=ph style=height:200px>◈</div>'"></div>
       </div>
       <div class="scard rv">
         <div><div class="cap">Growth 03. 성과관리 / 인사평가</div>
           <h3>SK케미칼<br>성과관리&평가 혁신 사례</h3>
           <ul><li>도입 기업이 직접 전하는 혁신 여정과 실측 성과</li></ul>
           <div class="who">SK케미칼 ㅣ 매니저</div></div>
-        <div class="ph" style="font-size:15px"><span style="font-size:26px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.5)">SK케미칼<span style="color:var(--lav)"> ×</span> H.</span></div>
+        <div class="ph" style="font-size:15px;height:248px"><span style="font-size:26px;font-weight:800;letter-spacing:-.02em;color:rgba(255,255,255,.5)">SK케미칼<span style="color:var(--lav)"> ×</span> H.</span></div>
       </div>
     </div>
   </div>
@@ -512,9 +511,9 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     <h2 class="tt rv">EVENT</h2>
     <p class="sub rv d1">참석 고객을 위해 준비한 특별한 혜택.</p>
     <div class="egrid" style="margin-top:70px">
-      <div class="ecard rv"><div class="ph"><span class="coupon"><span class="cl"><b>수수료 0원</b><span>SNS 타겟 광고 지원</span></span><span class="cr">AD</span></span></div><span class="cap">참석 혜택 01 — 수수료 0원</span><b>채용 홍보<br>무료 지원</b><span class="lnk">혜택 자세히 보기</span></div>
-      <div class="ecard rv d1"><div class="ph"><span class="obj drop">◆</span></div><span class="cap">참석 혜택 02 — 현장 수령</span><b>참석자 전원<br>스페셜 기프트</b><span class="lnk">기프트 미리 보기</span></div>
-      <div class="ecard rv d2"><div class="ph"><span class="obj lv drop r2">▤</span></div><span class="cap">참석 혜택 03 — PDF 제공</span><b>구조화 면접<br>질문지 키트</b><span class="lnk">질문지 받아보기</span></div>
+      <div class="ecard rv"><div class="photo" style="height:190px"><img src="../../app/bg/mbmtoss-ev1.jpg" alt="광고 성과 대시보드" onerror="this.parentNode.className='ph'"></div><span class="cap">참석 혜택 01 — 수수료 0원</span><b>채용 홍보<br>무료 지원</b><span class="lnk">혜택 자세히 보기</span></div>
+      <div class="ecard rv d1"><div class="photo" style="height:190px"><img src="../../app/bg/mbmtoss-ev2.jpg" alt="스페셜 기프트" onerror="this.parentNode.className='ph'"></div><span class="cap">참석 혜택 02 — 현장 수령</span><b>참석자 전원<br>스페셜 기프트</b><span class="lnk">기프트 미리 보기</span></div>
+      <div class="ecard rv d2"><div class="photo" style="height:190px"><img src="../../app/bg/mbmtoss-ev3.jpg" alt="면접 질문지 키트" onerror="this.parentNode.className='ph'"></div><span class="cap">참석 혜택 03 — PDF 제공</span><b>구조화 면접<br>질문지 키트</b><span class="lnk">질문지 받아보기</span></div>
     </div>
   </div>
 </section>
@@ -772,7 +771,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
         gctx.stroke();
       }
       // 파티클(회전)
-      gctx.fillStyle = 'rgba(255,255,255,.75)';
+      gctx.fillStyle = 'rgba(255,255,255,.6)';
       for (var k = 0; k < dots.length; k++) {
         var d2 = dots[k], lon2 = d2.lon + rot;
         var front2 = Math.cos(d2.lat) * Math.cos(lon2);
@@ -785,7 +784,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
       }
       gctx.globalAlpha = 1;
     }
-    function spin(){ if (!gvis) return; rot += 0.0016; drawGlobe(); requestAnimationFrame(spin); }
+    function spin(){ if (!gvis) return; rot += 0.00055; drawGlobe(); requestAnimationFrame(spin); }
     if (reduce) { drawGlobe(); }
     else if ('IntersectionObserver' in window) {
       new IntersectionObserver(function(es){
