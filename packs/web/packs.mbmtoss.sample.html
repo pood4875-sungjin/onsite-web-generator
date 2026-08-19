@@ -24,7 +24,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:hidden}
+body{font-family:"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
 .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
 .sec{padding:160px 0}
 h2.tt{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}
@@ -41,6 +41,26 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.kv-glow{animation:none}}
 
+/* 핀 트랙 — toss 스크럽 문법 */
+.track{position:relative}
+.stage{position:sticky;top:0;height:100vh;min-height:640px;overflow:hidden}
+.kv-track{height:280vh}
+.showpanel{position:absolute;inset:0;display:grid;place-items:center;opacity:0;pointer-events:none;z-index:3}
+.showpanel .panel{width:min(1180px,92vw);height:min(70vh,660px);background:linear-gradient(165deg,#F7F8FB,#E7EAF2);border-radius:24px;box-shadow:0 46px 130px rgba(10,5,40,.5);display:grid;place-items:center;color:#B9BFCB;font-size:30px;will-change:transform}
+.areas-track{height:340vh}
+.srow{padding:20px 0;border-bottom:1px solid var(--bg2);opacity:.32;transition:opacity .35s}
+.srow.on{opacity:1}
+.srow b{font-size:23px;font-weight:700;letter-spacing:-.02em}
+.srow .n{color:var(--brand);font-weight:700;margin-right:12px;font-size:15px}
+.srow p{max-height:0;overflow:hidden;margin:0;font-size:15.5px;line-height:1.6;color:var(--g3);transition:max-height .45s cubic-bezier(.22,1,.36,1),margin .3s}
+.srow.on p{max-height:90px;margin-top:8px}
+.spanel{position:relative;height:520px;border-radius:24px;background:var(--bg2);overflow:hidden}
+.spanel .pv{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .45s}
+.spanel .pv.on{opacity:1}
+.spanel .pv .glyph{width:110px;height:110px;border-radius:28px;background:rgba(103,53,230,.1);display:grid;place-items:center;color:var(--brand);font-size:44px;font-weight:800}
+.spanel .pv .w{margin-top:18px;font-size:19px;font-weight:700;color:var(--g1);text-align:center}
+@media (prefers-reduced-motion:reduce){.kv-track,.areas-track{height:auto!important}.stage{position:static;height:auto;min-height:0;padding:120px 0}.showpanel{display:none}.srow{opacity:1}.srow p{max-height:none;margin-top:8px}.spanel .pv{position:static;opacity:1}}
+
 /* GNB */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;backdrop-filter:blur(12px);background:rgba(52,27,115,.35);transition:background .4s ease}
 .gnb.solid{background:rgba(255,255,255,.92);border-bottom:1px solid rgba(3,7,18,.06)}
@@ -55,7 +75,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .gnb.solid .cta{background:var(--brand);color:#fff}
 
 /* KV — 풀뷰포트 스테이지 */
-.kv{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:linear-gradient(150deg,var(--kv0),var(--kv1))}
+.kv{height:100vh;min-height:640px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:linear-gradient(150deg,var(--kv0),var(--kv1))}
 .kv-glow{position:absolute;width:66vw;height:66vw;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 14s ease-in-out infinite alternate}
 .kv-glow.a{background:#7C4DFF;left:-12vw;top:-18vw}
 .kv-glow.b{background:#2E1A8F;right:-16vw;bottom:-22vw;animation-delay:-7s}
@@ -191,8 +211,9 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   </div>
 </div>
 
-<!-- KV — 풀뷰포트 스테이지 (toss 히어로 스케일) -->
-<section class="kv" id="kv">
+<!-- KV — 핀 트랙 280vh: 타이포 유지 → 페이드 → 쇼케이스 패널 부상 (toss 스크럽) -->
+<div class="track kv-track" id="kvtrack">
+<section class="kv stage" id="kv">
   <div class="kv-glow a"></div><div class="kv-glow b"></div>
   <div class="in wrap">
     <div class="eb">HR Growth 2026</div>
@@ -201,7 +222,9 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     <div class="act"><a class="pill w" href="#apply">신청하기</a></div>
   </div>
   <div class="scroll">SCROLL</div>
+  <div class="showpanel"><div class="panel">SHOWCASE ▦</div></div>
 </section>
+</div>
 
 <!-- 문제 제기 — 센터 대형 + 3열 타이포 그리드 -->
 <section class="sec" id="about">
@@ -233,6 +256,29 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     <p class="oneline rv">막막했던 HR x AI의 <span style="color:var(--brand)">실용적 해답</span>,<br>이번 세미나에서 확인하세요.</p>
   </div>
 </section>
+
+<!-- 4대 영역 — 핀 스크럽: 좌 스텝 활성 전환 + 우 패널 스왑 (toss 자산 장면 문법) -->
+<div class="track areas-track" id="areas">
+  <section class="stage" style="display:flex;align-items:center;background:#fff">
+    <div class="wrap" style="display:grid;grid-template-columns:0.95fr 1.05fr;gap:80px;align-items:center;width:100%">
+      <div>
+        <h2 class="tt" style="font-size:40px">HR의 4대 핵심 분야,<br>실전 활용법을 다룹니다</h2>
+        <div style="margin-top:44px">
+          <div class="srow on"><b><span class="n">01</span>진단</b><p>AI 데이터 진단으로 올바른 성장 방향을 정립합니다.</p></div>
+          <div class="srow"><b><span class="n">02</span>교육</b><p>진단 데이터 바탕 구성원 맞춤 가이드와 AI 롤플레잉 훈련.</p></div>
+          <div class="srow"><b><span class="n">03</span>성과</b><p>AI 기술을 접목한 성과관리 패러다임 전환과 실전 사례.</p></div>
+          <div class="srow"><b><span class="n">04</span>평가</b><p>조직 맞춤 평가 프로세스 구축 — 정교한 평가의 완성.</p></div>
+        </div>
+      </div>
+      <div class="spanel">
+        <div class="pv on"><div style="text-align:center"><div class="glyph" style="margin:0 auto">◆</div><div class="w">조직 데이터 진단</div></div></div>
+        <div class="pv"><div style="text-align:center"><div class="glyph" style="margin:0 auto">◈</div><div class="w">맞춤 성장 가이드</div></div></div>
+        <div class="pv"><div style="text-align:center"><div class="glyph" style="margin:0 auto">▦</div><div class="w">성과관리 Re:boot</div></div></div>
+        <div class="pv"><div style="text-align:center"><div class="glyph" style="margin:0 auto">◇</div><div class="w">정교한 인사평가</div></div></div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <!-- SESSION — 다크 스테이지 -->
 <section class="sec dark" id="session">
@@ -417,15 +463,40 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     document.querySelectorAll('[data-count]').forEach(function(el){ io2.observe(el); });
   }
 
-  // KV 스크럽 — 스크롤에 따라 타이포 페이드/이동 (toss 스테이지 감각의 경량 번안)
+  // 히어로 핀 스크럽 — 타이포 유지(~40%) → 페이드 → 쇼케이스 패널 부상·축소 (toss 문법)
+  var kvTrack = document.getElementById('kvtrack');
   var kvIn = document.querySelector('.kv .in');
-  if (kvIn && !reduce) {
-    addEventListener('scroll', function(){
-      var y = scrollY, h = innerHeight;
-      if (y < h) { var p = y / h;
-        kvIn.style.opacity = String(1 - p * 1.15);
-        kvIn.style.transform = 'translateY(' + (-p * 90) + 'px) scale(' + (1 - p * 0.04) + ')'; }
-    }, { passive: true });
+  var kvScroll = document.querySelector('.kv .scroll');
+  var panelWrap = document.querySelector('.showpanel');
+  var panelCard = panelWrap && panelWrap.querySelector('.panel');
+  function clamp01(v){ return Math.min(Math.max(v, 0), 1); }
+  function heroScrub(){
+    var vh = innerHeight;
+    var p = clamp01((scrollY - kvTrack.offsetTop) / (kvTrack.offsetHeight - vh));
+    var t = clamp01((p - 0.38) / 0.22);            // 타이포 페이드아웃 38~60%
+    kvIn.style.opacity = String(1 - t);
+    kvIn.style.transform = 'translateY(' + (-80 * t) + 'px) scale(' + (1 - 0.05 * t) + ')';
+    if (kvScroll) kvScroll.style.opacity = String(1 - clamp01(p / 0.15));
+    var q = clamp01((p - 0.5) / 0.3);              // 패널 부상 50~80%
+    var e = 1 - Math.pow(1 - q, 3);
+    panelWrap.style.opacity = String(e);
+    var shrink = clamp01((p - 0.84) / 0.16);       // 카드 축소 84~100%
+    panelCard.style.transform = 'translateY(' + ((1 - e) * 46) + 'vh) scale(' + (0.92 + e * 0.08 - shrink * 0.05) + ')';
+  }
+  // 4대 영역 스텝 스크럽 — 진행도에 따라 좌 스텝·우 패널 전환
+  var areas = document.getElementById('areas');
+  var srows = areas.querySelectorAll('.srow');
+  var pviews = areas.querySelectorAll('.pv');
+  function areasScrub(){
+    var vh = innerHeight;
+    var p = clamp01((scrollY - areas.offsetTop) / (areas.offsetHeight - vh));
+    var idx = Math.min(srows.length - 1, Math.floor(p * srows.length));
+    srows.forEach(function(r, i){ r.classList.toggle('on', i === idx); });
+    pviews.forEach(function(v, i){ v.classList.toggle('on', i === idx); });
+  }
+  if (!reduce) {
+    addEventListener('scroll', function(){ heroScrub(); areasScrub(); }, { passive: true });
+    heroScrub(); areasScrub();
   }
 
   // GNB — KV를 벗어나면 화이트로
