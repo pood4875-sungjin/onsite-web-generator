@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MBM × Toss 스케일 — HR Growth 2026 랜딩 시안</title>
+<!--
+  MBM 랜딩 × toss.im 크기감 번안 시안 (팩 베리에이션 근거용)
+  · 콘텐츠/브랜드: SK MBM 랜딩 실측 (Figma Y5BuxrmQwXHIDfOgPknPVr 412-46110)
+    - 보라 #6735E6 · 딥퍼플 밴드 #5B28CE · KV 그라데이션 #341B73→#4B3296 · 라벤더 #C6B2F5
+    - 다크 세션 #121419 / 카드 #1E2026
+  · 스케일/여백/모션: toss.im 실측
+    - 히어로 92px w700 lh1.2 풀뷰포트 스테이지(sticky 스크럽) → 정적 번안: 100vh + 스크럽 페이드
+    - 장면 타이틀 48px w700 ls -2% · 본문 lh 1.6 · 컨테이너 max 1040(실측 1024~1064)
+    - 잉크 #191F28 · 그레이 #4E5968/#6B7684/#8B95A1 · 면 #F2F4F6/#F9FAFB
+    - 카드 r20 · pill r100 · 소프트 버튼 rgba(7,25,76,.05) · 호버 .2s
+    - 리빌: fade-up 24px, .8s cubic-bezier(.22,1,.36,1), 스태거 — 토스 유사 문법(런타임 실측 불가 항목)
+-->
+<style>
+:root{
+  --brand:#6735E6; --brand-deep:#5B28CE; --kv0:#341B73; --kv1:#4B3296; --lav:#C6B2F5;
+  --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1;
+  --bg1:#F9FAFB; --bg2:#F2F4F6; --dark:#121419; --dark-card:#1E2026;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:hidden}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.sec{padding:160px 0}
+h2.tt{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}
+p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:keep-all}
+.center{text-align:center}
+.pill{display:inline-block;background:var(--brand);color:#fff;font-size:17px;font-weight:600;padding:16px 34px;border-radius:100px;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.pill:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(103,53,230,.3)}
+.pill.soft{background:rgba(7,25,76,.05);color:var(--g1)}
+.pill.w{background:#fff;color:var(--brand)}
+
+/* 리빌 모션 — toss 유사 fade-up */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.rv.on{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.kv-glow{animation:none}}
+
+/* GNB */
+.gnb{position:fixed;inset:0 0 auto;z-index:50;backdrop-filter:blur(12px);background:rgba(52,27,115,.35);transition:background .4s ease}
+.gnb.solid{background:rgba(255,255,255,.92);border-bottom:1px solid rgba(3,7,18,.06)}
+.gnb .in{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:36px}
+.gnb .logo{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.gnb.solid .logo{color:var(--ink)}
+.gnb nav{display:flex;gap:28px;margin-left:auto}
+.gnb nav a{font-size:15px;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;transition:color .2s}
+.gnb.solid nav a{color:var(--g2)}
+.gnb nav a:hover{color:#fff}.gnb.solid nav a:hover{color:var(--ink)}
+.gnb .cta{background:#fff;color:var(--brand);font-size:14px;font-weight:700;padding:10px 20px;border-radius:100px;text-decoration:none}
+.gnb.solid .cta{background:var(--brand);color:#fff}
+
+/* KV — 풀뷰포트 스테이지 */
+.kv{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:linear-gradient(150deg,var(--kv0),var(--kv1))}
+.kv-glow{position:absolute;width:66vw;height:66vw;border-radius:50%;filter:blur(90px);opacity:.5;animation:drift 14s ease-in-out infinite alternate}
+.kv-glow.a{background:#7C4DFF;left:-12vw;top:-18vw}
+.kv-glow.b{background:#2E1A8F;right:-16vw;bottom:-22vw;animation-delay:-7s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(9vw,7vh) scale(1.14)}}
+.kv .in{position:relative;z-index:2}
+.kv .eb{font-size:18px;font-weight:600;color:var(--lav);letter-spacing:.02em}
+.kv h1{margin-top:22px;font-size:88px;font-weight:700;line-height:1.2;color:#fff;letter-spacing:-.02em}
+.kv .meta{margin-top:30px;font-size:18px;color:rgba(255,255,255,.72)}
+.kv .meta b{color:#fff;font-weight:600}
+.kv .act{margin-top:42px}
+.kv .scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:13px;letter-spacing:.08em;z-index:2}
+.kv .scroll:after{content:"";display:block;width:1px;height:34px;background:rgba(255,255,255,.4);margin:10px auto 0;animation:down 1.6s ease-in-out infinite}
+@keyframes down{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.kv .line{display:block;overflow:hidden}
+.kv .line span{display:inline-block;transform:translateY(110%);animation:rise 1s cubic-bezier(.22,1,.36,1) forwards}
+.kv .line:nth-child(2) span{animation-delay:.12s}
+@keyframes rise{to{transform:none}}
+@media (prefers-reduced-motion:reduce){.kv .line span{transform:none;animation:none}}
+
+/* 3열 타이포 그리드 — toss 서비스 문법 */
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:64px 48px}
+.tgrid .num{font-size:56px;font-weight:700;letter-spacing:-.03em;color:var(--brand);font-variant-numeric:tabular-nums}
+.tgrid .num small{font-size:.5em;font-weight:600;vertical-align:.14em}
+.tgrid b{display:block;margin-top:14px;font-size:22px;font-weight:700;line-height:1.45;letter-spacing:-.02em;word-break:keep-all}
+.tgrid p{margin-top:8px;font-size:16px;line-height:1.6;color:var(--g3);word-break:keep-all}
+
+/* 차트 카드 */
+.chart-card{background:var(--bg1);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.bars{display:flex;gap:36px;align-items:flex-end;height:190px;padding:0 8px}
+.bars>div{flex:1;text-align:center}
+.bars .v{font-size:15px;font-weight:700;margin-bottom:8px}
+.bars .bar{border-radius:8px 8px 0 0;background:#E3E6EB}
+.bars .hot .v{color:var(--brand)}
+.bars .hot .bar{background:var(--brand)}
+.bars .l{margin-top:10px;font-size:13px;color:var(--g3)}
+
+/* 센터 대형 단독 문장 */
+.oneline{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}
+
+/* 다크 세션 */
+.dark{background:var(--dark);color:#fff}
+.scard{background:var(--dark-card);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1.5fr 1fr;gap:36px;align-items:center}
+.scard+.scard{margin-top:20px}
+.scard .cap{font-size:14px;font-weight:600;color:var(--lav)}
+.scard h3{margin-top:12px;font-size:30px;font-weight:700;line-height:1.35;letter-spacing:-.02em}
+.scard ul{margin-top:16px;list-style:none;display:grid;gap:7px}
+.scard li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.55;padding-left:14px;position:relative}
+.scard li:before{content:"·";position:absolute;left:0;color:var(--lav)}
+.scard .who{margin-top:22px;font-size:13.5px;color:rgba(255,255,255,.45)}
+.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,#2A2D36,#181A20);display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}
+
+/* 지그재그 */
+.zig{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.zig+.zig{margin-top:120px}
+.zig .cap{font-size:15px;font-weight:600;color:var(--brand)}
+.zig h3{margin-top:10px;font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.35;word-break:keep-all}
+.zig p{margin-top:14px;font-size:17px;line-height:1.7;color:var(--g3);word-break:keep-all}
+.ph{background:var(--bg2);border-radius:20px;position:relative;overflow:hidden}
+.ph:after{content:"▦";position:absolute;inset:0;display:grid;place-items:center;color:#D5DAE0;font-size:28px}
+
+/* EVENT */
+.egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ecard{background:var(--bg1);border-radius:20px;padding:36px 30px;display:flex;flex-direction:column;text-align:center}
+.ecard .b{align-self:center;background:var(--brand);color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.04em;border-radius:100px;padding:7px 16px}
+.ecard b{margin-top:18px;font-size:22px;font-weight:700;letter-spacing:-.02em}
+.ecard p{margin:10px 0 24px;font-size:15px;line-height:1.6;color:var(--g3);word-break:keep-all}
+.ecard .ph{height:160px;margin-top:auto;border-radius:14px;background:#fff}
+
+/* 일정·장소 */
+.tabs{display:flex;gap:10px;justify-content:center}
+.tab{font-size:15px;font-weight:600;padding:13px 26px;border-radius:100px;background:var(--bg2);color:var(--g3);cursor:pointer;transition:background .2s,color .2s}
+.tab.on{background:var(--ink);color:#fff}
+.place{margin-top:36px;background:#fff;border:1px solid rgba(3,7,18,.07);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:0.9fr 1.4fr}
+.place .info{padding:44px 40px;text-align:left}
+.place .info b{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.place .row{margin-top:16px;display:flex;gap:16px;font-size:15px}
+.place .row .k{color:var(--g4);font-weight:600;width:34px;flex:none}
+.place .row .v{font-weight:500;color:var(--g1);line-height:1.5}
+.place .map{min-height:320px;border-radius:0;position:relative}
+.place .pin{position:absolute;left:48%;top:42%;width:30px;height:30px;border-radius:50% 50% 50% 0;background:var(--brand);transform:rotate(-45deg);box-shadow:0 10px 24px rgba(103,53,230,.4)}
+
+/* 폼 — 다크 */
+.form{max-width:820px;margin:0 auto}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px 24px;text-align:left}
+.fl{font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
+.fl em{color:var(--lav);font-style:normal}
+.fi{margin-top:8px;background:#22242B;border-radius:12px;padding:16px 18px;font-size:15px;color:rgba(255,255,255,.35)}
+.chkrow{margin-top:8px;background:#22242B;border-radius:12px;padding:14px 18px;display:flex;gap:18px;flex-wrap:wrap}
+.chk{display:inline-flex;gap:8px;align-items:center;font-size:14px;font-weight:500;color:rgba(255,255,255,.8)}
+.chk .box{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:900}
+.chk .box.on{background:var(--brand);color:#fff}
+.chk .box.off{border:1.5px solid rgba(255,255,255,.25);color:transparent}
+.agree{margin-top:24px;display:grid;gap:9px;font-size:13.5px;color:rgba(255,255,255,.55);text-align:left}
+.agree u{cursor:pointer}
+
+/* FAQ */
+.faq{max-width:900px;margin:0 auto;display:grid;gap:12px}
+.frow{background:var(--bg1);border-radius:14px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;text-align:left;transition:background .2s}
+.frow:hover{background:var(--bg2)}
+.frow b{font-size:16.5px;font-weight:600}
+.frow b i{font-style:normal;color:var(--brand);font-weight:700}
+.frow span{color:var(--g4);font-size:22px}
+
+/* CTA 밴드 */
+.cta-band{background:var(--brand);color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}
+.cta-band .deco{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--brand-deep);filter:blur(60px);opacity:.7;right:-90px;top:-120px}
+.cta-band h2{position:relative;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.35}
+.cta-band p{position:relative;margin-top:14px;font-size:18px;color:rgba(255,255,255,.75)}
+.cta-band .act{position:relative;margin-top:36px;display:flex;gap:12px;justify-content:center}
+
+footer{background:var(--dark);color:rgba(255,255,255,.45);padding:44px 0;font-size:13.5px}
+footer .in{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center}
+footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
+
+@media (max-width:900px){
+  .kv h1{font-size:44px}
+  h2.tt{font-size:32px}
+  .oneline{font-size:26px}
+  .tgrid,.egrid,.zig,.chart-card,.fgrid{grid-template-columns:1fr}
+  .scard{grid-template-columns:1fr}
+  .place{grid-template-columns:1fr}
+  .sec{padding:90px 0}
+}
+</style>
+</head>
+<body>
+
+<div class="gnb" id="gnb">
+  <div class="in">
+    <span class="logo">H.</span>
+    <nav><a href="#about">ABOUT</a><a href="#session">SESSION</a><a href="#event">EVENT</a><a href="#location">LOCATION</a></nav>
+    <a class="cta" href="#apply">신청하기</a>
+  </div>
+</div>
+
+<!-- KV — 풀뷰포트 스테이지 (toss 히어로 스케일) -->
+<section class="kv" id="kv">
+  <div class="kv-glow a"></div><div class="kv-glow b"></div>
+  <div class="in wrap">
+    <div class="eb">HR Growth 2026</div>
+    <h1><span class="line"><span>The New Era of</span></span><span class="line"><span>HR x AI Performance</span></span></h1>
+    <div class="meta"><b>2026. 09. 10 (목) 13:30</b> ㅣ GS타워 아모리스홀 (역삼역 도보 1분)</div>
+    <div class="act"><a class="pill w" href="#apply">신청하기</a></div>
+  </div>
+  <div class="scroll">SCROLL</div>
+</section>
+
+<!-- 문제 제기 — 센터 대형 + 3열 타이포 그리드 -->
+<section class="sec" id="about">
+  <div class="wrap center">
+    <h2 class="tt rv">우리 조직의 HR은<br>AI를 ‘잘’ 쓰고 계신가요?</h2>
+    <p class="sub rv d1">기업 90%가 도입한 시대, 활용은 이제 선택이 아닌 기본이 되었습니다.</p>
+    <div class="tgrid" style="margin-top:90px;text-align:left">
+      <div class="rv"><div class="num"><span data-count="90">90</span><small>%</small></div><b>기업 90%가<br>HR에 AI를 도입했어요</b><p>상위 500대 기업 10곳 중 9곳이 인사 업무에 AI를 활용합니다.</p></div>
+      <div class="rv d1"><div class="num"><span data-count="75">75</span><small>%</small></div><b>글로벌 기업 75%는<br>업무 절반을 AI로 처리해요</b><p>한국은 89% — 흐름은 이미 기본값이 되었습니다.</p></div>
+      <div class="rv d2"><div class="num"><span data-count="91">91</span><small>%</small></div><b>고용주의 91%가<br>HR 업무에 AI를 활용해요</b><p>AI가 설계하는 직장은 더 이상 미래가 아닙니다.</p></div>
+    </div>
+    <div class="chart-card rv" style="margin-top:90px">
+      <div style="text-align:left">
+        <b style="font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.4">그런데, 실질적 성과로<br>연결하는 기업은 6%뿐이에요</b>
+        <p style="margin-top:12px;font-size:16px;line-height:1.65;color:var(--g3)">질문: AI와 상호작용하며 얼마나 큰 진전을 이루고 있나요?<br>도입과 성과의 간극이 이번 세미나의 출발점입니다.</p>
+      </div>
+      <div class="bars">
+        <div><div class="v">62%</div><div class="bar" style="height:124px"></div><div class="l">중요성을 체감</div></div>
+        <div><div class="v">54%</div><div class="bar" style="height:108px"></div><div class="l">행동하고 있다</div></div>
+        <div class="hot"><div class="v">6%</div><div class="bar" style="height:14px"></div><div class="l">큰 진전을 이룸</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 센터 한 줄 대형 문장 (toss 단독 문장 문법) -->
+<section style="padding:60px 0 160px">
+  <div class="wrap center">
+    <p class="oneline rv">막막했던 HR x AI의 <span style="color:var(--brand)">실용적 해답</span>,<br>이번 세미나에서 확인하세요.</p>
+  </div>
+</section>
+
+<!-- SESSION — 다크 스테이지 -->
+<section class="sec dark" id="session">
+  <div class="wrap">
+    <div class="center">
+      <h2 class="tt rv">SESSION</h2>
+      <p class="sub rv d1">진단 · 교육 · 성과 · 평가 — 네 영역의 실전 활용법.</p>
+    </div>
+    <div style="margin-top:80px">
+      <div class="scard rv">
+        <div><div class="cap">Growth 01. 성과관리 / 인사평가</div>
+          <h3>AI 시대를 위한<br>HR 성과&평가 Re:boot</h3>
+          <ul><li>전략 재설계 — AI 기술을 접목한 성과관리 패러다임 전환</li><li>정교한 평가 — 조직 맞춤 평가 프로세스 구축 & 실전 사례</li></ul>
+          <div class="who">에이치닷 ㅣ 시니어 컨설턴트</div></div>
+        <div class="ph">◆</div>
+      </div>
+      <div class="scard rv">
+        <div><div class="cap">Growth 02. 진단 / 교육</div>
+          <h3>AI로 연결하는<br>진단부터 실전 교육까지</h3>
+          <ul><li>AI 데이터 진단 — 올바른 성장 방향을 정립하는 진단</li><li>조직 성장 가이드 — 진단 데이터 바탕 구성원 맞춤 가이드</li><li>AI 롤플레잉 — 실무 적용력을 높이는 체계적인 성장 훈련</li></ul>
+          <div class="who">에이치닷 ㅣ 시니어 컨설턴트</div></div>
+        <div class="ph">◈</div>
+      </div>
+      <div class="scard rv">
+        <div><div class="cap">Growth 03. 성과관리 / 인사평가</div>
+          <h3>SK케미칼<br>성과관리&평가 혁신 사례</h3>
+          <ul><li>도입 기업이 직접 전하는 혁신 여정과 실측 성과</li></ul>
+          <div class="who">SK케미칼 ㅣ 매니저</div></div>
+        <div class="ph">▦</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 놓치면 안되는 이유 — 지그재그 -->
+<section class="sec">
+  <div class="wrap">
+    <div class="center"><h2 class="tt rv">세미나를 놓치면<br>안되는 이유</h2></div>
+    <div style="margin-top:100px">
+      <div class="zig">
+        <div class="rv"><div class="cap">Insight</div><h3>AI 시대, HR의 답을 찾다</h3>
+          <p>기준도, 방법도 빠르게 바뀌고 있습니다. 새롭게 마주한 과제를 짚어보고 즉시 활용할 수 있는 전략과 인사이트를 얻어가세요.</p></div>
+        <div class="ph rv d1" style="height:340px"></div>
+      </div>
+      <div class="zig">
+        <div class="ph rv" style="height:340px"></div>
+        <div class="rv d1"><div class="cap">Experience</div><h3>HR이 바뀌는 순간</h3>
+          <p>AI가 만드는 변화를 우리 조직의 시나리오에 맞춰 현장에서 직접 체험해 보세요.</p></div>
+      </div>
+      <div class="zig">
+        <div class="rv"><div class="cap">Networking</div><h3>함께 즐기는 네트워킹</h3>
+          <p>같은 고민을 가진 HR 동료들을 만나 인사이트를 나누고 노하우를 공유해 보세요.</p></div>
+        <div class="ph rv d1" style="height:340px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 소셜 프루프 카운트업 -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap center">
+    <p class="oneline rv">26년 누적 <span style="color:var(--brand)"><span data-count="1,300">1,300</span>명</span>이 증명한 실전 인사이트,<br>먼저 경험한 HRer들의 후기가 증명합니다.</p>
+  </div>
+</section>
+
+<!-- EVENT -->
+<section class="sec" style="padding-top:0" id="event">
+  <div class="wrap center">
+    <h2 class="tt rv">EVENT</h2>
+    <p class="sub rv d1">참석 고객을 위해 준비한 특별한 혜택.</p>
+    <div class="egrid" style="margin-top:70px">
+      <div class="ecard rv"><span class="b">참석 혜택 01</span><b>채용 홍보 무료 지원</b><p>수수료 0원으로 SNS 타겟 광고를 진행해 드려요.</p><div class="ph"></div></div>
+      <div class="ecard rv d1"><span class="b">참석 혜택 02</span><b>특별 기프트</b><p>스페셜 기프트가 준비되어 있어요. 현장에서 확인하세요.</p><div class="ph"></div></div>
+      <div class="ecard rv d2"><span class="b">참석 혜택 03</span><b>구조화 면접 질문지</b><p>면접에 바로 활용하는 질문지 PDF를 드려요.</p><div class="ph"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 일정 및 장소 -->
+<section class="sec" style="padding-top:0" id="location">
+  <div class="wrap center">
+    <h2 class="tt rv">일정 및 장소</h2>
+    <div class="tabs rv d1" style="margin-top:36px">
+      <span class="tab on">9월 10일(목) · GS타워</span>
+      <span class="tab">9월 17일(목) · 코엑스 마곡</span>
+    </div>
+    <div class="place rv d2">
+      <div class="info">
+        <b>HR Growth 2026<br>1회차</b>
+        <div class="row" style="margin-top:26px"><span class="k">일시</span><span class="v">2026. 09. 10 (목) 13:30 - 16:30</span></div>
+        <div class="row"><span class="k">장소</span><span class="v">GS타워 아모리스홀<br><span style="color:var(--g4);font-size:13.5px">역삼역 도보 1분</span></span></div>
+      </div>
+      <div class="map ph"><span class="pin"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 신청 폼 — 다크 -->
+<section class="sec dark" id="apply">
+  <div class="wrap center form">
+    <h2 class="tt rv" style="color:#fff">HR Growth 2026 신청하기</h2>
+    <p class="sub rv d1" style="color:rgba(255,255,255,.55)">2026. 09. 10 (목) 13:30 ㅣ GS타워 아모리스홀 (역삼역 도보 1분)</p>
+    <div class="fgrid rv d2" style="margin-top:64px">
+      <div><div class="fl">성함 <em>*</em></div><div class="fi">입력해주세요.</div></div>
+      <div><div class="fl">휴대전화번호 <em>*</em></div><div class="fi">입력해주세요. (ex.010-0000-0000)</div></div>
+      <div><div class="fl">회사명 <em>*</em></div><div class="fi">입력해주세요.</div></div>
+      <div><div class="fl">이메일 <em>*</em></div><div class="fi">입력해주세요.</div></div>
+      <div><div class="fl">임직원 수 <em>*</em></div><div class="fi">입력해주세요.</div></div>
+      <div><div class="fl">직책 혹은 직위 <em>*</em></div>
+        <div class="chkrow">
+          <span class="chk"><span class="box on">✓</span>대표/ 임원</span>
+          <span class="chk"><span class="box on">✓</span>HR 리더</span>
+          <span class="chk"><span class="box off">✓</span>HR 담당자</span>
+          <span class="chk"><span class="box off">✓</span>기타</span>
+        </div></div>
+    </div>
+    <div class="agree rv d3">
+      <span><span class="chk"><span class="box off">✓</span></span> <u>개인정보 수집 및 이용 약관 동의</u> (필수)</span>
+      <span><span class="chk"><span class="box on">✓</span></span> <u>홍보 및 마케팅 이용 약관 동의</u> (선택)</span>
+    </div>
+    <div class="rv d4" style="margin-top:44px"><span class="pill" style="padding:18px 80px;font-size:17px">신청하기</span></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec">
+  <div class="wrap center">
+    <h2 class="tt rv">도입 전,<br>이런 점이 궁금하신가요?</h2>
+    <div class="faq rv d1" style="margin-top:64px">
+      <div class="frow"><b><i>Q.</i> 세미나에 참가비가 있나요?</b><span>+</span></div>
+      <div class="frow"><b><i>Q.</i> 참가 대상은 어떻게 되나요?</b><span>+</span></div>
+      <div class="frow"><b><i>Q.</i> 참가 신청은 언제까지 할 수 있나요?</b><span>+</span></div>
+      <div class="frow"><b><i>Q.</i> 주차 지원이 가능한가요?</b><span>+</span></div>
+      <div class="frow"><b><i>Q.</i> 이벤트 혜택은 언제 받을 수 있나요?</b><span>+</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA 밴드 -->
+<section class="cta-band">
+  <div class="deco"></div>
+  <div class="wrap">
+    <h2 class="rv">올바른 성과관리와 인사평가의 시작,<br>H.성과에 대해 더 알고싶다면</h2>
+    <p class="rv d1">막막했던 HR x AI의 실용적 해답을 확인하세요.</p>
+    <div class="act rv d2"><span class="pill w">성과 · 평가 알아보기</span><span class="pill w">리더십진단 알아보기</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="in"><span><b>H.</b> ⓒ 2026 MIDAS Group.</span><span>HR Growth 2026 ㅣ 문의 mkt-team@h.place</span></div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 리빌
+  if ('IntersectionObserver' in window && !reduce) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.18 });
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('on'); });
+  }
+
+  // 카운트업
+  if ('IntersectionObserver' in window && !reduce) {
+    var io2 = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return; io2.unobserve(e.target);
+        var el = e.target, raw = el.getAttribute('data-count') || '0';
+        var target = parseFloat(raw.replace(/,/g,'')), comma = raw.indexOf(',') !== -1, t0 = null;
+        function step(ts){ if (!t0) t0 = ts;
+          var p = Math.min((ts - t0) / 1400, 1), ease = 1 - Math.pow(1 - p, 3);
+          var v = Math.round(target * ease);
+          el.textContent = comma ? v.toLocaleString('en-US') : String(v);
+          if (p < 1) requestAnimationFrame(step); }
+        requestAnimationFrame(step);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(function(el){ io2.observe(el); });
+  }
+
+  // KV 스크럽 — 스크롤에 따라 타이포 페이드/이동 (toss 스테이지 감각의 경량 번안)
+  var kvIn = document.querySelector('.kv .in');
+  if (kvIn && !reduce) {
+    addEventListener('scroll', function(){
+      var y = scrollY, h = innerHeight;
+      if (y < h) { var p = y / h;
+        kvIn.style.opacity = String(1 - p * 1.15);
+        kvIn.style.transform = 'translateY(' + (-p * 90) + 'px) scale(' + (1 - p * 0.04) + ')'; }
+    }, { passive: true });
+  }
+
+  // GNB — KV를 벗어나면 화이트로
+  var gnb = document.getElementById('gnb');
+  addEventListener('scroll', function(){
+    gnb.classList.toggle('solid', scrollY > innerHeight - 70);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
