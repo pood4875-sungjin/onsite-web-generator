@@ -35,7 +35,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
+body{transition:background-color .8s ease;font-family:"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
 .sec{padding:160px 0}
 h2.tt{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}
@@ -170,7 +170,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .nline .hl{color:var(--lav)}
 
 /* 다크 세션 */
-.dark{background:var(--dark);color:#fff}
+.dark{background:transparent;color:#fff}
 .scard{background:#241B47;border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
 .scard+.scard{margin-top:20px}
 .scard .cap{font-size:14px;font-weight:600;color:var(--lav)}
@@ -425,7 +425,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </div>
 
 <!-- 다크 내러티브 스크럽 — 줄 단위 블러 리빌 (toss 지구본 장면 문법, 핀 250vh) -->
-<div class="track nar-track" id="nar">
+<div class="track nar-track" id="nar" data-bg="#121419">
   <section class="stage dark nrstage">
     <div class="wrap">
       <p class="nline">26년 누적 <span class="hl"><span data-count="1,300">1,300</span>명</span>이 증명한 실전 인사이트,</p>
@@ -437,7 +437,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </div>
 
 <!-- SESSION — 다크 스테이지 -->
-<section class="sec" id="session" style="background:#191233;color:#fff">
+<section class="sec dark" id="session" data-bg="#191233">
   <div class="wrap">
     <div class="center">
       <h2 class="tt rv">SESSION</h2>
@@ -550,7 +550,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </section>
 
 <!-- 신청 폼 — 다크 -->
-<section class="sec dark" id="apply">
+<section class="sec dark" id="apply" data-bg="#121419">
   <div class="wrap center form">
     <h2 class="tt rv" style="color:#fff">HR Growth 2026 신청하기</h2>
     <p class="sub rv d1" style="color:rgba(255,255,255,.55)">2026. 09. 10 (목) 13:30 ㅣ GS타워 아모리스홀 (역삼역 도보 1분)</p>
@@ -725,6 +725,20 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     }, { threshold: 0.6 });
     io3.observe(tline);
   }
+
+  // 배경 존 전환 — 스크롤 위치에 따라 body 배경이 흰↔다크로 크로스페이드 (h.place 실측 문법)
+  var zones = Array.prototype.slice.call(document.querySelectorAll('[data-bg]'));
+  if (reduce) document.body.style.transition = 'none';
+  function bgZone(){
+    var mid = scrollY + innerHeight * 0.5, bg = '#fff';
+    for (var zi = 0; zi < zones.length; zi++) {
+      var z = zones[zi], top = z.offsetTop, bot = top + z.offsetHeight;
+      if (mid >= top && mid < bot) { bg = z.getAttribute('data-bg'); break; }
+    }
+    if (document.body.style.backgroundColor !== bg) document.body.style.backgroundColor = bg;
+  }
+  addEventListener('scroll', bgZone, { passive: true });
+  bgZone();
 
   // GNB — KV를 벗어나면 화이트로
   var gnb = document.getElementById('gnb');
