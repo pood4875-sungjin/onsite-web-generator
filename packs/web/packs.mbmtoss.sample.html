@@ -89,7 +89,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .spanel .pv.on{opacity:1}
 .spanel .pv .glyph{width:110px;height:110px;border-radius:28px;background:rgba(5,209,110,.1);display:grid;place-items:center;color:var(--brand);font-size:44px;font-weight:800}
 .spanel .pv .w{margin-top:18px;font-size:19px;font-weight:700;color:var(--g1);text-align:center}
-@media (prefers-reduced-motion:reduce){.kv-track,.areas-track,.nar-track{height:auto!important}.stage{position:static;height:auto;min-height:0;padding:120px 0}.kv{display:block;background:linear-gradient(150deg,#1E2026,#121419);padding:150px 0 90px}.kv .in{margin:0 auto}.kv .scroll{display:none}.kv-photo{position:relative;inset:auto;width:min(1200px,92vw);height:520px;margin:72px auto 0;border-radius:32px}.kv-photo .ov{opacity:.45}.kv-sub{opacity:1!important}.srow b{font-size:26px;color:var(--ink)}.srow .n{color:var(--brand)}.srow .more{max-height:none}.spanel .pv{position:static;opacity:1}.chipline .chip{opacity:1;transform:none;transition:none}.typeline .caret{display:none}.nline{opacity:1!important;filter:none!important}.drop{opacity:1;transform:none;transition:none}}
+@media (prefers-reduced-motion:reduce){.kv-track,.areas-track,.nar-track{height:auto!important}.stage{position:static;height:auto;min-height:0;padding:120px 0}.kv{display:block;background:linear-gradient(150deg,#1E2026,#121419);padding:150px 0 90px}.kv .in{margin:0 auto}.kv-photo{position:relative;inset:auto;width:min(1200px,92vw);height:520px;margin:72px auto 0;border-radius:32px}.kv-photo .ov{opacity:.45}.kv-sub{opacity:1!important}.srow b{font-size:26px;color:var(--ink)}.srow .n{color:var(--brand)}.srow .more{max-height:none}.spanel .pv{position:static;opacity:1}.chipline .chip{opacity:1;transform:none;transition:none}.typeline .caret{display:none}.nline{opacity:1!important;filter:none!important}.drop{opacity:1;transform:none;transition:none}}
 
 /* GNB */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;backdrop-filter:blur(12px);background:rgba(18,20,25,.35);transition:background .4s ease}
@@ -121,9 +121,6 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .kv .meta{margin-top:30px;font-size:18px;color:rgba(255,255,255,.72)}
 .kv .meta b{color:#fff;font-weight:600}
 .kv .act{margin-top:42px}
-.kv .scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:13px;letter-spacing:.08em;z-index:2}
-.kv .scroll:after{content:"";display:block;width:1px;height:34px;background:rgba(255,255,255,.4);margin:10px auto 0;animation:down 1.6s ease-in-out infinite}
-@keyframes down{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 .kv .line{display:block;overflow:hidden}
 .kv .line span{display:inline-block;transform:translateY(110%);animation:rise 1s cubic-bezier(.22,1,.36,1) forwards}
 .kv .line:nth-child(2) span{animation-delay:.12s}
@@ -357,7 +354,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     <div class="meta"><b>2026. 09. 10 (목) 13:30</b> ㅣ GS타워 아모리스홀 (역삼역 도보 1분)</div>
     <div class="act"><a class="cta2 w" href="#apply">신청하기 <span class="arr">→</span></a></div>
   </div>
-  <div class="scroll">SCROLL</div>
 </section>
 </div>
 
@@ -663,7 +659,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   // 히어로 핀 스크럽 — 실사 풀블리드 유지(~45%) → 타이포 페이드 → 라운드 카드 축소 + 서브 카피 (toss 송금 장면 문법)
   var kvTrack = document.getElementById('kvtrack');
   var kvIn = document.querySelector('.kv .in');
-  var kvScroll = document.querySelector('.kv .scroll');
   var kvPhoto = document.querySelector('.kv-photo');
   var kvOv = document.querySelector('.kv-photo .ov');
   var kvSub = document.querySelector('.kv-sub');
@@ -677,7 +672,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     kvIn.style.opacity = String(1 - t);
     kvIn.style.transform = 'translateY(' + (-80 * t) + 'px) scale(' + (1 - 0.05 * t) + ')';
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
-    if (kvScroll) kvScroll.style.opacity = String(1 - clamp01(p / 0.15));
     var q = clamp01((p - 0.45) / 0.35);            // 풀블리드 → 라운드 카드 축소 45~80%
     var e = 1 - Math.pow(1 - q, 3);
     if (kvImg) kvImg.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; // 프레임 씌워지며 점점 블러 → 슬로건 가독
