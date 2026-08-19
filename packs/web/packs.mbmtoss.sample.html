@@ -242,8 +242,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .mapsvg{position:absolute;inset:0;width:100%;height:100%}
 
 /* 던 푸터 — toss: 지구본 장면이 새벽 그라데이션으로 밝아지며 푸터로 이어짐 */
-.dawnfoot{position:relative;overflow:hidden;background:transparent;color:#fff;padding:46vh 0 64px}
-.dawnfoot #globe{position:absolute;left:0;top:0;width:100%;height:52vh}
+.dawnfoot{position:relative;background:var(--dark);color:#fff;padding:80px 0 44px}
 .dawnfoot .in{position:relative;max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:40px;align-items:start}
 .dawnfoot .slog{font-size:30px;font-weight:700;line-height:1.45;letter-spacing:-.02em}
 .dawnfoot .slog b{font-size:inherit;color:#fff}
@@ -288,8 +287,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .frow span{color:var(--g4);font-size:22px}
 
 /* CTA 밴드 */
-.finale{background:linear-gradient(180deg,var(--brand) 0%,#5A2FC2 16%,#3B2687 30%,#262060 44%,#232A5E 58%,#3A3576 72%,#8A6E93 87%,#E3BBA4 100%)}
-.cta-band{background:transparent;color:#fff;padding:120px 0 150px;text-align:center;position:relative;overflow:hidden}
+.cta-band{background:var(--brand);color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}
 .cta-band .deco{position:absolute;width:380px;height:380px;border-radius:50%;background:var(--brand-deep);filter:blur(60px);opacity:.7;right:-90px;top:-120px}
 .cta-band h2{position:relative;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.35}
 .cta-band p{position:relative;margin-top:14px;font-size:18px;color:rgba(255,255,255,.75)}
@@ -315,7 +313,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   .scard{grid-template-columns:1fr}
   .place{grid-template-columns:1fr}
   .dawnfoot .in{grid-template-columns:1fr;gap:28px}
-  .dawnfoot{padding-top:38vh}
   .mini{width:min(300px,86%)}
   .sec{padding:90px 0}
 }
@@ -593,8 +590,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   </div>
 </section>
 
-<!-- 피날레 — CTA 밴드와 던 푸터가 한 장의 그라데이션 -->
-<div class="finale">
+<!-- CTA 밴드 -->
 <section class="cta-band">
   <div class="deco"></div>
   <div class="wrap">
@@ -605,7 +601,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </section>
 
 <footer class="dawnfoot">
-  <canvas id="globe"></canvas>
   <div class="in">
     <div class="slog">HR의 다음 10년,<br>마침내 <b>H.</b>으로.</div>
     <div class="col"><i>행사</i><a href="#about">소개</a><a href="#session">세션</a><a href="#event">이벤트</a><a href="#location">일정·장소</a></div>
@@ -614,7 +609,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   </div>
   <div class="copy"><span>ⓒ 2026 MIDAS Group.</span><span>HR Growth 2026</span></div>
 </footer>
-</div>
 
 <script>
 (function(){
@@ -730,68 +724,6 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
       });
     }, { threshold: 0.6 });
     io3.observe(tline);
-  }
-
-  // 회전 파티클 지구본 — 던 푸터 상단 (toss 지구본 장면 문법, orbit 팩 캔버스 문법 재사용)
-  var gcv = document.getElementById('globe');
-  if (gcv && gcv.getContext) {
-    var gctx = gcv.getContext('2d');
-    var seed = 7;
-    function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-    var dots = [];
-    for (var di = 0; di < 900; di++) {
-      var lat = Math.asin(rnd() * 0.9);            // 상반구 위주
-      var lon = rnd() * Math.PI * 2;
-      if (rnd() < 0.55) dots.push({ lat: lat, lon: lon }); // 대륙 느낌 성긴 클러스터
-    }
-    var rot = 0, gvis = false;
-    function drawGlobe(){
-      var w = gcv.width = gcv.offsetWidth * (devicePixelRatio > 1 ? 1.5 : 1);
-      var h = gcv.height = gcv.offsetHeight * (devicePixelRatio > 1 ? 1.5 : 1);
-      var R = w * 0.46, cx = w / 2, cy = h + R * 0.28, tilt = 0.34;
-      gctx.clearRect(0, 0, w, h);
-      // 위도선
-      gctx.strokeStyle = 'rgba(255,255,255,.14)'; gctx.lineWidth = 1;
-      for (var la = 0.12; la < 1.5; la += 0.16) {
-        var ry = R * Math.cos(la) * tilt, rx = R * Math.cos(la), oy = cy - R * Math.sin(la) * 1.02;
-        if (oy - ry > h) continue;
-        gctx.beginPath(); gctx.ellipse(cx, oy, rx, ry, 0, 0, Math.PI * 2); gctx.stroke();
-      }
-      // 경도선(고정)
-      for (var lo = 0; lo < Math.PI * 2; lo += Math.PI / 11) {
-        gctx.beginPath();
-        var started = false;
-        for (var t2 = 0.04; t2 <= 1.52; t2 += 0.05) {
-          var X = cx + R * Math.cos(t2) * Math.sin(lo);
-          var Y = cy - R * Math.sin(t2) * 1.02 + R * Math.cos(t2) * Math.cos(lo) * tilt;
-          var front = Math.cos(t2) * Math.cos(lo) > -0.12;
-          if (front && Y < h + 20) { if (!started) { gctx.moveTo(X, Y); started = true; } else gctx.lineTo(X, Y); }
-          else started = false;
-        }
-        gctx.stroke();
-      }
-      // 파티클(회전)
-      gctx.fillStyle = 'rgba(255,255,255,.6)';
-      for (var k = 0; k < dots.length; k++) {
-        var d2 = dots[k], lon2 = d2.lon + rot;
-        var front2 = Math.cos(d2.lat) * Math.cos(lon2);
-        if (front2 < 0.02) continue;
-        var X2 = cx + R * Math.cos(d2.lat) * Math.sin(lon2);
-        var Y2 = cy - R * Math.sin(d2.lat) * 1.02 + R * Math.cos(d2.lat) * Math.cos(lon2) * tilt;
-        if (Y2 > h + 10) continue;
-        gctx.globalAlpha = 0.25 + 0.6 * front2;
-        gctx.fillRect(X2, Y2, 2.2, 2.2);
-      }
-      gctx.globalAlpha = 1;
-    }
-    function spin(){ if (!gvis) return; rot += 0.00055; drawGlobe(); requestAnimationFrame(spin); }
-    if (reduce) { drawGlobe(); }
-    else if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function(es){
-        es.forEach(function(e){ var was = gvis; gvis = e.isIntersecting; if (gvis && !was) spin(); });
-      }, { threshold: 0.05 }).observe(gcv);
-    } else { gvis = true; spin(); }
-    addEventListener('resize', drawGlobe);
   }
 
   // GNB — KV를 벗어나면 화이트로
