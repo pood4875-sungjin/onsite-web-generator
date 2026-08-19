@@ -288,6 +288,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .fitem{background:#fff;border-radius:14px;overflow:hidden}
 .frow{padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;text-align:left;cursor:pointer;transition:background .2s}
 .frow:hover{background:var(--bg1)}
+.fitem.open .frow,.fitem.open .frow:hover{background:#fff}
 .frow b{font-size:16.5px;font-weight:600}
 .frow b i{font-style:normal;color:var(--brand);font-weight:700}
 .frow span{color:var(--g4);font-size:22px;transition:transform .3s}
@@ -682,7 +683,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     if (kvImg) kvImg.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; // 프레임 씌워지며 점점 블러 → 슬로건 가독
     kvPhoto.style.transform = 'scale(' + (1 - 0.14 * e) + ')';
     kvPhoto.style.borderRadius = (32 * e).toFixed(1) + 'px';
-    kvOv.style.opacity = (0.55 - 0.25 * e).toFixed(3); // 선명하게 시작, 카드 전환 시 걷힘
+    kvOv.style.opacity = (0.72 - 0.3 * e).toFixed(3); // 다크그레이 깔아 텍스트 가독, 카드 전환 시 일부 걷힘
     var s = clamp01((p - 0.58) / 0.22), se = 1 - Math.pow(1 - s, 3); // 서브 카피 58~80%
     kvSub.style.opacity = String(se);
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
