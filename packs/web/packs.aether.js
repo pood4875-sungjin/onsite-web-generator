@@ -527,7 +527,7 @@
   }
 
   function css(motion) {
-    var anim = motion !== 'static';
+    var anim = motion !== 'static' && motion !== 'none';
     return '@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap");' +
       '[data-edit]{white-space:pre-wrap}body{margin:0}' +
       '.aglass{background:' + T.ink + ';color:' + T.text + ';font-family:' + T.fontB + ';-webkit-font-smoothing:antialiased;overflow-x:hidden}' +
@@ -844,8 +844,12 @@
       '.ag-prt .ag-pt{font-size:13px;gap:8px}' +
       '.ag-prt-cta td{border-bottom:none;padding:18px 16px 22px}' +
       '.ag-prt .ag-btn{display:inline-block;padding:10px 18px;font-size:13px;text-align:center}' +
-      /* reveal — 순수 CSS 엔트런스(JS 무의존, 항상 보임 + 스태거) */
-      (anim ? '.rv{opacity:0;transform:translateY(24px);animation:ag-rv .7s cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d,.06s)}' : '.rv{opacity:1}') +
+      /* reveal — 기본은 순수 CSS 엔트런스(JS 무의존, 항상 보임 + 스태거).
+         JS가 살아 있으면(html.ag-io) 일시정지 후 스크롤 진입 순간 재생. 인쇄·편집모드는 항상 보임 */
+      (anim ? '.rv{opacity:0;transform:translateY(24px);animation:ag-rv .7s cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d,.06s)}' +
+        'html.ag-io .rv{animation-play-state:paused}html.ag-io .rv.in{animation-play-state:running}' +
+        '[data-editing] .rv{animation-play-state:running!important}' +
+        '@media print{.rv{animation:none!important;opacity:1!important;transform:none!important}}' : '.rv{opacity:1}') +
       '@keyframes ag-rv{to{opacity:1;transform:none}}' +
       '@keyframes ag-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}' +
       '@keyframes ag-spin-r{to{transform:translate(-50%,-50%) rotate(-360deg)}}' +
@@ -854,8 +858,14 @@
       '@media(prefers-reduced-motion:reduce){.ag-w,.ag-bars i,.ag-a1,.ag-a2,.rv{animation:none!important}.ag-w,.rv{opacity:1;transform:none}.ag-bars i{height:var(--h)}}';
   }
 
-  // 리빌은 CSS로 처리(무의존). JS는 마그네틱 버튼 강화만(있으면 좋고, 없어도 무방).
-  var REVEAL_JS = '<script>(function(){document.querySelectorAll(".ag-mag").forEach(function(b){b.addEventListener("mousemove",function(e){var r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)*.3)+"px,"+((e.clientY-r.top-r.height/2)*.3)+"px)"});b.addEventListener("mouseleave",function(){b.style.transform=""})});})();<\/script>';
+  // 리빌 — JS 생존 시 IO 스크롤 진입 재생(html.ag-io 마킹). 제거·미지원·reduced-motion이면 CSS 로드 애니로 항상 보임. + 마그네틱 버튼 강화.
+  var REVEAL_JS = '<script>(function(){' +
+    'try{if(("IntersectionObserver" in window)&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){' +
+    'document.documentElement.classList.add("ag-io");' +
+    'var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.15});' +
+    'document.querySelectorAll(".rv").forEach(function(el){io.observe(el);});' +
+    '}}catch(e){document.documentElement.classList.remove("ag-io");}' +
+    'document.querySelectorAll(".ag-mag").forEach(function(b){b.addEventListener("mousemove",function(e){var r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)*.3)+"px,"+((e.clientY-r.top-r.height/2)*.3)+"px)"});b.addEventListener("mouseleave",function(){b.style.transform=""})});})();<\/script>';
 
   function renderAetherPage(shared, opts) {
     shared = shared || {}; opts = opts || {};
@@ -870,7 +880,7 @@
     }).join('');
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<style>' + css(motion) + '</style></head><body><div class="aglass">' + body + '</div>' +
-      (motion !== 'static' ? REVEAL_JS : '') + '</body></html>';
+      (motion !== 'static' && motion !== 'none' ? REVEAL_JS : '') + '</body></html>';
   }
 
   window.renderAetherPage = renderAetherPage;

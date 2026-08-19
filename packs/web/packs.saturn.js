@@ -71,17 +71,29 @@
     ].join('\n');
   }
 
-  /* ---- 모션 — 순수 CSS 엔트런스(스크립트 제거된 새창 미리보기에서도 생존). static=off ---- */
+  /* ---- 모션 — 스크롤 진입 리빌(IO). 기본 CSS는 순수 로드 애니 그대로 → JS가 살아 있으면(html.sat-io)
+     일시정지 후 뷰포트 진입 순간 재생. 스크립트 제거·IO 미지원·reduced-motion·인쇄 = 항상 보임. static/none=off ---- */
   function motion(level) {
-    if (level === 'static') return { css: '', js: '' };
+    if (level === 'static' || level === 'none') return { css: '', js: '' };
     var d = level === 'rich' ? '26px' : '16px';
     return {
       css: [
         '.sat .up{opacity:0;transform:translateY(' + d + ');animation:satUp .7s cubic-bezier(.22,1,.36,1) both}',
         '.sat .up.d1{animation-delay:.08s}.sat .up.d2{animation-delay:.16s}.sat .up.d3{animation-delay:.24s}',
         '@keyframes satUp{to{opacity:1;transform:none}}',
+        'html.sat-io .sat .up{animation-play-state:paused}',
+        'html.sat-io .sat .up.in{animation-play-state:running}',
+        '[data-editing] .sat .up{animation-play-state:running!important}',
+        '@media print{.sat .up{animation:none!important;opacity:1!important;transform:none!important}}',
         '@media (prefers-reduced-motion:reduce){.sat .up{animation:none;opacity:1;transform:none}}',
-      ].join('\n'), js: '',
+      ].join('\n'),
+      js: '<script>(function(){try{' +
+        'if(!("IntersectionObserver" in window))return;' +
+        'if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;' +
+        'document.documentElement.classList.add("sat-io");' +
+        'var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.15});' +
+        'document.querySelectorAll(".sat .up").forEach(function(el){io.observe(el);});' +
+        '}catch(e){document.documentElement.classList.remove("sat-io");}})();<\/script>',
     };
   }
 
@@ -865,7 +877,7 @@
     var mo = motion(opts.motion || 'subtle');
     return '<!doctype html><html lang="ko" data-pack="saturn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">' +
       '<title>' + esc(data.productName || '제품') + '</title><style>' + saturnPack.globalCss() + '\n' + (mo.css || '') + '</style></head>' +
-      '<body><div class="sat">' + body + '</div></body></html>';
+      '<body><div class="sat">' + body + '</div>' + (mo.js || '') + '</body></html>';
   }
 
   var TEMPLATE = [
