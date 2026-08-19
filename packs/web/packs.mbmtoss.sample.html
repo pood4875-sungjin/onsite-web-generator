@@ -255,7 +255,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .tabs{display:flex;gap:10px;justify-content:center}
 .tab{font-size:15px;font-weight:600;padding:13px 26px;border-radius:100px;background:var(--bg2);color:var(--g3);cursor:pointer;transition:background .2s,color .2s}
 .tab.on{background:var(--ink);color:#fff}
-.place{margin-top:36px;background:#fff;border:1px solid rgba(3,7,18,.07);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:0.9fr 1.4fr}
+.place{margin-top:36px;background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(3,7,18,.05);overflow:hidden;display:grid;grid-template-columns:0.9fr 1.4fr}
 .place .info{padding:44px 40px;text-align:left}
 .place .info b{font-size:24px;font-weight:700;letter-spacing:-.02em}
 .place .row{margin-top:16px;display:flex;gap:16px;font-size:15px}
@@ -514,7 +514,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </section>
 
 <!-- 일정 및 장소 -->
-<section class="sec" style="padding-top:0" id="location">
+<section class="sec" style="background:var(--bg1)" id="location">
   <div class="wrap center">
     <h2 class="tt rv">일정 및 장소</h2>
     <div class="tabs rv d1" style="margin-top:36px">
