@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../pagetypes.js','../../packs/web/packs.krds.js','../../packs/web/packs.midas.js','../../packs/edm/packs.edm.js','../../packs/web/packs.aether.js','../../packs/web/packs.saturn.js','../../packs/web/packs.mbm.js','../../packs/web/packs.axday.js','../../packs/web/packs.toss.js','../../packs/web/packs.orbit.js','../../packs/ppt/packs.ppt.js','../charts.js','../../packs/ppt/packs.pitch.js','../../packs/ppt/packs.honors.js','../../packs/ppt/packs.naver.js','../../packs/ppt/packs.rams.js','../../packs/ppt/packs.pastel.js','../../packs/ppt/packs.sfmi.js','../../packs/ppt/packs.machine.js','../export-pptx.js','../llm.js','../../packs/edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../pagetypes.js','../../packs/web/packs.krds.js','../../packs/web/packs.midas.js','../../packs/edm/packs.edm.js','../../packs/web/packs.aether.js','../../packs/web/packs.saturn.js','../../packs/web/packs.mbm.js','../../packs/web/packs.mbmtoss.js','../../packs/web/packs.axday.js','../../packs/web/packs.toss.js','../../packs/web/packs.orbit.js','../../packs/ppt/packs.ppt.js','../charts.js','../../packs/ppt/packs.pitch.js','../../packs/ppt/packs.honors.js','../../packs/ppt/packs.naver.js','../../packs/ppt/packs.rams.js','../../packs/ppt/packs.pastel.js','../../packs/ppt/packs.sfmi.js','../../packs/ppt/packs.machine.js','../export-pptx.js','../llm.js','../../packs/edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -659,6 +659,7 @@
     if(pack && pack.id==='aglass' && typeof renderAetherPage==='function') return renderAetherPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='saturn' && typeof renderSaturnPage==='function') return renderSaturnPage(rd, {volume:vol, motion:mot});
     if(pack && pack.id==='mbm' && typeof renderMbmPage==='function') return renderMbmPage(rd, {volume:vol, motion:mot!=='none'});
+    if(pack && pack.id==='mbmtoss' && typeof renderMbmtossPage==='function') return renderMbmtossPage(rd, {volume:vol, motion:mot!=='none'});
     if(pack && pack.id==='axday' && typeof renderAxdayPage==='function') return renderAxdayPage(rd, {volume:vol, motion:mot!=='none'});
     if(pack && pack.id==='toss' && typeof renderTossPage==='function') return renderTossPage(rd, {volume:vol, motion:mot!=='none'});
     if(pack && pack.id==='orbit' && typeof renderOrbitPage==='function') return renderOrbitPage(rd, {volume:vol, motion:mot!=='none'});
@@ -893,6 +894,7 @@
     if(pack && pack.id==='midas' && window.MIDAS_SECTION_SPEC) return window.MIDAS_SECTION_SPEC;
     // 세미나·이벤트 팩 — 고정 TEMPLATE이지만 sectionOrder/hiddenSections는 소비함
     if(pack && pack.id==='mbm' && window.MBM_SECTION_SPEC) return window.MBM_SECTION_SPEC;
+    if(pack && pack.id==='mbmtoss' && window.MBMTOSS_SECTION_SPEC) return window.MBMTOSS_SECTION_SPEC;
     if(pack && pack.id==='axday' && window.AXDAY_SECTION_SPEC) return window.AXDAY_SECTION_SPEC;
     if(pack && pack.id==='toss' && window.TOSS_SECTION_SPEC) return window.TOSS_SECTION_SPEC;
     if(pack && pack.id==='orbit' && window.ORBIT_SECTION_SPEC) return window.ORBIT_SECTION_SPEC;
@@ -2804,7 +2806,8 @@
   if(project && pageRef){
     pageType = pageRef.pageType || 'main'; volume = pageRef.volume || 'heavy';
     data = structuredClone(pageRef.data || EMPTY);
-    pack = (project.stylePack==='mbm' && typeof MBM_STYLE!=='undefined') ? MBM_STYLE
+    pack = (project.stylePack==='mbmtoss' && typeof MBMTOSS_STYLE!=='undefined') ? MBMTOSS_STYLE
+         : (project.stylePack==='mbm' && typeof MBM_STYLE!=='undefined') ? MBM_STYLE
          : (project.stylePack==='axday' && typeof AXDAY_STYLE!=='undefined') ? AXDAY_STYLE
          : (project.stylePack==='toss' && typeof TOSS_STYLE!=='undefined') ? TOSS_STYLE
          : (project.stylePack==='orbit' && typeof ORBIT_STYLE!=='undefined') ? ORBIT_STYLE

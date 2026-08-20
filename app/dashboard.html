@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','../packs/web/packs.mbm.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','../packs/web/packs.mbm.js','../packs/web/packs.mbmtoss.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','i18n.js','icons.js','shell.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -79,7 +79,7 @@
   const PTL={main:'메인홈',features:'기능소개',pricing:'요금',landing:'랜딩',notice:'공지'};
   const LL=(ko)=>window.L?L(ko):ko;
   function styleName(sp){ if(sp==='saturn'&&window.SATURN_STYLE)return SATURN_STYLE.name; if(sp==='edm')return 'eDM'; if(sp==='honors'&&window.HONORS_STYLE)return HONORS_STYLE.name; if(sp==='pitch'&&window.PITCH_STYLE)return PITCH_STYLE.name; if(sp==='ppt'&&window.PPT_STYLE)return PPT_STYLE.name; if(sp==='aglass'&&window.AETHER_STYLE)return AETHER_STYLE.name; if(sp==='krds'&&window.KRDS_STYLE)return KRDS_STYLE.name; if(sp==='midas'&&window.MIDAS_STYLE)return MIDAS_STYLE.name;
-    if(sp==='mbm'&&window.MBM_STYLE)return MBM_STYLE.name; if(sp==='axday'&&window.AXDAY_STYLE)return AXDAY_STYLE.name; if(sp==='toss'&&window.TOSS_STYLE)return TOSS_STYLE.name; if(sp==='orbit'&&window.ORBIT_STYLE)return ORBIT_STYLE.name;
+    if(sp==='mbmtoss'&&window.MBMTOSS_STYLE)return MBMTOSS_STYLE.name; if(sp==='mbm'&&window.MBM_STYLE)return MBM_STYLE.name; if(sp==='axday'&&window.AXDAY_STYLE)return AXDAY_STYLE.name; if(sp==='toss'&&window.TOSS_STYLE)return TOSS_STYLE.name; if(sp==='orbit'&&window.ORBIT_STYLE)return ORBIT_STYLE.name;
     if(sp==='pastel'&&window.PASTEL_STYLE)return PASTEL_STYLE.name; if(sp==='sfmi'&&window.SFMI_STYLE)return SFMI_STYLE.name; if(sp==='machine'&&window.MACHINE_STYLE)return MACHINE_STYLE.name;
     return (DARK_PACK_BY_ID[sp]||DARK_PACK_BY_ID.aether).name; }
   function renderForStyle(sp, pg){ const d=pg.data||{};
@@ -96,6 +96,7 @@
     if(sp==='pastel'&&window.renderPastelDeck) return renderPastelDeck(d);
     if(sp==='sfmi'&&window.renderSfmiDeck) return renderSfmiDeck(d);
     if(sp==='machine'&&window.renderMachineDeck) return renderMachineDeck(d);
+    if(sp==='mbmtoss'&&window.renderMbmtossPage) return renderMbmtossPage(d,{volume:pg.volume,motion:false});
     if(sp==='mbm'&&window.renderMbmPage) return renderMbmPage(d,{volume:pg.volume,motion:false});
     if(sp==='axday'&&window.renderAxdayPage) return renderAxdayPage(d,{volume:pg.volume,motion:false});
     if(sp==='toss'&&window.renderTossPage) return renderTossPage(d,{volume:pg.volume,motion:false});
