@@ -25,11 +25,11 @@
 
   /* 컬러 테마 5종 — shared.theme으로 선택 (기본 green). brand/deep/mint(연 틴트)/ink(진한 텍스트)/zone(세션 존)/card(세션 카드) */
   var THEMES = {
-    green:  { brand: '#05D16E', deep: '#04B863', mint: '#96F2C4', bink: '#067A43', zone: '#0E241A', card: '#142A1E', ph: '#1C3A29' },
-    blue:   { brand: '#3182F6', deep: '#1B64DA', mint: '#A9CCFB', bink: '#1957C2', zone: '#0D1B2E', card: '#12263F', ph: '#1B3557' },
-    purple: { brand: '#6735E6', deep: '#5B28CE', mint: '#C6B2F5', bink: '#4B2AAF', zone: '#191233', card: '#241B47', ph: '#2F2458' },
-    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00', zone: '#2A160A', card: '#3A1E0E', ph: '#4A2812' },
-    red:    { brand: '#F04452', deep: '#D63340', mint: '#FBB6BC', bink: '#B22833', zone: '#2B1013', card: '#3D171C', ph: '#4D1D23' },
+    green:  { brand: '#05D16E', deep: '#04B863', mint: '#96F2C4', bink: '#067A43', zone: '#0E241A', card: '#142A1E', ph: '#1C3A29', acc2: '#3182F6' },
+    blue:   { brand: '#3182F6', deep: '#1B64DA', mint: '#A9CCFB', bink: '#1957C2', zone: '#0D1B2E', card: '#12263F', ph: '#1B3557', acc2: '#05D16E' },
+    purple: { brand: '#6735E6', deep: '#5B28CE', mint: '#C6B2F5', bink: '#4B2AAF', zone: '#191233', card: '#241B47', ph: '#2F2458', acc2: '#3182F6' },
+    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00', zone: '#2A160A', card: '#3A1E0E', ph: '#4A2812', acc2: '#00A3FE' },
+    red:    { brand: '#F04452', deep: '#D63340', mint: '#FBB6BC', bink: '#B22833', zone: '#2B1013', card: '#3D171C', ph: '#4D1D23', acc2: '#FF8A3D' },
   };
 
   var HERO_MP4 = 'mbmtoss-hero.mp4', HERO_POSTER = 'mbmtoss-hero3.jpg';
@@ -162,7 +162,7 @@
 
   function css(LANG, TH) {
     return [
-      ':root{--brand:' + TH.brand + ';--brand-deep:' + TH.deep + ';--mint:' + TH.mint + ';--brand-ink:' + TH.bink + ';--zone-card:' + TH.card + ';--ink:#191F28;--g1:#333D4B;--g2:#4E5968;--g3:#6B7684;--g4:#8B95A1;--bg1:#F9FAFB;--bg2:#F2F4F6;--dark:#121419;--dark-card:#1E2026}',
+      ':root{--brand:' + TH.brand + ';--brand-deep:' + TH.deep + ';--mint:' + TH.mint + ';--brand-ink:' + TH.bink + ';--accent2:' + (TH.acc2 || TH.brand) + ';--zone-card:' + TH.card + ';--ink:#191F28;--g1:#333D4B;--g2:#4E5968;--g3:#6B7684;--g4:#8B95A1;--bg1:#F9FAFB;--bg2:#F2F4F6;--dark:#121419;--dark-card:#1E2026}',
       '*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}',
       'body{transition:background-color .8s ease;font-family:' + (LANG === 'ja' ? '"Noto Sans JP",' : LANG === 'zh' ? '"Noto Sans SC",' : '') + '"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}',
       'img{max-width:100%}a{text-decoration:none;color:inherit}',
@@ -230,7 +230,7 @@
       '@keyframes mtRise{to{transform:none}}',
       /* about 3열 수치 */
       '.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:64px 48px}',
-      '.tgrid .num{font-size:56px;font-weight:700;letter-spacing:-.03em;color:var(--brand);font-variant-numeric:tabular-nums}',
+      '.tgrid .num{font-size:56px;font-weight:700;letter-spacing:-.03em;background:linear-gradient(100deg,var(--brand) 10%,var(--accent2) 95%);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}',
       '.tgrid .num small{font-size:.5em;font-weight:600;vertical-align:.14em}',
       '.tgrid b{display:block;margin-top:14px;font-size:22px;font-weight:700;line-height:1.45;letter-spacing:-.02em;word-break:keep-all}',
       /* 슬로건/칩/타이핑 */
@@ -263,7 +263,7 @@
       /* 지그재그 */
       '.zig{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}',
       '.zig+.zig{margin-top:120px}',
-      '.zig .cap{font-size:15px;font-weight:600;color:var(--brand)}',
+      '.zig .cap{font-size:15px;font-weight:600;color:var(--accent2)}',
       '.zig h3{margin-top:10px;font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.35;word-break:keep-all}',
       '.zig p{margin-top:14px;font-size:17px;line-height:1.7;color:var(--g3);word-break:keep-all}',
       '.ph{background:var(--bg2);border-radius:20px;position:relative;overflow:hidden}',
@@ -321,7 +321,7 @@
       /* about:dark — 잉크 밴드 대형 수치 */
       '.about-dark{background:var(--dark);color:#fff;padding:130px 0;text-align:center}',
       '.about-dark .nums{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:48px}',
-      '.about-dark .num{font-size:64px;font-weight:700;color:var(--brand);letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}',
+      '.about-dark .num{font-size:64px;font-weight:700;background:linear-gradient(100deg,var(--brand) 10%,var(--accent2) 105%);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}',
       '.about-dark .num small{font-size:.45em;vertical-align:.2em;font-weight:600}',
       '.about-dark .nums b{display:block;margin-top:12px;font-size:18px;font-weight:600;line-height:1.5;color:rgba(255,255,255,.82);word-break:keep-all}',
       /* about:chart — 좌 카피 + 우 바 차트 카드 */
@@ -391,10 +391,10 @@
       '.fans{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}.fitem.open .fans{max-height:220px}',
       '.fans p{padding:2px 28px 26px;font-size:15.5px;line-height:1.7;color:var(--g3);text-align:left;word-break:keep-all}',
       /* CTA 밴드 — 흐르는 그라데이션 + 블롭 */
-      '.cta-band{background:linear-gradient(115deg,var(--brand),var(--brand-deep) 34%,color-mix(in srgb,var(--brand) 86%,#fff) 62%,color-mix(in srgb,var(--brand) 90%,#000));background-size:220% 220%;animation:mtBandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}',
+      '.cta-band{background:linear-gradient(115deg,var(--brand),var(--brand-deep) 38%,color-mix(in srgb,var(--brand) 55%,var(--accent2)) 72%,var(--accent2) 118%);background-size:220% 220%;animation:mtBandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}',
       '@keyframes mtBandGrad{from{background-position:0% 30%}to{background-position:100% 70%}}',
       '.cta-band .deco{position:absolute;width:560px;height:560px;border-radius:50%;background:var(--brand-deep);filter:blur(90px);opacity:.8;right:-140px;top:-180px;animation:mtBandFloat 16s ease-in-out infinite alternate}',
-      '.cta-band .deco2{position:absolute;width:460px;height:460px;border-radius:50%;background:var(--mint);filter:blur(110px);opacity:.26;left:-160px;bottom:-220px;animation:mtBandFloat2 21s ease-in-out infinite alternate}',
+      '.cta-band .deco2{position:absolute;width:460px;height:460px;border-radius:50%;background:var(--accent2);filter:blur(110px);opacity:.32;left:-160px;bottom:-220px;animation:mtBandFloat2 21s ease-in-out infinite alternate}',
       '@keyframes mtBandFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(-180px,100px) scale(1.28)}}',
       '@keyframes mtBandFloat2{from{transform:translate(0,0) scale(1)}to{transform:translate(200px,-80px) scale(1.18)}}',
       '.cta-band h2{position:relative;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.35;word-break:keep-all}',
@@ -608,7 +608,7 @@
       }).join('');
       SEC.chips = '<section class="slogan" data-section="chips"><div class="wrap center">' +
         '<p class="oneline rv chipline">' + esc(TT.chipsPre) + chips + esc(TT.chipsPost) + '<br>' +
-        esc(TT.chipsTail) + '<span style="color:var(--brand)">' + esc(TT.chipsHl) + '</span>' + esc(TT.chipsEnd) + '</p></div></section>';
+        esc(TT.chipsTail) + '<span style="background:linear-gradient(100deg,var(--brand) 20%,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent">' + esc(TT.chipsHl) + '</span>' + esc(TT.chipsEnd) + '</p></div></section>';
     }
 
     if (V.areas === 'grid') {

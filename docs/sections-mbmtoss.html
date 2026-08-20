@@ -685,7 +685,7 @@ a{text-decoration:none;color:inherit}
           fr.setAttribute('scrolling', 'no');
           var TF = THEME_FULL[theme];
           fr.srcdoc = '<!doctype html><html><head><meta charset="utf-8">' + styleHtml +
-            '<style>:root{--brand:' + TF.brand + ';--brand-deep:' + TF.deep + ';--mint:' + TF.mint + ';--brand-ink:' + TF.bink + '}</style><style>' + EXT_CSS + '</style>' +
+            '<style>:root{--brand:' + TF.brand + ';--brand-deep:' + TF.deep + ';--mint:' + TF.mint + ';--brand-ink:' + TF.bink + ';--accent2:' + (TF.acc2 || TF.brand) + '}</style><style>' + EXT_CSS + '</style>' +
             '<style>body{background:' + (b.bg || '#fff') + ' !important;overflow:hidden}</style>' +
             '</head><body>' + b.stat + '</body></html>';
           fr.addEventListener('load', function () {
