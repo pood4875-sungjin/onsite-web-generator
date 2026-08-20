@@ -156,7 +156,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 /* 타이핑 캐럿 — toss 실측: 문장 전체가 연회색 미리보기로 깔리고, 앞에서부터 브랜드색으로 치환 + 채움 지점 캐럿 */
 .type-track{height:220vh}
 .slogan.stage{display:flex;align-items:center;min-height:0;padding:0}
-.typeline{will-change:transform;transform-origin:left center}
+.typeline{will-change:transform;transform-origin:center center}
 .typeline .tw{position:relative;display:inline-block;white-space:nowrap}
 .typeline .ghost{color:#E0E3E8}
 .typeline .fillw{position:absolute;left:0;top:0;white-space:nowrap}
@@ -508,7 +508,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 <!-- 타이핑 슬로건 — toss 실측: 핀 스크럽, 크게 시작해 작아지며 두 줄이 앞에서부터 잉크로 채워짐 + 캐럿 -->
 <div class="track type-track" id="typetrack">
 <section class="slogan stage">
-  <div class="wrap">
+  <div class="wrap center" style="width:100%">
     <p class="oneline typeline">
       <span class="tw"><span class="ghost">막막했던 HR의 해답,</span><span class="fillw"><span class="done">막막했던 HR의 해답,</span><i class="caret"></i></span></span><br>
       <span class="tw"><span class="ghost">이것마저도 H.으로</span><span class="fillw"><span class="done">이것마저도 H.으로</span><i class="caret"></i></span></span>
@@ -752,7 +752,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   var zones = Array.prototype.slice.call(document.querySelectorAll('[data-bg]'));
   if (reduce) document.body.style.transition = 'none';
   function bgZone(){
-    var mid = scrollY + innerHeight * 0.5, bg = '#fff';
+    var mid = scrollY + innerHeight * 0.78, bg = '#fff'; // 판정선을 하단 쪽으로 — 다음 섹션 콘텐츠가 보이기 시작하면 배경이 먼저 전환
     for (var zi = 0; zi < zones.length; zi++) {
       var z = zones[zi], top = z.offsetTop, bot = top + z.offsetHeight;
       if (mid >= top && mid < bot) { bg = z.getAttribute('data-bg'); break; }
