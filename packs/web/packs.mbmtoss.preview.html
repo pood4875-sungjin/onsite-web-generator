@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toss Green 팩 미리보기</title>
+<style>
+body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;background:#F2F4F6}
+.bar{position:fixed;top:0;left:0;right:0;z-index:99;background:#191F28;color:#fff;padding:10px 16px;display:flex;gap:8px;align-items:center;font-size:13px}
+.bar b{font-size:14px;margin-right:8px}
+.bar button{border:0;border-radius:100px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;font-family:inherit}
+.bar button.on{background:#05D16E;color:#fff}
+.bar .sp{flex:1}
+.bar .st{font-size:12px;color:rgba(255,255,255,.55)}
+iframe{border:0;width:100%;height:calc(100vh - 46px);margin-top:46px;display:block;background:#fff}
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Toss Green 팩</b>
+  <button data-lang="ko" class="on">KO</button>
+  <button data-lang="en">EN</button>
+  <button data-lang="ja">JA</button>
+  <button data-lang="zh">ZH</button>
+  <span style="width:10px"></span>
+  <button id="mo" class="on">모션 ON</button>
+  <span class="sp"></span>
+  <span class="st" id="st"></span>
+</div>
+<iframe id="fr"></iframe>
+<script src="packs.mbmtoss.js"></script>
+<script>
+var lang = 'ko', motion = true;
+function draw(){
+  var html = window.renderMbmtossPage({ _clang: lang }, { motion: motion });
+  document.getElementById('fr').srcdoc = html;
+  document.getElementById('st').textContent = lang.toUpperCase() + ' · ' + (motion ? '모션 스크럽' : '정적') + ' · ' + Math.round(html.length / 1024) + 'KB';
+  document.querySelectorAll('[data-lang]').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+  var mo = document.getElementById('mo');
+  mo.classList.toggle('on', motion); mo.textContent = motion ? '모션 ON' : '모션 OFF';
+}
+document.querySelectorAll('[data-lang]').forEach(function(b){
+  b.addEventListener('click', function(){ lang = b.getAttribute('data-lang'); draw(); });
+});
+document.getElementById('mo').addEventListener('click', function(){ motion = !motion; draw(); });
+draw();
+</script>
+</body>
+</html>
