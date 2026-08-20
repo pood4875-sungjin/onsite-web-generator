@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toss Green 스타일 — 전 섹션 베리에이션</title>
+<style>
+/* ── Toss Green 팩 실측 토큰 (카탈로그 크롬) ── */
+:root{ --ink:#191F28; --green:#05D16E; --gray:#4E5968; --soft:#8B95A1; --alt:#F9FAFB; --line:rgba(3,7,18,.09) }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+.cat-head{padding:64px 0 8px}
+.cat-head .eb{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--green);text-transform:uppercase}
+.cat-head h1{font-size:40px;font-weight:300;letter-spacing:-.02em;margin-top:10px}
+.cat-head h1 b{font-weight:800}
+.cat-head p{margin-top:14px;color:var(--gray);font-size:15.5px;max-width:760px;line-height:1.6}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px}
+.toc a{font-size:12.5px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--gray)}
+.toc a:hover{border-color:var(--ink);color:var(--ink)}
+.lbl{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;padding:9px 30px;display:flex;gap:14px;align-items:baseline}
+.lbl b{color:#8CF5C6;font-weight:700}
+.lbl span{color:rgba(255,255,255,.62);font-family:Pretendard,sans-serif}
+.lbl .mo{margin-left:auto;flex:none;color:#FFD98A;font-family:Pretendard,sans-serif;font-weight:600}
+.grp-h{background:var(--green);color:#fff;padding:20px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.blk{border-bottom:1px solid var(--line)}
+.blk iframe{border:0;width:100%;height:400px;display:block;background:#fff}
+</style>
+</head>
+<body>
+
+<div class="cat-head"><div class="wrap">
+  <div class="eb">Style Pack Catalog</div>
+  <h1><b>Toss Green</b> — 전 섹션 베리에이션</h1>
+  <p>packs.mbmtoss.js(SK MBM × toss.im 번안)가 가진 섹션 어휘와 변형 전체.
+  핀 스크럽 섹션은 카탈로그에서 정적 상태로 표시되며, 우측 노란 라벨이 실제 페이지의 모션입니다.
+  데이터 필드가 비면 자동 숨김·폴백되는 규칙은 각 라벨에 표기.</p>
+  <div class="toc">
+    <a href="#g0">00 프레임</a><a href="#g1">01 도입부</a><a href="#g2">02 슬로건·내러티브</a>
+    <a href="#g3">03 콘텐츠</a><a href="#g4">04 신뢰·수치</a><a href="#g5">05 전환</a><a href="#g6">06 안내</a>
+  </div>
+</div></div>
+
+<div id="cat"></div>
+
+<script src="../packs/web/packs.mbmtoss.js"></script>
+<script>
+(function () {
+  var HERO_JPG = new URL('../app/bg/mbmtoss-hero3.jpg', location.href).href;
+
+  /* 변형별 렌더 소스 — 팩을 다른 데이터로 호출해 해당 섹션만 추출 */
+  var R = {};
+  R.base = window.renderMbmtossPage({}, { motion: false });
+  R.photo = window.renderMbmtossPage({ images: { hero: HERO_JPG } }, { motion: false });
+  R.step3 = window.renderMbmtossPage({ features: [
+    { title: '진단', desc: 'AI 데이터 진단으로 조직의 현재를 객관적으로 읽어냅니다.\n감이 아닌 데이터로 올바른 성장 방향을 정립합니다.' },
+    { title: '교육', desc: '진단 데이터를 바탕으로 구성원 맞춤 성장 가이드를 제시합니다.\nAI 롤플레잉 훈련으로 실무 적용력까지 끌어올립니다.' },
+    { title: '성과', desc: 'AI 기술을 접목해 성과관리의 패러다임을 전환합니다.\n현장에서 검증된 실전 사례로 다룹니다.' },
+  ] }, { motion: false });
+  R.duo = window.renderMbmtossPage({ bannerCta: '성과 · 평가 알아보기' }, { motion: false });
+  R.nostation = window.renderMbmtossPage({ eventPlace: '코엑스 컨퍼런스룸 402호' }, { motion: false });
+  var DOCS = {};
+  for (var k in R) DOCS[k] = new DOMParser().parseFromString(R[k], 'text/html');
+  var styleHtml = '';
+  DOCS.base.querySelectorAll('head link[rel=stylesheet], head style').forEach(function (n) { styleHtml += n.outerHTML; });
+
+  function pick(src, sel, edit) {
+    var el = DOCS[src].querySelector(sel);
+    if (!el) return '';
+    el = el.cloneNode(true);
+    if (edit) edit(el);
+    return el.outerHTML;
+  }
+
+  /* ── 카탈로그 정의: 그룹 → 블록(타입:변형 코드 · 설명 · 모션 · 마크업) ── */
+  var GROUPS = [
+    { id: 'g0', name: '00 · 프레임 — GNB / 플로팅', blocks: [
+      { code: 'gnb:dark', desc: '투명 GNB — 다크 히어로 위 · 블러 배경 · 그린 pill CTA', bg: '#121419',
+        html: function () { return pick('base', '.gnb'); } },
+      { code: 'gnb:solid', desc: '스크롤 후 화이트 GNB — 히어로를 벗어나면 전환', mo: '배경 크로스페이드 .4s',
+        html: function () { return pick('base', '.gnb', function (el) { el.classList.add('solid'); }); } },
+      { code: 'dock:floating', desc: '하단 고정 CTA 바 — 태그 · 행사 요약 · 그린 버튼 (productName·eventDate)', mo: '첫 화면 지나면 등장 → 폼 도달 시 퇴장', bg: '#F2F4F6', dock: 1,
+        html: function () { return pick('base', '#dock'); } },
+    ]},
+    { id: 'g1', name: '01 · 도입부 — KV', blocks: [
+      { code: 'hero:video', desc: '영상 풀블리드 KV — 타이포(tagline·eventDate/Place) + 슬로건(subcopy). 카탈로그=정적 카드 상태', mo: '핀 280vh · 카드 축소 r0→32 + 블러 12px → 슬로건',
+        html: function () { return pick('base', '#kvtrack'); } },
+      { code: 'hero:photo', desc: '실사 이미지 KV — images.hero에 jpg/png가 오면 자동 전환', mo: '핀 280vh · 동일 스크럽',
+        html: function () { return pick('photo', '#kvtrack'); } },
+    ]},
+    { id: 'g2', name: '02 · 슬로건 · 내러티브', blocks: [
+      { code: 'chips:pop', desc: '인라인 칩 슬로건 — features 타이틀이 칩으로 (2개 미만이면 자동 숨김)', mo: '칩 팝 스케일 .6→1 스태거',
+        html: function () { return pick('base', '[data-section=chips]'); } },
+      { code: 'typeline:scrub', desc: '타이핑 슬로건 2줄 — 슬로건 프레임 + productName', mo: '핀 220vh · 1.5배→축소 + 앞에서부터 잉크 채움 + 캐럿',
+        html: function () { return pick('base', '[data-section=typeline]'); } },
+      { code: 'narrative:blur', desc: '다크 내러티브 — bannerText 줄 단위 · 숫자는 자동 카운트업+민트 강조', mo: '핀 250vh · 줄 블러 리빌 + 배경 존 전환(잉크)', bg: '#121419',
+        html: function () { return pick('base', '[data-section=narrative]'); } },
+    ]},
+    { id: 'g3', name: '03 · 콘텐츠', blocks: [
+      { code: 'areas:step4', desc: '핵심 분야 스텝 — features 4개 · 좌 아코디언 + 우 파스텔 글래스 패널 4로테이션', mo: '핀 340vh · 진행도에 따라 스텝·패널 전환',
+        html: function () { return pick('base', '[data-section=areas]'); } },
+      { code: 'areas:step3', desc: '스텝 3개 변형 — features 수만큼 자동 (패널도 3개)', mo: '핀 340vh · 동일 스크럽',
+        html: function () { return pick('step3', '[data-section=areas]'); } },
+      { code: 'session:cards', desc: '세션 카드 — sessions(time·title·by) + 이미지 슬롯 session.N', mo: '배경 존 전환(다크그린 #0E241A)', bg: '#0E241A',
+        html: function () { return pick('base', '[data-section=session]'); } },
+      { code: 'zig:alt3', desc: '지그재그 3 — zigs(cap·title·desc, 팩 전용 필드·편집으로 수정) + 이미지 슬롯 zig.N',
+        html: function () { return pick('base', '[data-section=zig]'); } },
+      { code: 'event:benefit3', desc: '혜택 카드 3 — benefits(팩 전용) · 이미지 상단 풀블리드 + 소프트 필 버튼',
+        html: function () { return pick('base', '[data-section=event]'); } },
+    ]},
+    { id: 'g4', name: '04 · 신뢰 · 수치', blocks: [
+      { code: 'about:count3', desc: '수치 하이라이트 3열 — stats(value·label) · 없으면 섹션 자동 숨김', mo: '진입 시 카운트업 1.4s',
+        html: function () { return pick('base', '[data-section=about]'); } },
+    ]},
+    { id: 'g5', name: '05 · 전환', blocks: [
+      { code: 'ctaband:solo', desc: 'CTA 밴드 기본형 — ctaTitle·ctaSub + 신청 버튼 1', mo: '흐르는 그라데이션 11s + 블롭 플로트 2',
+        html: function () { return pick('base', '[data-section=ctaband]'); } },
+      { code: 'ctaband:duo', desc: '버튼 2개 변형 — bannerCta가 있으면 자동 추가', mo: '동일',
+        html: function () { return pick('duo', '[data-section=ctaband]'); } },
+      { code: 'apply:form', desc: '신청 폼(고정 섹션) — 6필드 + 직책 체크 토글 + 동의 2줄 · 라벨 4언어 팩 내장', mo: '인풋 호버/포커스 · 체크 클릭 토글',
+        html: function () { return pick('base', '#apply'); } },
+    ]},
+    { id: 'g6', name: '06 · 안내', blocks: [
+      { code: 'location:map', desc: '일정·장소 — 지도 SVG(역 밴드·출구·점선·주차 POI) + 주소 바(복사·지도로 보기). 역명=eventPlace 둘째 줄 첫 어절 자동',
+        html: function () { return pick('base', '[data-section=location]'); } },
+      { code: 'location:nostation', desc: '역 정보 없는 변형 — eventPlace가 한 줄이면 역 밴드·점선 자동 숨김',
+        html: function () { return pick('nostation', '[data-section=location]'); } },
+      { code: 'faq:accordion', desc: 'FAQ — faq(q·a) · 클릭 아코디언 (+ → × 회전, 열린 카드 단일톤)', mo: '펼침 .45s',
+        html: function () { return pick('base', '[data-section=faq]', function (el) { var f = el.querySelector('.fitem'); if (f) f.classList.add('open'); }); } },
+      { code: 'footer:columns', desc: '푸터 — 좌 슬로건(tagline) + 링크 컬럼 3(행사/참여/문의) + 카피 줄', bg: '#121419',
+        html: function () { return pick('base', '.dawnfoot'); } },
+    ]},
+  ];
+
+  var cat = document.getElementById('cat');
+  GROUPS.forEach(function (g) {
+    var gh = document.createElement('div'); gh.className = 'grp-h'; gh.id = g.id; gh.textContent = g.name;
+    cat.appendChild(gh);
+    g.blocks.forEach(function (b) {
+      var lbl = document.createElement('div'); lbl.className = 'lbl';
+      lbl.innerHTML = '<b>' + b.code + '</b><span>' + b.desc + '</span>' + (b.mo ? '<span class="mo">모션 · ' + b.mo + '</span>' : '');
+      var blk = document.createElement('div'); blk.className = 'blk';
+      var fr = document.createElement('iframe'); fr.setAttribute('scrolling', 'no');
+      blk.appendChild(fr);
+      cat.appendChild(lbl); cat.appendChild(blk);
+      var extra = b.dock ? '<style>.dock{position:static;margin:36px auto;opacity:1;transform:none;pointer-events:auto}</style>' : '';
+      fr.srcdoc = '<!doctype html><html class="nomo"><head><meta charset="utf-8">' + styleHtml + extra +
+        '<style>html{scroll-behavior:auto}body{transition:none!important;background:' + (b.bg || '#fff') + '!important;overflow:hidden}' +
+        '.gnb{position:relative}</style></head><body>' + b.html() + '</body></html>';
+      fr.addEventListener('load', function () {
+        try {
+          var d2 = fr.contentDocument;
+          var v = d2.querySelector('video'); if (v) { v.autoplay = false; v.pause(); }
+          fr.style.height = Math.min(1700, Math.max(70, d2.body.scrollHeight)) + 'px';
+        } catch (e) {}
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
