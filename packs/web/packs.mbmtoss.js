@@ -193,7 +193,7 @@
       '.spanel{position:relative;height:520px;border-radius:24px;background:var(--bg2);overflow:hidden}',
       '.spanel .pv{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .45s;background:var(--pvbg,var(--bg2))}',
       '.spanel .pv.on{opacity:1}',
-      '.pv .goarr{position:absolute;right:26px;bottom:26px;width:46px;height:46px;border-radius:50%;background:rgba(3,7,18,.08);display:grid;place-items:center;font-size:19px;font-weight:700;color:var(--ink)}',
+      '.pv .goarr,.acard .goarr{position:absolute;right:26px;bottom:26px;width:46px;height:46px;border-radius:50%;background:rgba(3,7,18,.08);display:grid;place-items:center;font-size:19px;font-weight:700;color:var(--ink)}',
       /* GNB */
       '.gnb{position:fixed;inset:0 0 auto;z-index:50;backdrop-filter:blur(12px);background:rgba(18,20,25,.35);transition:background .4s ease}',
       '.gnb.solid{background:rgba(255,255,255,.92);border-bottom:1px solid rgba(3,7,18,.06)}',
@@ -302,6 +302,65 @@
       '.place .foot .addr{display:flex;align-items:center;gap:8px;color:var(--g2);font-weight:600}',
       '.place .foot .cpy{cursor:pointer;color:var(--g4);font-size:15px;transition:color .2s}.place .foot .cpy:hover{color:var(--ink)}',
       '.place .foot .mlink{color:var(--g4);font-weight:600;cursor:pointer;transition:color .2s}.place .foot .mlink:hover{color:var(--ink)}',
+      /* ── 디자인 베리에이션 ── */
+      /* hero:light — 밝은 타이포 온리 (핀 없음) */
+      '.hero-light{padding:200px 0 150px;text-align:center;background:#fff}',
+      '.hero-light .eb{font-size:18px;font-weight:700;color:var(--brand)}',
+      '.hero-light h1{margin-top:22px;font-size:88px;font-weight:700;line-height:1.2;letter-spacing:-.02em;word-break:keep-all}',
+      '.hero-light .meta{margin-top:28px;font-size:18px;color:var(--g3)}.hero-light .meta b{color:var(--ink);font-weight:600}',
+      '.hero-light .act{margin-top:42px;display:flex;gap:12px;justify-content:center}',
+      /* about:dark — 잉크 밴드 대형 수치 */
+      '.about-dark{background:var(--dark);color:#fff;padding:130px 0;text-align:center}',
+      '.about-dark .nums{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:48px}',
+      '.about-dark .num{font-size:64px;font-weight:700;color:var(--brand);letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}',
+      '.about-dark .num small{font-size:.45em;vertical-align:.2em;font-weight:600}',
+      '.about-dark .nums b{display:block;margin-top:12px;font-size:18px;font-weight:600;line-height:1.5;color:rgba(255,255,255,.82);word-break:keep-all}',
+      /* about:chart — 좌 카피 + 우 바 차트 카드 */
+      '.chart-card{background:var(--bg1);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;text-align:left;margin-top:64px}',
+      '.chart-card .ct{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}',
+      '.chart-card .cs{margin-top:12px;font-size:16px;line-height:1.65;color:var(--g3);word-break:keep-all}',
+      '.bars{display:flex;gap:36px;align-items:flex-end;height:190px;padding:0 8px}',
+      '.bars>div{flex:1;text-align:center}',
+      '.bars .v{font-size:15px;font-weight:700;margin-bottom:8px}',
+      '.bars .bar{border-radius:8px 8px 0 0;background:#E3E6EB}',
+      '.bars .hot .v{color:var(--brand)}.bars .hot .bar{background:var(--brand)}',
+      '.bars .l{margin-top:10px;font-size:13px;color:var(--g3)}',
+      /* areas:grid — 정적 2×2 파스텔 카드 */
+      '.agrid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:64px}',
+      '.acard{border-radius:24px;padding:34px 32px;position:relative;min-height:250px;text-align:left;background:var(--pvbg,var(--bg2))}',
+      '.acard .n{font-size:15px;font-weight:700;color:#067A43}',
+      '.acard b{display:block;margin-top:8px;font-size:26px;font-weight:700;letter-spacing:-.02em}',
+      '.acard p{margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--g2);word-break:keep-all;max-width:88%}',
+      /* session:timetable — 라이트 타임테이블 */
+      '.stt{max-width:1000px;margin:64px auto 0;display:grid;gap:14px}',
+      '.strow{display:grid;grid-template-columns:150px 1fr auto;gap:22px;align-items:center;background:#fff;border-radius:16px;padding:24px 30px;box-shadow:0 8px 24px rgba(3,7,18,.05);text-align:left;transition:transform .25s,box-shadow .25s}',
+      '.strow:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(3,7,18,.09)}',
+      '.strow .tm{font-size:15px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums}',
+      '.strow .st{font-size:19px;font-weight:700;letter-spacing:-.01em;word-break:keep-all}',
+      '.strow .by{font-size:14px;color:var(--g4);white-space:nowrap}',
+      /* event:list — 아이콘 리스트 2열 */
+      '.elist{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:64px;text-align:left}',
+      '.eli{display:flex;gap:16px;align-items:flex-start;background:#fff;border-radius:18px;padding:24px 26px;box-shadow:0 8px 24px rgba(3,7,18,.05)}',
+      '.eli .ic{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(5,209,110,.12);color:var(--brand);display:grid;place-items:center;font-size:17px;font-weight:800}',
+      '.eli .cap{font-size:13px;font-weight:600;color:var(--g4)}',
+      '.eli b{display:block;margin-top:3px;font-size:18px;font-weight:700;letter-spacing:-.01em;word-break:keep-all}',
+      /* faq:cards — 2열 상시 노출 */
+      '.faqcards{max-width:1000px;margin:64px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:18px}',
+      '.fqc{background:#fff;border-radius:16px;padding:28px 30px;text-align:left;box-shadow:0 8px 24px rgba(3,7,18,.04)}',
+      '.fqc b{font-size:17px;font-weight:700}.fqc b i{font-style:normal;color:var(--brand);font-weight:800}',
+      '.fqc p{margin-top:12px;font-size:14.5px;line-height:1.7;color:var(--g3);word-break:keep-all}',
+      /* ctaband:dark — 잉크 밴드 */
+      '.cta-band.dark2{background:var(--dark);animation:none}',
+      '.cta-band.dark2 .deco,.cta-band.dark2 .deco2{display:none}',
+      '.cta-band.dark2 p{color:rgba(255,255,255,.55)}',
+      /* location:simple — 지도 없는 센터 정보 카드 */
+      '.place.simple{grid-template-columns:1fr;max-width:720px;margin-left:auto;margin-right:auto}',
+      '.place.simple .info{text-align:center;padding:52px 40px}',
+      '.place.simple .row{justify-content:center}',
+      /* narrative:statement — 정적 다크 선언 */
+      '.nstate{padding:170px 0;text-align:center}',
+      '.nstate .tx{font-size:48px;font-weight:700;line-height:1.5;letter-spacing:-.02em;color:#fff;word-break:keep-all}',
+      '.nstate .tx .hl{color:var(--mint)}',
       /* 폼 (라이트) */
       '.form{max-width:820px;margin:0 auto}',
       '.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px 24px;text-align:left}',
@@ -345,7 +404,7 @@
       /* 앵커 보정 + 편집 개행 */
       '.sec,.track{scroll-margin-top:72px}',
       '[data-edit]{white-space:pre-wrap}',
-      '@media (max-width:900px){.kv h1{font-size:44px}h2.tt{font-size:32px}.oneline{font-size:34px}.slogan{min-height:60vh}.nline{font-size:26px}.srow b{font-size:18px}.srow.on b{font-size:24px}.kv-sub h3{font-size:32px}.tgrid,.egrid,.zig,.fgrid{grid-template-columns:1fr}.scard{grid-template-columns:1fr}.place{grid-template-columns:1fr}.dawnfoot .in{grid-template-columns:1fr;gap:28px}.mini{width:min(300px,86%)}.sec{padding:90px 0}.gnb nav{display:none}}',
+      '@media (max-width:900px){.kv h1{font-size:44px}.hero-light h1{font-size:44px}.agrid2,.elist,.faqcards,.about-dark .nums,.chart-card{grid-template-columns:1fr}.strow{grid-template-columns:1fr;gap:8px}.nstate .tx{font-size:28px}h2.tt{font-size:32px}.oneline{font-size:34px}.slogan{min-height:60vh}.nline{font-size:26px}.srow b{font-size:18px}.srow.on b{font-size:24px}.kv-sub h3{font-size:32px}.tgrid,.egrid,.zig,.fgrid{grid-template-columns:1fr}.scard{grid-template-columns:1fr}.place{grid-template-columns:1fr}.dawnfoot .in{grid-template-columns:1fr;gap:28px}.mini{width:min(300px,86%)}.sec{padding:90px 0}.gnb nav{display:none}}',
     ].join('\n');
   }
   /* 정적 폴백 규칙 — media(reduce)와 html.nomo(모션 off) 두 컨텍스트로 동일 출력 */
@@ -440,6 +499,7 @@
     })[LANG === 'ko' ? 'ko' : 'en'];
 
     var imgs = shared.images || {};
+    var V = shared.variants || {};   /* 섹션별 디자인 변형 — {hero:'light', about:'dark'|'chart', areas:'grid', session:'timetable', event:'list', faq:'cards', ctaband:'dark', location:'simple', narrative:'statement'} */
     var feats = (d.features && d.features.length ? d.features : BD.features).slice(0, 4);
     var faq = (shared.faq && shared.faq.length ? shared.faq : BD.faq).slice(0, 6);
     var sessions = (d.sessions && d.sessions.length ? d.sessions : BD.sessions).slice(0, 5);
@@ -472,8 +532,17 @@
     var heroMedia = isVid
       ? '<video class="kimg" src="' + esc(heroSrc || att(HERO_MP4)) + '" poster="' + esc(att(HERO_POSTER)) + '" autoplay muted loop playsinline data-img="hero"></video>'
       : '<img class="kimg" alt="" data-img="hero" src="' + esc(heroSrc) + '" onerror="this.remove()">';
-    var kv = '<div class="gnb" id="gnb"><div class="in"><span class="logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
-      '<nav>' + menu + '</nav><a class="cta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></div>' +
+    var gnbLight = V.hero === 'light';
+    var gnbHtml = '<div class="gnb' + (gnbLight ? ' solid lock' : '') + '" id="gnb"><div class="in"><span class="logo"' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
+      '<nav>' + menu + '</nav><a class="cta" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></div>';
+    var kv = gnbLight
+      ? gnbHtml + '<section class="hero-light"><div class="wrap">' +
+        '<div class="eb"' + de('productName') + '>' + esc(d.productName) + '</div>' +
+        '<h1' + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
+        '<div class="meta"><b' + de('eventDate') + '>' + esc(d.eventDate) + '</b> ㅣ <span' + de('eventPlace') + '>' + esc(placeMain + (placeSub ? ' (' + placeSub + ')' : '')) + '</span></div>' +
+        '<div class="act"><a class="pill" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a><a class="cta2" href="#session">' + esc((d.navLinks || [])[1] || 'SESSION') + ' <span class="arr">→</span></a></div>' +
+        '</div></section>'
+      : gnbHtml +
       '<div class="track kv-track" id="kvtrack"><section class="kv stage" id="kv"><div class="kv-photo">' +
       heroMedia + '<div class="ov"></div>' +
       '<div class="kv-sub"><h3' + de('subcopy') + '>' + ml(d.subcopy) + '</h3></div></div>' +
@@ -486,14 +555,36 @@
     /* ── movable 섹션들 ── */
     var SEC = {};
 
+    function statNum(sv) {
+      var m = String(sv || '').match(/^([0-9][0-9,\.]*)(.*)$/);
+      return m ? '<span data-count="' + esc(m[1]) + '">' + esc(m[1]) + '</span><small>' + esc(m[2]) + '</small>' : esc(sv || '');
+    }
     if (stats.length) {
-      SEC.about = '<section class="sec" id="about" data-section="about"><div class="wrap center">' +
-        '<h2 class="tt rv">' + ml(TT.aboutT) + '</h2>' +
-        '<div class="tgrid" style="margin-top:90px;text-align:left">' + stats.map(function (s, i) {
-          var m = String(s.value || '').match(/^([0-9][0-9,\.]*)(.*)$/);
-          var num = m ? '<span data-count="' + esc(m[1]) + '">' + esc(m[1]) + '</span><small>' + esc(m[2]) + '</small>' : esc(s.value || '');
-          return '<div class="rv' + (i ? ' d' + i : '') + '"><div class="num"' + de('stats.' + i + '.value') + '>' + num + '</div><b' + de('stats.' + i + '.label') + '>' + ml(s.label || '') + '</b></div>';
-        }).join('') + '</div></div></section>';
+      if (V.about === 'dark') {
+        SEC.about = '<section class="about-dark" id="about" data-section="about"><div class="wrap center">' +
+          '<h2 class="tt rv" style="color:#fff">' + ml(TT.aboutT) + '</h2>' +
+          '<div class="nums rv d1">' + stats.map(function (s, i) {
+            return '<div><div class="num"' + de('stats.' + i + '.value') + '>' + statNum(s.value) + '</div><b' + de('stats.' + i + '.label') + '>' + ml(s.label || '') + '</b></div>';
+          }).join('') + '</div></div></section>';
+      } else if (V.about === 'chart') {
+        var mx = Math.max.apply(null, stats.map(function (s) { return parseFloat(String(s.value).replace(/[^0-9.]/g, '')) || 1; }));
+        SEC.about = '<section class="sec" id="about" data-section="about"><div class="wrap center">' +
+          '<h2 class="tt rv">' + ml(TT.aboutT) + '</h2>' +
+          '<div class="chart-card rv d1"><div>' +
+          '<div class="ct"' + de('stats.0.label') + '>' + ml((stats[0] || {}).label || '') + '</div>' +
+          '<div class="cs">' + esc(TT.evS) + '</div></div>' +
+          '<div class="bars">' + stats.map(function (s, i) {
+            var n = parseFloat(String(s.value).replace(/[^0-9.]/g, '')) || 0;
+            var h = Math.max(12, Math.round(160 * n / mx));
+            return '<div' + (i === stats.length - 1 ? ' class="hot"' : '') + '><div class="v"' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</div><div class="bar" style="height:' + h + 'px"></div><div class="l"' + de('stats.' + i + '.label') + '>' + esc(String(s.label || '').split('\n')[0]) + '</div></div>';
+          }).join('') + '</div></div></div></section>';
+      } else {
+        SEC.about = '<section class="sec" id="about" data-section="about"><div class="wrap center">' +
+          '<h2 class="tt rv">' + ml(TT.aboutT) + '</h2>' +
+          '<div class="tgrid" style="margin-top:90px;text-align:left">' + stats.map(function (s, i) {
+            return '<div class="rv' + (i ? ' d' + i : '') + '"><div class="num"' + de('stats.' + i + '.value') + '>' + statNum(s.value) + '</div><b' + de('stats.' + i + '.label') + '>' + ml(s.label || '') + '</b></div>';
+          }).join('') + '</div></div></section>';
+      }
     }
 
     if (feats.length >= 2) {
@@ -506,6 +597,16 @@
         esc(TT.chipsTail) + '<span style="color:var(--brand)">' + esc(TT.chipsHl) + '</span>' + esc(TT.chipsEnd) + '</p></div></section>';
     }
 
+    if (V.areas === 'grid') {
+      SEC.areas = '<section class="sec" data-section="areas"><div class="wrap center">' +
+        '<h2 class="tt rv">' + ml(TT.areasT) + '</h2>' +
+        '<div class="agrid2">' + feats.map(function (f, i) {
+          var P = 'features.' + i;
+          return '<div class="acard rv' + (i ? ' d' + Math.min(i, 4) : '') + '" style="--pvbg:' + PV_BG[i % 4] + '">' +
+            '<div class="n">0' + (i + 1) + '</div><b' + de(P + '.title') + '>' + esc(String(f.title || '').split('\n')[0]) + '</b>' +
+            '<p' + de(P + '.desc') + '>' + ml(f.desc || '') + '</p><span class="goarr">→</span></div>';
+        }).join('') + '</div></div></section>';
+    } else
     SEC.areas = '<div class="track areas-track" id="areas" data-section="areas"><section class="stage" style="display:flex;align-items:center;background:#fff">' +
       '<div class="wrap" style="display:grid;grid-template-columns:0.95fr 1.05fr;gap:80px;align-items:center;width:100%"><div>' +
       '<h2 class="tt">' + ml(TT.areasT) + '</h2><div style="margin-top:44px">' +
@@ -520,11 +621,29 @@
 
     if (d.bannerText) {
       var nlines = String(d.bannerText).split('\n').filter(function (s) { return s.trim(); });
-      SEC.narrative = '<div class="track nar-track" id="nar" data-bg="#121419" data-section="narrative"><section class="stage dark nrstage"><div class="wrap">' +
-        nlines.map(function (ln, i) { return numHl(ln, i === 0 ? 'bannerText' : ''); }).join('') +
-        '</div></section></div>';
+      if (V.narrative === 'statement') {
+        SEC.narrative = '<section class="nstate dark" id="nar" data-bg="#121419" data-section="narrative"><div class="wrap center">' +
+          '<p class="tx rv"' + de('bannerText') + '>' + nlines.map(function (ln) {
+            var m = String(ln).match(/([0-9][0-9,\.]*)/);
+            return m ? esc(ln).replace(m[1], '<span class="hl"><span data-count="' + esc(m[1]) + '">' + esc(m[1]) + '</span></span>') : esc(ln);
+          }).join('<br>') + '</p></div></section>';
+      } else {
+        SEC.narrative = '<div class="track nar-track" id="nar" data-bg="#121419" data-section="narrative"><section class="stage dark nrstage"><div class="wrap">' +
+          nlines.map(function (ln, i) { return numHl(ln, i === 0 ? 'bannerText' : ''); }).join('') +
+          '</div></section></div>';
+      }
     }
 
+    if (V.session === 'timetable') {
+      SEC.session = '<section class="sec" id="session" style="background:var(--bg1)" data-section="session"><div class="wrap center">' +
+        '<h2 class="tt rv">' + esc(TT.sesT) + '</h2><p class="sub rv d1">' + esc(TT.sesS) + '</p>' +
+        '<div class="stt rv d2">' + sessions.map(function (s, i) {
+          var P = 'sessions.' + i;
+          return '<div class="strow"><span class="tm"' + de(P + '.time') + '>' + esc(s.time || '') + '</span>' +
+            '<span class="st"' + de(P + '.title') + '>' + esc(String(s.title || '').replace(/\n/g, ' ')) + '</span>' +
+            '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
+        }).join('') + '</div></div></section>';
+    } else
     SEC.session = '<section class="sec dark" id="session" data-bg="#0E241A" data-section="session"><div class="wrap">' +
       '<div class="center"><h2 class="tt rv">' + esc(TT.sesT) + '</h2><p class="sub rv d1">' + esc(TT.sesS) + '</p></div>' +
       '<div style="margin-top:80px">' + sessions.map(function (s, i) {
@@ -553,6 +672,16 @@
     SEC.typeline = '<div class="track type-track" id="typetrack" data-section="typeline"><section class="slogan stage"><div class="wrap center" style="width:100%">' +
       '<p class="oneline typeline">' + tw(TT.slog1) + '<br>' + tw(slog2) + '</p></div></section></div>';
 
+    if (V.event === 'list') {
+      SEC.event = '<section class="sec" id="event" style="background:var(--bg1)" data-section="event"><div class="wrap center">' +
+        '<h2 class="tt rv">' + esc(TT.evT) + '</h2><p class="sub rv d1">' + esc(TT.evS) + '</p>' +
+        '<div class="elist rv d2">' + benefits.map(function (b, i) {
+          var P = 'benefits.' + i;
+          return '<div class="eli"><span class="ic">✓</span><div>' +
+            '<div class="cap"' + de(P + '.cap') + '>' + esc(b.cap || '') + '</div>' +
+            '<b' + de(P + '.title') + '>' + esc(String(b.title || '').replace(/\n/g, ' ')) + '</b></div></div>';
+        }).join('') + '</div></div></section>';
+    } else
     SEC.event = '<section class="sec" style="padding-top:0" id="event" data-section="event"><div class="wrap center">' +
       '<h2 class="tt rv">' + esc(TT.evT) + '</h2><p class="sub rv d1">' + esc(TT.evS) + '</p>' +
       '<div class="egrid" style="margin-top:70px">' + benefits.map(function (b, i) {
@@ -579,16 +708,24 @@
       '</svg>';
     SEC.location = '<section class="sec" style="background:var(--bg1)" id="location" data-section="location"><div class="wrap center">' +
       '<h2 class="tt rv">' + esc(TT.locT) + '</h2>' +
-      '<div class="place rv d1"><div class="info">' +
+      '<div class="place' + (V.location === 'simple' ? ' simple' : '') + ' rv d1"><div class="info">' +
       '<b' + de('productName') + '>' + esc(d.productName) + '</b>' +
       '<div class="row" style="margin-top:26px"><span class="k">' + esc(TT.dt) + '</span><span class="v"' + de('eventDate') + '>' + esc(d.eventDate) + '</span></div>' +
       '<div class="row"><span class="k">' + esc(TT.pl) + '</span><span class="v"' + de('eventPlace') + '>' + esc(placeMain) + (placeSub ? '<small>' + esc(placeSub) + '</small>' : '') + '</span></div>' +
       '<a class="pill" href="#apply" style="display:inline-block;margin-top:30px;padding:15px 32px;font-size:15px"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a>' +
       '<p style="margin-top:14px;font-size:12.5px;color:var(--g4)">' + esc(TT.note) + '</p>' +
-      '</div><div class="map"><div class="mapbody">' + mapSvg + '</div>' +
+      '</div>' + (V.location === 'simple' ? '' : '<div class="map"><div class="mapbody">' + mapSvg + '</div>' +
       '<div class="foot"><span class="addr">' + esc(placeMain) + ' <span class="cpy" id="addrcpy" data-addr="' + esc(placeMain) + '" title="' + esc(TT.cpy) + '">⧉</span></span>' +
-      '<a class="mlink" href="https://maps.google.com/maps?q=' + encodeURIComponent(placeMain) + '" target="_blank" rel="noopener">' + esc(TT.mlink) + '</a></div></div></div></div></section>';
+      '<a class="mlink" href="https://maps.google.com/maps?q=' + encodeURIComponent(placeMain) + '" target="_blank" rel="noopener">' + esc(TT.mlink) + '</a></div></div>') + '</div></div></section>';
 
+    if (V.faq === 'cards') {
+      SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
+        '<h2 class="tt rv">' + ml(TT.faqT) + '</h2>' +
+        '<div class="faqcards rv d1">' + faq.map(function (f, i) {
+          return '<div class="fqc"><b><i>Q.</i> <span' + de('faq.' + i + '.q') + '>' + esc(f.q || '') + '</span></b>' +
+            '<p' + de('faq.' + i + '.a') + '>' + ml(f.a || '') + '</p></div>';
+        }).join('') + '</div></div></section>';
+    } else
     SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
       '<h2 class="tt rv">' + ml(TT.faqT) + '</h2>' +
       '<div class="faq rv d1" style="margin-top:64px">' + faq.map(function (f, i) {
@@ -596,7 +733,7 @@
           '<div class="fans"><p' + de('faq.' + i + '.a') + '>' + ml(f.a || '') + '</p></div></div>';
       }).join('') + '</div></div></section>';
 
-    SEC.ctaband = '<section class="cta-band" data-section="ctaband"><div class="deco"></div><div class="deco2"></div><div class="wrap">' +
+    SEC.ctaband = '<section class="cta-band' + (V.ctaband === 'dark' ? ' dark2' : '') + '" data-section="ctaband"><div class="deco"></div><div class="deco2"></div><div class="wrap">' +
       '<h2 class="rv"' + de('ctaTitle') + '>' + ml(d.ctaTitle) + '</h2>' +
       '<p class="rv d1"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
       '<div class="act rv d2">' + (d.bannerCta ? '<span class="cta2 w"' + de('bannerCta') + '>' + esc(d.bannerCta) + ' <span class="arr">→</span></span>' : '') +
@@ -647,7 +784,7 @@
       'document.querySelectorAll(".chk").forEach(function(c){c.addEventListener("click",function(){var bx=c.querySelector(".box");bx.classList.toggle("on");bx.classList.toggle("off");});});' +
       'var cp=document.getElementById("addrcpy");if(cp)cp.addEventListener("click",function(){if(navigator.clipboard)navigator.clipboard.writeText(cp.getAttribute("data-addr")||"");cp.textContent="✓";setTimeout(function(){cp.textContent="⧉";},1400);});' +
       'var sb=document.querySelector(".sbm");if(sb)sb.addEventListener("click",function(){sb.textContent=sb.getAttribute("data-fdone")||sb.textContent;sb.style.background="var(--brand-deep)";});' +
-      'var gnb=document.getElementById("gnb");addEventListener("scroll",function(){gnb.classList.toggle("solid",scrollY>innerHeight-70);},{passive:true});' +
+      'var gnb=document.getElementById("gnb");if(!gnb.classList.contains("lock"))addEventListener("scroll",function(){gnb.classList.toggle("solid",scrollY>innerHeight-70);},{passive:true});' +
       '})();<\/script>';
 
     var mot = !motion ? '' : '<script>(function(){' +
@@ -665,7 +802,7 @@
       /* 히어로 스크럽 */
       'var kvTrack=document.getElementById("kvtrack"),kvIn=document.querySelector(".kv .in"),kvPhoto=document.querySelector(".kv-photo"),kvOv=document.querySelector(".kv-photo .ov"),kvSub=document.querySelector(".kv-sub"),kvImg=document.querySelector(".kv-photo .kimg");' +
       'if(reduce&&kvImg&&kvImg.tagName==="VIDEO"){kvImg.autoplay=false;kvImg.pause();}' +
-      'function heroScrub(){var vh=innerHeight,p=clamp01((scrollY-kvTrack.offsetTop)/(kvTrack.offsetHeight-vh));' +
+      'function heroScrub(){if(!kvTrack)return;var vh=innerHeight,p=clamp01((scrollY-kvTrack.offsetTop)/(kvTrack.offsetHeight-vh));' +
       'var t=clamp01((p-0.38)/0.22);kvIn.style.opacity=String(1-t);' +
       'kvIn.style.transform="translateY("+(-80*t)+"px) scale("+(1-0.05*t)+")";kvIn.style.pointerEvents=t>0.6?"none":"auto";' +
       'var q=clamp01((p-0.45)/0.35),e=1-Math.pow(1-q,3);' +

@@ -9,7 +9,19 @@ SK MBM 랜딩 콘텐츠 × toss.im 실측 스케일/모션 번안. 그린 포인
 - `MBMTOSS_SECTION_SPEC` (template/fixed/labels) · `MBMTOSS_STYLE` (id: `mbmtoss`)
 - 데이터: compose-web 평면 스키마. 팩 전용 필드 `zigs[]`(cap/title/desc)·`benefits[]`(cap/title/link)는 스키마 밖 — DEMO 폴백, 인라인 편집으로만 수정.
 
-## 3. 섹션 어휘 (movable 11 + 고정)
+## 3. 디자인 베리에이션 (variants 필드)
+`shared.variants = { 섹션: 변형명 }` — 미지정 시 기본형. 전체 사전 = docs/sections-mbmtoss.html (31블록).
+- hero: video(기본·imgs.hero가 mp4/webm) / photo(jpg·png 자동) / **light**(흰 배경 타이포 온리·핀 없음·GNB 화이트 고정)
+- about: count(기본 3열) / **dark**(잉크 밴드 대형 수치 — 배경 브레이크) / **chart**(좌 카피+우 바 차트, 마지막 항목 강조)
+- areas: scrub(기본 핀) / **grid**(정적 2×2 파스텔 카드)
+- narrative: blur(기본 핀) / **statement**(정적 센터 선언)
+- session: dark(기본 존) / **timetable**(라이트 흰 카드 rows)
+- event: cards(기본) / **list**(아이콘 리스트 2열·이미지 없음)
+- faq: accordion(기본) / **cards**(2열 상시 노출)
+- ctaband: gradient(기본) / **dark**(잉크 밴드)
+- location: map(기본) / **simple**(지도 없는 센터 카드)
+
+## 3.5 섹션 어휘 (movable 11 + 고정)
 about(수치 3열 카운트업·stats 없으면 자동 숨김) · chips(칩 슬로건·features<2면 숨김) · areas(스텝 스크럽 340vh+파스텔 글래스 패널, features≤4)
 · narrative(다크 블러 리빌 250vh, bannerText 줄 단위·숫자 자동 카운트업+민트 hl) · session(다크그린 존) · zig(지그재그 3)
 · typeline(타이핑 스크럽 220vh — ghost→잉크 채움+캐럿) · event(혜택 카드 3) · location(지도 SVG — 역명은 eventPlace 둘째 줄 첫 어절 자동)
