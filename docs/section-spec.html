@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>웹페이지 섹션 유형 정의서</title>
+<style>
+  :root{
+    --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
+    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --code-bg:#f6f6f8; --code-tx:#41415a;
+    --wf-bg:#fafafc; --wf-ink:#c9c6d6; --wf-ink2:#e2e0ec; --wf-acc:#6c2bff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
+      --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+      --code-bg:#221e33; --code-tx:#cfc4f5;
+      --wf-bg:#191625; --wf-ink:#4a4563; --wf-ink2:#332e49; --wf-acc:#9d6bff;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
+    --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+    --code-bg:#221e33; --code-tx:#cfc4f5;
+    --wf-bg:#191625; --wf-ink:#4a4563; --wf-ink2:#332e49; --wf-acc:#9d6bff;
+  }
+  :root[data-theme="light"]{
+    --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
+    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --code-bg:#f6f6f8; --code-tx:#41415a;
+    --wf-bg:#fafafc; --wf-ink:#c9c6d6; --wf-ink2:#e2e0ec; --wf-acc:#6c2bff;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg); color:var(--tx); font-size:15.5px; line-height:1.7;
+    font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .doc{max-width:1080px; margin:0 auto; padding:52px 28px 120px}
+  .eyebrow{font-size:14px; font-weight:700; letter-spacing:.05em; color:var(--brand); text-transform:uppercase}
+  h1{font-size:32px; line-height:1.28; letter-spacing:-.02em; font-weight:800; margin:10px 0 12px; text-wrap:balance}
+  .lead{font-size:16px; color:var(--tx2); text-wrap:pretty; max-width:800px}
+  h2{font-size:21px; font-weight:800; letter-spacing:-.015em; margin:60px 0 6px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+  h2 .n{color:var(--brand); margin-right:10px; font-variant-numeric:tabular-nums}
+  h3{font-size:16px; font-weight:800; margin:28px 0 4px}
+  .sub{color:var(--tx2); font-size:13.5px; margin:0 0 14px}
+  p{margin:10px 0; text-wrap:pretty}
+  a{color:var(--brand)}
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; font-size:.84em; background:var(--code-bg); color:var(--code-tx); padding:2px 6px; border-radius:5px}
+  table{width:100%; border-collapse:collapse; margin:12px 0; font-size:13.5px}
+  th{text-align:left; font-size:11.5px; letter-spacing:.03em; color:var(--tx2); font-weight:700; padding:7px 10px; border-bottom:2px solid var(--line); white-space:nowrap}
+  td{padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tblwrap{overflow-x:auto}
+  .tag{display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:99px; white-space:nowrap}
+  .t-core{background:var(--brand-soft); color:var(--brand-deep)}
+  .t-cta{background:var(--brand); color:#fff}
+  .t-rep{background:var(--code-bg); color:var(--tx2)}
+  .grp{font-weight:800; font-size:12px; color:var(--tx3); letter-spacing:.04em; white-space:nowrap}
+  .box{border-radius:10px; padding:13px 16px; margin:14px 0; font-size:14px}
+  .info{background:var(--brand-soft)} .info b.t{color:var(--brand-deep)}
+  .seq{font-family:"SF Mono",ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--code-tx)}
+  .seq b{color:var(--brand); font-weight:700}
+  .seq i{font-style:normal; color:var(--tx3)}
+  .dim{color:var(--tx2)}
+  .flow{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 6px}
+  .flow span{background:var(--code-bg); border-radius:99px; padding:6px 14px; font-size:13px; font-weight:700}
+  .flow i{align-self:center; color:var(--tx3); font-style:normal}
+  /* 문서 링크 카드 */
+  .links{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin:16px 0}
+  .lk{display:block; border:1px solid var(--line); border-radius:14px; padding:18px 20px; text-decoration:none; color:inherit; background:var(--panel); transition:border-color .15s, transform .15s}
+  .lk:hover{border-color:var(--brand); transform:translateY(-2px)}
+  .lk .sw{height:8px; border-radius:99px; margin-bottom:12px}
+  .lk b{font-size:15.5px}
+  .lk span{display:block; font-size:13px; color:var(--tx2); margin-top:5px; line-height:1.55}
+  .lk i{display:inline-block; font-style:normal; font-size:11.5px; color:var(--tx3); margin-top:9px}
+  /* 와이어프레임 프리미티브 (sections-visual 이식) */
+  .grph{font-size:12.5px; font-weight:800; letter-spacing:.08em; color:var(--tx3); text-transform:uppercase; margin:40px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--line)}
+  .sec{margin:22px 0 6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .sec b{font-size:16.5px; font-weight:800}
+  .sec .role{font-size:13px; color:var(--tx2)}
+  .vgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:12px; margin:8px 0 4px}
+  .vc{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel)}
+  .vc .cap{padding:8px 12px 9px; border-top:1px solid var(--line)}
+  .vc .cap b{font-size:12.5px; font-family:"SF Mono",ui-monospace,Menlo,monospace; color:var(--brand)}
+  .vc .cap span{display:block; font-size:12px; color:var(--tx2); line-height:1.45; margin-top:1px}
+  .vc .cap i{font-style:normal; font-size:10.5px; color:var(--tx3)}
+  .wf{height:126px; background:var(--wf-bg); padding:12px 14px; display:flex; flex-direction:column; gap:6px; justify-content:center}
+  .wf *{border-radius:3px; flex:none}
+  .r{display:flex; gap:6px; align-items:center}
+  .c{display:flex; flex-direction:column; gap:5px}
+  .grow{flex:1 1 auto; min-width:0}
+  .t{height:5px; background:var(--wf-ink2)}
+  .T{height:9px; background:var(--wf-ink)}
+  .acc{background:var(--wf-acc)!important; opacity:.85}
+  .btn{height:11px; width:34px; background:var(--wf-acc); border-radius:6px; opacity:.9}
+  .img{background:var(--wf-ink2); border:1px dashed var(--wf-ink); display:flex; align-items:center; justify-content:center}
+  .img::after{content:"▦"; color:var(--wf-ink); font-size:11px}
+  .card{border:1px solid var(--wf-ink); background:var(--panel); padding:7px; display:flex; flex-direction:column; gap:4px}
+  .num{font-family:ui-monospace,monospace; font-weight:800; font-size:17px; color:var(--wf-acc); line-height:1}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--wf-acc)}
+  .circ{width:16px; height:16px; border-radius:50%; background:var(--wf-ink2); border:1px solid var(--wf-ink)}
+  .ctr{align-items:center; text-align:center}
+  .q{font-size:20px; font-weight:900; color:var(--wf-acc); line-height:.8}
+  .chev{margin-left:auto; color:var(--wf-ink); font-size:9px}
+  .band{background:var(--brand-soft); border-radius:8px; padding:8px 10px; display:flex; align-items:center; gap:8px}
+</style>
+</head>
+<body>
+<div class="doc">
+
+<div class="eyebrow">Web Section Spec</div>
+<h1>웹페이지 섹션 유형 정의서</h1>
+<p class="lead">웹페이지를 만들 때 쓰는 공통 언어를 한 문서로 묶었다.
+페이지가 어떤 유형으로 나뉘고, 각 페이지는 어떤 섹션으로 조립되며, 섹션마다 어떤 표현이 가능한지 —
+그리고 그 정의가 실제 디자인(케이스팩·스타일팩 카탈로그)으로 어떻게 이어지는지를 따라가며 본다.</p>
+
+<div class="flow">
+  <span>① 페이지 유형</span><i>→</i>
+  <span>② 섹션 유형</span><i>→</i>
+  <span>③ 섹션 × 표현 변형</span><i>→</i>
+  <span>④ 행사 랜딩 12블록</span><i>→</i>
+  <span>⑤ 섹션 디자인 카탈로그</span>
+</div>
+<p class="sub">근거: <code>app/pagetypes.js</code> · Figma Design Generator(랜딩페이지 제작 사이즈 484-83314 / Block·Template 513-737) · 기준일 2026-08-20</p>
+
+<!-- ═══════════ 1. 페이지 유형 ═══════════ -->
+<h2><span class="n">01</span>페이지 유형 정의 — 10종</h2>
+<p class="sub">사이트를 이루는 페이지를 목적에 따라 10가지로 나눈다. 페이지를 만들면 유형별 기본 골격이 먼저 깔리고, 내용은 브리프와 첨부 자료에서 채워진다. <b>굵은 섹션</b>이 그 페이지의 대표 섹션.</p>
+<div class="tblwrap"><table>
+  <tr><th>유형</th><th>용도</th><th>섹션 조립 순서</th></tr>
+  <tr><td><b>main</b> 메인홈</td><td>핵심 가치와 전체 요약</td><td class="seq">hero → feature → <i>stats</i> → <i>showcase</i> → <i>testimonial</i> → cta</td></tr>
+  <tr><td><b>product</b> 제품소개</td><td>제품 하나를 깊게</td><td class="seq">pagehero → featurerows → <i>gallery</i> → <i>compare</i> → cta</td></tr>
+  <tr><td><b>features</b> 기능소개</td><td>기능 카탈로그</td><td class="seq">pagehero → <b>feature</b> → <i>featurerows</i> → <i>faq</i> → cta</td></tr>
+  <tr><td><b>pricing</b> 요금</td><td>플랜 비교</td><td class="seq">pagehero → <b>pricing</b> → <i>faq</i> → cta</td></tr>
+  <tr><td><b>faq</b> FAQ</td><td>질문과 문의 유도</td><td class="seq">pagehero → <b>faq</b> → <i>infocards</i> → cta</td></tr>
+  <tr><td><b>contact</b> 도입문의</td><td>폼과 연락처</td><td class="seq">pagehero → <b>form</b> → <i>infocards</i></td></tr>
+  <tr><td><b>manual</b> 매뉴얼</td><td>가이드 입구</td><td class="seq">pagehero → <b>doclist</b> → <i>steps</i> → cta</td></tr>
+  <tr><td><b>blog</b> 블로그</td><td>소식 목록</td><td class="seq">pagehero → <b>bloglist</b> → <i>cta</i></td></tr>
+  <tr><td><b>landing</b> 제품 랜딩</td><td>전환 하나에 집중한 한 장</td><td class="seq">hero → <i>feature</i> → <i>stats</i> → <i>testimonial</i> → cta</td></tr>
+  <tr><td><b>event</b> 행사 랜딩</td><td>세미나·웨비나·컨퍼런스 집객 한 장</td><td class="seq">hero → overview → <i>intro</i> → agenda → speakers → <i>notice</i> → cta</td></tr>
+</table></div>
+<div class="box info"><b class="t">두 갈래의 팩</b> — 위 조립표대로 여러 페이지를 만드는 <b>사이트형</b> 팩(Saturn·KRDS·MIDAS AX·Aether)과,
+행사 한 장에 골격을 고정하고 내용만 갈아입는 <b>랜딩형</b> 팩(Civil Blue·Ensol MBM·Toss Green 등)이 있다.
+§4의 12블록 정의는 랜딩형(행사) 전용 규격이다.</div>
+
+<!-- ═══════════ 2. 섹션 유형 ═══════════ -->
+<h2><span class="n">02</span>섹션 유형 정의 — 22종</h2>
+<p class="sub">페이지를 이루는 최소 단위. 모든 팩은 이 어휘를 자기 디자인으로 구현하고, 없는 유형은 비슷한 유형으로 대체해 렌더한다(깨지지 않는 것이 우선).</p>
+<div class="tblwrap"><table>
+  <tr><th>묶음</th><th>섹션</th><th>역할</th><th>표현 변형</th></tr>
+  <tr><td class="grp" rowspan="2">도입부</td><td><code>hero</code></td><td>첫 화면 — 타이틀·서브·CTA</td><td>center · split · screenshot · bgimage</td></tr>
+  <tr><td><code>pagehero</code></td><td>하위 페이지 표제</td><td>banner · breadcrumb</td></tr>
+  <tr><td class="grp" rowspan="2">소개</td><td><code>overview</code></td><td>개요 — 무엇을, 왜</td><td>split · center · problem</td></tr>
+  <tr><td><code>intro</code></td><td>목적·대상 소개</td><td>center · quote</td></tr>
+  <tr><td class="grp" rowspan="5">기능·콘텐츠</td><td><code>feature</code></td><td>기능 카드 그리드</td><td>icons · cards · bento · list</td></tr>
+  <tr><td><code>featurerows</code></td><td>기능 상세 좌우 교차</td><td>zigzag · numbered · checks</td></tr>
+  <tr><td><code>gallery</code></td><td>화면·이미지 모음</td><td>grid · mosaic · marquee</td></tr>
+  <tr><td><code>showcase</code></td><td>대표 화면 하나 크게</td><td>—</td></tr>
+  <tr><td><code>compare</code></td><td>비교 (우리 vs 기존)</td><td>table · beforeafter · cards</td></tr>
+  <tr><td class="grp" rowspan="2">신뢰·수치</td><td><code>stats</code></td><td>지표 숫자</td><td>numbers · kpi · big · dark · chart</td></tr>
+  <tr><td><code>testimonial</code></td><td>고객 후기·로고</td><td>cards · single · logos</td></tr>
+  <tr><td class="grp" rowspan="3">전환</td><td><code>cta</code></td><td>행동 유도 배너</td><td>banner · simple · cards</td></tr>
+  <tr><td><code>form</code></td><td>문의·신청 폼</td><td>center · split · full</td></tr>
+  <tr><td><code>pricing</code></td><td>요금 플랜</td><td>cards · table</td></tr>
+  <tr><td class="grp" rowspan="6">안내</td><td><code>faq</code></td><td>자주 묻는 질문</td><td>accordion · twocol · category · bars</td></tr>
+  <tr><td><code>infocards</code></td><td>연락처·절차 카드</td><td>—</td></tr>
+  <tr><td><code>notice</code></td><td>유의사항·참가 안내</td><td>—</td></tr>
+  <tr><td><code>steps</code></td><td>절차 스텝</td><td>horizontal · vertical · cards</td></tr>
+  <tr><td><code>doclist</code></td><td>가이드 문서 목록</td><td>cards · list</td></tr>
+  <tr><td><code>bloglist</code></td><td>소식·아티클 목록</td><td>cards · list · featured</td></tr>
+  <tr><td class="grp" rowspan="2">행사</td><td><code>agenda</code></td><td>세션 시간표</td><td>timeline · detail · table · tabs</td></tr>
+  <tr><td><code>speakers</code></td><td>연사 소개</td><td>grid · text · rows</td></tr>
+</table></div>
+<p class="dim">대체 순서 예: <code>pagehero→hero</code> · <code>gallery→showcase→feature</code> · <code>agenda→steps→feature</code>.</p>
+
+<!-- ═══════════ 3. 유형별 분류 — 와이어프레임 ═══════════ -->
+<h2><span class="n">03</span>섹션 × 표현 변형 — 레이아웃 분류</h2>
+<p class="sub">같은 섹션이라도 내용 성격에 따라 얼굴이 달라진다. 아래는 변형별 레이아웃 뼈대 —
+색과 폰트는 스타일팩이 입히므로 여기서는 구조만 본다(보라 = CTA·강조 위치).
+내용을 보고 변형을 고른다: 제품 화면이 강점이면 <code>hero:screenshot</code>, 기능이 많으면 <code>feature:bento</code>. 페이지마다 같은 조합을 반복하지 않는다.</p>
+
+<div id="cat"></div>
+
+<!-- ═══════════ 4. 행사 랜딩 12블록 ═══════════ -->
+<h2><span class="n">04</span>행사 랜딩페이지 정의 — 12블록</h2>
+<p class="sub">위 22종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 블록마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
+기준 폭 1920, 높이는 유동. 출처: Figma Design Generator. 각 블록명을 누르면 Toss Green 카탈로그의 해당 그룹으로 이동한다.</p>
+<div class="tblwrap"><table>
+  <tr><th>#</th><th>블록</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th></tr>
+  <tr><td>1</td><td><a href="sections-mbmtoss.html#b1"><b>Hero 배너</b></a></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td></tr>
+  <tr><td>2</td><td><a href="sections-mbmtoss.html#b2"><b>띠배너 Marquee</b></a></td><td>텍스트·로고가 좌우로 흐르는 공지</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">marquee_text · icon · speed · direction</td></tr>
+  <tr><td>3</td><td><a href="sections-mbmtoss.html#b3"><b>소개영역 Intro</b></a></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td></tr>
+  <tr><td>4</td><td><a href="sections-mbmtoss.html#b4"><b>핵심포인트 Key Point</b></a></td><td>주요 메시지·성과·강점 — 카드형</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">point_title · point_desc · image · cta_text</td></tr>
+  <tr><td>5</td><td><a href="sections-mbmtoss.html#b5"><b>이벤트 Event</b></a></td><td>참여 혜택·경품·프로모션</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">event_title · event_desc · image · cta_text</td></tr>
+  <tr><td>6</td><td><a href="sections-mbmtoss.html#b6"><b>연사소개 Speaker</b></a></td><td>발표자 정보 — 사진·소속·소개</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">name · title · company · desc · photo</td></tr>
+  <tr><td>7</td><td><a href="sections-mbmtoss.html#b7"><b>아젠다 Agenda</b></a></td><td>세션 일정·프로그램 리스트</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">session_title · time · speaker · desc</td></tr>
+  <tr><td>8</td><td><a href="sections-mbmtoss.html#b8"><b>행사요약 Event Summary</b></a></td><td>대상·장소·일정을 한눈에</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">target · place_name · date</td></tr>
+  <tr><td>9</td><td><a href="sections-mbmtoss.html#b9"><b>신청 양식 Registration</b></a></td><td>참가 신청 — 정보 입력·제출</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">form_title · fields[] · cta_text · submit_type · success_msg</td></tr>
+  <tr><td>10</td><td><a href="sections-mbmtoss.html#b10"><b>장소안내 Location</b></a></td><td>지도·주소·접근 안내</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">place_name · address · map · link · parking_info</td></tr>
+  <tr><td>11</td><td><a href="sections-mbmtoss.html#b11"><b>질문답변 FAQ</b></a></td><td>Q&amp;A로 사전 문의 대응</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">question · answer</td></tr>
+  <tr><td>12</td><td><a href="sections-mbmtoss.html#b12"><b>안내문구 Info</b></a></td><td>유의사항 — Footer 위 참고 문구</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">title · text_list[]</td></tr>
+  <tr><td>+</td><td><a href="sections-mbmtoss.html#b13"><b>Closing CTA</b></a></td><td>마무리 전환 밴드</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">cta_title · cta_sub · cta_text</td></tr>
+</table></div>
+<p class="dim">데이터 계약: 이 필드들은 생성 스키마의 <code>sessions[] · eventDate · eventPlace · deadline · faq[] · ctaTitle/ctaSub</code>와 대응한다.
+폼 실제 제출(<code>submit_type · success_msg</code>)은 서버 수신이 필요한 별도 작업 단위.</p>
+
+<!-- ═══════════ 5. 디자인 카탈로그 연결 ═══════════ -->
+<h2><span class="n">05</span>섹션 디자인 카탈로그 — 스타일별</h2>
+<p class="sub">위 정의를 실제 디자인으로 구현한 카탈로그. 스타일팩마다 하나씩 늘어난다.</p>
+<div class="links">
+  <a class="lk" href="sections-mbmtoss.html">
+    <div class="sw" style="background:linear-gradient(90deg,#05D16E,#3182F6)"></div>
+    <b>Toss Green — 전 섹션 베리에이션</b>
+    <span>행사 랜딩 12블록 체계로 정리한 82블록. 프레임 안에서 스크롤하면 핀 스크럽·리빌이 실제로 동작하고, 컬러 테마 5종을 바꿔 볼 수 있다.</span>
+    <i>packs.mbmtoss.js · 라이브 카탈로그</i>
+  </a>
+  <a class="lk" href="sections-axday.html">
+    <div class="sw" style="background:linear-gradient(90deg,#FF5500,#030712)"></div>
+    <b>Ensol MBM — 전 섹션 베리에이션</b>
+    <span>AX Day 스타일 기준의 케이스팩 원본. 섹션 × 변형 72블록과 배경 리듬 규칙 5가지를 담고 있다.</span>
+    <i>packs.axday.js 계열 · 정적 카탈로그</i>
+  </a>
+  <a class="lk" href="sections-visual.html">
+    <div class="sw" style="background:linear-gradient(90deg,#c9c6d6,#6c2bff)"></div>
+    <b>변형 와이어프레임 카탈로그</b>
+    <span>§3의 원본 — 22섹션 × 변형의 레이아웃 뼈대 그림 53장.</span>
+    <i>구조 전용</i>
+  </a>
+  <a class="lk" href="sections-map.html">
+    <div class="sw" style="background:linear-gradient(90deg,#6c2bff,#4a1bb8)"></div>
+    <b>섹션 계약 지도</b>
+    <span>어휘·조립표·행사 필드가 실제 코드와 어떻게 연결되는지 — 개발 관점의 계약 문서.</span>
+    <i>app/pagetypes.js 기준</i>
+  </a>
+</div>
+
+<p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:14px">
+웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
+
+</div>
+
+<script>
+/* ── §3 와이어프레임 — sections-visual.html에서 이식 ── */
+function t(w,acc){ return '<div class="t'+(acc?' acc':'')+'" style="width:'+w+'%"></div>'; }
+function T(w,acc){ return '<div class="T'+(acc?' acc':'')+'" style="width:'+w+'%"></div>'; }
+function img(h,w){ return '<div class="img" style="height:'+h+'px;'+(w?'width:'+w+'%':'flex:1')+'"></div>'; }
+function card(inner,style){ return '<div class="card" style="flex:1;'+(style||'')+'">'+inner+'</div>'; }
+function r(inner,style){ return '<div class="r" style="'+(style||'')+'">'+inner+'</div>'; }
+function c(inner,style){ return '<div class="c grow" style="'+(style||'')+'">'+inner+'</div>'; }
+var BTN='<div class="btn"></div>', DOT='<div class="dot"></div>', CIRC='<div class="circ"></div>';
+function num(v){ return '<div class="num">'+(v||'42')+'</div>'; }
+
+var WF = {
+  'hero.center': '<div class="c ctr">'+T(56)+t(40)+r(BTN+BTN)+'</div>',
+  'hero.split': r( c(T(80)+t(65)+t(50)+r(BTN)) + img(70,44) ),
+  'hero.screenshot': '<div class="c ctr">'+T(46)+r(BTN)+img(52,78)+'</div>',
+  'hero.bgimage': '<div class="c ctr grow" style="background:linear-gradient(135deg,#413a6b,#6c2bff88);border-radius:6px;justify-content:center"><div class="T" style="width:52%;background:#fff;opacity:.92"></div><div class="t" style="width:38%;background:#fff;opacity:.55"></div><div class="btn" style="background:#fff;opacity:.95"></div></div>',
+  'pagehero.banner': '<div class="c">'+T(38)+t(58)+'</div>',
+  'pagehero.breadcrumb': '<div class="c">'+r(t(8)+t(8)+t(12,1))+T(38)+'</div>',
+  'overview.split': r( c(T(60)) + c(t(90)+t(84)+t(70)) ),
+  'overview.center': '<div class="c ctr">'+T(70)+T(52)+t(36)+'</div>',
+  'overview.problem': r( card(t(30,1)+t(85)+t(70)) + card(t(30,1)+t(85)+t(70),'border-color:var(--wf-acc)') ),
+  'intro.center': '<div class="c ctr">'+T(48)+t(66)+t(58)+'</div>',
+  'intro.quote': '<div class="c ctr"><div class="q">“</div>'+T(62)+t(44)+'</div>',
+  'feature.icons': r(card(DOT+t(70)+t(88))+card(DOT+t(70)+t(88))+card(DOT+t(70)+t(88))),
+  'feature.cards': r(card(t(50,1)+T(66)+t(88))+card(t(50,1)+T(66)+t(88))+card(t(50,1)+T(66)+t(88))),
+  'feature.bento': r( card(DOT+T(60)+t(88)+t(70),'flex:1.6') + '<div class="c grow">'+card(DOT+t(80))+card(DOT+t(80))+'</div>' ),
+  'feature.list': '<div class="c">'+r(DOT+t(60))+r(DOT+t(72))+r(DOT+t(54))+r(DOT+t(66))+'</div>',
+  'featurerows.zigzag': '<div class="c">'+r(img(28,30)+c(T(50)+t(80)))+r(c(T(50)+t(80))+img(28,30))+'</div>',
+  'featurerows.numbered': '<div class="c">'+r(num('1')+c(T(46)+t(76)))+r(num('2')+c(T(46)+t(76)))+'</div>',
+  'featurerows.checks': r( c(r(DOT+t(70))+r(DOT+t(58))+r(DOT+t(64))) + img(56,36) ),
+  'gallery.grid': '<div class="c">'+r(img(26)+img(26)+img(26))+r(img(26)+img(26)+img(26))+'</div>',
+  'gallery.mosaic': r( img(64,52) + '<div class="c grow">'+r(img(29)+img(29))+r(img(29)+img(29))+'</div>' ),
+  'gallery.marquee': '<div class="c" style="justify-content:center">'+r(img(30,26)+img(30,26)+img(30,26)+img(30,26),'flex-wrap:nowrap')+'<div class="t acc" style="width:24%"></div></div>',
+  'showcase.기본': '<div class="c ctr">'+T(40)+img(66,86)+'</div>',
+  'compare.table': '<div class="c">'+r(t(24)+t(24,1)+t(24))+r(t(24)+t(24,1)+t(24))+r(t(24)+t(24,1)+t(24))+'</div>',
+  'compare.beforeafter': r( card(t(34)+t(80)+t(66)) + card(t(34,1)+t(80)+t(66),'border-color:var(--wf-acc)') ),
+  'compare.cards': r(card(T(50)+t(80)+t(64))+card(T(50,1)+t(80)+t(64),'border-color:var(--wf-acc)')),
+  'stats.numbers': r('<div class="c ctr grow">'+num('87%')+t(50)+'</div><div class="c ctr grow">'+num('3.2s')+t(50)+'</div><div class="c ctr grow">'+num('12k')+t(50)+'</div>'),
+  'stats.kpi': r(card(num('87%')+t(60))+card(num('3.2s')+t(60))+card(num('12k')+t(60))),
+  'stats.big': '<div class="c ctr"><div class="num" style="font-size:30px">98.7%</div>'+t(34)+'</div>',
+  'stats.dark': '<div class="c ctr grow" style="background:#221e33;border-radius:6px;justify-content:center"><div class="num" style="font-size:24px">1,300</div><div class="t" style="width:30%;background:#4a4563"></div></div>',
+  'stats.chart': r( c(T(52)+t(70)) + '<div class="r grow" style="align-items:flex-end;height:56px"><div class="t" style="height:34px;width:14%"></div><div class="t" style="height:44px;width:14%"></div><div class="t acc" style="height:18px;width:14%"></div></div>' ),
+  'testimonial.cards': r(card('<div class="q">“</div>'+t(88)+t(70)+r(CIRC+t(34)))+card('<div class="q">“</div>'+t(88)+t(70)+r(CIRC+t(34)))),
+  'testimonial.single': '<div class="c ctr"><div class="q">“</div>'+T(66)+t(48)+r(CIRC+t(22))+'</div>',
+  'testimonial.logos': '<div class="c ctr">'+r(t(16)+t(16)+t(16)+t(16))+num('120+')+t(38)+'</div>',
+  'cta.banner': '<div class="band" style="flex:none; height:56px">'+c(T(52)+t(38))+BTN+'</div>',
+  'cta.simple': '<div class="c ctr">'+T(44)+r(BTN)+'</div>',
+  'cta.cards': r(card(T(56)+t(70)+r(BTN))+card(T(56)+t(70)+r(BTN))),
+  'form.center': '<div class="c ctr" style="align-items:stretch; padding:0 18%">'+t(30)+'<div class="card" style="height:12px"></div><div class="card" style="height:12px"></div><div class="card" style="height:22px"></div>'+r('<div class="btn" style="width:100%"></div>')+'</div>',
+  'form.split': r( c(T(56)+t(78)+t(62)) + '<div class="c grow"><div class="card" style="height:11px"></div><div class="card" style="height:11px"></div><div class="btn" style="width:100%"></div></div>' ),
+  'form.full': '<div class="c ctr" style="align-items:stretch;padding:0 8%">'+t(26)+r('<div class="card grow" style="height:11px"></div><div class="card grow" style="height:11px"></div>')+r('<div class="card grow" style="height:11px"></div><div class="card grow" style="height:11px"></div>')+r('<div class="btn" style="width:38%;margin:0 auto"></div>')+'</div>',
+  'pricing.cards': r(card(t(40)+num('9')+t(70)+t(60))+card(t(40,1)+num('29')+t(70)+t(60),'border-color:var(--wf-acc)')+card(t(40)+num('99')+t(70)+t(60))),
+  'pricing.table': '<div class="c">'+r(t(30)+t(18,1)+t(18))+r(t(30)+t(18,1)+t(18))+r(t(30)+t(18,1)+t(18))+r(t(30)+t(18,1)+t(18))+'</div>',
+  'faq.accordion': '<div class="c">'+r(t(64)+'<span class="chev">▾</span>')+r(t(50)+'<span class="chev">▾</span>')+r(t(58)+'<span class="chev">▾</span>')+r(t(44)+'<span class="chev">▾</span>')+'</div>',
+  'faq.twocol': r( c(r(t(80))+r(t(64))+r(t(72))) + c(r(t(72))+r(t(80))+r(t(58))) ),
+  'faq.category': r( c(t(30,1)+t(80)+t(64)) + c(t(30,1)+t(72)+t(80)) ),
+  'faq.bars': '<div class="c">'+r('<div class="card grow" style="flex-direction:row;align-items:center">'+t(60)+'<span class="chev">+</span></div>')+r('<div class="card grow" style="flex-direction:row;align-items:center">'+t(48)+'<span class="chev">+</span></div>')+'</div>',
+  'infocards.기본': r(card(DOT+t(50)+t(76))+card(DOT+t(50)+t(76))+card(DOT+t(50)+t(76))),
+  'notice.기본': '<div class="c">'+r(DOT+t(30,1))+t(84)+t(70)+r(DOT+t(26,1))+t(76)+'</div>',
+  'steps.horizontal': r('<div class="c ctr grow">'+num('1')+t(60)+'</div><div class="c ctr grow">'+num('2')+t(60)+'</div><div class="c ctr grow">'+num('3')+t(60)+'</div>'),
+  'steps.vertical': '<div class="c">'+r(DOT+c(T(40)+t(70)))+r(DOT+c(T(40)+t(70)))+r(DOT+c(T(40)+t(70)))+'</div>',
+  'steps.cards': r(card(num('1')+t(64)+t(80))+card(num('2')+t(64)+t(80))+card(num('3')+t(64)+t(80))),
+  'doclist.cards': '<div class="c">'+r(card(T(56)+t(80))+card(T(56)+t(80)))+r(card(T(56)+t(80))+card(T(56)+t(80)))+'</div>',
+  'doclist.list': '<div class="c">'+r(DOT+t(58)+'<span class="chev">›</span>')+r(DOT+t(66)+'<span class="chev">›</span>')+r(DOT+t(50)+'<span class="chev">›</span>')+'</div>',
+  'bloglist.cards': r(card(img(26)+T(70)+t(50))+card(img(26)+T(70)+t(50))+card(img(26)+T(70)+t(50))),
+  'bloglist.list': '<div class="c">'+r(img(20,18)+c(T(56)+t(40)))+r(img(20,18)+c(T(56)+t(40)))+'</div>',
+  'bloglist.featured': r( card(img(48)+T(76)+t(56),'flex:1.7') + '<div class="c grow">'+card(T(80)+t(56))+card(T(80)+t(56))+'</div>' ),
+  'agenda.timeline': '<div class="c">'+r(t(12,1)+DOT+c(T(48)+t(66)))+r(t(12,1)+DOT+c(T(48)+t(66)))+'</div>',
+  'agenda.detail': '<div class="c">'+r(t(12,1)+c(T(56)+t(72)+t(60)))+r(t(12,1)+c(T(56)+t(72)))+'</div>',
+  'agenda.table': '<div class="c">'+r(t(14,1)+t(46)+t(24))+r(t(14,1)+t(52)+t(24))+r(t(14,1)+t(40)+t(24))+'</div>',
+  'agenda.tabs': '<div class="c">'+r('<div class="btn" style="width:26%"></div><div class="t" style="width:26%;height:11px"></div>')+r(t(14,1)+t(50))+r(t(14,1)+t(44))+'</div>',
+  'speakers.grid': r(card('<div class="circ" style="align-self:center;width:22px;height:22px"></div>'+T(60)+t(76))+card('<div class="circ" style="align-self:center;width:22px;height:22px"></div>'+T(60)+t(76))+card('<div class="circ" style="align-self:center;width:22px;height:22px"></div>'+T(60)+t(76))),
+  'speakers.text': '<div class="c">'+r(T(24)+t(40))+r(T(24)+t(48))+r(T(24)+t(36))+'</div>',
+  'speakers.rows': '<div class="c">'+r(CIRC+c(T(38)+t(64)))+r(CIRC+c(T(38)+t(58)))+'</div>',
+};
+
+var CAT = [
+  ['도입부', [
+    ['hero','첫 화면 — 타이틀·서브·CTA', [['center','중앙 정렬 타이포','기본'],['split','텍스트 좌 / 이미지 우 분할'],['screenshot','하단 대형 제품 화면 강조'],['bgimage','배경 사진 풀블리드 + 오버레이 타이포']]],
+    ['pagehero','하위 페이지 표제', [['banner','제목+설명 배너','기본'],['breadcrumb','제목+경로 표시']]],
+  ]],
+  ['소개', [
+    ['overview','개요 — 무엇을, 왜', [['split','좌 제목 / 우 설명','기본'],['center','중앙 대형 문장'],['problem','문제 / 해법 대비']]],
+    ['intro','목적·대상 소개', [['center','중앙 정렬','기본'],['quote','인용문형']]],
+  ]],
+  ['기능·콘텐츠', [
+    ['feature','기능 카드 그리드', [['icons','아이콘 그리드','기본'],['cards','카드형'],['bento','벤토 — 대표 1 + 보조'],['list','아이콘 리스트(밀도형)']]],
+    ['featurerows','기능 상세 교차', [['zigzag','이미지 좌우 교차','기본'],['numbered','번호+제목 교차'],['checks','체크리스트 교차']]],
+    ['gallery','화면·이미지 모음', [['grid','균등 그리드','기본'],['mosaic','대표 1장 크게 + 보조'],['marquee','좌우로 흐르는 이미지 띠']]],
+    ['showcase','대표 화면 크게', [['기본','대형 화면 하나']]],
+    ['compare','비교', [['table','비교표','기본'],['beforeafter','좌우 Before/After 패널'],['cards','카드 비교']]],
+  ]],
+  ['신뢰·수치', [
+    ['stats','지표 숫자', [['numbers','숫자 나열','기본'],['kpi','KPI 카드'],['big','대형 숫자 하나 강조'],['dark','잉크 밴드 대형 수치'],['chart','바 차트 카드']]],
+    ['testimonial','고객 후기·로고', [['cards','후기 카드','기본'],['single','단일 대형 인용'],['logos','고객사 로고 그리드+수치']]],
+  ]],
+  ['전환', [
+    ['cta','행동 유도', [['banner','풀 배너','기본'],['simple','제목+버튼 미니멀'],['cards','2단 카드 CTA']]],
+    ['form','문의·신청 폼', [['center','중앙 단일 폼','기본'],['split','좌 설명 / 우 폼'],['full','광폭 2열 폼(행사 신청)']]],
+    ['pricing','요금 플랜', [['cards','플랜 카드','기본'],['table','요금 비교표']]],
+  ]],
+  ['안내', [
+    ['faq','자주 묻는 질문', [['accordion','아코디언','기본'],['twocol','2단 그리드'],['category','카테고리 묶음'],['bars','바 리스트(+/× 토글)']]],
+    ['infocards','연락처·절차 카드', [['기본','카드 3개']]],
+    ['notice','유의사항·안내', [['기본','불릿 문단']]],
+    ['steps','절차 스텝', [['horizontal','가로 번호 스텝','기본'],['vertical','세로 타임라인'],['cards','카드 스텝']]],
+    ['doclist','가이드 문서 목록', [['cards','카드','기본'],['list','컴팩트 리스트']]],
+    ['bloglist','소식·아티클 목록', [['cards','카드 그리드','기본'],['list','썸네일 리스트'],['featured','대표 1 + 일반']]],
+  ]],
+  ['행사', [
+    ['agenda','세션 시간표', [['timeline','타임라인','기본'],['detail','세부 설명형'],['table','시간표 행'],['tabs','회차 탭 전환']]],
+    ['speakers','연사 소개', [['grid','사진+소속 카드','기본'],['text','텍스트 나열'],['rows','행 리스트']]],
+  ]],
+];
+
+var out = [];
+CAT.forEach(function (g) {
+  out.push('<div class="grph">' + g[0] + '</div>');
+  g[1].forEach(function (s) {
+    out.push('<div class="sec"><b><code>' + s[0] + '</code></b><span class="role">' + s[1] + '</span></div>');
+    out.push('<div class="vgrid">');
+    s[2].forEach(function (v) {
+      var key = s[0] + '.' + v[0];
+      out.push('<div class="vc"><div class="wf">' + (WF[key] || '') + '</div>' +
+        '<div class="cap"><b>' + (v[0] === '기본' ? s[0] : s[0] + ':' + v[0]) + '</b>' +
+        (v[2] ? ' <i>· 기본형</i>' : '') +
+        '<span>' + v[1] + '</span></div></div>');
+    });
+    out.push('</div>');
+  });
+});
+document.getElementById('cat').innerHTML = out.join('');
+</script>
+</body>
+</html>
