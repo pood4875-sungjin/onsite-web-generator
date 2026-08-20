@@ -441,7 +441,11 @@
       '.cta-band,.cta-band .deco,.cta-band .deco2{animation:none}',
     ];
     if (post) return pre + R.join('') + post;                       /* media 블록 */
-    return R.map(function (r) { return pre + r; }).join('\n');      /* html.nomo 접두 */
+    /* html.nomo 접두 — 콤마 셀렉터 각각에 붙여야 한다(첫 항목에만 붙이면 나머지가 전역 오염) */
+    return R.map(function (r) {
+      var i = r.indexOf('{');
+      return r.slice(0, i).split(',').map(function (x) { return pre + x.trim(); }).join(',') + r.slice(i);
+    }).join('\n');
   }
 
   window.renderMbmtossPage = function (shared, opts) {
@@ -794,7 +798,7 @@
       'document.querySelectorAll(".chk").forEach(function(c){c.addEventListener("click",function(){var bx=c.querySelector(".box");bx.classList.toggle("on");bx.classList.toggle("off");});});' +
       'var cp=document.getElementById("addrcpy");if(cp)cp.addEventListener("click",function(){if(navigator.clipboard)navigator.clipboard.writeText(cp.getAttribute("data-addr")||"");cp.textContent="✓";setTimeout(function(){cp.textContent="⧉";},1400);});' +
       'var sb=document.querySelector(".sbm");if(sb)sb.addEventListener("click",function(){sb.textContent=sb.getAttribute("data-fdone")||sb.textContent;sb.style.background="var(--brand-deep)";});' +
-      'var gnb=document.getElementById("gnb");if(!gnb.classList.contains("lock"))addEventListener("scroll",function(){gnb.classList.toggle("solid",scrollY>innerHeight-70);},{passive:true});' +
+      'var gnb=document.getElementById("gnb");if(gnb&&!gnb.classList.contains("lock"))addEventListener("scroll",function(){gnb.classList.toggle("solid",scrollY>innerHeight-70);},{passive:true});' +
       '})();<\/script>';
 
     var mot = !motion ? '' : '<script>(function(){' +
