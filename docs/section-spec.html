@@ -176,28 +176,33 @@
 <!-- ═══════════ 4. 행사 랜딩 12블록 ═══════════ -->
 <h2><span class="n">04</span>행사 랜딩페이지 정의 — 12블록</h2>
 <p class="sub">위 22종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 블록마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
-기준 폭 1920, 높이는 유동. 출처: Figma Design Generator. 각 블록명을 누르면 Toss Green 카탈로그의 해당 그룹으로 이동한다.</p>
+기준 폭 1920, 높이는 유동. 출처: Figma Design Generator.</p>
 <div class="tblwrap"><table>
   <tr><th>#</th><th>블록</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th></tr>
-  <tr><td>1</td><td><a href="sections-mbmtoss.html#b1"><b>Hero 배너</b></a></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td></tr>
-  <tr><td>2</td><td><a href="sections-mbmtoss.html#b2"><b>띠배너 Marquee</b></a></td><td>텍스트·로고가 좌우로 흐르는 공지</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">marquee_text · icon · speed · direction</td></tr>
-  <tr><td>3</td><td><a href="sections-mbmtoss.html#b3"><b>소개영역 Intro</b></a></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td></tr>
-  <tr><td>4</td><td><a href="sections-mbmtoss.html#b4"><b>핵심포인트 Key Point</b></a></td><td>주요 메시지·성과·강점 — 카드형</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">point_title · point_desc · image · cta_text</td></tr>
-  <tr><td>5</td><td><a href="sections-mbmtoss.html#b5"><b>이벤트 Event</b></a></td><td>참여 혜택·경품·프로모션</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">event_title · event_desc · image · cta_text</td></tr>
-  <tr><td>6</td><td><a href="sections-mbmtoss.html#b6"><b>연사소개 Speaker</b></a></td><td>발표자 정보 — 사진·소속·소개</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">name · title · company · desc · photo</td></tr>
-  <tr><td>7</td><td><a href="sections-mbmtoss.html#b7"><b>아젠다 Agenda</b></a></td><td>세션 일정·프로그램 리스트</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">session_title · time · speaker · desc</td></tr>
-  <tr><td>8</td><td><a href="sections-mbmtoss.html#b8"><b>행사요약 Event Summary</b></a></td><td>대상·장소·일정을 한눈에</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">target · place_name · date</td></tr>
-  <tr><td>9</td><td><a href="sections-mbmtoss.html#b9"><b>신청 양식 Registration</b></a></td><td>참가 신청 — 정보 입력·제출</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">form_title · fields[] · cta_text · submit_type · success_msg</td></tr>
-  <tr><td>10</td><td><a href="sections-mbmtoss.html#b10"><b>장소안내 Location</b></a></td><td>지도·주소·접근 안내</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">place_name · address · map · link · parking_info</td></tr>
-  <tr><td>11</td><td><a href="sections-mbmtoss.html#b11"><b>질문답변 FAQ</b></a></td><td>Q&amp;A로 사전 문의 대응</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">question · answer</td></tr>
-  <tr><td>12</td><td><a href="sections-mbmtoss.html#b12"><b>안내문구 Info</b></a></td><td>유의사항 — Footer 위 참고 문구</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">title · text_list[]</td></tr>
-  <tr><td>+</td><td><a href="sections-mbmtoss.html#b13"><b>Closing CTA</b></a></td><td>마무리 전환 밴드</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">cta_title · cta_sub · cta_text</td></tr>
+  <tr><td>1</td><td><b>Hero 배너</b></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td></tr>
+  <tr><td>2</td><td><b>띠배너 Marquee</b></td><td>텍스트·로고가 좌우로 흐르는 공지</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">marquee_text · icon · speed · direction</td></tr>
+  <tr><td>3</td><td><b>소개영역 Intro</b></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td></tr>
+  <tr><td>4</td><td><b>핵심포인트 Key Point</b></td><td>주요 메시지·성과·강점 — 카드형</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">point_title · point_desc · image · cta_text</td></tr>
+  <tr><td>5</td><td><b>이벤트 Event</b></td><td>참여 혜택·경품·프로모션</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">event_title · event_desc · image · cta_text</td></tr>
+  <tr><td>6</td><td><b>연사소개 Speaker</b></td><td>발표자 정보 — 사진·소속·소개</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">name · title · company · desc · photo</td></tr>
+  <tr><td>7</td><td><b>아젠다 Agenda</b></td><td>세션 일정·프로그램 리스트</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">session_title · time · speaker · desc</td></tr>
+  <tr><td>8</td><td><b>행사요약 Event Summary</b></td><td>대상·장소·일정을 한눈에</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">target · place_name · date</td></tr>
+  <tr><td>9</td><td><b>신청 양식 Registration</b></td><td>참가 신청 — 정보 입력·제출</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">form_title · fields[] · cta_text · submit_type · success_msg</td></tr>
+  <tr><td>10</td><td><b>장소안내 Location</b></td><td>지도·주소·접근 안내</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">place_name · address · map · link · parking_info</td></tr>
+  <tr><td>11</td><td><b>질문답변 FAQ</b></td><td>Q&amp;A로 사전 문의 대응</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">question · answer</td></tr>
+  <tr><td>12</td><td><b>안내문구 Info</b></td><td>유의사항 — Footer 위 참고 문구</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">title · text_list[]</td></tr>
+  <tr><td>+</td><td><b>Closing CTA</b></td><td>마무리 전환 밴드</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">cta_title · cta_sub · cta_text</td></tr>
 </table></div>
+<div class="box info"><b class="t">블록별 디자인 카탈로그</b> —
+<a href="sections-mbmtoss.html">Toss Green 전 섹션 베리에이션 (82블록 · 라이브)</a> ·
+<a href="sections-axday.html">Ensol MBM 전 섹션 베리에이션 (72블록)</a></div>
 <p class="dim">데이터 계약: 이 필드들은 생성 스키마의 <code>sessions[] · eventDate · eventPlace · deadline · faq[] · ctaTitle/ctaSub</code>와 대응한다.
 폼 실제 제출(<code>submit_type · success_msg</code>)은 서버 수신이 필요한 별도 작업 단위.</p>
 
 <p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:14px">
-섹션 디자인 카탈로그: <a href="sections-mbmtoss.html">Toss Green(82블록·라이브)</a> · <a href="sections-axday.html">Ensol MBM(72블록)</a><br>웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
+<b>디자인 씨드</b> — <a href="../packs/web/packs.mbmtoss.sample.html">SK 사업 · MBM 랜딩페이지 (상단 영상형)</a>
+<span class="dim">· 12블록 정의를 처음부터 끝까지 구현한 원본 시안. Toss Green 팩이 여기서 나왔다.</span><br><br>
+웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
 
 </div>
 
