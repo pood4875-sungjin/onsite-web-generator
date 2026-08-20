@@ -3,47 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Toss Green 팩 미리보기</title>
+<title>Toss Green 팩 — 섹션 카탈로그</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;background:#F2F4F6}
-.bar{position:fixed;top:0;left:0;right:0;z-index:99;background:#191F28;color:#fff;padding:10px 16px;display:flex;gap:8px;align-items:center;font-size:13px}
-.bar b{font-size:14px;margin-right:8px}
-.bar button{border:0;border-radius:100px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;font-family:inherit}
-.bar button.on{background:#05D16E;color:#fff}
-.bar .sp{flex:1}
-.bar .st{font-size:12px;color:rgba(255,255,255,.55)}
-iframe{border:0;width:100%;height:calc(100vh - 46px);margin-top:46px;display:block;background:#fff}
+body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;background:#F2F4F6;color:#191F28}
+.head{max-width:1280px;margin:0 auto;padding:56px 32px 8px}
+.head h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.head p{margin-top:10px;font-size:15px;color:#6B7684;line-height:1.6}
+.cat{max-width:1280px;margin:0 auto;padding:24px 32px 100px;display:grid;gap:44px}
+.blk .hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.blk .no{font-size:13px;font-weight:800;color:#05D16E;font-variant-numeric:tabular-nums}
+.blk .nm{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.blk .tg{font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px;background:#E8EBEF;color:#4E5968}
+.blk .tg.mo{background:rgba(5,209,110,.12);color:#049252}
+.blk .tg.fx{background:#191F28;color:#fff}
+.blk .dt{font-size:13px;color:#8B95A1;margin-left:auto}
+.blk .fr{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 26px rgba(3,7,18,.07)}
+.blk iframe{border:0;width:100%;height:400px;display:block}
 </style>
 </head>
 <body>
-<div class="bar">
-  <b>Toss Green 팩</b>
-  <button data-lang="ko" class="on">KO</button>
-  <button data-lang="en">EN</button>
-  <button data-lang="ja">JA</button>
-  <button data-lang="zh">ZH</button>
-  <span style="width:10px"></span>
-  <button id="mo" class="on">모션 ON</button>
-  <span class="sp"></span>
-  <span class="st" id="st"></span>
+<div class="head">
+  <h1>Toss Green 팩 — 섹션 카탈로그</h1>
+  <p>packs.mbmtoss.js가 가진 섹션 어휘 전체. 스크럽(핀) 섹션은 카탈로그에서 정적 폴백 상태로 표시되고,
+  실제 페이지에서는 <b>모션</b> 태그의 연출로 동작합니다. 순서 이동·숨김은 movable 섹션만 가능합니다.</p>
 </div>
-<iframe id="fr"></iframe>
+<div class="cat" id="cat"></div>
+
 <script src="packs.mbmtoss.js"></script>
 <script>
-var lang = 'ko', motion = true;
-function draw(){
-  var html = window.renderMbmtossPage({ _clang: lang }, { motion: motion });
-  document.getElementById('fr').srcdoc = html;
-  document.getElementById('st').textContent = lang.toUpperCase() + ' · ' + (motion ? '모션 스크럽' : '정적') + ' · ' + Math.round(html.length / 1024) + 'KB';
-  document.querySelectorAll('[data-lang]').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
-  var mo = document.getElementById('mo');
-  mo.classList.toggle('on', motion); mo.textContent = motion ? '모션 ON' : '모션 OFF';
-}
-document.querySelectorAll('[data-lang]').forEach(function(b){
-  b.addEventListener('click', function(){ lang = b.getAttribute('data-lang'); draw(); });
-});
-document.getElementById('mo').addEventListener('click', function(){ motion = !motion; draw(); });
-draw();
+(function () {
+  /* 섹션 메타 — 이름·성격·데이터 매핑 (팩 어휘 사전) */
+  var META = {
+    gnbhero:   { nm: 'GNB + 히어로', fx: 1, mo: '영상 핀 스크럽 280vh · 카드 축소+블러 → 슬로건', dt: 'navTitle · navLinks · tagline · subcopy · eventDate/Place' },
+    about:     { nm: '수치 하이라이트', mo: '카운트업', dt: 'stats (없으면 자동 숨김)' },
+    chips:     { nm: '칩 슬로건', mo: '칩 팝 스태거', dt: 'features 타이틀 → 칩' },
+    areas:     { nm: '핵심 분야 스텝', mo: '스텝 스크럽 340vh · 파스텔 글래스 패널 전환', dt: 'features ≤4 (title·desc)' },
+    narrative: { nm: '다크 내러티브', mo: '줄 단위 블러 리빌 250vh · 배경 존 전환', dt: 'bannerText (숫자 자동 카운트업+민트)' },
+    session:   { nm: '세션', mo: '배경 존 전환(다크그린)', dt: 'sessions (time·title·by) + 이미지 슬롯' },
+    zig:       { nm: '지그재그', dt: 'zigs (팩 전용 — 편집으로 수정) + 이미지 슬롯' },
+    typeline:  { nm: '타이핑 슬로건', mo: '타이핑 스크럽 220vh · 크게→축소+잉크 채움', dt: '슬로건 프레임 + productName' },
+    event:     { nm: '이벤트 혜택', dt: 'benefits (팩 전용 — 편집으로 수정) + 이미지 슬롯' },
+    location:  { nm: '일정·장소', dt: 'eventDate · eventPlace (역명 자동 추출 → 지도)' },
+    faq:       { nm: 'FAQ', dt: 'faq (q·a) — 클릭 아코디언' },
+    ctaband:   { nm: 'CTA 밴드', mo: '흐르는 그라데이션 + 블롭 플로트', dt: 'ctaTitle · ctaSub · bannerCta' },
+    apply:     { nm: '신청 폼', fx: 1, dt: '폼 라벨 4언어 고정 · primaryCta' },
+    footer:    { nm: '푸터', fx: 1, dt: 'tagline · navLinks · footerLinks · copyright' },
+    dock:      { nm: '플로팅 CTA 독', mo: '스크롤 등장 · 폼 도달 시 퇴장', dt: 'productName · eventDate · primaryCta' },
+  };
+
+  var html = window.renderMbmtossPage({}, { motion: false });
+  var doc = new DOMParser().parseFromString(html, 'text/html');
+  var styleHtml = '';
+  doc.querySelectorAll('head link[rel=stylesheet], head style').forEach(function (n) { styleHtml += n.outerHTML; });
+
+  /* 블록 수집 — 문서 순서대로: GNB+히어로 → movable 섹션들 → 폼 → 푸터 → 독 */
+  var blocks = [];
+  var gnb = doc.querySelector('.gnb'), kvt = doc.getElementById('kvtrack');
+  blocks.push({ key: 'gnbhero', html: gnb.outerHTML + kvt.outerHTML, bg: '#fff' });
+  doc.querySelectorAll('[data-section]').forEach(function (el) {
+    var k = el.getAttribute('data-section');
+    if (k === 'dock') return; // 맨 뒤에 별도
+    blocks.push({ key: k, html: el.outerHTML, bg: el.getAttribute('data-bg') || '#fff' });
+  });
+  var apply = doc.getElementById('apply');
+  blocks.push({ key: 'apply', html: apply.outerHTML, bg: '#fff' });
+  var foot = doc.querySelector('.dawnfoot');
+  blocks.push({ key: 'footer', html: foot.outerHTML, bg: '#fff' });
+  var dockEl = doc.getElementById('dock');
+  if (dockEl) blocks.push({ key: 'dock', html: dockEl.outerHTML, bg: '#F2F4F6', dock: 1 });
+
+  var cat = document.getElementById('cat');
+  blocks.forEach(function (b, i) {
+    var m = META[b.key] || { nm: b.key, dt: '' };
+    var wrap = document.createElement('div'); wrap.className = 'blk';
+    var tags = (m.fx ? '<span class="tg fx">고정</span>' : '<span class="tg">movable</span>') +
+      (m.mo ? '<span class="tg mo">모션 · ' + m.mo + '</span>' : '');
+    wrap.innerHTML = '<div class="hd"><span class="no">' + String(i + 1).padStart(2, '0') + '</span>' +
+      '<span class="nm">' + m.nm + '</span>' + tags +
+      '<span class="dt">데이터: ' + m.dt + '</span></div>' +
+      '<div class="fr"><iframe scrolling="no"></iframe></div>';
+    cat.appendChild(wrap);
+    var fr = wrap.querySelector('iframe');
+    /* 독은 fixed → 카탈로그에선 정적 배치로 오버라이드 */
+    var extra = b.dock ? '<style>.dock{position:static;margin:36px auto;opacity:1;transform:none;pointer-events:auto}</style>' : '';
+    fr.srcdoc = '<!doctype html><html class="nomo"><head><meta charset="utf-8">' + styleHtml + extra +
+      '<style>html{scroll-behavior:auto}body{transition:none!important;background:' + b.bg + '!important;overflow:hidden}</style>' +
+      '</head><body>' + b.html + '</body></html>';
+    fr.addEventListener('load', function () {
+      try {
+        var d2 = fr.contentDocument;
+        /* 히어로 영상 정지(카탈로그 성능) */
+        var v = d2.querySelector('video'); if (v) { v.autoplay = false; v.pause(); }
+        var h = Math.min(1600, Math.max(120, d2.body.scrollHeight));
+        fr.style.height = h + 'px';
+        /* FAQ 첫 항목 열어 형태 보여주기 */
+        var f0 = d2.querySelector('.fitem'); if (f0 && b.key === 'faq') { f0.classList.add('open'); setTimeout(function(){ fr.style.height = Math.min(1600, d2.body.scrollHeight) + 'px'; }, 500); }
+      } catch (e) {}
+    });
+  });
+})();
 </script>
 </body>
 </html>
