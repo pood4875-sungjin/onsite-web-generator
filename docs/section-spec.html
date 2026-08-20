@@ -66,14 +66,6 @@
   .flow{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 6px}
   .flow span{background:var(--code-bg); border-radius:99px; padding:6px 14px; font-size:13px; font-weight:700}
   .flow i{align-self:center; color:var(--tx3); font-style:normal}
-  /* 문서 링크 카드 */
-  .links{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin:16px 0}
-  .lk{display:block; border:1px solid var(--line); border-radius:14px; padding:18px 20px; text-decoration:none; color:inherit; background:var(--panel); transition:border-color .15s, transform .15s}
-  .lk:hover{border-color:var(--brand); transform:translateY(-2px)}
-  .lk .sw{height:8px; border-radius:99px; margin-bottom:12px}
-  .lk b{font-size:15.5px}
-  .lk span{display:block; font-size:13px; color:var(--tx2); margin-top:5px; line-height:1.55}
-  .lk i{display:inline-block; font-style:normal; font-size:11.5px; color:var(--tx3); margin-top:9px}
   /* 와이어프레임 프리미티브 (sections-visual 이식) */
   .grph{font-size:12.5px; font-weight:800; letter-spacing:.08em; color:var(--tx3); text-transform:uppercase; margin:40px 0 8px; padding-bottom:6px; border-bottom:2px solid var(--line)}
   .sec{margin:22px 0 6px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
@@ -120,7 +112,7 @@
   <span>② 섹션 유형</span><i>→</i>
   <span>③ 섹션 × 표현 변형</span><i>→</i>
   <span>④ 행사 랜딩 12블록</span><i>→</i>
-  <span>⑤ 섹션 디자인 카탈로그</span>
+  <span>⑤ 섹션 디자인</span>
 </div>
 <p class="sub">근거: <code>app/pagetypes.js</code> · Figma Design Generator(랜딩페이지 제작 사이즈 484-83314 / Block·Template 513-737) · 기준일 2026-08-20</p>
 
@@ -205,38 +197,8 @@
 <p class="dim">데이터 계약: 이 필드들은 생성 스키마의 <code>sessions[] · eventDate · eventPlace · deadline · faq[] · ctaTitle/ctaSub</code>와 대응한다.
 폼 실제 제출(<code>submit_type · success_msg</code>)은 서버 수신이 필요한 별도 작업 단위.</p>
 
-<!-- ═══════════ 5. 디자인 카탈로그 연결 ═══════════ -->
-<h2><span class="n">05</span>섹션 디자인 카탈로그 — 스타일별</h2>
-<p class="sub">위 정의를 실제 디자인으로 구현한 카탈로그. 스타일팩마다 하나씩 늘어난다.</p>
-<div class="links">
-  <a class="lk" href="sections-mbmtoss.html">
-    <div class="sw" style="background:linear-gradient(90deg,#05D16E,#3182F6)"></div>
-    <b>Toss Green — 전 섹션 베리에이션</b>
-    <span>행사 랜딩 12블록 체계로 정리한 82블록. 프레임 안에서 스크롤하면 핀 스크럽·리빌이 실제로 동작하고, 컬러 테마 5종을 바꿔 볼 수 있다.</span>
-    <i>packs.mbmtoss.js · 라이브 카탈로그</i>
-  </a>
-  <a class="lk" href="sections-axday.html">
-    <div class="sw" style="background:linear-gradient(90deg,#FF5500,#030712)"></div>
-    <b>Ensol MBM — 전 섹션 베리에이션</b>
-    <span>AX Day 스타일 기준의 케이스팩 원본. 섹션 × 변형 72블록과 배경 리듬 규칙 5가지를 담고 있다.</span>
-    <i>packs.axday.js 계열 · 정적 카탈로그</i>
-  </a>
-  <a class="lk" href="sections-visual.html">
-    <div class="sw" style="background:linear-gradient(90deg,#c9c6d6,#6c2bff)"></div>
-    <b>변형 와이어프레임 카탈로그</b>
-    <span>§3의 원본 — 22섹션 × 변형의 레이아웃 뼈대 그림 53장.</span>
-    <i>구조 전용</i>
-  </a>
-  <a class="lk" href="sections-map.html">
-    <div class="sw" style="background:linear-gradient(90deg,#6c2bff,#4a1bb8)"></div>
-    <b>섹션 계약 지도</b>
-    <span>어휘·조립표·행사 필드가 실제 코드와 어떻게 연결되는지 — 개발 관점의 계약 문서.</span>
-    <i>app/pagetypes.js 기준</i>
-  </a>
-</div>
-
 <p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:14px">
-웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
+섹션 디자인 카탈로그: <a href="sections-mbmtoss.html">Toss Green(82블록·라이브)</a> · <a href="sections-axday.html">Ensol MBM(72블록)</a><br>웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
 
 </div>
 
