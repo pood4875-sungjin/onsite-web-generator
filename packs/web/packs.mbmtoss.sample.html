@@ -29,7 +29,7 @@
 -->
 <style>
 :root{
-  --brand:#05D16E; --brand-deep:#04B863; --mint:#96F2C4;
+  --brand:#05D16E; --brand-deep:#04B863; --mint:#96F2C4; --brand-ink:#067A43; --zone:#0E241A; --zone-card:#142A1E;
   --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1;
   --bg1:#F9FAFB; --bg2:#F2F4F6; --dark:#121419; --dark-card:#1E2026;
 }
@@ -42,7 +42,7 @@ h2.tt{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.3;word-
 p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:keep-all}
 .center{text-align:center}
 .pill{display:inline-block;background:var(--brand);color:#fff;font-size:17px;font-weight:600;padding:16px 34px;border-radius:100px;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
-.pill:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(5,209,110,.3)}
+.pill:hover{transform:translateY(-2px);box-shadow:0 12px 28px color-mix(in srgb,var(--brand) 30%,transparent)}
 .pill.soft{background:rgba(7,25,76,.05);color:var(--g1)}
 .pill.w{background:#fff;color:var(--brand)}
 
@@ -56,11 +56,17 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 /* 하단 고정 CTA 독 — toss 플로팅 상담 바: 스크롤 중 등장, 신청 폼 도달 시 퇴장 */
 .dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:18px;width:min(620px,calc(100vw - 48px));padding:10px 10px 10px 24px;background:#fff;border-radius:100px;box-shadow:0 18px 50px rgba(10,5,40,.25),0 2px 8px rgba(10,5,40,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-.dock .tag{flex:none;background:rgba(5,209,110,.1);color:var(--brand);font-size:13px;font-weight:700;padding:7px 13px;border-radius:100px}
+.dock .tag{flex:none;background:color-mix(in srgb,var(--brand) 10%,transparent);color:var(--brand);font-size:13px;font-weight:700;padding:7px 13px;border-radius:100px}
 .dock p{flex:1;font-size:16px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dock .go{flex:none;background:var(--brand);color:#fff;font-size:15px;font-weight:600;padding:14px 28px;border-radius:100px;text-decoration:none;transition:background .2s}
 .dock .go:hover{background:var(--brand-deep)}
 @media (prefers-reduced-motion:reduce){.dock{transition:opacity .2s ease}}
+
+/* 우하단 컬러 테마 칩 */
+.thchips{position:fixed;right:20px;bottom:24px;z-index:70;display:flex;flex-direction:column;gap:8px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);padding:9px 8px;border-radius:100px;box-shadow:0 10px 30px rgba(3,7,18,.16)}
+.thchips button{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.thchips button.on{border-color:var(--ink)}
+@media (max-width:900px){.thchips{right:12px;bottom:14px}}
 
 /* 리빌 모션 — toss 유사 fade-up */
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
@@ -172,7 +178,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 
 /* 다크 세션 */
 .dark{background:transparent;color:#fff}
-.scard{background:#142A1E;border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
+.scard{background:var(--zone-card);border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
 .scard+.scard{margin-top:20px}
 .scard .cap{font-size:14px;font-weight:600;color:var(--mint)}
 .scard h3{margin-top:12px;font-size:30px;font-weight:700;line-height:1.35;letter-spacing:-.02em}
@@ -180,7 +186,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .scard li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.55;padding-left:14px;position:relative}
 .scard li:before{content:"·";position:absolute;left:0;color:var(--mint)}
 .scard .who{margin-top:22px;font-size:13.5px;color:rgba(255,255,255,.45)}
-.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,#2F2458,#1B1438);display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}
+.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,var(--zone-card),var(--dark));display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}
 
 /* 지그재그 */
 .zig{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
@@ -206,8 +212,8 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .zcard .ph,.zcard .photo{height:100%;border-radius:26px}
 
 /* 오브젝트 드롭 — toss 상품 판매 장면: 회전하며 떨어져 통통 안착 */
-.obj{width:88px;height:88px;border-radius:22px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:36px;font-weight:800;box-shadow:0 18px 36px rgba(5,209,110,.32)}
-.obj.lv{background:var(--mint);color:#067A43}
+.obj{width:88px;height:88px;border-radius:22px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:36px;font-weight:800;box-shadow:0 18px 36px color-mix(in srgb,var(--brand) 32%,transparent)}
+.obj.lv{background:var(--mint);color:var(--brand-ink)}
 .drop{opacity:0;transform:translateY(-120px) rotate(-18deg);transition:transform .9s cubic-bezier(.34,1.56,.64,1) .25s,opacity .3s ease .25s}
 .drop.r2{transform:translateY(-120px) rotate(14deg);transition-delay:.4s}
 .rv.on .drop{opacity:1;transform:none}
@@ -226,17 +232,17 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .mini .grow i{display:block;height:100%;border-radius:100px;background:var(--brand)}
 .mini .mrow{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--g1);background:rgba(255,255,255,.85);border-radius:14px;padding:13px 14px;border:1.5px solid transparent}
 .mini .grow+.mrow,.mini .mb+.mrow{margin-top:16px}
-.mini .mrow.hl{border-color:var(--brand);background:rgba(5,209,110,.07)}
-.mini .mrow .dot{width:22px;height:22px;border-radius:50%;background:rgba(5,209,110,.12);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}
+.mini .mrow.hl{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 7%,transparent)}
+.mini .mrow .dot{width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}
 .mini .mrow .val{margin-left:auto;font-size:12.5px;color:var(--g3);font-weight:700;background:rgba(3,7,18,.05);border-radius:100px;padding:5px 10px;flex:none}
-.mini .mrow.hl .val{background:rgba(5,209,110,.14);color:#067A43}
+.mini .mrow.hl .val{background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand-ink)}
 .mini .mbar{display:flex;gap:14px;align-items:flex-end;height:96px;margin-top:16px;padding:0 4px}
 .mini .mbar>i{flex:1;border-radius:6px 6px 0 0;background:#E3E6EB}
 .mini .mbar>i.hot{background:var(--brand)}
-.mini .chipA{display:inline-block;margin-top:2px;background:rgba(5,209,110,.1);color:var(--brand);font-size:13px;font-weight:800;border-radius:8px;padding:4px 10px}
+.mini .chipA{display:inline-block;margin-top:2px;background:color-mix(in srgb,var(--brand) 10%,transparent);color:var(--brand);font-size:13px;font-weight:800;border-radius:8px;padding:4px 10px}
 
 /* EVENT 쿠폰 오브젝트 */
-.coupon{width:170px;height:96px;border-radius:16px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;box-shadow:0 18px 36px rgba(5,209,110,.3);transform:rotate(-6deg);display:flex;align-items:center;position:relative;overflow:hidden}
+.coupon{width:170px;height:96px;border-radius:16px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;box-shadow:0 18px 36px color-mix(in srgb,var(--brand) 30%,transparent);transform:rotate(-6deg);display:flex;align-items:center;position:relative;overflow:hidden}
 .coupon:before{content:"";position:absolute;left:114px;top:-7px;bottom:-7px;border-left:2px dashed rgba(255,255,255,.45)}
 .coupon .cl{flex:1;padding:0 12px 0 20px;text-align:left}
 .coupon .cl b{display:block;font-size:19px;font-weight:800;letter-spacing:-.01em}
@@ -307,7 +313,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .fans p{padding:2px 28px 26px;font-size:15.5px;line-height:1.7;color:var(--g3);text-align:left;word-break:keep-all}
 
 /* CTA 밴드 */
-.cta-band{background:linear-gradient(115deg,#05D16E,#04B863 34%,#0ADB84 62%,#05C46B);background-size:220% 220%;animation:bandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}
+.cta-band{background:linear-gradient(115deg,var(--brand),var(--brand-deep) 34%,color-mix(in srgb,var(--brand) 86%,#fff) 62%,color-mix(in srgb,var(--brand) 90%,#000));background-size:220% 220%;animation:bandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}
 @keyframes bandGrad{from{background-position:0% 30%}to{background-position:100% 70%}}
 .cta-band .deco{position:absolute;width:560px;height:560px;border-radius:50%;background:var(--brand-deep);filter:blur(90px);opacity:.8;right:-140px;top:-180px;animation:bandFloat 16s ease-in-out infinite alternate}
 .cta-band .deco2{position:absolute;width:460px;height:460px;border-radius:50%;background:var(--mint);filter:blur(110px);opacity:.26;left:-160px;bottom:-220px;animation:bandFloat2 21s ease-in-out infinite alternate}
@@ -456,7 +462,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
 </div>
 
 <!-- SESSION — 다크 스테이지 -->
-<section class="sec dark" id="session" data-bg="#0E241A">
+<section class="sec dark" id="session" data-bg="#0E241A" data-zone="1">
   <div class="wrap">
     <div class="center">
       <h2 class="tt rv">SESSION</h2>
@@ -569,19 +575,19 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
             <path d="M20 120 H690"/><path d="M170 10 V330"/><path d="M290 10 V220"/><path d="M448 10 V330"/><path d="M20 218 H660"/>
           </g>
           <g stroke="#C9D4E2" stroke-width="3" fill="none"><path d="M20 120 H690"/><path d="M448 10 V330"/></g>
-          <path d="M462 148 L332 186" stroke="#05D16E" stroke-width="3.5" stroke-dasharray="7 7" fill="none"/>
-          <rect x="497" y="86" width="150" height="52" rx="14" fill="#05D16E"/>
+          <path d="M462 148 L332 186" style="stroke:var(--brand)" stroke-width="3.5" stroke-dasharray="7 7" fill="none"/>
+          <rect x="497" y="86" width="150" height="52" rx="14" style="fill:var(--brand)"/>
           <text x="572" y="119" text-anchor="middle" font-size="19" font-weight="800" fill="#fff" font-family="inherit">역삼역</text>
           <g font-size="12" font-weight="800" font-family="inherit">
             <circle cx="512" cy="66" r="12" fill="#C9D2DC"/><text x="512" y="70" text-anchor="middle" fill="#fff">6</text>
             <circle cx="642" cy="158" r="12" fill="#C9D2DC"/><text x="642" y="162" text-anchor="middle" fill="#fff">8</text>
-            <circle cx="466" cy="150" r="13" fill="#05D16E"/><text x="466" y="154" text-anchor="middle" fill="#fff">7</text>
+            <circle cx="466" cy="150" r="13" style="fill:var(--brand)"/><text x="466" y="154" text-anchor="middle" fill="#fff">7</text>
           </g>
-          <rect x="272" y="186" width="66" height="48" rx="9" fill="#191F28" stroke="#05D16E" stroke-width="3"/>
-          <path d="M305 128c-14 0-24 10-24 23 0 16 24 34 24 34s24-18 24-34c0-13-10-23-24-23z" fill="#05D16E"/>
+          <rect x="272" y="186" width="66" height="48" rx="9" fill="#191F28" style="stroke:var(--brand)" stroke-width="3"/>
+          <path d="M305 128c-14 0-24 10-24 23 0 16 24 34 24 34s24-18 24-34c0-13-10-23-24-23z" style="fill:var(--brand)"/>
           <circle cx="305" cy="152" r="7.5" fill="#fff"/>
-          <text x="305" y="96" text-anchor="middle" font-size="19" font-weight="800" fill="#067A43" font-family="inherit">GS타워</text>
-          <text x="305" y="118" text-anchor="middle" font-size="15" font-weight="700" fill="#067A43" font-family="inherit">아모리스홀</text>
+          <text x="305" y="96" text-anchor="middle" font-size="19" font-weight="800" style="fill:var(--brand-ink)" font-family="inherit">GS타워</text>
+          <text x="305" y="118" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--brand-ink)" font-family="inherit">아모리스홀</text>
           <circle cx="560" cy="258" r="11" fill="#C9D2DC"/>
           <text x="560" y="262" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" font-family="inherit">P</text>
           <text x="560" y="286" text-anchor="middle" font-size="12" font-weight="600" fill="#8B95A1" font-family="inherit">유료 주차장</text>
@@ -657,6 +663,9 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   </div>
   <div class="copy"><span>ⓒ 2026 MIDAS Group.</span><span>HR Growth 2026</span></div>
 </footer>
+
+<!-- 우하단 컬러 테마 칩 -->
+<div class="thchips" id="thchips"></div>
 
 <!-- 하단 고정 CTA 독 (toss 플로팅 상담 바) -->
 <div class="dock" id="dock">
@@ -821,6 +830,34 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
   }
   addEventListener('scroll', dockTick, { passive: true });
   dockTick();
+
+  // 컬러 테마 칩 — 팩 THEMES와 동일 5종
+  var THEMES = {
+    green:  { brand:'#05D16E', deep:'#04B863', mint:'#96F2C4', bink:'#067A43', zone:'#0E241A', card:'#142A1E' },
+    blue:   { brand:'#3182F6', deep:'#1B64DA', mint:'#A9CCFB', bink:'#1957C2', zone:'#0D1B2E', card:'#12263F' },
+    purple: { brand:'#6735E6', deep:'#5B28CE', mint:'#C6B2F5', bink:'#4B2AAF', zone:'#191233', card:'#241B47' },
+    orange: { brand:'#FF5500', deep:'#E64A00', mint:'#FFC9A8', bink:'#B23B00', zone:'#2A160A', card:'#3A1E0E' },
+    red:    { brand:'#F04452', deep:'#D63340', mint:'#FBB6BC', bink:'#B22833', zone:'#2B1013', card:'#3D171C' }
+  };
+  var thWrap = document.getElementById('thchips');
+  Object.keys(THEMES).forEach(function(t, i){
+    var b = document.createElement('button');
+    b.style.background = THEMES[t].brand;
+    b.title = t;
+    if (i === 0) b.className = 'on';
+    b.addEventListener('click', function(){
+      var T = THEMES[t], r = document.documentElement.style;
+      r.setProperty('--brand', T.brand); r.setProperty('--brand-deep', T.deep);
+      r.setProperty('--mint', T.mint); r.setProperty('--brand-ink', T.bink);
+      r.setProperty('--zone', T.zone); r.setProperty('--zone-card', T.card);
+      var zs = document.querySelector('[data-zone]');
+      if (zs) zs.setAttribute('data-bg', T.zone);
+      thWrap.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      bgZone();
+    });
+    thWrap.appendChild(b);
+  });
 
   // GNB — KV를 벗어나면 화이트로
   var gnb = document.getElementById('gnb');
