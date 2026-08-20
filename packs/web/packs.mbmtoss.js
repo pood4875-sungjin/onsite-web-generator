@@ -28,7 +28,7 @@
     green:  { brand: '#05D16E', deep: '#04B863', mint: '#96F2C4', bink: '#067A43', zone: '#0E241A', card: '#142A1E', ph: '#1C3A29', acc2: '#3182F6' },
     blue:   { brand: '#3182F6', deep: '#1B64DA', mint: '#A9CCFB', bink: '#1957C2', zone: '#0D1B2E', card: '#12263F', ph: '#1B3557', acc2: '#05D16E' },
     purple: { brand: '#6735E6', deep: '#5B28CE', mint: '#C6B2F5', bink: '#4B2AAF', zone: '#191233', card: '#241B47', ph: '#2F2458', acc2: '#3182F6' },
-    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00', zone: '#2A160A', card: '#3A1E0E', ph: '#4A2812', acc2: '#00A3FE' },
+    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00', zone: '#2A160A', card: '#3A1E0E', ph: '#4A2812', acc2: '#FF5C8A' },
     red:    { brand: '#F04452', deep: '#D63340', mint: '#FBB6BC', bink: '#B22833', zone: '#2B1013', card: '#3D171C', ph: '#4D1D23', acc2: '#FF8A3D' },
   };
 
