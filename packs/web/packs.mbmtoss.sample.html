@@ -87,15 +87,14 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .spanel{position:relative;height:520px;border-radius:24px;background:var(--bg2);overflow:hidden}
 .spanel .pv{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .45s}
 .spanel .pv.on{opacity:1}
-.spanel .pv .glyph{width:110px;height:110px;border-radius:28px;background:rgba(5,209,110,.1);display:grid;place-items:center;color:var(--brand);font-size:44px;font-weight:800}
-.spanel .pv .w{margin-top:18px;font-size:19px;font-weight:700;color:var(--g1);text-align:center}
-@media (prefers-reduced-motion:reduce){.kv-track,.areas-track,.nar-track{height:auto!important}.stage{position:static;height:auto;min-height:0;padding:120px 0}.kv{display:block;background:linear-gradient(150deg,#1E2026,#121419);padding:150px 0 90px}.kv .in{margin:0 auto}.kv-photo{position:relative;inset:auto;width:min(1200px,92vw);height:520px;margin:72px auto 0;border-radius:32px}.kv-photo .ov{opacity:.45}.kv-sub{opacity:1!important}.srow b{font-size:26px;color:var(--ink)}.srow .n{color:var(--brand)}.srow .more{max-height:none}.spanel .pv{position:static;opacity:1}.chipline .chip{opacity:1;transform:none;transition:none}.typeline .caret{display:none}.nline{opacity:1!important;filter:none!important}.drop{opacity:1;transform:none;transition:none}}
+.pv .goarr{position:absolute;right:26px;bottom:26px;width:46px;height:46px;border-radius:50%;background:rgba(3,7,18,.08);display:grid;place-items:center;font-size:19px;font-weight:700;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.kv-track,.areas-track,.nar-track,.type-track{height:auto!important}.stage{position:static;height:auto;min-height:0;padding:120px 0}.kv{display:block;background:linear-gradient(150deg,#1E2026,#121419);padding:150px 0 90px}.kv .in{margin:0 auto}.kv-photo{position:relative;inset:auto;width:min(1200px,92vw);height:520px;margin:72px auto 0;border-radius:32px}.kv-photo .ov{opacity:.45}.kv-sub{opacity:1!important}.srow b{font-size:26px;color:var(--ink)}.srow .n{color:var(--brand)}.srow .more{max-height:none}.spanel .pv{position:static;opacity:1}.chipline .chip{opacity:1;transform:none;transition:none}.typeline .caret{display:none}.nline{opacity:1!important;filter:none!important}.drop{opacity:1;transform:none;transition:none}}
 
 /* GNB */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;backdrop-filter:blur(12px);background:rgba(18,20,25,.35);transition:background .4s ease}
 .gnb.solid{background:rgba(255,255,255,.92);border-bottom:1px solid rgba(3,7,18,.06)}
 .gnb .in{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:36px}
-.gnb .logo{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.gnb .logo{font-size:27px;font-weight:800;color:#fff;letter-spacing:-.02em}
 .gnb.solid .logo{color:var(--ink)}
 .gnb nav{display:flex;gap:28px;margin-left:auto}
 .gnb nav a{font-size:15px;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;transition:color .2s}
@@ -155,10 +154,13 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .chipline .cd1{transition-delay:.08s}.chipline .cd2{transition-delay:.2s}.chipline .cd3{transition-delay:.32s}.chipline .cd4{transition-delay:.44s}
 
 /* 타이핑 캐럿 — toss 실측: 문장 전체가 연회색 미리보기로 깔리고, 앞에서부터 브랜드색으로 치환 + 채움 지점 캐럿 */
+.type-track{height:220vh}
+.slogan.stage{display:flex;align-items:center;min-height:0;padding:0}
+.typeline{will-change:transform;transform-origin:left center}
 .typeline .tw{position:relative;display:inline-block;white-space:nowrap}
 .typeline .ghost{color:#E0E3E8}
 .typeline .fillw{position:absolute;left:0;top:0;white-space:nowrap}
-.typeline .done{color:var(--brand)}
+.typeline .done{color:var(--ink)}
 .typeline .caret{display:inline-block;width:3px;height:.8em;background:var(--brand);margin-left:2px;vertical-align:-.05em;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{0%,54%{opacity:1}55%,100%{opacity:0}}
 
@@ -191,11 +193,12 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 
 /* EVENT — toss 광고 카드 문법: 흰 카드 r26 무보더+은은한 그림자, 인셋 그래픽 r18, 캡션 15px + 타이틀 24px 2줄 + 회색 링크 라인 */
 .egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.ecard{background:#fff;border-radius:26px;border:0;box-shadow:0 10px 30px rgba(3,7,18,.06),0 2px 8px rgba(3,7,18,.04);padding:16px 16px 30px;display:flex;flex-direction:column;text-align:left}
-.ecard .ph{height:190px;border-radius:18px;background:var(--bg2);display:grid;place-items:center}
-.ecard .cap{margin:22px 12px 0;font-size:15px;font-weight:500;color:var(--g4)}
-.ecard b{margin:6px 12px 26px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}
-.ecard .lnk{margin:0 12px;margin-top:auto;align-self:flex-start;background:rgba(7,25,76,.05);color:var(--g1);font-size:15px;font-weight:600;padding:14px 20px;border-radius:100px;cursor:pointer;transition:background .2s}
+.ecard{background:#fff;border-radius:26px;border:0;box-shadow:0 10px 30px rgba(3,7,18,.06),0 2px 8px rgba(3,7,18,.04);padding:0 0 30px;overflow:hidden;display:flex;flex-direction:column;text-align:left}
+.ecard .photo{border-radius:0}
+.ecard .ph{height:190px;border-radius:0;background:var(--bg2);display:grid;place-items:center}
+.ecard .cap{margin:24px 28px 0;font-size:15px;font-weight:500;color:var(--g4)}
+.ecard b{margin:6px 28px 26px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}
+.ecard .lnk{margin:0 28px;margin-top:auto;align-self:flex-start;background:rgba(7,25,76,.05);color:var(--g1);font-size:15px;font-weight:600;padding:14px 20px;border-radius:100px;cursor:pointer;transition:background .2s}
 .ecard .lnk:hover{background:rgba(7,25,76,.09)}
 
 /* 지그재그 비주얼 — 광고 카드 래핑(흰 카드 + 인셋 그래픽) */
@@ -212,18 +215,21 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 /* 실사 이미지 셀 — zcard/scard 인셋 */
 .photo{position:relative;overflow:hidden;border-radius:18px}
 .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.photo .tint{position:absolute;inset:0;background:linear-gradient(160deg,rgba(52,27,115,.16),rgba(75,50,150,.05))}
+.photo .tint{position:absolute;inset:0;background:linear-gradient(160deg,rgba(3,7,18,.16),rgba(3,7,18,.04))}
 
 /* areas 패널 — 파스텔 로테이션 + 유리 미니 UI 목업 (toss 파스텔 패널 문법) */
 .spanel .pv{background:var(--pvbg,var(--bg2))}
-.mini{width:min(340px,80%);background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-radius:18px;padding:22px 22px 20px;box-shadow:0 24px 60px rgba(30,20,80,.16);text-align:left}
+.mini{width:min(350px,82%);background:rgba(255,255,255,.62);backdrop-filter:blur(22px);border-radius:26px;padding:26px 24px 24px;box-shadow:0 30px 70px rgba(30,40,60,.18);text-align:left}
 .mini .mt{font-size:13px;font-weight:600;color:var(--g4)}
-.mini .mb{margin-top:4px;font-size:19px;font-weight:700;letter-spacing:-.02em}
+.mini .mb{margin-top:4px;font-size:20px;font-weight:700;letter-spacing:-.02em}
 .mini .grow{margin-top:14px;height:10px;border-radius:100px;background:rgba(3,7,18,.07);overflow:hidden}
 .mini .grow i{display:block;height:100%;border-radius:100px;background:var(--brand)}
-.mini .mrow{margin-top:12px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--g2)}
+.mini .mrow{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--g1);background:rgba(255,255,255,.85);border-radius:14px;padding:13px 14px;border:1.5px solid transparent}
+.mini .grow+.mrow,.mini .mb+.mrow{margin-top:16px}
+.mini .mrow.hl{border-color:var(--brand);background:rgba(5,209,110,.07)}
 .mini .mrow .dot{width:22px;height:22px;border-radius:50%;background:rgba(5,209,110,.12);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}
-.mini .mrow .val{margin-left:auto;font-size:13px;color:var(--g4);font-weight:600}
+.mini .mrow .val{margin-left:auto;font-size:12.5px;color:var(--g3);font-weight:700;background:rgba(3,7,18,.05);border-radius:100px;padding:5px 10px;flex:none}
+.mini .mrow.hl .val{background:rgba(5,209,110,.14);color:#067A43}
 .mini .mbar{display:flex;gap:14px;align-items:flex-end;height:96px;margin-top:16px;padding:0 4px}
 .mini .mbar>i{flex:1;border-radius:6px 6px 0 0;background:#E3E6EB}
 .mini .mbar>i.hot{background:var(--brand)}
@@ -284,7 +290,7 @@ p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:
 .faq{max-width:900px;margin:0 auto;display:grid;gap:12px}
 .fitem{background:#fff;border-radius:14px;overflow:hidden}
 .frow{padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;text-align:left;cursor:pointer;transition:background .2s}
-.frow:hover{background:var(--bg1)}
+.frow:hover{background:#ECEEF1}
 .fitem.open .frow,.fitem.open .frow:hover{background:#fff}
 .frow b{font-size:16.5px;font-weight:600}
 .frow b i{font-style:normal;color:var(--brand);font-weight:700}
@@ -402,29 +408,29 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
         </div>
       </div>
       <div class="spanel">
-        <div class="pv on" style="--pvbg:linear-gradient(160deg,#ECE6FB,#DCE7F8)">
+        <div class="pv on" style="--pvbg:radial-gradient(120% 100% at 15% 0%,#C7D8FA 0%,rgba(199,216,250,0) 60%),radial-gradient(110% 90% at 85% 100%,#E8D8F6 0%,rgba(232,216,246,0) 55%),linear-gradient(160deg,#E7EEFA,#F0EDF8)">
           <div class="mini"><div class="mt">분석 완료</div><div class="mb">조직 진단 리포트</div>
             <div class="grow"><i style="width:78%"></i></div>
-            <div class="mrow"><span class="dot">✓</span>몰입도 진단<span class="val">상위 22%</span></div>
+            <div class="mrow hl"><span class="dot">✓</span>몰입도 진단<span class="val">상위 22%</span></div>
             <div class="mrow"><span class="dot">✓</span>성장 방향 정렬<span class="val">78점</span></div>
             <div class="mrow"><span class="dot">…</span>리더십 신뢰<span class="val">분석 중</span></div>
-          </div></div>
-        <div class="pv" style="--pvbg:linear-gradient(160deg,#DFEAFB,#E9F4F2)">
+          </div><span class="goarr">→</span></div>
+        <div class="pv" style="--pvbg:radial-gradient(120% 100% at 20% 0%,#C4E0F8 0%,rgba(196,224,248,0) 60%),radial-gradient(110% 90% at 85% 100%,#CFF0E2 0%,rgba(207,240,226,0) 55%),linear-gradient(160deg,#E4F0FA,#EAF6F0)">
           <div class="mini"><div class="mt">구성원 맞춤</div><div class="mb">AI 롤플레잉 코스</div>
             <div class="grow"><i style="width:62%"></i></div>
             <div class="mrow"><span class="dot">✓</span>피드백 대화 실습<span class="val">완료</span></div>
-            <div class="mrow"><span class="dot">▶</span>저성과자 코칭<span class="val">진행 중</span></div>
-          </div></div>
-        <div class="pv" style="--pvbg:linear-gradient(160deg,#FBE9DF,#EFE4F6)">
+            <div class="mrow hl"><span class="dot">▶</span>저성과자 코칭<span class="val">진행 중</span></div>
+          </div><span class="goarr">→</span></div>
+        <div class="pv" style="--pvbg:radial-gradient(120% 100% at 18% 0%,#FAD9C6 0%,rgba(250,217,198,0) 60%),radial-gradient(110% 90% at 85% 100%,#CBDCF8 0%,rgba(203,220,248,0) 55%),linear-gradient(160deg,#FAEDE4,#EDF1FA)">
           <div class="mini"><div class="mt">분기 성과</div><div class="mb">팀 목표 달성률</div>
             <div class="mbar"><i style="height:38%"></i><i style="height:56%"></i><i style="height:47%"></i><i class="hot" style="height:88%"></i></div>
-          </div></div>
-        <div class="pv" style="--pvbg:linear-gradient(160deg,#E4F0EC,#E3E8FA)">
+          </div><span class="goarr">→</span></div>
+        <div class="pv" style="--pvbg:radial-gradient(120% 100% at 18% 0%,#C8EEDC 0%,rgba(200,238,220,0) 60%),radial-gradient(110% 90% at 85% 100%,#DCD8F8 0%,rgba(220,216,248,0) 55%),linear-gradient(160deg,#E8F6EE,#ECEAF9)">
           <div class="mini"><div class="mt">평가 시즌</div><div class="mb">역량 평가 요약 <span class="chipA">A+</span></div>
-            <div class="mrow"><span class="dot">✓</span>목표 기여도<span class="val">탁월</span></div>
+            <div class="mrow hl"><span class="dot">✓</span>목표 기여도<span class="val">탁월</span></div>
             <div class="mrow"><span class="dot">✓</span>협업·커뮤니케이션<span class="val">우수</span></div>
             <div class="mrow"><span class="dot">✓</span>성장 속도<span class="val">탁월</span></div>
-          </div></div>
+          </div><span class="goarr">→</span></div>
       </div>
     </div>
   </section>
@@ -482,29 +488,34 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
     <div style="margin-top:100px">
       <div class="zig">
         <div class="rv"><div class="cap">Insight</div><h3>AI 시대, HR의 답을 찾다</h3>
-          <p>기준도, 방법도 빠르게 바뀌고 있습니다. 새롭게 마주한 과제를 짚어보고 즉시 활용할 수 있는 전략과 인사이트를 얻어가세요.</p></div>
+          <p>기준도, 방법도 빠르게 바뀌고 있습니다. 새롭게 마주한 과제를 짚어보고<br>즉시 활용할 수 있는 전략과 인사이트를 얻어가세요.</p></div>
         <div class="zcard rv d1" style="height:340px"><div class="photo" style="height:100%"><img src="../../app/bg/mbmtoss-insight.jpg" alt="지난 세미나 청중" onerror="this.parentNode.className='ph'"><div class="tint"></div></div></div>
       </div>
       <div class="zig">
         <div class="zcard rv" style="height:340px"><div class="photo" style="height:100%"><img src="../../app/bg/mbmtoss-experience.jpg" alt="현장 시연" onerror="this.parentNode.className='ph'"><div class="tint"></div></div></div>
         <div class="rv d1"><div class="cap">Experience</div><h3>HR이 바뀌는 순간</h3>
-          <p>AI가 만드는 변화를 우리 조직의 시나리오에 맞춰 현장에서 직접 체험해 보세요.</p></div>
+          <p>AI가 만드는 변화를 우리 조직의 시나리오에 맞춰 직접 체험해 보세요.<br>데모 부스에서 실제 업무 데이터를 얹어 그 자리에서 확인할 수 있습니다.</p></div>
       </div>
       <div class="zig">
         <div class="rv"><div class="cap">Networking</div><h3>함께 즐기는 네트워킹</h3>
-          <p>같은 고민을 가진 HR 동료들을 만나 인사이트를 나누고 노하우를 공유해 보세요.</p></div>
+          <p>같은 고민을 가진 HR 동료들을 만나 인사이트를 나누고 노하우를 공유해 보세요.<br>현장의 시행착오와 해법을 가장 가까이에서 들을 수 있는 시간입니다.</p></div>
         <div class="zcard rv d1" style="height:340px"><div class="photo" style="height:100%"><img src="../../app/bg/mbmtoss-network.jpg" alt="네트워킹" onerror="this.parentNode.className='ph'"><div class="tint"></div></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 타이핑 캐럿 문장 — toss 실측: 연회색 미리보기 위를 앞에서부터 브랜드색으로 치환 + 캐럿 -->
-<section class="slogan">
-  <div class="wrap center">
-    <p class="oneline typeline rv">막막했던 HR의 해답,<br><span class="tw"><span class="ghost">HR Growth 2026</span><span class="fillw"><span class="done">HR Growth 2026</span><i class="caret"></i></span></span></p>
+<!-- 타이핑 슬로건 — toss 실측: 핀 스크럽, 크게 시작해 작아지며 두 줄이 앞에서부터 잉크로 채워짐 + 캐럿 -->
+<div class="track type-track" id="typetrack">
+<section class="slogan stage">
+  <div class="wrap">
+    <p class="oneline typeline">
+      <span class="tw"><span class="ghost">막막했던 HR의 해답,</span><span class="fillw"><span class="done">막막했던 HR의 해답,</span><i class="caret"></i></span></span><br>
+      <span class="tw"><span class="ghost">이것마저도 H.으로</span><span class="fillw"><span class="done">이것마저도 H.으로</span><i class="caret"></i></span></span>
+    </p>
   </div>
 </section>
+</div>
 
 <!-- EVENT -->
 <section class="sec" style="padding-top:0" id="event">
@@ -532,6 +543,7 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
         <b>HR Growth 2026<br>1회차</b>
         <div class="row" style="margin-top:26px"><span class="k">일시</span><span class="v">2026. 09. 10 (목) 13:30 - 16:30</span></div>
         <div class="row"><span class="k">장소</span><span class="v">GS타워 아모리스홀<br><span style="color:var(--g4);font-size:13.5px">역삼역 도보 1분</span></span></div>
+        <div class="row"><span class="k">참가</span><span class="v">무료 (사전 신청 후 확정 안내)</span></div>
       </div>
       <div class="map" style="position:relative;background:#EDF1F6;overflow:hidden">
         <svg class="mapsvg" viewBox="0 0 700 340" preserveAspectRatio="xMidYMid slice">
@@ -707,32 +719,33 @@ footer b{color:rgba(255,255,255,.8);font-weight:700;font-size:15px}
       el.style.filter = t >= 1 ? 'none' : 'blur(' + (7 * (1 - t)).toFixed(2) + 'px)';
     });
   }
-  if (!reduce) {
-    addEventListener('scroll', function(){ heroScrub(); areasScrub(); narScrub(); }, { passive: true });
-    heroScrub(); areasScrub(); narScrub();
+  // 타이핑 슬로건 스크럽 — 크게 시작해 작아지며, 스크롤 진행도만큼 두 줄을 앞에서부터 잉크로 채움 (toss 실측 문법)
+  // 마크업은 완성 상태(done=풀텍스트)로 출고 → reduce/무JS면 그대로 정적 완성 표시
+  var typeTrack = document.getElementById('typetrack');
+  var tline = document.querySelector('.typeline');
+  var tws = tline ? tline.querySelectorAll('.tw') : [];
+  var tFulls = [], tDones = [], tCarets = [];
+  tws.forEach(function(w){
+    tDones.push(w.querySelector('.done'));
+    tCarets.push(w.querySelector('.caret'));
+    tFulls.push(w.querySelector('.done').textContent);
+  });
+  function typeScrub(){
+    var vh = innerHeight;
+    var p = clamp01((scrollY - typeTrack.offsetTop) / (typeTrack.offsetHeight - vh));
+    tline.style.transform = 'scale(' + (1.5 - 0.5 * clamp01(p / 0.75)) + ')';
+    var total = tFulls[0].length + tFulls[1].length;
+    var idx = Math.round(total * clamp01((p - 0.12) / 0.72));
+    var i1 = Math.min(idx, tFulls[0].length), i2 = Math.max(0, idx - tFulls[0].length);
+    tDones[0].textContent = tFulls[0].slice(0, i1);
+    tDones[1].textContent = tFulls[1].slice(0, i2);
+    tCarets[0].style.display = (idx <= tFulls[0].length && idx > 0) ? '' : 'none';
+    tCarets[1].style.display = (idx > tFulls[0].length && idx < total) ? '' : 'none';
   }
 
-  // 타이핑 캐럿 — 연회색 미리보기(ghost) 위를 앞에서부터 브랜드색으로 치환 (toss 실측 문법)
-  // 마크업은 완성 상태(done=풀텍스트)로 출고 → reduce/무JS면 그대로 정적 완성 표시
-  var tline = document.querySelector('.typeline');
-  if (tline && !reduce && 'IntersectionObserver' in window) {
-    var tDone = tline.querySelector('.done');
-    var tFull = tDone.textContent;
-    tDone.textContent = '';
-    var io3 = new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if (!e.isIntersecting) return; io3.unobserve(e.target);
-        var i = 0;
-        setTimeout(function(){
-          var timer = setInterval(function(){
-            i++;
-            tDone.textContent = tFull.slice(0, i);
-            if (i >= tFull.length) clearInterval(timer);
-          }, 105);
-        }, 350);
-      });
-    }, { threshold: 0.6 });
-    io3.observe(tline);
+  if (!reduce) {
+    addEventListener('scroll', function(){ heroScrub(); areasScrub(); narScrub(); typeScrub(); }, { passive: true });
+    heroScrub(); areasScrub(); narScrub(); typeScrub();
   }
 
   // 배경 존 전환 — 스크롤 위치에 따라 body 배경이 흰↔다크로 크로스페이드 (h.place 실측 문법)
