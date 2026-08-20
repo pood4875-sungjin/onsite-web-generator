@@ -21,9 +21,9 @@
   }
   :root[data-theme="dark"]{
     --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
-    --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+    --line:#2A342D; --brand:#05D16E; --brand-soft:#142A1E; --brand-deep:#96F2C4;
     --code-bg:#221e33; --code-tx:#cfc4f5;
-    --wf-bg:#191625; --wf-ink:#4a4563; --wf-ink2:#332e49; --wf-acc:#9d6bff;
+    --wf-bg:#16211B; --wf-ink:#47564C; --wf-ink2:#2C3A31; --wf-acc:#05D16E;
   }
   :root[data-theme="light"]{
     --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
@@ -111,7 +111,7 @@
   <span>① 페이지 유형</span><i>→</i>
   <span>② 섹션 유형</span><i>→</i>
   <span>③ 섹션 × 표현 변형</span><i>→</i>
-  <span>④ 행사 랜딩 12블록 → 디자인 씨드</span>
+  <span>④ 행사 랜딩 12섹션 → 디자인 씨드</span>
 </div>
 
 <!-- ═══════════ 1. 페이지 유형 ═══════════ -->
@@ -170,12 +170,12 @@
 
 <div id="cat"></div>
 
-<!-- ═══════════ 4. 행사 랜딩 12블록 ═══════════ -->
-<h2><span class="n">04</span>행사 랜딩페이지 정의 — 12블록</h2>
-<p class="sub">위 23종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 블록마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
-기준 폭 1920, 높이는 유동. 마지막 열은 디자인 씨드(SK MBM 랜딩페이지)가 각 블록을 실제로 어떤 섹션으로 구현했는지의 기록.</p>
+<!-- ═══════════ 4. 행사 랜딩 12섹션 ═══════════ -->
+<h2><span class="n">04</span>행사 랜딩페이지 정의 — 12섹션</h2>
+<p class="sub">위 23종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 섹션마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
+기준 폭 1920, 높이는 유동. 마지막 열은 디자인 씨드(SK MBM 랜딩페이지)가 각 항목을 실제로 어떤 섹션으로 구현했는지의 기록.</p>
 <div class="tblwrap"><table>
-  <tr><th>#</th><th>블록</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th><th>씨드 구현 — 사용 섹션</th></tr>
+  <tr><th>#</th><th>섹션</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th><th>씨드 구현 — 사용 섹션</th></tr>
   <tr><td>1</td><td><b>Hero 배너</b></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td><td><code>hero</code> 풀스크린 영상 + 스크롤 핀(카드 축소·블러)</td></tr>
   <tr><td>2</td><td><b>슬로건 훅 Slogan</b></td><td>가치 제안을 한 줄로 박는 마케팅 훅 — 큰 섹션 사이 호흡을 만든다</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">slogan_text · highlight · motion</td><td><code>slogan</code> ×3 — 칩 강조 · 내러티브 카운트업 · 타이핑 모션</td></tr>
   <tr><td>3</td><td><b>소개영역 Intro</b></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td><td><code>about</code> 도입 질문 + 수치 카운트업</td></tr>
