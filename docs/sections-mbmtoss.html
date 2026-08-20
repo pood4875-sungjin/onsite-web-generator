@@ -58,7 +58,7 @@ a{text-decoration:none;color:inherit}
   각 블록은 <b>살아있는 프레임</b> — 프레임 안에서 스크롤하면 핀 스크럽·리빌·배경 전환이 실제로 동작합니다. <b style="color:#049252">⤢ 전체 페이지</b>는 전체 맥락 모달(자동 재생).</p>
   <div class="toc">
     <a href="#g0">00 프레임</a><a href="#g1">01 도입부</a><a href="#g2">02 슬로건·내러티브</a>
-    <a href="#g3">03 콘텐츠</a><a href="#g4">04 신뢰·수치</a><a href="#g5">05 전환</a><a href="#g6">06 안내</a>
+    <a href="#g3">03 콘텐츠</a><a href="#g4">04 신뢰·수치</a><a href="#g5">05 전환</a><a href="#g6">06 안내</a><a href="#g7">07 상태</a>
   </div>
   <div class="themes" id="themes"><span class="tl">THEME</span></div>
 </div></div>
@@ -80,7 +80,43 @@ a{text-decoration:none;color:inherit}
 (function () {
   var HERO_JPG = new URL('../app/bg/mbmtoss-hero3.jpg', location.href).href;
   var THEME_SW = { green: '#05D16E', blue: '#3182F6', purple: '#6735E6', orange: '#FF5500', red: '#F04452' };
+  /* 정적 블록용 풀 토큰 세트 — 팩 CSS(:root)를 뒤에서 오버라이드해 테마 추종 */
+  var THEME_FULL = {
+    green: { brand: '#05D16E', deep: '#04B863', mint: '#96F2C4', bink: '#067A43' },
+    blue: { brand: '#3182F6', deep: '#1B64DA', mint: '#A9CCFB', bink: '#1957C2' },
+    purple: { brand: '#6735E6', deep: '#5B28CE', mint: '#C6B2F5', bink: '#4B2AAF' },
+    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00' },
+    red: { brand: '#F04452', deep: '#D63340', mint: '#FBB6BC', bink: '#B22833' } };
   var theme = 'green';
+
+  /* ── 확장 CSS — 케이스팩(axday) 어휘를 토스 그린 톤으로 번안한 정적 블록 전용 (tg-*) ── */
+  var EXT_CSS =
+    '.tg-sec{padding:110px 0}.tg-sec.alt{background:var(--bg1)}' +
+    '.tg-eb{font-size:19px;font-weight:700;letter-spacing:-.01em;color:var(--brand-ink)}' +
+    '.tg-ht{margin-top:16px;font-size:64px;font-weight:300;letter-spacing:-.02em;line-height:1.14;word-break:keep-all;text-wrap:balance}.tg-ht b{font-weight:700}' +
+    '.tg-hsub{margin:24px auto 0;font-size:19px;line-height:1.6;color:var(--g3);max-width:600px;word-break:keep-all}' +
+    '.tg-tt{text-align:center;font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}' +
+    '.tg-sub{text-align:center;margin:14px auto 0;color:var(--g3);font-size:16.5px;line-height:1.6;max-width:640px;word-break:keep-all}' +
+    '.tg-body{margin-top:54px}' +
+    '.tg-c3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.tg-c2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}' +
+    '.tg-card{background:#fff;border:1px solid rgba(2,32,71,.05);border-radius:22px;overflow:hidden;box-shadow:0 2px 10px rgba(2,32,71,.04)}.tg-card .ph{border-radius:0}' +
+    '.tg-bd{padding:24px}' +
+    '.tg-cap{font-size:13.5px;color:var(--g4);font-weight:600}.tg-ct{margin-top:8px;font-size:22px;font-weight:700;letter-spacing:-.02em}.tg-ds{margin-top:10px;font-size:15px;line-height:1.6;color:var(--g3)}' +
+    '.tg-chips{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}.tg-chips span{font-size:12.5px;font-weight:600;color:var(--g2);background:var(--bg2);border-radius:100px;padding:7px 13px}' +
+    '.tg-pill{display:inline-block;background:var(--brand);color:#fff;font-size:16px;font-weight:600;padding:14px 30px;border-radius:100px;border:0}' +
+    '.tg-pill.w{background:#fff;color:var(--ink)}.tg-pill.soft{background:rgba(7,25,76,.05);color:var(--ink)}' +
+    '.tg-field{display:block;width:100%;border:0;border-radius:14px;padding:16px 18px;font-size:15px;color:var(--g4);background:var(--bg2)}' +
+    '.tg-num{font-size:44px;font-weight:700;color:var(--brand);letter-spacing:-.02em;line-height:1}' +
+    '.tg-inum{font-size:52px;font-weight:700;letter-spacing:-.03em;line-height:1}' +
+    '.tg-okdot{width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}' +
+    '.tg-stepdot{width:52px;height:52px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:19px;margin:0 auto}' +
+    '.tg-ic{width:56px;height:56px;border-radius:18px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-weight:800;font-size:20px}' +
+    '.tg-dk{position:relative;border-radius:22px;overflow:hidden;min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;color:#fff}' +
+    '.tg-dk .ph{position:absolute;inset:0;border-radius:0;background:linear-gradient(160deg,#2C3A4B,var(--dark))}.tg-dk .ph:after{color:rgba(255,255,255,.2)}' +
+    '.tg-dk:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,25,0) 30%,rgba(18,20,25,.82) 88%)}.tg-dk>*{position:relative;z-index:2}' +
+    '.tg-mq{display:flex;width:max-content;animation:tgmq 28s linear infinite}.tg-mq .ph{width:380px;height:250px;border-radius:20px;margin-right:20px;flex:none}' +
+    '@keyframes tgmq{to{transform:translateX(-50%)}}' +
+    '@media (prefers-reduced-motion:reduce){.tg-mq{animation:none}}';
 
   /* 렌더 소스 — shared 사전 (정적 카탈로그와 라이브 모달이 공유) */
   var SRC = {
@@ -149,12 +185,83 @@ a{text-decoration:none;color:inherit}
       { code: 'hero:video', desc: '영상 풀블리드 KV — tagline·eventDate/Place + 슬로건(subcopy)', mo: '핀 280vh · 카드 축소+블러 → 슬로건', src: 'base', sel: '#kvtrack', live: '#kvtrack' },
       { code: 'hero:photo', desc: '실사 이미지 KV — images.hero에 jpg/png가 오면 자동 전환', mo: '핀 280vh · 동일 스크럽', src: 'photo', sel: '#kvtrack', live: '#kvtrack' },
       { code: 'hero:light', desc: '라이트 타이포 히어로 — 흰 배경 · 포인트 eyebrow · 핀 없음 (variants.hero=light)', src: 'varA', sel: ['.gnb', '.hero-light'], live: '.hero-light' },
+      { code: 'hero:split', desc: '텍스트 좌 / 이미지 우 분할 KV (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap" style="display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center">' +
+        '<div><div class="tg-eb">HR의 성장, 에이전트로 완성하다</div>' +
+        '<h1 class="tg-ht" style="font-size:54px">달라진 HR,<br><b>직접 확인하세요</b></h1>' +
+        '<p class="tg-hsub" style="margin-left:0;font-size:17px">기업 맞춤 시나리오로 HR 업무가 어떻게 바뀌는지, 실시간 시연으로 보여드립니다.</p>' +
+        '<div style="margin-top:30px;display:flex;gap:12px"><span class="tg-pill">참가 신청</span><span class="tg-pill soft">세션 보기</span></div></div>' +
+        '<div class="ph" style="height:400px"></div></div></section>' },
+      { code: 'hero:screenshot', desc: '타이포 절제 + 하단 대형 제품 화면 강조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="text-align:center"><div class="wrap">' +
+        '<h1 class="tg-ht" style="font-size:52px">에이전트가 일하는 화면,<br><b>그대로 보여드립니다</b></h1>' +
+        '<p class="tg-hsub">업무 설계부터 결과 안내까지, 실제 화면으로 확인하세요.</p>' +
+        '<div style="margin-top:30px"><span class="tg-pill">데모 신청</span></div>' +
+        '<div class="ph" style="height:430px;margin-top:52px;border-radius:24px 24px 0 0"></div></div></section>' },
+      { code: 'pagehero:banner', desc: '하위 페이지 표제 — 다크 밴드 배너 (카탈로그 전용 — 팩 렌더러 미편입)', bg: '#121419', stat:
+        '<section style="background:var(--dark);color:#fff;padding:76px 0"><div class="wrap">' +
+        '<div style="font-size:14px;font-weight:700;letter-spacing:.06em;color:var(--mint)">SESSIONS</div>' +
+        '<h1 style="margin-top:10px;font-size:44px;font-weight:700;letter-spacing:-.02em">세션 안내</h1>' +
+        '<p style="margin-top:12px;color:rgba(255,255,255,.6);font-size:16.5px">키노트부터 핸즈온까지, 하루에 담은 전체 프로그램.</p></div></section>' },
+      { code: 'pagehero:breadcrumb', desc: '제목 + 경로(Breadcrumb) (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="padding:64px 0"><div class="wrap">' +
+        '<div style="font-size:13.5px;color:var(--g4);font-weight:600">홈 · 프로그램 · <span style="color:var(--brand-ink)">세션</span></div>' +
+        '<h1 style="margin-top:14px;font-size:44px;font-weight:700;letter-spacing:-.02em">세션 안내</h1>' +
+        '<p style="margin-top:12px;color:var(--g3);font-size:16.5px">하루 일정의 전체 프로그램을 확인하세요.</p></div></section>' },
     ]},
     { id: 'g2', name: '02 · 슬로건 · 내러티브', blocks: [
       { code: 'chips:pop', desc: '인라인 칩 슬로건 — features 타이틀이 칩으로', mo: '칩 팝 스케일 .6→1 스태거', src: 'base', sel: '[data-section=chips]', live: '[data-section=chips]' },
       { code: 'typeline:scrub', desc: '타이핑 슬로건 2줄 — 슬로건 프레임 + productName', mo: '핀 220vh · 1.5배→축소 + 잉크 채움 + 캐럿', src: 'base', sel: '[data-section=typeline]', live: '#typetrack' },
       { code: 'narrative:blur', desc: '다크 내러티브 — bannerText 줄 단위 · 숫자 자동 카운트업+민트', mo: '핀 250vh · 줄 블러 리빌 + 배경 존 전환', bg: '#121419', src: 'base', sel: '[data-section=narrative]', live: '#nar' },
       { code: 'narrative:statement', desc: '정적 선언 변형 (variants.narrative=statement)', mo: '카운트업 + 배경 존 전환', bg: '#121419', src: 'varA', sel: '[data-section=narrative]', live: '#nar' },
+      { code: 'intro:center', desc: '목적·대상 소개 — 센터 문단 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="text-align:center"><div class="wrap">' +
+        '<h2 class="tg-tt">이런 분들을 위해 준비했어요</h2>' +
+        '<p class="tg-sub">HR 자동화를 검토 중인 리더, 에이전트 도입을 앞둔 실무 담당자, AI 시대의 HR 전략이 궁금한 모든 분.</p></div></section>' },
+      { code: 'intro:quote', desc: '인용문형 소개 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt" style="text-align:center"><div class="wrap">' +
+        '<div style="font-size:64px;font-weight:800;color:var(--brand);line-height:.6">“</div>' +
+        '<p style="margin-top:18px;font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.45;word-break:keep-all">작년 세미나에서 본 시연이 계기가 되어,<br>올해 채용 리드타임을 절반으로 줄였습니다.</p>' +
+        '<div style="margin-top:20px;font-size:14.5px;color:var(--g4);font-weight:600">2025 참가 기업 HR 팀장</div></div></section>' },
+      { code: 'intro:story', desc: '문제 제기 → 서사 → 결론 밴드 — 스토리텔링 흐름 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap">' +
+        '<h2 class="tg-tt">AI를 쓰는데, 왜 성과는 그대로일까</h2>' +
+        '<p class="tg-sub">도입만으로는 아무것도 달라지지 않는 이유.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">' +
+        '<div class="tg-card"><div style="display:flex;gap:14px;align-items:center;padding:18px 22px"><span style="flex:none;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:13px;font-weight:800">01</span><b style="font-size:15.5px">도입에만 치중된 활용</b></div></div>' +
+        '<div class="tg-card"><div style="display:flex;gap:14px;align-items:center;padding:18px 22px"><span style="flex:none;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:13px;font-weight:800">02</span><b style="font-size:15.5px">담당자별 역량 양극화</b></div></div>' +
+        '<div class="tg-card"><div style="display:flex;gap:14px;align-items:center;padding:18px 22px"><span style="flex:none;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:13px;font-weight:800">03</span><b style="font-size:15.5px">실무 프로세스와 단절</b></div></div></div>' +
+        '<div style="text-align:center;margin-top:34px;color:var(--brand);font-size:26px;font-weight:800">↓</div>' +
+        '<p style="margin:30px auto 0;max-width:620px;text-align:center;font-size:17px;line-height:1.75;color:var(--g3)">너도나도 AI를 말하지만, 조직의 진짜 차이를 만드는 건 <b style="color:var(--ink)">현장에서 어떻게 쓰느냐</b>입니다.<br>이번 세미나에서 진단·교육·성과·평가 네 영역의 실전 활용법을 공개합니다.</p>' +
+        '<div style="margin-top:44px;background:var(--dark);color:#fff;border-radius:20px;padding:28px;text-align:center;font-size:19px;font-weight:700">막막했던 <b style="color:var(--mint)">실용적 해답</b>을 이번 세미나에서 확인하세요</div></div></section>' },
+      { code: 'overview:split', desc: '좌 제목 / 우 설명+번호 포인트 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap">' +
+        '<h2 class="tg-tt">왜 지금 HR Growth 2026인가</h2>' +
+        '<p class="tg-sub">AI 에이전트 시대, HR의 업무 방식도 이제 달라져야 합니다.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1fr 1.3fr;gap:64px">' +
+        '<h3 style="font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.3">하루에 확인하는<br>도입의 근거</h3>' +
+        '<div><p style="font-size:17px;line-height:1.7;color:var(--g3)">도입을 고민하는 담당자를 위해 검증된 사례와 실행 전략을 준비했습니다. 시연·전략·네트워킹을 한 자리에서.</p>' +
+        '<div style="margin-top:28px;display:grid;gap:14px">' +
+        '<div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--brand-ink);font-size:15px">01</b><span style="font-weight:600">실시간 에이전트 시연</span></div>' +
+        '<div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--brand-ink);font-size:15px">02</b><span style="font-weight:600">현장 적용 전략과 사례</span></div>' +
+        '<div style="display:flex;gap:14px;align-items:baseline"><b style="color:var(--brand-ink);font-size:15px">03</b><span style="font-weight:600">HR 네트워킹과 액티비티</span></div>' +
+        '</div></div></div></div></section>' },
+      { code: 'overview:center', desc: '중앙 대형 문장 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt" style="text-align:center"><div class="wrap">' +
+        '<p style="font-size:34px;font-weight:300;letter-spacing:-.02em;line-height:1.4;word-break:keep-all">반복되는 HR 업무는 에이전트에게,<br>사람은 <b style="color:var(--brand-ink)">사람에게 집중</b>하는 조직으로.</p></div></section>' },
+      { code: 'overview:problem', desc: 'Problem / Solution 대비 카드 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap">' +
+        '<h2 class="tg-tt">무엇이 문제이고, 어떻게 푸나</h2>' +
+        '<p class="tg-sub">지금의 HR 업무와 에이전트 도입 후를 나란히 놓고 봅니다.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div style="border:1px solid rgba(2,32,71,.08);border-radius:22px;padding:36px;background:#fff">' +
+        '<div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--g4)">PROBLEM</div>' +
+        '<h3 style="margin-top:12px;font-size:24px;font-weight:700;letter-spacing:-.02em">서류 검토에 하루가 다 간다</h3>' +
+        '<p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--g3)">지원자는 늘고, 검토·일정 조율·안내 메일은 전부 수작업. 정작 구성원과의 대화 시간은 부족합니다.</p></div>' +
+        '<div style="border:1.5px solid var(--brand);border-radius:22px;padding:36px;background:color-mix(in srgb,var(--brand) 4%,transparent)">' +
+        '<div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--brand-ink)">SOLUTION</div>' +
+        '<h3 style="margin-top:12px;font-size:24px;font-weight:700;letter-spacing:-.02em">에이전트가 과정 전체를 실행</h3>' +
+        '<p style="margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--g3)">스크리닝부터 일정·안내까지 에이전트가 알아서. 담당자는 판단과 대화에만 집중하면 됩니다.</p></div></div></div></section>' },
     ]},
     { id: 'g3', name: '03 · 콘텐츠', blocks: [
       { code: 'areas:step4', desc: '핵심 분야 스텝 — features 4 · 좌 아코디언 + 우 파스텔 글래스 패널', mo: '핀 340vh · 스텝·패널 전환', src: 'base', sel: '[data-section=areas]', live: '#areas' },
@@ -165,17 +272,349 @@ a{text-decoration:none;color:inherit}
       { code: 'zig:alt3', desc: '지그재그 3 — zigs(팩 전용·편집 수정) + 이미지 슬롯 zig.N', src: 'base', sel: '[data-section=zig]', live: '[data-section=zig]' },
       { code: 'event:benefit3', desc: '혜택 카드 3 — benefits(팩 전용) · 이미지 풀블리드 + 소프트 필 버튼', src: 'base', sel: '[data-section=event]', live: '#event' },
       { code: 'event:list', desc: '아이콘 리스트 2열 변형 (variants.event=list)', src: 'varA', sel: '[data-section=event]', live: '#event' },
+      { code: 'feature:icons', desc: '아이콘 그리드 3열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap">' +
+        '<h2 class="tg-tt">참여해야 하는 이유</h2>' +
+        '<p class="tg-sub">시연·인사이트·네트워킹, 세 가지를 하루에 담았습니다.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div><div class="tg-ic">◆</div><h3 style="margin-top:18px;font-size:21px;font-weight:700;letter-spacing:-.02em">실시간 시연</h3><p style="margin-top:10px;font-size:15px;line-height:1.6;color:var(--g3)">우리 기업 시나리오에 맞춘 에이전트 시연을 현장에서 바로.</p></div>' +
+        '<div><div class="tg-ic">◈</div><h3 style="margin-top:18px;font-size:21px;font-weight:700;letter-spacing:-.02em">인사이트</h3><p style="margin-top:10px;font-size:15px;line-height:1.6;color:var(--g3)">AI 시대 HR의 역할 변화, 즉시 쓰는 전략으로 정리해 드립니다.</p></div>' +
+        '<div><div class="tg-ic">◇</div><h3 style="margin-top:18px;font-size:21px;font-weight:700;letter-spacing:-.02em">네트워킹</h3><p style="margin-top:10px;font-size:15px;line-height:1.6;color:var(--g3)">HR 동료들과의 교류, 담당자만을 위한 특별 액티비티.</p></div>' +
+        '</div></div></section>' },
+      { code: 'feature:cards', desc: '포토 카드 + 캡션 + 태그 칩 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap">' +
+        '<h2 class="tg-tt">HR Growth 2026에서 만나는 것</h2>' +
+        '<p class="tg-sub">경험·인사이트·액티비티, 세 갈래 프로그램.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="ph" style="height:190px"></div><div class="tg-bd"><div class="tg-cap">Experience</div><div class="tg-ct">HR이 바뀌는 순간</div><div class="tg-ds">에이전트가 공개하는 최신 기능. 우리 기업 시나리오로 업무가 어떻게 바뀌는지 확인하세요.</div><div class="tg-chips"><span>실시간 시연</span><span>에이전트 활용법</span><span>1:1 컨설팅</span></div></div></div>' +
+        '<div class="tg-card"><div class="ph" style="height:190px"></div><div class="tg-bd"><div class="tg-cap">Insight</div><div class="tg-ct">AI가 바꾸는 2026</div><div class="tg-ds">AI 시대, HR 담당자의 역할과 업무 방식은 어떻게 달라질까요? 현장에서 즉시 활용할 전략.</div><div class="tg-chips"><span>키노트</span><span>인사이트</span><span>활용사례</span></div></div></div>' +
+        '<div class="tg-card"><div class="ph" style="height:190px"></div><div class="tg-bd"><div class="tg-cap">Activity</div><div class="tg-ct">함께 즐기는 액티비티</div><div class="tg-ds">HR 동료들을 만나 인사이트를 나누고, 특별한 이벤트와 풍성한 선물까지.</div><div class="tg-chips"><span>이벤트</span><span>네트워킹</span><span>플레이그라운드</span></div></div></div>' +
+        '</div></div></section>' },
+      { code: 'feature:bento', desc: '벤토 — 대표 1(2칸) + 보조 스택 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap">' +
+        '<h2 class="tg-tt">핵심 프로그램</h2><p class="tg-sub">대표 세션 하나를 크게, 나머지를 곁들여.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">' +
+        '<div class="tg-card" style="display:flex;flex-direction:column"><div class="ph" style="height:250px;flex:none"></div><div class="tg-bd"><div class="tg-cap">Main</div><div class="tg-ct" style="font-size:26px">에이전트 라이브 시연</div><div class="tg-ds">업무 설계부터 결과 안내까지 — 실제 HR 업무 한 사이클을 무대에서 끝까지 돌립니다.</div></div></div>' +
+        '<div style="display:grid;gap:22px">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">Sub</div><div class="tg-ct" style="font-size:19px">도입 로드맵 세션</div><div class="tg-ds" style="font-size:14px">우리 회사 규모에 맞는 단계별 도입 전략.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">Sub</div><div class="tg-ct" style="font-size:19px">1:1 컨설팅 부스</div><div class="tg-ds" style="font-size:14px">현장에서 바로 받는 맞춤 상담.</div></div></div>' +
+        '</div></div></div></section>' },
+      { code: 'feature:list', desc: '아이콘 리스트(밀도형) — 2열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap">' +
+        '<h2 class="tg-tt">하루에 다 담았습니다</h2><p class="tg-sub">프로그램 전체를 한눈에.</p>' +
+        '<div class="tg-body tg-c2" style="gap:14px 48px">' +
+        '<div style="display:flex;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(2,32,71,.07)"><span style="flex:none;width:40px;height:40px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:16px;font-weight:800">◆</span><div><b>키노트</b> <span style="color:var(--g3);font-size:14.5px">— AI가 바꾸는 HR의 10년</span></div></div>' +
+        '<div style="display:flex;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(2,32,71,.07)"><span style="flex:none;width:40px;height:40px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:16px;font-weight:800">▶</span><div><b>라이브 데모</b> <span style="color:var(--g3);font-size:14.5px">— HR 업무 전 과정 시연</span></div></div>' +
+        '<div style="display:flex;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(2,32,71,.07)"><span style="flex:none;width:40px;height:40px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:16px;font-weight:800">▤</span><div><b>사례 발표</b> <span style="color:var(--g3);font-size:14.5px">— 도입 기업의 실제 수치</span></div></div>' +
+        '<div style="display:flex;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(2,32,71,.07)"><span style="flex:none;width:40px;height:40px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);display:grid;place-items:center;color:var(--brand-ink);font-size:16px;font-weight:800">◈</span><div><b>네트워킹</b> <span style="color:var(--g3);font-size:14.5px">— HR 담당자 교류의 장</span></div></div>' +
+        '</div></div></section>' },
+      { code: 'featurerows:numbered', desc: '번호 + 제목 교차 리스트 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap">' +
+        '<h2 class="tg-tt">HR 업무 한 사이클, 세 단계</h2><p class="tg-sub">에이전트가 실행하는 순서 그대로.</p>' +
+        '<div class="tg-body">' +
+        '<div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid rgba(2,32,71,.07)"><div class="tg-num">01</div><div><h3 style="font-size:24px;font-weight:700;letter-spacing:-.02em">공고 작성</h3><p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--g3)">직무 정보만 넣으면 에이전트가 공고 초안과 평가 기준을 함께 만듭니다.</p></div></div>' +
+        '<div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0;border-bottom:1px solid rgba(2,32,71,.07)"><div class="tg-num">02</div><div><h3 style="font-size:24px;font-weight:700;letter-spacing:-.02em">스크리닝</h3><p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--g3)">기준에 따라 전 지원서를 분석하고 추천 리스트를 제안합니다.</p></div></div>' +
+        '<div style="display:grid;grid-template-columns:120px 1fr;gap:32px;padding:34px 0"><div class="tg-num">03</div><div><h3 style="font-size:24px;font-weight:700;letter-spacing:-.02em">면접·안내</h3><p style="margin-top:10px;font-size:15.5px;line-height:1.65;color:var(--g3)">일정 조율부터 결과 안내까지, 커뮤니케이션 전체를 실행합니다.</p></div></div>' +
+        '</div></div></section>' },
+      { code: 'featurerows:checks', desc: '체크리스트 + 이미지 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap">' +
+        '<h2 class="tg-tt">도입 전 이것부터 확인</h2><p class="tg-sub">체크리스트 세 줄이면 준비 끝.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center">' +
+        '<div style="display:grid;gap:14px">' +
+        '<div style="display:flex;gap:14px;align-items:center"><span class="tg-okdot">✓</span><span style="font-size:19px;font-weight:700;letter-spacing:-.02em">현재 HR 프로세스 진단</span></div>' +
+        '<div style="display:flex;gap:14px;align-items:center"><span class="tg-okdot">✓</span><span style="font-size:19px;font-weight:700;letter-spacing:-.02em">자동화 우선 구간 선정</span></div>' +
+        '<div style="display:flex;gap:14px;align-items:center"><span class="tg-okdot">✓</span><span style="font-size:19px;font-weight:700;letter-spacing:-.02em">보안·개인정보 정책 점검</span></div>' +
+        '</div><div class="ph" style="height:300px"></div></div></div></section>' },
+      { code: 'gallery:grid', desc: '균등 그리드 갤러리 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">지난 행사 현장</h2><p class="tg-sub">2025 HR Growth 스케치.</p>' +
+        '<div class="tg-body tg-c3" style="gap:14px">' +
+        '<div class="ph" style="height:200px;border-radius:16px"></div><div class="ph" style="height:200px;border-radius:16px"></div><div class="ph" style="height:200px;border-radius:16px"></div>' +
+        '<div class="ph" style="height:200px;border-radius:16px"></div><div class="ph" style="height:200px;border-radius:16px"></div><div class="ph" style="height:200px;border-radius:16px"></div>' +
+        '</div></div></section>' },
+      { code: 'gallery:mosaic', desc: '대표 1장 크게 + 보조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">현장 하이라이트</h2><p class="tg-sub">대표 컷 하나, 곁들이는 순간들.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">' +
+        '<div class="ph" style="height:414px"></div>' +
+        '<div style="display:grid;gap:14px"><div class="ph" style="height:200px"></div><div class="ph" style="height:200px"></div></div>' +
+        '</div></div></section>' },
+      { code: 'gallery:marquee', desc: '풀블리드 마키 — 이미지가 계속 흘러가는 모션 (카탈로그 전용 — 팩 렌더러 미편입)', mo: 'CSS 마키 28s 무한 · reduced-motion 정지', stat:
+        '<section class="tg-sec" style="overflow:hidden"><div class="wrap"><h2 class="tg-tt">현장 스케치</h2><p class="tg-sub">작년 행사의 기록이 화면 가득 흘러갑니다.</p></div>' +
+        '<div style="margin-top:54px"><div class="tg-mq"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div></div></section>' },
+      { code: 'compare:table', desc: '비교표 — 포인트 열 강조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">도입 전후, 무엇이 달라지나</h2><p class="tg-sub">같은 일, 다른 속도.</p>' +
+        '<div class="tg-body" style="background:#fff;border:1px solid rgba(2,32,71,.07);border-radius:20px;overflow:hidden">' +
+        '<table style="width:100%;border-collapse:collapse;font-size:15px">' +
+        '<tr><th style="text-align:left;padding:22px 26px;font-size:13px;color:var(--g4);font-weight:600;width:26%">구분</th>' +
+        '<th style="text-align:left;padding:22px 22px;font-size:15px;font-weight:800;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 5%,transparent);width:40%">에이전트 도입</th>' +
+        '<th style="text-align:left;padding:22px 22px;font-size:15px;font-weight:800;color:var(--g4)">기존 방식</th></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">서류 검토</td><td style="padding:17px 22px;font-weight:700;background:color-mix(in srgb,var(--brand) 5%,transparent)">수 분 내 전건 분석</td><td style="padding:17px 22px;color:var(--g3)">건당 수작업</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">일정 조율</td><td style="padding:17px 22px;font-weight:700;background:color-mix(in srgb,var(--brand) 5%,transparent)">자동 매칭·발송</td><td style="padding:17px 22px;color:var(--g3)">왕복 메일</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">문의 응대</td><td style="padding:17px 22px;font-weight:700;background:color-mix(in srgb,var(--brand) 5%,transparent)">24시간 응대</td><td style="padding:17px 22px;color:var(--g3)">업무시간 한정</td></tr>' +
+        '</table></div></div></section>' },
+      { code: 'compare:beforeafter', desc: '좌우 Before / After 패널 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">Before / After</h2><p class="tg-sub">도입 3개월, 팀의 하루가 이렇게 바뀝니다.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div style="border-radius:22px;padding:36px;background:var(--bg2)"><div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--g4)">BEFORE</div>' +
+        '<div style="margin-top:18px;display:grid;gap:12px;font-size:15.5px;color:var(--g3)">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--g4);font-weight:800">✕</span>서류 검토에 주당 12시간</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--g4);font-weight:800">✕</span>면접 조율 왕복 메일 평균 6통</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--g4);font-weight:800">✕</span>불합격 안내 지연·누락</div></div></div>' +
+        '<div style="border-radius:22px;padding:36px;background:var(--dark);color:#fff"><div style="font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--mint)">AFTER</div>' +
+        '<div style="margin-top:18px;display:grid;gap:12px;font-size:15.5px">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>전건 자동 분석 + 추천 순위</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>일정 자동 매칭·안내</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>전 단계 응대 자동화</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'compare:cards', desc: '카드 비교 — 추천안 강조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">두 가지 방식</h2><p class="tg-sub">사람이 전부 하던 일과, 판단만 하는 일.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">기존 방식</div><div class="tg-ct">사람이 전 과정</div><div class="tg-ds">검토·조율·안내 전부 수작업. 업무가 커질수록 사람이 갈립니다.</div></div></div>' +
+        '<div class="tg-card" style="border:2px solid var(--brand);box-shadow:0 18px 44px color-mix(in srgb,var(--brand) 14%,transparent)"><div class="tg-bd" style="background:color-mix(in srgb,var(--brand) 3%,transparent)"><div class="tg-cap" style="color:var(--brand-ink)">에이전트</div><div class="tg-ct">사람은 판단만</div><div class="tg-ds">실행은 에이전트, 판단은 사람. 업무 규모와 무관하게 일정한 속도.</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'steps:horizontal', desc: '가로 번호 스텝 3 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt" style="text-align:center"><div class="wrap"><h2 class="tg-tt">참가까지 3단계</h2><p class="tg-sub">신청부터 입장까지 5분이면 충분해요.</p>' +
+        '<div class="tg-body" style="position:relative">' +
+        '<div style="position:absolute;top:26px;left:16.66%;right:16.66%;height:2px;background:rgba(2,32,71,.08)"></div>' +
+        '<div class="tg-c3" style="position:relative">' +
+        '<div><div class="tg-stepdot" style="position:relative;z-index:1;box-shadow:0 0 0 8px var(--bg1)">1</div><h4 style="margin-top:16px;font-size:18px;font-weight:700">신청서 제출</h4><p style="margin-top:8px;font-size:14.5px;color:var(--g3)">1분이면 끝나요</p></div>' +
+        '<div><div class="tg-stepdot" style="position:relative;z-index:1;box-shadow:0 0 0 8px var(--bg1)">2</div><h4 style="margin-top:16px;font-size:18px;font-weight:700">확정 안내 수신</h4><p style="margin-top:8px;font-size:14.5px;color:var(--g3)">메일·문자로 발송</p></div>' +
+        '<div><div class="tg-stepdot" style="position:relative;z-index:1;box-shadow:0 0 0 8px var(--bg1)">3</div><h4 style="margin-top:16px;font-size:18px;font-weight:700">현장 체크인</h4><p style="margin-top:8px;font-size:14.5px;color:var(--g3)">QR로 바로 입장</p></div>' +
+        '</div></div></div></section>' },
+      { code: 'steps:vertical', desc: '세로 타임라인 + 카드 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">신청 절차</h2><p class="tg-sub">순서대로 따라오시면 됩니다.</p>' +
+        '<div class="tg-body">' +
+        '<div style="display:grid;grid-template-columns:64px 1fr;column-gap:26px">' +
+        '<div style="display:flex;flex-direction:column;align-items:center"><span style="width:48px;height:48px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none">1</span><span style="flex:1;width:2px;background:rgba(2,32,71,.08)"></span></div>' +
+        '<div class="tg-card" style="margin-bottom:22px"><div class="tg-bd" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:center"><div><div class="tg-cap" style="color:var(--brand-ink)">STEP 01</div><div class="tg-ct" style="font-size:20px">신청서 제출</div><div class="tg-ds">회사·담당자 정보만 입력하면 됩니다. 첨부 서류는 없어요.</div></div><span style="font-size:13px;font-weight:700;color:var(--g4);background:var(--bg2);border-radius:100px;padding:7px 14px;white-space:nowrap">소요 1분</span></div></div></div>' +
+        '<div style="display:grid;grid-template-columns:64px 1fr;column-gap:26px">' +
+        '<div style="display:flex;flex-direction:column;align-items:center"><span style="width:48px;height:48px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none">2</span><span style="flex:1;width:2px;background:rgba(2,32,71,.08)"></span></div>' +
+        '<div class="tg-card" style="margin-bottom:22px"><div class="tg-bd" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:center"><div><div class="tg-cap" style="color:var(--brand-ink)">STEP 02</div><div class="tg-ct" style="font-size:20px">확정 안내 수신</div><div class="tg-ds">참석 확정과 상세 안내를 메일·문자로 보내드립니다.</div></div><span style="font-size:13px;font-weight:700;color:var(--g4);background:var(--bg2);border-radius:100px;padding:7px 14px;white-space:nowrap">1영업일 내</span></div></div></div>' +
+        '<div style="display:grid;grid-template-columns:64px 1fr;column-gap:26px">' +
+        '<div style="display:flex;flex-direction:column;align-items:center"><span style="width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none">3</span></div>' +
+        '<div class="tg-card"><div class="tg-bd" style="display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:center"><div><div class="tg-cap" style="color:var(--brand-ink)">STEP 03</div><div class="tg-ct" style="font-size:20px">현장 체크인</div><div class="tg-ds">QR 코드로 입장하고 웰컴 키트를 받으세요.</div></div><span style="font-size:13px;font-weight:700;color:var(--g4);background:var(--bg2);border-radius:100px;padding:7px 14px;white-space:nowrap">행사 당일</span></div></div></div>' +
+        '</div></div></section>' },
+      { code: 'steps:cards', desc: '카드 스텝 3 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">이렇게 진행돼요</h2><p class="tg-sub">세 장의 카드로 보는 참가 절차.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:32px">1</div><b style="display:block;margin-top:12px;font-size:18px">신청</b><div class="tg-ds" style="margin-top:6px">신청서 제출, 1분 소요</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:32px">2</div><b style="display:block;margin-top:12px;font-size:18px">확정</b><div class="tg-ds" style="margin-top:6px">참석 확정 안내 수신</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:32px">3</div><b style="display:block;margin-top:12px;font-size:18px">참석</b><div class="tg-ds" style="margin-top:6px">QR 체크인 후 입장</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'doclist:cards', desc: '가이드 문서 카드 2열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">미리 보면 좋은 자료</h2><p class="tg-sub">참가 전에 읽어두면 세션이 두 배로 들립니다.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">GUIDE</div><div class="tg-ct" style="font-size:19px">에이전트 시작 가이드</div><div class="tg-ds">설치와 첫 설정까지 10분 코스.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">GUIDE</div><div class="tg-ct" style="font-size:19px">HR 시나리오 설계</div><div class="tg-ds">우리 회사 프로세스에 맞추는 법.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">GUIDE</div><div class="tg-ct" style="font-size:19px">보안·개인정보 백서</div><div class="tg-ds">도입 검토 부서용 자료.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">FAQ</div><div class="tg-ct" style="font-size:19px">자주 묻는 질문 모음</div><div class="tg-ds">문제 해결 사례 30선.</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'doclist:list', desc: '컴팩트 자료 리스트 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">자료실</h2><p class="tg-sub">필요한 문서를 바로 내려받으세요.</p>' +
+        '<div class="tg-body" style="display:grid">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-bottom:1px solid rgba(2,32,71,.07)"><div><b>에이전트 시작 가이드</b><span style="margin-left:12px;font-size:13px;color:var(--g4)">10분 코스</span></div><span style="color:var(--brand-ink);font-weight:900">→</span></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px;border-bottom:1px solid rgba(2,32,71,.07)"><div><b>HR 시나리오 설계</b><span style="margin-left:12px;font-size:13px;color:var(--g4)">실무 가이드</span></div><span style="color:var(--brand-ink);font-weight:900">→</span></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:20px 4px"><div><b>보안·개인정보 백서</b><span style="margin-left:12px;font-size:13px;color:var(--g4)">검토 부서용</span></div><span style="color:var(--brand-ink);font-weight:900">→</span></div>' +
+        '</div></div></section>' },
+      { code: 'bloglist:cards', desc: '소식 카드 그리드 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">HR 소식</h2><p class="tg-sub">행사와 제품의 최근 소식.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="ph" style="height:160px"></div><div class="tg-bd"><div class="tg-cap">NEWS · 2026.08</div><div class="tg-ct" style="font-size:18px">HR Growth 2026 개최 확정</div></div></div>' +
+        '<div class="tg-card"><div class="ph" style="height:160px"></div><div class="tg-bd"><div class="tg-cap">CASE · 2026.07</div><div class="tg-ct" style="font-size:18px">제조사 A, 리드타임 절반</div></div></div>' +
+        '<div class="tg-card"><div class="ph" style="height:160px"></div><div class="tg-bd"><div class="tg-cap">TIP · 2026.06</div><div class="tg-ct" style="font-size:18px">시나리오 설계 체크리스트</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'bloglist:list', desc: '썸네일 소식 리스트 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">최근 소식</h2><p class="tg-sub">시간순으로 정리했습니다.</p>' +
+        '<div class="tg-body" style="display:grid;gap:18px">' +
+        '<div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:14px"></div><div><div style="font-size:12.5px;color:var(--g4);font-weight:700">NEWS · 2026.08</div><b style="display:block;margin-top:6px;font-size:18px">HR Growth 2026 개최 확정 — 신청 오픈</b></div></div>' +
+        '<div style="display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center"><div class="ph" style="height:96px;border-radius:14px"></div><div><div style="font-size:12.5px;color:var(--g4);font-weight:700">CASE · 2026.07</div><b style="display:block;margin-top:6px;font-size:18px">제조사 A, 채용 리드타임을 절반으로</b></div></div>' +
+        '</div></div></section>' },
+      { code: 'bloglist:featured', desc: '대표 1 + 일반 소식 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">이번 달 읽을거리</h2><p class="tg-sub">대표 아티클 하나, 곁들일 두 편.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1.6fr 1fr;gap:22px">' +
+        '<div class="tg-card"><div class="ph" style="height:250px"></div><div class="tg-bd"><div class="tg-cap" style="color:var(--brand-ink)">FEATURED</div><div class="tg-ct" style="font-size:24px">HR Growth 2026, 무엇이 달라지나</div><div class="tg-ds">올해의 키노트·세션 구성과 관전 포인트 총정리.</div></div></div>' +
+        '<div style="display:grid;gap:22px">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">CASE</div><div class="tg-ct" style="font-size:17px">제조사 A 도입기</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-cap">TIP</div><div class="tg-ct" style="font-size:17px">시나리오 설계 체크리스트</div></div></div>' +
+        '</div></div></div></section>' },
+      { code: 'agenda:timeline', desc: '다크 포토 세션 카드 3열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">세션 안내</h2><p class="tg-sub">13:30 입장 · 세 개의 세션으로 진행됩니다.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-dk"><div class="ph"></div><div style="font-size:14px;opacity:.85">14:10 - 14:50</div><div style="margin-top:8px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.32">HR의 성장,<br>에이전트로 완성하다</div><div style="margin-top:12px;font-size:14px;opacity:.85">마이다스그룹 기획자</div></div>' +
+        '<div class="tg-dk"><div class="ph"></div><div style="font-size:14px;opacity:.85">14:50 - 15:30</div><div style="margin-top:8px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.32">경험을 넘어 실행까지:<br>체험/컨설팅</div><div style="margin-top:12px;font-size:14px;opacity:.85">마이다스 컨설턴트</div></div>' +
+        '<div class="tg-dk"><div class="ph"></div><div style="font-size:14px;opacity:.85">15:30 - 16:00</div><div style="margin-top:8px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.32">에이전트 200% 활용한<br>마이다스 사례</div><div style="margin-top:12px;font-size:14px;opacity:.85">마이다스그룹 HR 담당자</div></div>' +
+        '</div></div></section>' },
+      { code: 'agenda:detail', desc: '세션 소개형 — 시간 pill + 다루는 내용 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">프로그램 소개</h2><p class="tg-sub">세션마다 무엇을 다루는지 미리 확인하세요.</p>' +
+        '<div class="tg-body" style="display:grid;gap:14px">' +
+        '<div style="background:#fff;border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:26px 30px;display:grid;grid-template-columns:150px 1fr auto;gap:24px;align-items:center">' +
+        '<span style="font-size:14px;font-weight:800;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:8px 0;text-align:center">14:10 - 14:50</span>' +
+        '<div><b style="font-size:19px;letter-spacing:-.02em">HR의 성장, 에이전트로 완성하다</b><p style="margin-top:6px;font-size:14.5px;line-height:1.6;color:var(--g3)">에이전트가 바꾸는 HR의 전 과정을 키노트로. 왜 지금 도입해야 하는지 근거와 함께 엽니다.</p></div>' +
+        '<span style="font-size:13.5px;color:var(--g4);font-weight:600;white-space:nowrap">마이다스그룹 기획자</span></div>' +
+        '<div style="background:#fff;border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:26px 30px;display:grid;grid-template-columns:150px 1fr auto;gap:24px;align-items:center">' +
+        '<span style="font-size:14px;font-weight:800;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:8px 0;text-align:center">14:50 - 15:30</span>' +
+        '<div><b style="font-size:19px;letter-spacing:-.02em">경험을 넘어 실행까지: 체험/컨설팅</b><p style="margin-top:6px;font-size:14.5px;line-height:1.6;color:var(--g3)">우리 회사 시나리오로 직접 돌려보는 핸즈온. 현장에서 1:1 컨설팅으로 이어집니다.</p></div>' +
+        '<span style="font-size:13.5px;color:var(--g4);font-weight:600;white-space:nowrap">마이다스 컨설턴트</span></div>' +
+        '<div style="background:#fff;border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:26px 30px;display:grid;grid-template-columns:150px 1fr auto;gap:24px;align-items:center">' +
+        '<span style="font-size:14px;font-weight:800;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:8px 0;text-align:center">15:30 - 16:00</span>' +
+        '<div><b style="font-size:19px;letter-spacing:-.02em">에이전트 200% 활용한 마이다스 사례</b><p style="margin-top:6px;font-size:14.5px;line-height:1.6;color:var(--g3)">도입 6개월의 실제 수치와 운영 노하우. 실패했던 시도까지 공개합니다.</p></div>' +
+        '<span style="font-size:13.5px;color:var(--g4);font-weight:600;white-space:nowrap">마이다스그룹 HR</span></div>' +
+        '</div></div></section>' },
+      { code: 'agenda:table', desc: '일정·장소 카드 — 표 + 지도 핀 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">일정 · 장소</h2><p class="tg-sub">오시는 길과 마감 일정을 확인하세요.</p>' +
+        '<div class="tg-body" style="border-radius:22px;display:grid;grid-template-columns:1fr 1.4fr;overflow:hidden;background:#fff;border:1px solid rgba(2,32,71,.06)">' +
+        '<div style="padding:40px"><div style="font-size:30px;font-weight:800;letter-spacing:-.02em">HR Growth 2026</div>' +
+        '<table style="margin-top:26px;border-collapse:collapse;font-size:16px">' +
+        '<tr><th style="color:var(--g4);font-weight:600;text-align:left;padding:9px 26px 9px 0;vertical-align:top">일시</th><td style="padding:9px 0;font-weight:600">2026.10.15 (목) 13:30 - 16:00</td></tr>' +
+        '<tr><th style="color:var(--g4);font-weight:600;text-align:left;padding:9px 26px 9px 0;vertical-align:top">장소</th><td style="padding:9px 0;font-weight:600;line-height:1.5">섬유센터빌딩 Tex Fa Hall (강남)<br>삼성역 4번 출구에서 도보 4분</td></tr>' +
+        '<tr><th style="color:var(--g4);font-weight:600;text-align:left;padding:9px 26px 9px 0;vertical-align:top">마감</th><td style="padding:9px 0;font-weight:600">10.13 (화) 18:00</td></tr>' +
+        '</table><div style="margin-top:30px"><span class="tg-pill">신청하기</span></div></div>' +
+        '<div style="position:relative;background:linear-gradient(135deg,var(--bg2),#E5E8EB);min-height:320px">' +
+        '<span style="position:absolute;left:0;right:0;top:56%;height:14px;background:rgba(2,32,71,.06);transform:rotate(-7deg)"></span>' +
+        '<span style="position:absolute;top:0;bottom:0;left:62%;width:14px;background:rgba(2,32,71,.06);transform:rotate(9deg)"></span>' +
+        '<span style="position:absolute;left:44%;top:40%;width:34px;height:34px;border-radius:50% 50% 50% 0;background:var(--brand);transform:rotate(-45deg);box-shadow:0 10px 24px color-mix(in srgb,var(--brand) 40%,transparent)"></span>' +
+        '<span style="position:absolute;left:calc(44% + 10px);top:calc(40% + 10px);width:14px;height:14px;border-radius:50%;background:#fff"></span>' +
+        '</div></div></div></section>' },
+      { code: 'speakers:grid', desc: '4단 컴팩트 연사 — 연사가 많을 때 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">연사 소개</h2><p class="tg-sub">여덟 명의 연사 중 네 명을 먼저.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:22px">' +
+        '<div class="tg-card" style="text-align:center"><div class="tg-bd" style="padding:30px 20px"><div class="ph" style="width:76px;height:76px;border-radius:50%;margin:0 auto"></div><b style="display:block;margin-top:16px;font-size:17px">신해경화</b><div style="margin-top:4px;font-size:13px;color:var(--g4)">마이다스그룹 · AX 총괄</div></div></div>' +
+        '<div class="tg-card" style="text-align:center"><div class="tg-bd" style="padding:30px 20px"><div class="ph" style="width:76px;height:76px;border-radius:50%;margin:0 auto"></div><b style="display:block;margin-top:16px;font-size:17px">라강림</b><div style="margin-top:4px;font-size:13px;color:var(--g4)">마이다스 컨설팅 · 수석</div></div></div>' +
+        '<div class="tg-card" style="text-align:center"><div class="tg-bd" style="padding:30px 20px"><div class="ph" style="width:76px;height:76px;border-radius:50%;margin:0 auto"></div><b style="display:block;margin-top:16px;font-size:17px">김도현</b><div style="margin-top:4px;font-size:13px;color:var(--g4)">사례 발표 기업 · CHRO</div></div></div>' +
+        '<div class="tg-card" style="text-align:center"><div class="tg-bd" style="padding:30px 20px"><div class="ph" style="width:76px;height:76px;border-radius:50%;margin:0 auto"></div><b style="display:block;margin-top:16px;font-size:17px">박서연</b><div style="margin-top:4px;font-size:13px;color:var(--g4)">모더레이터 · HR 매거진</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'speakers:text', desc: '이미지 없음 — 이니셜 서클 연사 카드 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">연사 소개</h2><p class="tg-sub">사진이 준비되지 않아도 깨지지 않게.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="tg-bd"><div style="width:56px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:20px">신</div><b style="display:block;margin-top:16px;font-size:19px">신해경화</b><div style="margin-top:4px;font-size:13.5px;color:var(--g4)">마이다스그룹 · AX 총괄</div><div class="tg-ds" style="margin-top:12px">HR 에이전트 프로덕트를 이끌며, 키노트로 행사를 엽니다.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div style="width:56px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:20px">라</div><b style="display:block;margin-top:16px;font-size:19px">라강림</b><div style="margin-top:4px;font-size:13.5px;color:var(--g4)">마이다스 컨설팅 · 수석</div><div class="tg-ds" style="margin-top:12px">도입 전략과 핸즈온 세션을 맡아 실행까지 안내합니다.</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div style="width:56px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:20px">김</div><b style="display:block;margin-top:16px;font-size:19px">김도현</b><div style="margin-top:4px;font-size:13.5px;color:var(--g4)">사례 발표 기업 · CHRO</div><div class="tg-ds" style="margin-top:12px">도입 6개월의 실제 수치와 시행착오를 공개합니다.</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'speakers:rows', desc: '가로형 리스트 — 연사 + 담당 세션 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">연사 소개</h2><p class="tg-sub">누가 어떤 세션을 맡는지 한 줄로.</p>' +
+        '<div class="tg-body" style="background:#fff;border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:10px 30px">' +
+        '<div style="display:grid;grid-template-columns:56px 1fr auto;gap:22px;align-items:center;padding:20px 0;border-bottom:1px solid rgba(2,32,71,.06)"><div class="ph" style="width:56px;height:56px;border-radius:50%"></div><div><b style="font-size:17px">신해경화</b><div style="margin-top:3px;font-size:13.5px;color:var(--g4)">마이다스그룹 · AX 총괄</div></div><span style="font-size:13px;font-weight:700;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:7px 14px;white-space:nowrap">키노트 14:10</span></div>' +
+        '<div style="display:grid;grid-template-columns:56px 1fr auto;gap:22px;align-items:center;padding:20px 0;border-bottom:1px solid rgba(2,32,71,.06)"><div class="ph" style="width:56px;height:56px;border-radius:50%"></div><div><b style="font-size:17px">라강림</b><div style="margin-top:3px;font-size:13.5px;color:var(--g4)">마이다스 컨설팅 · 수석</div></div><span style="font-size:13px;font-weight:700;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:7px 14px;white-space:nowrap">핸즈온 14:50</span></div>' +
+        '<div style="display:grid;grid-template-columns:56px 1fr auto;gap:22px;align-items:center;padding:20px 0"><div style="width:56px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:19px">김</div><div><b style="font-size:17px">김도현</b><div style="margin-top:3px;font-size:13.5px;color:var(--g4)">사례 발표 기업 · CHRO</div></div><span style="font-size:13px;font-weight:700;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 8%,transparent);border-radius:100px;padding:7px 14px;white-space:nowrap">사례 15:30</span></div>' +
+        '</div></div></section>' },
     ]},
     { id: 'g4', name: '04 · 신뢰 · 수치', blocks: [
       { code: 'about:count3', desc: '수치 하이라이트 3열 — stats · 없으면 자동 숨김', mo: '진입 시 카운트업 1.4s', src: 'base', sel: '[data-section=about]', live: '#about' },
       { code: 'about:dark', desc: '잉크 밴드 대형 수치 변형 (variants.about=dark)', mo: '카운트업', bg: '#121419', src: 'varA', sel: '[data-section=about]', live: '#about' },
       { code: 'about:chart', desc: '바 차트 카드 변형 — 마지막 항목 포인트 강조 (variants.about=chart)', src: 'varB', sel: '[data-section=about]', live: '#about' },
+      { code: 'stats:kpi', desc: 'KPI 카드 3열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">도입 기업의 변화</h2><p class="tg-sub">참가 후 도입한 기업들의 3개월 평균.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:40px">-58<span style="font-size:.6em;vertical-align:.08em">%</span></div><div style="margin-top:10px;font-weight:700">서류 검토 시간</div><div class="tg-ds" style="margin-top:6px">도입 3개월 평균</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:40px"><span style="font-size:.6em;vertical-align:.1em">×</span>3</div><div style="margin-top:10px;font-weight:700">구성원 응답 속도</div><div class="tg-ds" style="margin-top:6px">24시간 자동 응대</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div class="tg-num" style="font-size:40px">+31<span style="font-size:.6em;vertical-align:.08em">%</span></div><div style="margin-top:10px;font-weight:700">면접 노쇼 감소</div><div class="tg-ds" style="margin-top:6px">리마인드 자동화</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'stats:big', desc: '대형 숫자 하나 강조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="text-align:center"><div class="wrap">' +
+        '<div style="font-size:120px;font-weight:700;letter-spacing:-.04em;line-height:1;color:var(--brand);font-variant-numeric:tabular-nums">96<span style="font-size:.5em;vertical-align:.1em">%</span></div>' +
+        '<p style="margin-top:18px;font-size:19px;color:var(--g3);font-weight:600">“동료에게 추천하겠다”고 답했습니다</p></div></section>' },
+      { code: 'testimonial:cards', desc: '후기 카드 3열 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">참가자들의 이야기</h2><p class="tg-sub">2025 참가자 후기에서 골랐습니다.</p>' +
+        '<div class="tg-body tg-c3">' +
+        '<div class="tg-card"><div class="tg-bd"><div style="font-size:34px;font-weight:900;color:var(--brand);line-height:.7">“</div><p style="margin-top:12px;font-size:15px;line-height:1.65;color:var(--g3)">시연을 보고 나서야 ‘이게 진짜 되는구나’ 싶었어요. 돌아가서 바로 도입 검토를 시작했습니다.</p><div style="margin-top:16px;font-size:13.5px;color:var(--g4);font-weight:600">제조업 · HR 팀장</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div style="font-size:34px;font-weight:900;color:var(--brand);line-height:.7">“</div><p style="margin-top:12px;font-size:15px;line-height:1.65;color:var(--g3)">막연했던 AI 전략이 우리 회사 기준으로 구체화됐습니다. 1:1 컨설팅이 특히 좋았어요.</p><div style="margin-top:16px;font-size:13.5px;color:var(--g4);font-weight:600">IT 서비스 · 인사 담당</div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd"><div style="font-size:34px;font-weight:900;color:var(--brand);line-height:.7">“</div><p style="margin-top:12px;font-size:15px;line-height:1.65;color:var(--g3)">같은 고민을 하는 HR 동료들을 만난 것만으로도 올 이유가 충분했습니다.</p><div style="margin-top:16px;font-size:13.5px;color:var(--g4);font-weight:600">유통 · HR 매니저</div></div></div>' +
+        '</div></div></section>' },
+      { code: 'testimonial:single', desc: '단일 대형 인용 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="text-align:center"><div class="wrap">' +
+        '<p style="font-size:30px;font-weight:600;letter-spacing:-.02em;line-height:1.5;word-break:keep-all">“반복 업무가 사라지니, <b style="color:var(--brand-ink)">사람을 보는 시간</b>이 돌아왔습니다.”</p>' +
+        '<div style="margin-top:22px;font-size:14.5px;color:var(--g4);font-weight:600">2025 참가 기업 · CHRO</div></div></section>' },
+      { code: 'testimonial:logos', desc: '고객사 로고 그리드 + 수치 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt" style="text-align:center"><div class="wrap"><h2 class="tg-tt">함께한 기업들</h2><p class="tg-sub">업종을 가리지 않고 모입니다.</p>' +
+        '<div class="tg-body"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">' +
+        '<span style="background:var(--bg2);border-radius:100px;padding:12px 28px;font-weight:800;color:var(--g2)">ALPHA</span>' +
+        '<span style="background:var(--bg2);border-radius:100px;padding:12px 28px;font-weight:800;color:var(--g2)">BRAVO</span>' +
+        '<span style="background:var(--bg2);border-radius:100px;padding:12px 28px;font-weight:800;color:var(--g2)">CHARLIE</span>' +
+        '<span style="background:var(--bg2);border-radius:100px;padding:12px 28px;font-weight:800;color:var(--g2)">DELTA</span>' +
+        '<span style="background:var(--bg2);border-radius:100px;padding:12px 28px;font-weight:800;color:var(--g2)">ECHO</span>' +
+        '</div><div style="margin-top:28px;font-size:22px;font-weight:700">누적 <span style="color:var(--brand-ink)">320개 기업</span>이 참가했습니다</div></div></div></section>' },
     ]},
     { id: 'g5', name: '05 · 전환', blocks: [
       { code: 'ctaband:solo', desc: 'CTA 밴드 기본형 — ctaTitle·ctaSub + 신청 버튼', mo: '흐르는 그라데이션 11s + 블롭 2', src: 'base', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
       { code: 'ctaband:duo', desc: '버튼 2개 변형 — bannerCta가 있으면 자동 추가', mo: '동일', src: 'duo', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
       { code: 'ctaband:dark', desc: '잉크 밴드 변형 (variants.ctaband=dark)', bg: '#121419', src: 'varA', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
       { code: 'apply:form', desc: '신청 폼(고정) — 6필드 + 체크 토글 · 라벨 4언어', mo: '인풋 포커스 · 체크 토글', src: 'base', sel: '#apply', live: '#apply' },
+      { code: 'cta:simple', desc: '제목 + 버튼 미니멀 CTA (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec" style="text-align:center"><div class="wrap"><h2 class="tg-tt">자리가 얼마 남지 않았어요</h2><p class="tg-sub">선착순 마감 전에 신청하세요.</p>' +
+        '<div style="margin-top:30px"><span class="tg-pill">지금 신청하기</span></div></div></section>' },
+      { code: 'cta:cards', desc: '2단 카드 CTA — 신청 / 자료 분리 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">두 가지 방법으로 시작하세요</h2><p class="tg-sub">현장 참가 또는 자료 먼저 — 편한 쪽으로.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div class="tg-card" style="background:var(--dark);color:#fff;border:0"><div class="tg-bd" style="padding:34px"><div class="tg-ct" style="font-size:24px">참가 신청</div><div class="tg-ds" style="color:rgba(255,255,255,.72)">현장에서 시연과 컨설팅까지 한 번에.</div><div style="margin-top:22px"><span class="tg-pill w">신청하기</span></div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd" style="padding:34px"><div class="tg-ct" style="font-size:24px">소개 자료 받기</div><div class="tg-ds">참석이 어렵다면 에이전트 소개서를 먼저.</div><div style="margin-top:22px"><span class="tg-pill soft">자료 요청</span></div></div></div>' +
+        '</div></div></section>' },
+      { code: 'form:center', desc: '중앙 단일 폼 — 2열 필드 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">참가 신청</h2><p class="tg-sub">신청 후 참석 확정 안내를 보내드립니다.</p>' +
+        '<div class="tg-body">' +
+        '<div class="tg-c2" style="gap:12px"><span class="tg-field">회사명</span><span class="tg-field">담당자 이름</span><span class="tg-field">이메일</span><span class="tg-field">연락처</span></div>' +
+        '<span class="tg-field" style="height:110px;margin-top:12px">기대하는 내용 (선택)</span>' +
+        '<div style="text-align:center;margin-top:22px"><span class="tg-pill" style="padding:14px 56px">신청하기</span></div></div></div></section>' },
+      { code: 'form:split', desc: '좌 설명 / 우 폼 패널 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">도입 문의</h2><p class="tg-sub">우리 회사 HR 규모에 맞는 도입 방안을 안내해 드립니다.</p>' +
+        '<div class="tg-body" style="display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:start">' +
+        '<div><p style="font-size:15.5px;line-height:1.7;color:var(--g3)">남겨주시면 1영업일 안에 연락드려요.</p>' +
+        '<div style="margin-top:24px;display:grid;gap:10px;font-size:14.5px;color:var(--g3)">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">·</span>평균 응답 1영업일</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">·</span>규모별 요금 안내 포함</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">·</span>보안 검토 자료 제공</div></div></div>' +
+        '<div style="background:#fff;border-radius:20px;padding:28px;box-shadow:0 2px 10px rgba(2,32,71,.04)">' +
+        '<span class="tg-field">회사명</span><span class="tg-field" style="margin-top:12px">이메일</span><span class="tg-field" style="margin-top:12px;height:96px">문의 내용</span>' +
+        '<span class="tg-pill" style="display:block;text-align:center;margin-top:16px">문의 보내기</span></div></div></div></section>' },
+      { code: 'pricing:cards', desc: '플랜 카드 — 중앙 강조 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">참가권</h2><p class="tg-sub">필요한 만큼만 고르세요.</p>' +
+        '<div class="tg-body tg-c3" style="align-items:stretch">' +
+        '<div class="tg-card"><div class="tg-bd" style="padding:34px 28px"><div class="tg-cap">Basic</div>' +
+        '<div style="margin-top:10px"><span class="tg-inum" style="font-size:38px">무료</span></div><div class="tg-ds" style="margin-top:6px">가볍게 둘러보고 싶다면</div>' +
+        '<div style="margin:22px 0;height:1px;background:rgba(2,32,71,.07)"></div>' +
+        '<div style="display:grid;gap:11px;font-size:14.5px">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>전 세션 참관</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>네트워킹 라운지</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>발표 자료 메일 수신</div>' +
+        '<div style="display:flex;gap:10px;color:var(--g4)"><span>—</span>1:1 컨설팅</div>' +
+        '<div style="display:flex;gap:10px;color:var(--g4)"><span>—</span>핸즈온 워크숍</div></div>' +
+        '<div style="margin-top:26px"><span class="tg-pill soft" style="display:block;text-align:center;font-size:14px;padding:12px 0">무료로 신청</span></div></div></div>' +
+        '<div class="tg-card" style="border:2px solid var(--brand);transform:translateY(-10px);box-shadow:0 18px 44px color-mix(in srgb,var(--brand) 14%,transparent);position:relative;overflow:visible">' +
+        '<div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--brand);color:#fff;font-size:12px;font-weight:800;letter-spacing:.04em;border-radius:100px;padding:5px 14px;white-space:nowrap">가장 인기</div>' +
+        '<div class="tg-bd" style="padding:40px 28px 34px;background:color-mix(in srgb,var(--brand) 3%,transparent);border-radius:20px"><div class="tg-cap" style="color:var(--brand-ink)">Pro</div>' +
+        '<div style="margin-top:10px;display:flex;align-items:baseline;gap:6px"><span class="tg-inum" style="font-size:44px">5만원</span><span style="font-size:14px;color:var(--g4)">/ 1인</span></div><div class="tg-ds" style="margin-top:6px">도입을 결정하러 온다면</div>' +
+        '<div style="margin:22px 0;height:1px;background:color-mix(in srgb,var(--brand) 25%,transparent)"></div>' +
+        '<div style="display:grid;gap:11px;font-size:14.5px">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span><b>Basic의 전부</b></div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>1:1 컨설팅 30분</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>핸즈온 워크숍</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>웰컴 키트 + 굿즈</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>우선 좌석 배정</div></div>' +
+        '<div style="margin-top:26px"><span class="tg-pill" style="display:block;text-align:center;font-size:14px;padding:12px 0">Pro로 신청</span></div></div></div>' +
+        '<div class="tg-card"><div class="tg-bd" style="padding:34px 28px"><div class="tg-cap">Team</div>' +
+        '<div style="margin-top:10px"><span class="tg-inum" style="font-size:38px">문의</span></div><div class="tg-ds" style="margin-top:6px">팀 단위로 검토한다면</div>' +
+        '<div style="margin:22px 0;height:1px;background:rgba(2,32,71,.07)"></div>' +
+        '<div style="display:grid;gap:11px;font-size:14.5px">' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span><b>Pro의 전부</b></div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>5인 이상 단체석</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>전용 컨설팅 세션</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>도입 견적 상담</div>' +
+        '<div style="display:flex;gap:10px"><span style="color:var(--brand);font-weight:900">✓</span>세금계산서 발행</div></div>' +
+        '<div style="margin-top:26px"><span class="tg-pill soft" style="display:block;text-align:center;font-size:14px;padding:12px 0">단체 문의</span></div></div></div>' +
+        '</div></div></section>' },
+      { code: 'pricing:table', desc: '요금 비교표 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec alt"><div class="wrap"><h2 class="tg-tt">플랜 비교</h2><p class="tg-sub">포함 항목을 한눈에.</p>' +
+        '<div class="tg-body" style="background:#fff;border:1px solid rgba(2,32,71,.06);border-radius:20px;overflow:hidden">' +
+        '<table style="width:100%;border-collapse:collapse;font-size:15px">' +
+        '<tr><th style="text-align:left;padding:22px 26px;font-size:13px;color:var(--g4);font-weight:600;width:34%">포함 항목</th>' +
+        '<th style="padding:22px 16px;font-size:15px;font-weight:800">Basic<div style="margin-top:4px;font-size:12.5px;color:var(--g4);font-weight:600">무료</div></th>' +
+        '<th style="padding:22px 16px;font-size:15px;font-weight:800;color:var(--brand-ink);background:color-mix(in srgb,var(--brand) 5%,transparent)">Pro<div style="margin-top:4px;font-size:12.5px;color:var(--brand-ink);font-weight:700">5만원 · 인기</div></th>' +
+        '<th style="padding:22px 16px;font-size:15px;font-weight:800">Team<div style="margin-top:4px;font-size:12.5px;color:var(--g4);font-weight:600">문의</div></th></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">전 세션 참관</td><td style="text-align:center;color:var(--g3)">✓</td><td style="text-align:center;color:var(--brand-ink);font-weight:800;background:color-mix(in srgb,var(--brand) 5%,transparent)">✓</td><td style="text-align:center;color:var(--g3)">✓</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">1:1 컨설팅</td><td style="text-align:center;color:#D3D8DE">—</td><td style="text-align:center;color:var(--brand-ink);font-weight:800;background:color-mix(in srgb,var(--brand) 5%,transparent)">30분</td><td style="text-align:center;color:var(--g3)">전용 세션</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">핸즈온 워크숍</td><td style="text-align:center;color:#D3D8DE">—</td><td style="text-align:center;color:var(--brand-ink);font-weight:800;background:color-mix(in srgb,var(--brand) 5%,transparent)">✓</td><td style="text-align:center;color:var(--g3)">✓</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">웰컴 키트 + 굿즈</td><td style="text-align:center;color:#D3D8DE">—</td><td style="text-align:center;color:var(--brand-ink);font-weight:800;background:color-mix(in srgb,var(--brand) 5%,transparent)">✓</td><td style="text-align:center;color:var(--g3)">✓</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:17px 26px;font-weight:600">단체 좌석·견적 상담</td><td style="text-align:center;color:#D3D8DE">—</td><td style="text-align:center;color:#D3D8DE;background:color-mix(in srgb,var(--brand) 5%,transparent)">—</td><td style="text-align:center;color:var(--brand-ink);font-weight:800">✓</td></tr>' +
+        '<tr style="border-top:1px solid rgba(2,32,71,.05)"><td style="padding:19px 26px"></td><td style="text-align:center;padding:19px 12px"><span class="tg-pill soft" style="font-size:13px;padding:9px 22px">신청</span></td><td style="text-align:center;padding:19px 12px;background:color-mix(in srgb,var(--brand) 5%,transparent)"><span class="tg-pill" style="font-size:13px;padding:9px 22px">Pro 신청</span></td><td style="text-align:center;padding:19px 12px"><span class="tg-pill soft" style="font-size:13px;padding:9px 22px">문의</span></td></tr>' +
+        '</table></div></div></section>' },
     ]},
     { id: 'g6', name: '06 · 안내', blocks: [
       { code: 'location:map', desc: '일정·장소 — 지도 SVG(역 밴드·출구·점선·주차) + 주소 바. 역명 자동', src: 'base', sel: '[data-section=location]', live: '#location' },
@@ -184,6 +623,40 @@ a{text-decoration:none;color:inherit}
       { code: 'faq:accordion', desc: 'FAQ — 클릭 아코디언 (+ → × 회전)', mo: '펼침 .45s', src: 'base', sel: '[data-section=faq]', live: '[data-section=faq]', edit: function (el) { var f = el.querySelector('.fitem'); if (f) f.classList.add('open'); } },
       { code: 'faq:cards', desc: '2열 카드 변형 — 답변 상시 노출 (variants.faq=cards)', src: 'varA', sel: '[data-section=faq]', live: '[data-section=faq]' },
       { code: 'footer:columns', desc: '푸터 — 좌 슬로건(tagline) + 링크 컬럼 3 + 카피 줄', bg: '#121419', src: 'base', sel: '.dawnfoot', live: '.dawnfoot' },
+      { code: 'faq:category', desc: '카테고리 묶음 2열 FAQ (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">주제별로 찾아보세요</h2><p class="tg-sub">신청과 현장, 두 갈래로 정리했습니다.</p>' +
+        '<div class="tg-body tg-c2">' +
+        '<div style="background:var(--bg1);border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:30px 32px">' +
+        '<div style="display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand)"></span><b style="font-size:18px;letter-spacing:-.02em">신청</b></div>' +
+        '<div style="margin-top:18px;display:grid">' +
+        '<div style="padding:14px 0;border-bottom:1px solid rgba(2,32,71,.07)"><b style="font-size:15.5px">마감은 언제인가요?</b><p style="margin-top:6px;color:var(--g3);font-size:14.5px;line-height:1.6">10/13(화) 18:00, 조기 마감될 수 있습니다.</p></div>' +
+        '<div style="padding:14px 0"><b style="font-size:15.5px">단체 신청이 되나요?</b><p style="margin-top:6px;color:var(--g3);font-size:14.5px;line-height:1.6">5인 이상은 별도 문의 주세요.</p></div></div></div>' +
+        '<div style="background:var(--bg1);border:1px solid rgba(2,32,71,.06);border-radius:20px;padding:30px 32px">' +
+        '<div style="display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:var(--brand)"></span><b style="font-size:18px;letter-spacing:-.02em">현장</b></div>' +
+        '<div style="margin-top:18px;display:grid">' +
+        '<div style="padding:14px 0;border-bottom:1px solid rgba(2,32,71,.07)"><b style="font-size:15.5px">주차가 가능한가요?</b><p style="margin-top:6px;color:var(--g3);font-size:14.5px;line-height:1.6">공간이 제한적입니다. 대중교통 이용을 권장드립니다.</p></div>' +
+        '<div style="padding:14px 0"><b style="font-size:15.5px">점심이 제공되나요?</b><p style="margin-top:6px;color:var(--g3);font-size:14.5px;line-height:1.6">오후 행사로 다과와 커피가 준비됩니다.</p></div></div></div>' +
+        '</div></div></section>' },
+      { code: 'faq:bars', desc: '면 바 리스트 — Q 행을 그레이 면으로 (카탈로그 전용 — 팩 렌더러 미편입)', stat:
+        '<section class="tg-sec"><div class="wrap"><h2 class="tg-tt">도입 전,<br>이런 점이 궁금하신가요?</h2><p class="tg-sub">가장 많이 묻는 질문을 모았습니다. 더 궁금한 점은 부담 없이 문의해 주세요.</p>' +
+        '<div style="margin-top:44px;display:grid;gap:12px">' +
+        '<div style="background:var(--bg2);border-radius:16px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16.5px;font-weight:700"><span style="color:var(--brand-ink)">Q.</span> 우리 행사에도 적용할 수 있나요?</span><span style="color:var(--g4);font-size:22px">+</span></div>' +
+        '<div style="background:var(--bg2);border-radius:16px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16.5px;font-weight:700"><span style="color:var(--brand-ink)">Q.</span> 여러 세션을 동시에 운영할 수 있나요?</span><span style="color:var(--g4);font-size:22px">+</span></div>' +
+        '<div style="background:var(--bg2);border-radius:16px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16.5px;font-weight:700"><span style="color:var(--brand-ink)">Q.</span> 기존 신청 데이터도 가져올 수 있나요?</span><span style="color:var(--g4);font-size:22px">+</span></div>' +
+        '<div style="background:var(--bg2);border-radius:16px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16.5px;font-weight:700"><span style="color:var(--brand-ink)">Q.</span> 모바일에서도 확인하고 알림을 받을 수 있나요?</span><span style="color:var(--g4);font-size:22px">+</span></div>' +
+        '<div style="background:var(--bg2);border-radius:16px;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:16.5px;font-weight:700"><span style="color:var(--brand-ink)">Q.</span> 도입 절차가 복잡하거나 오래 걸리지는 않나요?</span><span style="color:var(--g4);font-size:22px">+</span></div>' +
+        '</div></div></section>' },
+    ]},
+    { id: 'g7', name: '07 · 상태 화면', blocks: [
+      { code: 'status:done', desc: '신청 완료 상태 밴드 — 폼 대체 화면 (카탈로그 전용 — 팩 렌더러 미편입)', bg: '#121419', stat:
+        '<section style="background:var(--dark);color:#fff;padding:80px 0;text-align:center"><div class="wrap">' +
+        '<b style="font-size:28px;letter-spacing:-.02em">HR Growth 2026</b>' +
+        '<p style="margin-top:18px;font-size:16px;color:rgba(255,255,255,.72);line-height:1.7">신청이 완료되었습니다.<br>확정 안내 메일을 보내드릴게요. 감사합니다.</p></div></section>' },
+      { code: 'status:closed', desc: '마감 상태 밴드 — 일시 + 다음 안내 (카탈로그 전용 — 팩 렌더러 미편입)', bg: '#121419', stat:
+        '<section style="background:var(--dark);color:#fff;padding:80px 0;text-align:center"><div class="wrap">' +
+        '<b style="font-size:28px;letter-spacing:-.02em">HR Growth 2026</b>' +
+        '<div style="margin-top:12px;font-size:13.5px;color:rgba(255,255,255,.5)">2026. 10. 15 (목) 13:30 ㅣ 섬유센터빌딩 Tex Fa Hall</div>' +
+        '<p style="margin-top:22px;font-size:16px;color:rgba(255,255,255,.72);line-height:1.7">신청이 마감되었습니다.<br>다음 세미나로 다시 찾아뵙겠습니다. 감사합니다.</p></div></section>' },
     ]},
   ];
 
@@ -200,13 +673,25 @@ a{text-decoration:none;color:inherit}
         var lbl = document.createElement('div'); lbl.className = 'lbl';
         lbl.innerHTML = '<b>' + b.code + '</b><span>' + b.desc + '</span>' +
           (b.mo ? '<span class="mo">모션 · ' + b.mo + '</span>' : '') +
-          '<button class="play' + (b.mo ? '' : ' still') + '" style="background:' + THEME_SW[theme] + '">' + (b.live ? '⤢ 전체 페이지' : '▶ 모션 보기') + '</button>';
-        lbl.querySelector('.play').addEventListener('click', function () { openLive(b); });
+          (b.stat ? '' : '<button class="play' + (b.mo ? '' : ' still') + '" style="background:' + THEME_SW[theme] + '">' + (b.live ? '⤢ 전체 페이지' : '▶ 모션 보기') + '</button>');
+        var playBtn = lbl.querySelector('.play');
+        if (playBtn) playBtn.addEventListener('click', function () { openLive(b); });
         var blk = document.createElement('div'); blk.className = 'blk';
         var fr = document.createElement('iframe'); fr.setAttribute('loading', 'lazy');
         blk.appendChild(fr);
         cat.appendChild(lbl); cat.appendChild(blk);
-        if (b.live) {
+        if (b.stat) {
+          /* 정적 블록 — 카탈로그 전용 마크업. 팩 CSS 뒤에 토큰 오버라이드 + EXT_CSS 주입 */
+          fr.setAttribute('scrolling', 'no');
+          var TF = THEME_FULL[theme];
+          fr.srcdoc = '<!doctype html><html><head><meta charset="utf-8">' + styleHtml +
+            '<style>:root{--brand:' + TF.brand + ';--brand-deep:' + TF.deep + ';--mint:' + TF.mint + ';--brand-ink:' + TF.bink + '}</style><style>' + EXT_CSS + '</style>' +
+            '<style>body{background:' + (b.bg || '#fff') + ' !important;overflow:hidden}</style>' +
+            '</head><body>' + b.stat + '</body></html>';
+          fr.addEventListener('load', function () {
+            try { fr.style.height = Math.min(1700, Math.max(70, fr.contentDocument.body.scrollHeight)) + 'px'; } catch (e) {}
+          });
+        } else if (b.live) {
           /* 라이브 프레임 — 프레임 안에서 직접 스크롤하면 핀 스크럽·리빌·존 전환이 그대로 동작 */
           fr.srcdoc = liveDoc(b.src, b.live);
           fr.addEventListener('load', function () {
