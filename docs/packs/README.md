@@ -5,7 +5,7 @@
 ```
 packs/
   ppt/   PPT 팩  — packs.naver.js rams machine pastel sfmi pitch honors ppt
-  web/   웹/랜딩 팩 — packs.mbm.js mbmtoss axday toss orbit saturn aether krds midas
+  web/   웹/랜딩 팩 — packs.mbm.js skmbm axday toss orbit saturn aether krds midas
   edm/   eDM 팩  — packs.edm.js
 ```
 
@@ -25,7 +25,7 @@ packs/
 | honors | PPT | MIDAS Honors | 활성(피커 밖) | 팩 옆 .md |
 | ppt | PPT | 기본(ax) | 레거시 폴백 | 팩 옆 .md |
 | mbm | 웹 | Civil Blue | **활성·시연 잠금**(GNB·히어로) | [packs.mbm.md](../../packs/web/packs.mbm.md) |
-| mbmtoss | 웹 | Toss Green | 활성 — MBM×toss 번안, 핀 스크럽 4종·배경 존 전환 | [packs.mbmtoss.md](../../packs/web/packs.mbmtoss.md) |
+| skmbm(id:mbmtoss) | 웹 | SK MBM | 활성 — MBM×toss 번안, 핀 스크럽 4종·배경 존 전환 | [packs.skmbm.md](../../packs/web/packs.skmbm.md) |
 | axday | 웹 | Ensol MBM | **활성·시연 잠금**(GNB·eyebrow·히어로·사진) | [packs.axday.md](../../packs/web/packs.axday.md) |
 | orbit | 웹 | Global MBM | **활성·시연 잠금**(GNB·히어로) | [packs.orbit.md](../../packs/web/packs.orbit.md) |
 | toss | 웹 | 챌린지 화이트 | 유지(피커 제외) | 팩 옆 .md |

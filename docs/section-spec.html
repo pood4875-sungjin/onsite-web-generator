@@ -7,16 +7,16 @@
 <style>
   :root{
     --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
-    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --line:#e9e9ee; --brand:#04B863; --brand-soft:#EAF8F0; --brand-deep:#067A43;
     --code-bg:#f6f6f8; --code-tx:#41415a;
-    --wf-bg:#fafafc; --wf-ink:#c9c6d6; --wf-ink2:#e2e0ec; --wf-acc:#6c2bff;
+    --wf-bg:#fafafc; --wf-ink:#C6D2CA; --wf-ink2:#DFE9E2; --wf-acc:#04B863;
   }
   @media (prefers-color-scheme: dark){
     :root{
       --bg:#14121c; --panel:#1c1927; --tx:#eceaf5; --tx2:#aaa6c0; --tx3:#767290;
-      --line:#2e2a40; --brand:#9d6bff; --brand-soft:#2a2144; --brand-deep:#c4a5ff;
+      --line:#2A342D; --brand:#05D16E; --brand-soft:#142A1E; --brand-deep:#96F2C4;
       --code-bg:#221e33; --code-tx:#cfc4f5;
-      --wf-bg:#191625; --wf-ink:#4a4563; --wf-ink2:#332e49; --wf-acc:#9d6bff;
+      --wf-bg:#16211B; --wf-ink:#47564C; --wf-ink2:#2C3A31; --wf-acc:#05D16E;
     }
   }
   :root[data-theme="dark"]{
@@ -27,9 +27,9 @@
   }
   :root[data-theme="light"]{
     --bg:#ffffff; --panel:#fff; --tx:#1c1a27; --tx2:#5c5870; --tx3:#8b87a0;
-    --line:#e9e9ee; --brand:#6c2bff; --brand-soft:#f4f4f6; --brand-deep:#4a1bb8;
+    --line:#e9e9ee; --brand:#04B863; --brand-soft:#EAF8F0; --brand-deep:#067A43;
     --code-bg:#f6f6f8; --code-tx:#41415a;
-    --wf-bg:#fafafc; --wf-ink:#c9c6d6; --wf-ink2:#e2e0ec; --wf-acc:#6c2bff;
+    --wf-bg:#fafafc; --wf-ink:#C6D2CA; --wf-ink2:#DFE9E2; --wf-acc:#04B863;
   }
   *{box-sizing:border-box; margin:0; padding:0}
   html{scroll-behavior:smooth}
@@ -105,15 +105,14 @@
 <h1>웹페이지 섹션 유형 정의서</h1>
 <p class="lead">웹페이지를 만들 때 쓰는 공통 언어를 한 문서로 묶었다.
 페이지가 어떤 유형으로 나뉘고, 각 페이지는 어떤 섹션으로 조립되며, 섹션마다 어떤 표현이 가능한지 —
-그리고 그 정의가 실제 디자인(케이스팩·스타일팩 카탈로그)으로 어떻게 이어지는지를 따라가며 본다.</p>
+그리고 그 정의가 디자인 씨드(SK MBM 랜딩페이지)에서 실제로 어떻게 구현됐는지까지 따라가며 본다.</p>
 
 <div class="flow">
   <span>① 페이지 유형</span><i>→</i>
   <span>② 섹션 유형</span><i>→</i>
   <span>③ 섹션 × 표현 변형</span><i>→</i>
-  <span>④ 행사 랜딩 12블록 → 디자인 카탈로그</span>
+  <span>④ 행사 랜딩 12블록 → 디자인 씨드</span>
 </div>
-<p class="sub">근거: <code>app/pagetypes.js</code> · Figma Design Generator(랜딩페이지 제작 사이즈 484-83314 / Block·Template 513-737) · 기준일 2026-08-20</p>
 
 <!-- ═══════════ 1. 페이지 유형 ═══════════ -->
 <h2><span class="n">01</span>페이지 유형 정의 — 10종</h2>
@@ -129,14 +128,11 @@
   <tr><td><b>manual</b> 매뉴얼</td><td>가이드 입구</td><td class="seq">pagehero → <b>doclist</b> → <i>steps</i> → cta</td></tr>
   <tr><td><b>blog</b> 블로그</td><td>소식 목록</td><td class="seq">pagehero → <b>bloglist</b> → <i>cta</i></td></tr>
   <tr><td><b>landing</b> 제품 랜딩</td><td>전환 하나에 집중한 한 장</td><td class="seq">hero → <i>feature</i> → <i>stats</i> → <i>testimonial</i> → cta</td></tr>
-  <tr><td><b>event</b> 행사 랜딩</td><td>세미나·웨비나·컨퍼런스 집객 한 장</td><td class="seq">hero → overview → <i>intro</i> → agenda → speakers → <i>notice</i> → cta</td></tr>
+  <tr><td><b>event</b> 행사 랜딩</td><td>세미나·웨비나·컨퍼런스 집객 한 장</td><td class="seq">hero → overview → <i>slogan</i> → <i>intro</i> → agenda → speakers → <i>notice</i> → cta</td></tr>
 </table></div>
-<div class="box info"><b class="t">두 갈래의 팩</b> — 위 조립표대로 여러 페이지를 만드는 <b>사이트형</b> 팩(Saturn·KRDS·MIDAS AX·Aether)과,
-행사 한 장에 골격을 고정하고 내용만 갈아입는 <b>랜딩형</b> 팩(Civil Blue·Ensol MBM·Toss Green 등)이 있다.
-§4의 12블록 정의는 랜딩형(행사) 전용 규격이다.</div>
 
 <!-- ═══════════ 2. 섹션 유형 ═══════════ -->
-<h2><span class="n">02</span>섹션 유형 정의 — 22종</h2>
+<h2><span class="n">02</span>섹션 유형 정의 — 23종</h2>
 <p class="sub">페이지를 이루는 최소 단위. 모든 팩은 이 어휘를 자기 디자인으로 구현하고, 없는 유형은 비슷한 유형으로 대체해 렌더한다(깨지지 않는 것이 우선).</p>
 <div class="tblwrap"><table>
   <tr><th>묶음</th><th>섹션</th><th>역할</th><th>표현 변형</th></tr>
@@ -151,7 +147,8 @@
   <tr><td><code>compare</code></td><td>비교 (우리 vs 기존)</td><td>table · beforeafter · cards</td></tr>
   <tr><td class="grp" rowspan="2">신뢰·수치</td><td><code>stats</code></td><td>지표 숫자</td><td>numbers · kpi · big · dark · chart</td></tr>
   <tr><td><code>testimonial</code></td><td>고객 후기·로고</td><td>cards · single · logos</td></tr>
-  <tr><td class="grp" rowspan="3">전환</td><td><code>cta</code></td><td>행동 유도 배너</td><td>banner · simple · cards</td></tr>
+  <tr><td class="grp" rowspan="4">전환</td><td><code>cta</code></td><td>행동 유도 배너</td><td>banner · simple · cards</td></tr>
+  <tr><td><code>slogan</code></td><td>한 줄 훅 문구 — 가치 제안을 박고 큰 섹션 사이 호흡을 만든다</td><td>chips · typing · statement</td></tr>
   <tr><td><code>form</code></td><td>문의·신청 폼</td><td>center · split · full</td></tr>
   <tr><td><code>pricing</code></td><td>요금 플랜</td><td>cards · table</td></tr>
   <tr><td class="grp" rowspan="6">안내</td><td><code>faq</code></td><td>자주 묻는 질문</td><td>accordion · twocol · category · bars</td></tr>
@@ -175,34 +172,24 @@
 
 <!-- ═══════════ 4. 행사 랜딩 12블록 ═══════════ -->
 <h2><span class="n">04</span>행사 랜딩페이지 정의 — 12블록</h2>
-<p class="sub">위 22종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 블록마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
-기준 폭 1920, 높이는 유동. 출처: Figma Design Generator.</p>
+<p class="sub">위 23종 어휘에서 행사(세미나·웨비나·컨퍼런스) 집객 랜딩에 필요한 것만 추려, 블록마다 반복 여부·CTA·데이터 필드까지 규격으로 못 박은 정의.
+기준 폭 1920, 높이는 유동. 마지막 열은 디자인 씨드(SK MBM 랜딩페이지)가 각 블록을 실제로 어떤 섹션으로 구현했는지의 기록.</p>
 <div class="tblwrap"><table>
-  <tr><th>#</th><th>블록</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th></tr>
-  <tr><td>1</td><td><b>Hero 배너</b></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td></tr>
-  <tr><td>2</td><td><b>띠배너 Marquee</b></td><td>텍스트·로고가 좌우로 흐르는 공지</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">marquee_text · icon · speed · direction</td></tr>
-  <tr><td>3</td><td><b>소개영역 Intro</b></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td></tr>
-  <tr><td>4</td><td><b>핵심포인트 Key Point</b></td><td>주요 메시지·성과·강점 — 카드형</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">point_title · point_desc · image · cta_text</td></tr>
-  <tr><td>5</td><td><b>이벤트 Event</b></td><td>참여 혜택·경품·프로모션</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">event_title · event_desc · image · cta_text</td></tr>
-  <tr><td>6</td><td><b>연사소개 Speaker</b></td><td>발표자 정보 — 사진·소속·소개</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">name · title · company · desc · photo</td></tr>
-  <tr><td>7</td><td><b>아젠다 Agenda</b></td><td>세션 일정·프로그램 리스트</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">session_title · time · speaker · desc</td></tr>
-  <tr><td>8</td><td><b>행사요약 Event Summary</b></td><td>대상·장소·일정을 한눈에</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">target · place_name · date</td></tr>
-  <tr><td>9</td><td><b>신청 양식 Registration</b></td><td>참가 신청 — 정보 입력·제출</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">form_title · fields[] · cta_text · submit_type · success_msg</td></tr>
-  <tr><td>10</td><td><b>장소안내 Location</b></td><td>지도·주소·접근 안내</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">place_name · address · map · link · parking_info</td></tr>
-  <tr><td>11</td><td><b>질문답변 FAQ</b></td><td>Q&amp;A로 사전 문의 대응</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">question · answer</td></tr>
-  <tr><td>12</td><td><b>안내문구 Info</b></td><td>유의사항 — Footer 위 참고 문구</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">title · text_list[]</td></tr>
-  <tr><td>+</td><td><b>Closing CTA</b></td><td>마무리 전환 밴드</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">cta_title · cta_sub · cta_text</td></tr>
+  <tr><th>#</th><th>블록</th><th>역할</th><th>반복</th><th>CTA</th><th>주요 데이터</th><th>씨드 구현 — 사용 섹션</th></tr>
+  <tr><td>1</td><td><b>Hero 배너</b></td><td>시선을 잡는 대표 비주얼 — 행사명·일정·신청 버튼</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">title · subtitle · date · location · cta_text · cta_link · bg_image</td><td><code>hero</code> 풀스크린 영상 + 스크롤 핀(카드 축소·블러)</td></tr>
+  <tr><td>2</td><td><b>슬로건 훅 Slogan</b></td><td>가치 제안을 한 줄로 박는 마케팅 훅 — 큰 섹션 사이 호흡을 만든다</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">slogan_text · highlight · motion</td><td><code>slogan</code> ×3 — 칩 강조 · 내러티브 카운트업 · 타이핑 모션</td></tr>
+  <tr><td>3</td><td><b>소개영역 Intro</b></td><td>행사 배경과 주요 메시지를 간결히</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">intro_title · intro_desc · main_image · key_phrase</td><td><code>about</code> 도입 질문 + 수치 카운트업</td></tr>
+  <tr><td>4</td><td><b>핵심포인트 Key Point</b></td><td>주요 메시지·성과·강점 — 카드형</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">point_title · point_desc · image · cta_text</td><td><code>areas</code> 스텝 핀 스크럽 · <code>zig</code> 지그재그 (2회 사용)</td></tr>
+  <tr><td>5</td><td><b>이벤트 Event</b></td><td>참여 혜택·경품·프로모션</td><td><span class="tag t-rep">반복 1~N</span></td><td><span class="tag t-cta">선택</span></td><td class="seq">event_title · event_desc · image · cta_text</td><td><code>event</code> 혜택 카드 3</td></tr>
+  <tr><td>6</td><td><b>연사소개 Speaker</b></td><td>발표자 정보 — 사진·소속·소개</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">name · title · company · desc · photo</td><td>독립 섹션 없음 — <code>session</code> 카드에 연사·소속으로 흡수</td></tr>
+  <tr><td>7</td><td><b>아젠다 Agenda</b></td><td>세션 일정·프로그램 리스트</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">session_title · time · speaker · desc</td><td><code>session</code> 다크 존 세션 카드</td></tr>
+  <tr><td>8</td><td><b>행사요약 Event Summary</b></td><td>대상·장소·일정을 한눈에</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">target · place_name · date</td><td><code>location</code> 상단 일정·장소 카드</td></tr>
+  <tr><td>9</td><td><b>신청 양식 Registration</b></td><td>참가 신청 — 정보 입력·제출</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">form_title · fields[] · cta_text · submit_type · success_msg</td><td><code>apply</code> 2단 폼 + 개인정보 동의</td></tr>
+  <tr><td>10</td><td><b>장소안내 Location</b></td><td>지도·주소·접근 안내</td><td><span class="tag t-rep">단일</span></td><td>—</td><td class="seq">place_name · address · map · link · parking_info</td><td><code>location</code> 구글맵 임베드 — 카드 우측 풀 블리드</td></tr>
+  <tr><td>11</td><td><b>질문답변 FAQ</b></td><td>Q&amp;A로 사전 문의 대응</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">question · answer</td><td><code>faq</code> 아코디언</td></tr>
+  <tr><td>12</td><td><b>안내문구 Info</b></td><td>유의사항 — Footer 위 참고 문구</td><td><span class="tag t-rep">반복 1~N</span></td><td>—</td><td class="seq">title · text_list[]</td><td><code>footer</code> 슬로건·링크 컬럼 (유의사항 리스트는 미사용)</td></tr>
+  <tr><td>+</td><td><b>Closing CTA</b></td><td>마무리 전환 밴드</td><td><span class="tag t-rep">단일</span></td><td><span class="tag t-cta">필수</span></td><td class="seq">cta_title · cta_sub · cta_text</td><td><code>cta-band</code> 그라데이션 밴드 + 하단 고정 <code>dock</code></td></tr>
 </table></div>
-<div class="box info"><b class="t">블록별 디자인 카탈로그</b> —
-<a href="sections-mbmtoss.html">Toss Green 전 섹션 베리에이션 (82블록 · 라이브)</a> ·
-<a href="sections-axday.html">Ensol MBM 전 섹션 베리에이션 (72블록)</a></div>
-<p class="dim">데이터 계약: 이 필드들은 생성 스키마의 <code>sessions[] · eventDate · eventPlace · deadline · faq[] · ctaTitle/ctaSub</code>와 대응한다.
-폼 실제 제출(<code>submit_type · success_msg</code>)은 서버 수신이 필요한 별도 작업 단위.</p>
-
-<p class="dim" style="margin-top:44px; border-top:1px solid var(--line); padding-top:14px">
-<b>디자인 씨드</b> — <a href="../packs/web/packs.mbmtoss.sample.html">SK 사업 · MBM 랜딩페이지 (상단 영상형)</a>
-<span class="dim">· 12블록 정의를 처음부터 끝까지 구현한 원본 시안. Toss Green 팩이 여기서 나왔다.</span><br><br>
-웹페이지 섹션 유형 정의서 · 근거: <code>app/pagetypes.js</code> · Figma Design Generator(484-83314 · 513-737) · 최종 갱신 2026-08-20</p>
 
 </div>
 
@@ -221,7 +208,7 @@ var WF = {
   'hero.center': '<div class="c ctr">'+T(56)+t(40)+r(BTN+BTN)+'</div>',
   'hero.split': r( c(T(80)+t(65)+t(50)+r(BTN)) + img(70,44) ),
   'hero.screenshot': '<div class="c ctr">'+T(46)+r(BTN)+img(52,78)+'</div>',
-  'hero.bgimage': '<div class="c ctr grow" style="background:linear-gradient(135deg,#413a6b,#6c2bff88);border-radius:6px;justify-content:center"><div class="T" style="width:52%;background:#fff;opacity:.92"></div><div class="t" style="width:38%;background:#fff;opacity:.55"></div><div class="btn" style="background:#fff;opacity:.95"></div></div>',
+  'hero.bgimage': '<div class="c ctr grow" style="background:linear-gradient(135deg,#16241C,#05D16E88);border-radius:6px;justify-content:center"><div class="T" style="width:52%;background:#fff;opacity:.92"></div><div class="t" style="width:38%;background:#fff;opacity:.55"></div><div class="btn" style="background:#fff;opacity:.95"></div></div>',
   'pagehero.banner': '<div class="c">'+T(38)+t(58)+'</div>',
   'pagehero.breadcrumb': '<div class="c">'+r(t(8)+t(8)+t(12,1))+T(38)+'</div>',
   'overview.split': r( c(T(60)) + c(t(90)+t(84)+t(70)) ),
@@ -246,11 +233,14 @@ var WF = {
   'stats.numbers': r('<div class="c ctr grow">'+num('87%')+t(50)+'</div><div class="c ctr grow">'+num('3.2s')+t(50)+'</div><div class="c ctr grow">'+num('12k')+t(50)+'</div>'),
   'stats.kpi': r(card(num('87%')+t(60))+card(num('3.2s')+t(60))+card(num('12k')+t(60))),
   'stats.big': '<div class="c ctr"><div class="num" style="font-size:30px">98.7%</div>'+t(34)+'</div>',
-  'stats.dark': '<div class="c ctr grow" style="background:#221e33;border-radius:6px;justify-content:center"><div class="num" style="font-size:24px">1,300</div><div class="t" style="width:30%;background:#4a4563"></div></div>',
+  'stats.dark': '<div class="c ctr grow" style="background:#1B2620;border-radius:6px;justify-content:center"><div class="num" style="font-size:24px">1,300</div><div class="t" style="width:30%;background:#47564C"></div></div>',
   'stats.chart': r( c(T(52)+t(70)) + '<div class="r grow" style="align-items:flex-end;height:56px"><div class="t" style="height:34px;width:14%"></div><div class="t" style="height:44px;width:14%"></div><div class="t acc" style="height:18px;width:14%"></div></div>' ),
   'testimonial.cards': r(card('<div class="q">“</div>'+t(88)+t(70)+r(CIRC+t(34)))+card('<div class="q">“</div>'+t(88)+t(70)+r(CIRC+t(34)))),
   'testimonial.single': '<div class="c ctr"><div class="q">“</div>'+T(66)+t(48)+r(CIRC+t(22))+'</div>',
   'testimonial.logos': '<div class="c ctr">'+r(t(16)+t(16)+t(16)+t(16))+num('120+')+t(38)+'</div>',
+  'slogan.chips': '<div class="c ctr" style="justify-content:center">'+r(t(14)+t(7,1)+t(7,1)+t(7,1)+t(10))+T(44,1)+'</div>',
+  'slogan.typing': '<div class="c ctr" style="justify-content:center">'+T(50,1)+r(T(30)+'<span class="chev" style="margin-left:2px">|</span>')+'</div>',
+  'slogan.statement': '<div class="c ctr grow" style="background:#1B2620;border-radius:6px;justify-content:center"><div class="T" style="width:54%;background:#fff;opacity:.92"></div><div class="t acc" style="width:26%"></div></div>',
   'cta.banner': '<div class="band" style="flex:none; height:56px">'+c(T(52)+t(38))+BTN+'</div>',
   'cta.simple': '<div class="c ctr">'+T(44)+r(BTN)+'</div>',
   'cta.cards': r(card(T(56)+t(70)+r(BTN))+card(T(56)+t(70)+r(BTN))),
@@ -304,6 +294,7 @@ var CAT = [
   ]],
   ['전환', [
     ['cta','행동 유도', [['banner','풀 배너','기본'],['simple','제목+버튼 미니멀'],['cards','2단 카드 CTA']]],
+    ['slogan','한 줄 훅 문구 — 섹션 사이 호흡', [['chips','키워드 칩 강조','기본'],['typing','타이핑 모션 한 줄'],['statement','선언형 대형 문장(잉크 밴드)']]],
     ['form','문의·신청 폼', [['center','중앙 단일 폼','기본'],['split','좌 설명 / 우 폼'],['full','광폭 2열 폼(행사 신청)']]],
     ['pricing','요금 플랜', [['cards','플랜 카드','기본'],['table','요금 비교표']]],
   ]],
