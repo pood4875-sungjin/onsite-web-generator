@@ -31,7 +31,8 @@ a{text-decoration:none;color:inherit}
 .lbl .play{flex:none;margin-left:14px;background:var(--green);color:#fff;border:0;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:800;font-family:Pretendard,sans-serif;cursor:pointer}
 .lbl .play:hover{filter:brightness(.92)}
 .lbl .play.still{margin-left:auto}
-.grp-h{background:var(--green);color:#fff;padding:20px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.grp-h{background:var(--green);color:#fff;padding:18px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.grp-h .gd{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(255,255,255,.78)}
 .blk{border-bottom:1px solid var(--line)}
 .blk iframe{border:0;width:100%;height:400px;display:block;background:#fff}
 /* ── 라이브 모션 모달 ── */
@@ -56,10 +57,7 @@ a{text-decoration:none;color:inherit}
   <p>packs.mbmtoss.js(SK MBM × toss.im 번안)가 가진 섹션 어휘와 변형 전체.
   디자인 변형은 <b>variants</b> 필드, 컬러는 <b>theme</b> 필드로 선택합니다(코드의 콜론 뒤가 변형명).
   각 블록은 <b>살아있는 프레임</b> — 프레임 안에서 스크롤하면 핀 스크럽·리빌·배경 전환이 실제로 동작합니다. <b style="color:#049252">⤢ 전체 페이지</b>는 전체 맥락 모달(자동 재생).</p>
-  <div class="toc">
-    <a href="#g0">00 프레임</a><a href="#g1">01 도입부</a><a href="#g2">02 슬로건·내러티브</a>
-    <a href="#g3">03 콘텐츠</a><a href="#g4">04 신뢰·수치</a><a href="#g5">05 전환</a><a href="#g6">06 안내</a><a href="#g7">07 상태</a>
-  </div>
+  <div class="toc" id="toc"></div>
   <div class="themes" id="themes"><span class="tl">THEME</span></div>
 </div></div>
 
@@ -661,12 +659,49 @@ a{text-decoration:none;color:inherit}
   ];
 
   /* ── 정적 카탈로그 조립 (테마 바뀌면 재조립) ── */
+  /* ── 피그마 '행사 랜딩 12블록' 정의 체계 (Design Generator 484-83314 실측) — 표시 그룹·정의 라벨 ── */
+  var FIGMA_GROUPS = [
+    { id: 'f0', name: '00 · 프레임 — GNB', def: '상단 내비 — 전 페이지 공통', codes: ['gnb:dark', 'gnb:solid'] },
+    { id: 'b1', name: '01 · Hero 배너', def: '메인 후킹·타이틀·CTA 유도 — 단일 · CTA 선택 · title, subtitle, date, location, cta_text, cta_link, bg_image', codes: ['hero:video', 'hero:photo', 'hero:light', 'hero:split', 'hero:screenshot', 'pagehero:banner', 'pagehero:breadcrumb'] },
+    { id: 'b2', name: '02 · 띠배너 Marquee', def: '흐르는 공지·알림 — 단일 · marquee_text, icon, speed, direction', codes: ['gallery:marquee'] },
+    { id: 'b3', name: '03 · 소개영역 Intro', def: '행사 개요·목적·가치 — 단일 · intro_title, intro_desc, main_image, key_phrase', codes: ['intro:center', 'intro:quote', 'intro:story', 'overview:split', 'overview:center', 'overview:problem', 'chips:pop', 'typeline:scrub', 'narrative:blur', 'narrative:statement'] },
+    { id: 'b4', name: '04 · 핵심포인트 Key Point', def: '주요 메시지·성과·강점 — 반복 1~N · CTA 선택 · point_title, point_desc, image, cta_text', codes: ['areas:step4', 'areas:step3', 'areas:grid', 'feature:icons', 'feature:cards', 'feature:bento', 'feature:list', 'featurerows:numbered', 'featurerows:checks', 'zig:alt3'] },
+    { id: 'b5', name: '05 · 이벤트 Event', def: '참여 혜택·경품·프로모션 — 반복 1~N · CTA 선택 · event_title, event_desc, image, cta_text', codes: ['event:benefit3', 'event:list'] },
+    { id: 'b6', name: '06 · 연사소개 Speaker', def: '발표자·강연자 — 반복 1~N · name, title, company, desc, photo', codes: ['speakers:grid', 'speakers:text', 'speakers:rows'] },
+    { id: 'b7', name: '07 · 아젠다 Agenda', def: '세션 일정·프로그램 — 반복 1~N · session_title, time, speaker, desc', codes: ['session:cards', 'session:timetable', 'agenda:timeline', 'agenda:detail', 'agenda:table'] },
+    { id: 'b8', name: '08 · 행사요약 Event Summary', def: '대상·장소·일정 요약 — 단일 · target, place_name, date', codes: ['location:simple'] },
+    { id: 'b9', name: '09 · 신청 양식 Registration Form', def: '참가 신청·정보 수집 — 단일 · CTA 필수 · form_title, fields[], cta_text, success_msg', codes: ['apply:form', 'form:center', 'form:split'] },
+    { id: 'b10', name: '10 · 장소안내 Location', def: '행사 장소·지도·접근 — 단일 · place_name, address, map, link, parking_info', codes: ['location:map', 'location:nostation'] },
+    { id: 'b11', name: '11 · 질문답변 FAQ', def: 'Q&A 사전 문의 대응 — 반복 1~N · question, answer', codes: ['faq:accordion', 'faq:cards', 'faq:category', 'faq:bars'] },
+    { id: 'b12', name: '12 · 안내문구 Info / Footer', def: '유의사항·참고 문구 — 반복 1~N · title, text_list[]', codes: ['footer:columns'] },
+    { id: 'b13', name: '13 · Closing CTA', def: '마무리 전환 — 단일 · CTA · cta_title, cta_sub, cta_text', codes: ['ctaband:solo', 'ctaband:duo', 'ctaband:dark', 'cta:simple', 'cta:cards', 'dock:floating'] },
+    { id: 'gx', name: 'EXT · 확장 어휘', def: '피그마 정의 밖 — 케이스팩 계승 (수치·후기·비교·가격·절차·문서·소식·상태)', codes: ['about:count3', 'about:dark', 'about:chart', 'stats:kpi', 'stats:big', 'testimonial:cards', 'testimonial:single', 'testimonial:logos', 'compare:table', 'compare:beforeafter', 'compare:cards', 'steps:horizontal', 'steps:vertical', 'steps:cards', 'gallery:grid', 'gallery:mosaic', 'pricing:cards', 'pricing:table', 'doclist:cards', 'doclist:list', 'bloglist:cards', 'bloglist:list', 'bloglist:featured', 'status:done', 'status:closed'] },
+  ];
+
   var cat = document.getElementById('cat');
   function build() {
     renderAll();
     cat.innerHTML = '';
-    GROUPS.forEach(function (g) {
-      var gh = document.createElement('div'); gh.className = 'grp-h'; gh.id = g.id; gh.textContent = g.name;
+    /* 코드 → 블록 사전 (GROUPS는 정의 소스, 표시 순서는 FIGMA_GROUPS) */
+    var ALL = {}, seen = {};
+    GROUPS.forEach(function (g) { g.blocks.forEach(function (b) { ALL[b.code] = b; }); });
+    var VIEW = FIGMA_GROUPS.map(function (fg) {
+      return { id: fg.id, name: fg.name, def: fg.def, blocks: fg.codes.map(function (c) { seen[c] = 1; return ALL[c]; }).filter(Boolean) };
+    });
+    /* 매핑 누락 안전망 — 어느 그룹에도 안 잡힌 블록은 확장 그룹 끝에 */
+    var rest = [];
+    GROUPS.forEach(function (g) { g.blocks.forEach(function (b) { if (!seen[b.code]) rest.push(b); }); });
+    if (rest.length) VIEW[VIEW.length - 1].blocks = VIEW[VIEW.length - 1].blocks.concat(rest);
+    /* TOC */
+    var toc = document.getElementById('toc');
+    toc.innerHTML = '';
+    VIEW.forEach(function (g) {
+      var a = document.createElement('a'); a.href = '#' + g.id; a.textContent = g.name.replace(/ ·.*$/, '') === g.name ? g.name : g.name.split(' · ')[0] + ' ' + g.name.split(' · ')[1].split(' ')[0];
+      toc.appendChild(a);
+    });
+    VIEW.forEach(function (g) {
+      var gh = document.createElement('div'); gh.className = 'grp-h'; gh.id = g.id;
+      gh.innerHTML = '<span>' + g.name + '</span>' + (g.def ? '<span class="gd">' + g.def + '</span>' : '');
       gh.style.background = THEME_SW[theme];
       cat.appendChild(gh);
       g.blocks.forEach(function (b) {
