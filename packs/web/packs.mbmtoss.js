@@ -23,6 +23,15 @@
     return 'onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'' + PROD + 'bg/' + rel + '\';}else{this.parentNode.className=\'ph\';this.remove();}"';
   }
 
+  /* 컬러 테마 5종 — shared.theme으로 선택 (기본 green). brand/deep/mint(연 틴트)/ink(진한 텍스트)/zone(세션 존)/card(세션 카드) */
+  var THEMES = {
+    green:  { brand: '#05D16E', deep: '#04B863', mint: '#96F2C4', bink: '#067A43', zone: '#0E241A', card: '#142A1E', ph: '#1C3A29' },
+    blue:   { brand: '#3182F6', deep: '#1B64DA', mint: '#A9CCFB', bink: '#1957C2', zone: '#0D1B2E', card: '#12263F', ph: '#1B3557' },
+    purple: { brand: '#6735E6', deep: '#5B28CE', mint: '#C6B2F5', bink: '#4B2AAF', zone: '#191233', card: '#241B47', ph: '#2F2458' },
+    orange: { brand: '#FF5500', deep: '#E64A00', mint: '#FFC9A8', bink: '#B23B00', zone: '#2A160A', card: '#3A1E0E', ph: '#4A2812' },
+    red:    { brand: '#F04452', deep: '#D63340', mint: '#FBB6BC', bink: '#B22833', zone: '#2B1013', card: '#3D171C', ph: '#4D1D23' },
+  };
+
   var HERO_MP4 = 'mbmtoss-hero.mp4', HERO_POSTER = 'mbmtoss-hero3.jpg';
   var IMG_SES = ['mbmtoss-session.jpg', 'mbmtoss-mic.jpg', 'mbmtoss-company.jpg'];
   var IMG_ZIG = ['mbmtoss-insight.jpg', 'mbmtoss-experience.jpg', 'mbmtoss-network.jpg'];
@@ -151,9 +160,9 @@
     ],
   };
 
-  function css(LANG) {
+  function css(LANG, TH) {
     return [
-      ':root{--brand:#05D16E;--brand-deep:#04B863;--mint:#96F2C4;--ink:#191F28;--g1:#333D4B;--g2:#4E5968;--g3:#6B7684;--g4:#8B95A1;--bg1:#F9FAFB;--bg2:#F2F4F6;--dark:#121419;--dark-card:#1E2026}',
+      ':root{--brand:' + TH.brand + ';--brand-deep:' + TH.deep + ';--mint:' + TH.mint + ';--brand-ink:' + TH.bink + ';--zone-card:' + TH.card + ';--ink:#191F28;--g1:#333D4B;--g2:#4E5968;--g3:#6B7684;--g4:#8B95A1;--bg1:#F9FAFB;--bg2:#F2F4F6;--dark:#121419;--dark-card:#1E2026}',
       '*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}',
       'body{transition:background-color .8s ease;font-family:' + (LANG === 'ja' ? '"Noto Sans JP",' : LANG === 'zh' ? '"Noto Sans SC",' : '') + '"Toss Product Sans OTF","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}',
       'img{max-width:100%}a{text-decoration:none;color:inherit}',
@@ -163,7 +172,7 @@
       'p.sub{margin-top:16px;font-size:20px;line-height:1.6;color:var(--g3);word-break:keep-all}',
       '.center{text-align:center}',
       '.pill{display:inline-block;background:var(--brand);color:#fff;font-size:17px;font-weight:600;padding:16px 34px;border-radius:100px;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer;border:0;font-family:inherit}',
-      '.pill:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(5,209,110,.3)}',
+      '.pill:hover{transform:translateY(-2px);box-shadow:0 12px 28px color-mix(in srgb,var(--brand) 30%,transparent)}',
       '.cta2{display:inline-flex;align-items:center;gap:10px;background:rgba(7,25,76,.05);color:var(--ink);font-size:17px;font-weight:600;padding:16px 26px;border-radius:100px;text-decoration:none;cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s}',
       '.cta2 .arr{font-size:18px;font-weight:700;line-height:1}',
       '.cta2:hover{background:rgba(7,25,76,.09);transform:translateY(-2px)}',
@@ -171,7 +180,7 @@
       /* 하단 고정 CTA 독 — toss 플로팅 상담 바 */
       '.dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:18px;width:min(620px,calc(100vw - 48px));padding:10px 10px 10px 24px;background:#fff;border-radius:100px;box-shadow:0 18px 50px rgba(10,5,40,.25),0 2px 8px rgba(10,5,40,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}',
       '.dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}',
-      '.dock .tag{flex:none;background:rgba(5,209,110,.1);color:var(--brand);font-size:13px;font-weight:700;padding:7px 13px;border-radius:100px}',
+      '.dock .tag{flex:none;background:color-mix(in srgb,var(--brand) 10%,transparent);color:var(--brand);font-size:13px;font-weight:700;padding:7px 13px;border-radius:100px}',
       '.dock p{flex:1;font-size:16px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.dock .go{flex:none;background:var(--brand);color:#fff;font-size:15px;font-weight:600;padding:14px 28px;border-radius:100px;text-decoration:none;transition:background .2s}.dock .go:hover{background:var(--brand-deep)}',
       /* 리빌 */
@@ -245,12 +254,12 @@
       '.nline .hl{color:var(--mint)}',
       /* 세션 */
       '.dark{background:transparent;color:#fff}',
-      '.scard{background:#142A1E;border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}',
+      '.scard{background:var(--zone-card);border-radius:20px;padding:36px 28px 36px 48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}',
       '.scard+.scard{margin-top:20px}',
       '.scard .cap{font-size:14px;font-weight:600;color:var(--mint)}',
       '.scard h3{margin-top:12px;font-size:30px;font-weight:700;line-height:1.35;letter-spacing:-.02em}',
       '.scard .who{margin-top:22px;font-size:13.5px;color:rgba(255,255,255,.45)}',
-      '.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,#1C3A29,#0E241A);display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}',
+      '.scard .ph{height:200px;border-radius:14px;background:linear-gradient(160deg,var(--zone-card),var(--dark));display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:26px}',
       /* 지그재그 */
       '.zig{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}',
       '.zig+.zig{margin-top:120px}',
@@ -272,13 +281,13 @@
       '.mini .grow i{display:block;height:100%;border-radius:100px;background:var(--brand)}',
       '.mini .mrow{margin-top:10px;display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--g1);background:rgba(255,255,255,.85);border-radius:14px;padding:13px 14px;border:1.5px solid transparent}',
       '.mini .grow+.mrow,.mini .mb+.mrow{margin-top:16px}',
-      '.mini .mrow.hl{border-color:var(--brand);background:rgba(5,209,110,.07)}',
-      '.mini .mrow .dot{width:22px;height:22px;border-radius:50%;background:rgba(5,209,110,.12);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}',
+      '.mini .mrow.hl{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 7%,transparent)}',
+      '.mini .mrow .dot{width:22px;height:22px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:900;flex:none}',
       '.mini .mrow .val{margin-left:auto;font-size:12.5px;color:var(--g3);font-weight:700;background:rgba(3,7,18,.05);border-radius:100px;padding:5px 10px;flex:none}',
-      '.mini .mrow.hl .val{background:rgba(5,209,110,.14);color:#067A43}',
+      '.mini .mrow.hl .val{background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand-ink)}',
       '.mini .mbar{display:flex;gap:14px;align-items:flex-end;height:96px;margin-top:16px;padding:0 4px}',
       '.mini .mbar>i{flex:1;border-radius:6px 6px 0 0;background:#E3E6EB}.mini .mbar>i.hot{background:var(--brand)}',
-      '.mini .chipA{display:inline-block;margin-top:2px;background:rgba(5,209,110,.1);color:var(--brand);font-size:13px;font-weight:800;border-radius:8px;padding:4px 10px}',
+      '.mini .chipA{display:inline-block;margin-top:2px;background:color-mix(in srgb,var(--brand) 10%,transparent);color:var(--brand);font-size:13px;font-weight:800;border-radius:8px;padding:4px 10px}',
       /* EVENT 카드 — 이미지 상단 풀블리드 */
       '.egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}',
       '.ecard{background:#fff;border-radius:26px;border:0;box-shadow:0 10px 30px rgba(3,7,18,.06),0 2px 8px rgba(3,7,18,.04);padding:0 0 30px;overflow:hidden;display:flex;flex-direction:column;text-align:left}',
@@ -328,7 +337,7 @@
       /* areas:grid — 정적 2×2 파스텔 카드 */
       '.agrid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:64px}',
       '.acard{border-radius:24px;padding:34px 32px;position:relative;min-height:250px;text-align:left;background:var(--pvbg,var(--bg2))}',
-      '.acard .n{font-size:15px;font-weight:700;color:#067A43}',
+      '.acard .n{font-size:15px;font-weight:700;color:var(--brand-ink)}',
       '.acard b{display:block;margin-top:8px;font-size:26px;font-weight:700;letter-spacing:-.02em}',
       '.acard p{margin-top:12px;font-size:15.5px;line-height:1.65;color:var(--g2);word-break:keep-all;max-width:88%}',
       /* session:timetable — 라이트 타임테이블 */
@@ -341,7 +350,7 @@
       /* event:list — 아이콘 리스트 2열 */
       '.elist{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:64px;text-align:left}',
       '.eli{display:flex;gap:16px;align-items:flex-start;background:#fff;border-radius:18px;padding:24px 26px;box-shadow:0 8px 24px rgba(3,7,18,.05)}',
-      '.eli .ic{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(5,209,110,.12);color:var(--brand);display:grid;place-items:center;font-size:17px;font-weight:800}',
+      '.eli .ic{flex:none;width:44px;height:44px;border-radius:50%;background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand);display:grid;place-items:center;font-size:17px;font-weight:800}',
       '.eli .cap{font-size:13px;font-weight:600;color:var(--g4)}',
       '.eli b{display:block;margin-top:3px;font-size:18px;font-weight:700;letter-spacing:-.01em;word-break:keep-all}',
       /* faq:cards — 2열 상시 노출 */
@@ -382,7 +391,7 @@
       '.fans{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}.fitem.open .fans{max-height:220px}',
       '.fans p{padding:2px 28px 26px;font-size:15.5px;line-height:1.7;color:var(--g3);text-align:left;word-break:keep-all}',
       /* CTA 밴드 — 흐르는 그라데이션 + 블롭 */
-      '.cta-band{background:linear-gradient(115deg,#05D16E,#04B863 34%,#0ADB84 62%,#05C46B);background-size:220% 220%;animation:mtBandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}',
+      '.cta-band{background:linear-gradient(115deg,var(--brand),var(--brand-deep) 34%,color-mix(in srgb,var(--brand) 86%,#fff) 62%,color-mix(in srgb,var(--brand) 90%,#000));background-size:220% 220%;animation:mtBandGrad 11s ease-in-out infinite alternate;color:#fff;padding:120px 0;text-align:center;position:relative;overflow:hidden}',
       '@keyframes mtBandGrad{from{background-position:0% 30%}to{background-position:100% 70%}}',
       '.cta-band .deco{position:absolute;width:560px;height:560px;border-radius:50%;background:var(--brand-deep);filter:blur(90px);opacity:.8;right:-140px;top:-180px;animation:mtBandFloat 16s ease-in-out infinite alternate}',
       '.cta-band .deco2{position:absolute;width:460px;height:460px;border-radius:50%;background:var(--mint);filter:blur(110px);opacity:.26;left:-160px;bottom:-220px;animation:mtBandFloat2 21s ease-in-out infinite alternate}',
@@ -442,6 +451,7 @@
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
     var motion = opts.motion !== false;
+    var TH = THEMES[shared.theme] || THEMES.green;
 
     /* 템플릿 고정 라벨 — 번역 파이프라인을 안 타므로 팩이 4언어 직접 처리 */
     var TT = {
@@ -644,7 +654,7 @@
             '<span class="by"' + de(P + '.by') + '>' + esc(s.by || '') + '</span></div>';
         }).join('') + '</div></div></section>';
     } else
-    SEC.session = '<section class="sec dark" id="session" data-bg="#0E241A" data-section="session"><div class="wrap">' +
+    SEC.session = '<section class="sec dark" id="session" data-bg="' + TH.zone + '" data-section="session"><div class="wrap">' +
       '<div class="center"><h2 class="tt rv">' + esc(TT.sesT) + '</h2><p class="sub rv d1">' + esc(TT.sesS) + '</p></div>' +
       '<div style="margin-top:80px">' + sessions.map(function (s, i) {
         var P = 'sessions.' + i, slot = 'session.' + i, rel = IMG_SES[i % IMG_SES.length];
@@ -698,13 +708,13 @@
       '<g fill="#E2E7EE"><rect x="40" y="40" width="120" height="74" rx="10"/><rect x="180" y="28" width="96" height="60" rx="10"/><rect x="60" y="140" width="90" height="66" rx="10"/><rect x="470" y="30" width="110" height="70" rx="10"/><rect x="460" y="128" width="150" height="76" rx="10"/><rect x="184" y="112" width="88" height="88" rx="10"/><rect x="612" y="40" width="70" height="120" rx="10"/></g>' +
       '<g stroke="#fff" stroke-width="12" stroke-linecap="round" fill="none"><path d="M20 120 H690"/><path d="M170 10 V330"/><path d="M290 10 V220"/><path d="M448 10 V330"/><path d="M20 218 H660"/></g>' +
       '<g stroke="#C9D4E2" stroke-width="3" fill="none"><path d="M20 120 H690"/><path d="M448 10 V330"/></g>' +
-      (stationWord ? '<path d="M462 148 L332 186" stroke="#05D16E" stroke-width="3.5" stroke-dasharray="7 7" fill="none"/>' +
-        '<rect x="497" y="86" width="150" height="52" rx="14" fill="#05D16E"/>' +
+      (stationWord ? '<path d="M462 148 L332 186" stroke="' + TH.brand + '" stroke-width="3.5" stroke-dasharray="7 7" fill="none"/>' +
+        '<rect x="497" y="86" width="150" height="52" rx="14" fill="' + TH.brand + '"/>' +
         '<text x="572" y="119" text-anchor="middle" font-size="19" font-weight="800" fill="#fff" font-family="inherit">' + esc(stationWord) + '</text>' : '') +
-      '<rect x="272" y="186" width="66" height="48" rx="9" fill="#191F28" stroke="#05D16E" stroke-width="3"/>' +
-      '<path d="M305 128c-14 0-24 10-24 23 0 16 24 34 24 34s24-18 24-34c0-13-10-23-24-23z" fill="#05D16E"/>' +
+      '<rect x="272" y="186" width="66" height="48" rx="9" fill="#191F28" stroke="' + TH.brand + '" stroke-width="3"/>' +
+      '<path d="M305 128c-14 0-24 10-24 23 0 16 24 34 24 34s24-18 24-34c0-13-10-23-24-23z" fill="' + TH.brand + '"/>' +
       '<circle cx="305" cy="152" r="7.5" fill="#fff"/>' +
-      '<text x="305" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="#067A43" font-family="inherit">' + esc(placeMain.slice(0, 14)) + '</text>' +
+      '<text x="305" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="' + TH.bink + '" font-family="inherit">' + esc(placeMain.slice(0, 14)) + '</text>' +
       '</svg>';
     SEC.location = '<section class="sec" style="background:var(--bg1)" id="location" data-section="location"><div class="wrap center">' +
       '<h2 class="tt rv">' + esc(TT.locT) + '</h2>' +
@@ -853,7 +863,7 @@
     return '<!doctype html><html lang="' + LANG + '"' + (motion ? '' : ' class="nomo"') + '><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(d.productName) + '</title>' +
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">' +
       (LANG === 'ja' || LANG === 'zh' ? '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=' + (LANG === 'ja' ? 'Noto+Sans+JP' : 'Noto+Sans+SC') + ':wght@400;500;600;700;800&display=swap">' : '') +
-      '<style>' + css(LANG) + '</style></head><body data-pack="mbmtoss">' +
+      '<style>' + css(LANG, TH) + '</style></head><body data-pack="mbmtoss">' +
       kv + bodySecs + apply + footer + dock + fnjs + mot + staticFix + '</body></html>';
   };
 

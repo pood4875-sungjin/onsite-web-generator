@@ -16,16 +16,36 @@ a{text-decoration:none;color:inherit}
 .cat-head h1{font-size:40px;font-weight:300;letter-spacing:-.02em;margin-top:10px}
 .cat-head h1 b{font-weight:800}
 .cat-head p{margin-top:14px;color:var(--gray);font-size:15.5px;max-width:760px;line-height:1.6}
-.toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 26px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 14px}
 .toc a{font-size:12.5px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--gray)}
 .toc a:hover{border-color:var(--ink);color:var(--ink)}
-.lbl{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;padding:9px 30px;display:flex;gap:14px;align-items:baseline}
+.themes{display:flex;gap:10px;align-items:center;margin:0 0 26px}
+.themes .tl{font-size:12.5px;font-weight:700;color:var(--soft);margin-right:4px}
+.themes button{width:30px;height:30px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;padding:0;background:none}
+.themes button i{display:block;width:100%;height:100%;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(3,7,18,.18)}
+.themes button.on{border-color:var(--ink)}
+.lbl{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;padding:8px 30px;display:flex;gap:14px;align-items:center}
 .lbl b{color:#8CF5C6;font-weight:700}
 .lbl span{color:rgba(255,255,255,.62);font-family:Pretendard,sans-serif}
 .lbl .mo{margin-left:auto;flex:none;color:#FFD98A;font-family:Pretendard,sans-serif;font-weight:600}
+.lbl .play{flex:none;margin-left:14px;background:var(--green);color:#fff;border:0;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:800;font-family:Pretendard,sans-serif;cursor:pointer}
+.lbl .play:hover{filter:brightness(.92)}
+.lbl .play.still{margin-left:auto}
 .grp-h{background:var(--green);color:#fff;padding:20px 30px;font-size:14px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .blk{border-bottom:1px solid var(--line)}
 .blk iframe{border:0;width:100%;height:400px;display:block;background:#fff}
+/* ── 라이브 모션 모달 ── */
+.live{position:fixed;inset:0;z-index:99;background:rgba(10,12,16,.72);backdrop-filter:blur(6px);display:none}
+.live.on{display:block}
+.live .box{position:absolute;inset:34px;background:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 40px 120px rgba(0,0,0,.5)}
+.live .bar{flex:none;background:var(--ink);color:#fff;padding:11px 20px;display:flex;gap:14px;align-items:center;font-size:13px}
+.live .bar b{color:#8CF5C6;font-family:"SF Mono",ui-monospace,Menlo,monospace}
+.live .bar span{color:rgba(255,255,255,.6)}
+.live .bar .re{margin-left:auto;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer}
+.live .bar .x{background:#fff;color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.live iframe{border:0;flex:1;width:100%}
+.live .hint{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);background:rgba(10,12,16,.8);color:#fff;font-size:12.5px;padding:8px 16px;border-radius:999px;pointer-events:none;opacity:0;transition:opacity .4s}
+.live .hint.on{opacity:1}
 </style>
 </head>
 <body>
@@ -34,157 +54,229 @@ a{text-decoration:none;color:inherit}
   <div class="eb">Style Pack Catalog</div>
   <h1><b>Toss Green</b> — 전 섹션 베리에이션</h1>
   <p>packs.mbmtoss.js(SK MBM × toss.im 번안)가 가진 섹션 어휘와 변형 전체.
-  섹션마다 디자인 변형은 <b>variants</b> 필드로 선택합니다(코드의 콜론 뒤가 변형명). 핀 스크럽 섹션은 카탈로그에서 정적 상태로 표시되며, 우측 노란 라벨이 실제 페이지의 모션입니다.
-  데이터 필드가 비면 자동 숨김·폴백되는 규칙은 각 라벨에 표기.</p>
+  디자인 변형은 <b>variants</b> 필드, 컬러는 <b>theme</b> 필드로 선택합니다(코드의 콜론 뒤가 변형명).
+  블록 미리보기는 정적 상태 — <b style="color:#049252">▶ 모션 보기</b>를 누르면 실제 페이지가 열리고 해당 섹션의 모션을 자동 재생합니다.</p>
   <div class="toc">
     <a href="#g0">00 프레임</a><a href="#g1">01 도입부</a><a href="#g2">02 슬로건·내러티브</a>
     <a href="#g3">03 콘텐츠</a><a href="#g4">04 신뢰·수치</a><a href="#g5">05 전환</a><a href="#g6">06 안내</a>
   </div>
+  <div class="themes" id="themes"><span class="tl">THEME</span></div>
 </div></div>
 
 <div id="cat"></div>
+
+<div class="live" id="live">
+  <div class="box">
+    <div class="bar"><b id="lv-code"></b><span id="lv-desc"></span>
+      <button class="re" id="lv-replay">↻ 다시 재생</button>
+      <button class="x" id="lv-close">닫기 ✕</button></div>
+    <iframe id="lv-frame"></iframe>
+    <div class="hint" id="lv-hint">자동 재생 중 — 직접 스크롤해도 됩니다</div>
+  </div>
+</div>
 
 <script src="../packs/web/packs.mbmtoss.js"></script>
 <script>
 (function () {
   var HERO_JPG = new URL('../app/bg/mbmtoss-hero3.jpg', location.href).href;
+  var THEME_SW = { green: '#05D16E', blue: '#3182F6', purple: '#6735E6', orange: '#FF5500', red: '#F04452' };
+  var theme = 'green';
 
-  /* 변형별 렌더 소스 — 팩을 다른 데이터로 호출해 해당 섹션만 추출 */
-  var R = {};
-  R.base = window.renderMbmtossPage({}, { motion: false });
-  R.photo = window.renderMbmtossPage({ images: { hero: HERO_JPG } }, { motion: false });
-  R.step3 = window.renderMbmtossPage({ features: [
-    { title: '진단', desc: 'AI 데이터 진단으로 조직의 현재를 객관적으로 읽어냅니다.\n감이 아닌 데이터로 올바른 성장 방향을 정립합니다.' },
-    { title: '교육', desc: '진단 데이터를 바탕으로 구성원 맞춤 성장 가이드를 제시합니다.\nAI 롤플레잉 훈련으로 실무 적용력까지 끌어올립니다.' },
-    { title: '성과', desc: 'AI 기술을 접목해 성과관리의 패러다임을 전환합니다.\n현장에서 검증된 실전 사례로 다룹니다.' },
-  ] }, { motion: false });
-  R.duo = window.renderMbmtossPage({ bannerCta: '성과 · 평가 알아보기' }, { motion: false });
-  R.nostation = window.renderMbmtossPage({ eventPlace: '코엑스 컨퍼런스룸 402호' }, { motion: false });
-  R.varA = window.renderMbmtossPage({ variants: { hero: 'light', about: 'dark', areas: 'grid', session: 'timetable', event: 'list', faq: 'cards', ctaband: 'dark', location: 'simple', narrative: 'statement' } }, { motion: false });
-  R.varB = window.renderMbmtossPage({ variants: { about: 'chart' } }, { motion: false });
-  var DOCS = {};
-  for (var k in R) DOCS[k] = new DOMParser().parseFromString(R[k], 'text/html');
-  var styleHtml = '';
-  DOCS.base.querySelectorAll('head link[rel=stylesheet], head style').forEach(function (n) { styleHtml += n.outerHTML; });
-
-  function pick(src, sel, edit) {
-    var el = DOCS[src].querySelector(sel);
-    if (!el) return '';
-    el = el.cloneNode(true);
-    /* 카탈로그는 정적 표시 — 영상은 포스터 이미지로 치환 (23MB 로드 방지) */
-    el.querySelectorAll('video').forEach(function (v) {
-      var im = DOCS[src].createElement('img');
-      im.className = v.className; im.src = v.getAttribute('poster') || '';
-      v.parentNode.replaceChild(im, v);
-    });
-    if (edit) edit(el);
-    return el.outerHTML;
+  /* 렌더 소스 — shared 사전 (정적 카탈로그와 라이브 모달이 공유) */
+  var SRC = {
+    base: {},
+    photo: { images: { hero: HERO_JPG } },
+    step3: { features: [
+      { title: '진단', desc: 'AI 데이터 진단으로 조직의 현재를 객관적으로 읽어냅니다.\n감이 아닌 데이터로 올바른 성장 방향을 정립합니다.' },
+      { title: '교육', desc: '진단 데이터를 바탕으로 구성원 맞춤 성장 가이드를 제시합니다.\nAI 롤플레잉 훈련으로 실무 적용력까지 끌어올립니다.' },
+      { title: '성과', desc: 'AI 기술을 접목해 성과관리의 패러다임을 전환합니다.\n현장에서 검증된 실전 사례로 다룹니다.' },
+    ] },
+    duo: { bannerCta: '성과 · 평가 알아보기' },
+    nostation: { eventPlace: '코엑스 컨퍼런스룸 402호' },
+    varA: { variants: { hero: 'light', about: 'dark', areas: 'grid', session: 'timetable', event: 'list', faq: 'cards', ctaband: 'dark', location: 'simple', narrative: 'statement' } },
+    varB: { variants: { about: 'chart' } },
+  };
+  var DOCS = {}, styleHtml = '';
+  function renderAll() {
+    styleHtml = '';
+    for (var k in SRC) {
+      var shared = JSON.parse(JSON.stringify(SRC[k]));
+      shared.theme = theme;
+      DOCS[k] = new DOMParser().parseFromString(window.renderMbmtossPage(shared, { motion: false }), 'text/html');
+    }
+    DOCS.base.querySelectorAll('head link[rel=stylesheet], head style').forEach(function (n) { styleHtml += n.outerHTML; });
   }
 
-  /* ── 카탈로그 정의: 그룹 → 블록(타입:변형 코드 · 설명 · 모션 · 마크업) ── */
+  function pick(src, sels, edit) {
+    var out = '';
+    (Array.isArray(sels) ? sels : [sels]).forEach(function (sel) {
+      var el = DOCS[src].querySelector(sel);
+      if (!el) return;
+      el = el.cloneNode(true);
+      /* 정적 미리보기 — 영상은 포스터로 치환 (로드 폭탄 방지) */
+      el.querySelectorAll('video').forEach(function (v) {
+        var im = DOCS[src].createElement('img');
+        im.className = v.className; im.src = v.getAttribute('poster') || '';
+        v.parentNode.replaceChild(im, v);
+      });
+      if (edit) edit(el);
+      out += el.outerHTML;
+    });
+    return out;
+  }
+
+  /* ── 카탈로그 정의 — src/sel은 정적 미리보기와 라이브 재생 공용 ── */
   var GROUPS = [
     { id: 'g0', name: '00 · 프레임 — GNB / 플로팅', blocks: [
-      { code: 'gnb:dark', desc: '투명 GNB — 다크 히어로 위 · 블러 배경 · 그린 pill CTA', bg: '#121419',
-        html: function () { return pick('base', '.gnb'); } },
-      { code: 'gnb:solid', desc: '스크롤 후 화이트 GNB — 히어로를 벗어나면 전환', mo: '배경 크로스페이드 .4s',
-        html: function () { return pick('base', '.gnb', function (el) { el.classList.add('solid'); }); } },
-      { code: 'dock:floating', desc: '하단 고정 CTA 바 — 태그 · 행사 요약 · 그린 버튼 (productName·eventDate)', mo: '첫 화면 지나면 등장 → 폼 도달 시 퇴장', bg: '#F2F4F6', dock: 1,
-        html: function () { return pick('base', '#dock'); } },
+      { code: 'gnb:dark', desc: '투명 GNB — 다크 히어로 위 · 블러 배경 · 포인트 pill CTA', bg: '#121419', src: 'base', sel: '.gnb' },
+      { code: 'gnb:solid', desc: '스크롤 후 화이트 GNB — 히어로를 벗어나면 전환', mo: '배경 크로스페이드 .4s', src: 'base', sel: '.gnb', edit: function (el) { el.classList.add('solid'); } },
+      { code: 'dock:floating', desc: '하단 고정 CTA 바 — 태그 · 행사 요약 · 포인트 버튼', mo: '첫 화면 지나면 등장 → 폼 도달 시 퇴장', bg: '#F2F4F6', dock: 1, src: 'base', sel: '#dock', live: '#event' },
     ]},
     { id: 'g1', name: '01 · 도입부 — KV', blocks: [
-      { code: 'hero:video', desc: '영상 풀블리드 KV — 타이포(tagline·eventDate/Place) + 슬로건(subcopy). 카탈로그=정적 카드 상태', mo: '핀 280vh · 카드 축소 r0→32 + 블러 12px → 슬로건',
-        html: function () { return pick('base', '#kvtrack'); } },
-      { code: 'hero:photo', desc: '실사 이미지 KV — images.hero에 jpg/png가 오면 자동 전환', mo: '핀 280vh · 동일 스크럽',
-        html: function () { return pick('photo', '#kvtrack'); } },
-      { code: 'hero:light', desc: '라이트 타이포 히어로 — 흰 배경 · 그린 eyebrow · 핀 없음 (variants.hero=light, GNB 화이트 고정)',
-        html: function () { return pick('varA', '.gnb') + pick('varA', '.hero-light'); } },
+      { code: 'hero:video', desc: '영상 풀블리드 KV — tagline·eventDate/Place + 슬로건(subcopy)', mo: '핀 280vh · 카드 축소+블러 → 슬로건', src: 'base', sel: '#kvtrack', live: '#kvtrack' },
+      { code: 'hero:photo', desc: '실사 이미지 KV — images.hero에 jpg/png가 오면 자동 전환', mo: '핀 280vh · 동일 스크럽', src: 'photo', sel: '#kvtrack', live: '#kvtrack' },
+      { code: 'hero:light', desc: '라이트 타이포 히어로 — 흰 배경 · 포인트 eyebrow · 핀 없음 (variants.hero=light)', src: 'varA', sel: ['.gnb', '.hero-light'], live: '.hero-light' },
     ]},
     { id: 'g2', name: '02 · 슬로건 · 내러티브', blocks: [
-      { code: 'chips:pop', desc: '인라인 칩 슬로건 — features 타이틀이 칩으로 (2개 미만이면 자동 숨김)', mo: '칩 팝 스케일 .6→1 스태거',
-        html: function () { return pick('base', '[data-section=chips]'); } },
-      { code: 'typeline:scrub', desc: '타이핑 슬로건 2줄 — 슬로건 프레임 + productName', mo: '핀 220vh · 1.5배→축소 + 앞에서부터 잉크 채움 + 캐럿',
-        html: function () { return pick('base', '[data-section=typeline]'); } },
-      { code: 'narrative:blur', desc: '다크 내러티브 — bannerText 줄 단위 · 숫자는 자동 카운트업+민트 강조', mo: '핀 250vh · 줄 블러 리빌 + 배경 존 전환(잉크)', bg: '#121419',
-        html: function () { return pick('base', '[data-section=narrative]'); } },
-      { code: 'narrative:statement', desc: '정적 선언 변형 — 핀 없이 센터 대형 타이포 (variants.narrative=statement)', mo: '카운트업 + 배경 존 전환', bg: '#121419',
-        html: function () { return pick('varA', '[data-section=narrative]'); } },
+      { code: 'chips:pop', desc: '인라인 칩 슬로건 — features 타이틀이 칩으로', mo: '칩 팝 스케일 .6→1 스태거', src: 'base', sel: '[data-section=chips]', live: '[data-section=chips]' },
+      { code: 'typeline:scrub', desc: '타이핑 슬로건 2줄 — 슬로건 프레임 + productName', mo: '핀 220vh · 1.5배→축소 + 잉크 채움 + 캐럿', src: 'base', sel: '[data-section=typeline]', live: '#typetrack' },
+      { code: 'narrative:blur', desc: '다크 내러티브 — bannerText 줄 단위 · 숫자 자동 카운트업+민트', mo: '핀 250vh · 줄 블러 리빌 + 배경 존 전환', bg: '#121419', src: 'base', sel: '[data-section=narrative]', live: '#nar' },
+      { code: 'narrative:statement', desc: '정적 선언 변형 (variants.narrative=statement)', mo: '카운트업 + 배경 존 전환', bg: '#121419', src: 'varA', sel: '[data-section=narrative]', live: '#nar' },
     ]},
     { id: 'g3', name: '03 · 콘텐츠', blocks: [
-      { code: 'areas:step4', desc: '핵심 분야 스텝 — features 4개 · 좌 아코디언 + 우 파스텔 글래스 패널 4로테이션', mo: '핀 340vh · 진행도에 따라 스텝·패널 전환',
-        html: function () { return pick('base', '[data-section=areas]'); } },
-      { code: 'areas:step3', desc: '스텝 3개 변형 — features 수만큼 자동 (패널도 3개)', mo: '핀 340vh · 동일 스크럽',
-        html: function () { return pick('step3', '[data-section=areas]'); } },
-      { code: 'areas:grid', desc: '정적 2×2 파스텔 카드 변형 — 핀 없이 전 항목 동시 노출 (variants.areas=grid)',
-        html: function () { return pick('varA', '[data-section=areas]'); } },
-      { code: 'session:cards', desc: '세션 카드 — sessions(time·title·by) + 이미지 슬롯 session.N', mo: '배경 존 전환(다크그린 #0E241A)', bg: '#0E241A',
-        html: function () { return pick('base', '[data-section=session]'); } },
-      { code: 'session:timetable', desc: '라이트 타임테이블 변형 — 흰 카드 rows · time 그린 (variants.session=timetable)', mo: '행 호버 lift',
-        html: function () { return pick('varA', '[data-section=session]'); } },
-      { code: 'zig:alt3', desc: '지그재그 3 — zigs(cap·title·desc, 팩 전용 필드·편집으로 수정) + 이미지 슬롯 zig.N',
-        html: function () { return pick('base', '[data-section=zig]'); } },
-      { code: 'event:benefit3', desc: '혜택 카드 3 — benefits(팩 전용) · 이미지 상단 풀블리드 + 소프트 필 버튼',
-        html: function () { return pick('base', '[data-section=event]'); } },
-      { code: 'event:list', desc: '아이콘 리스트 2열 변형 — 이미지 없이 밀도형 (variants.event=list)',
-        html: function () { return pick('varA', '[data-section=event]'); } },
+      { code: 'areas:step4', desc: '핵심 분야 스텝 — features 4 · 좌 아코디언 + 우 파스텔 글래스 패널', mo: '핀 340vh · 스텝·패널 전환', src: 'base', sel: '[data-section=areas]', live: '#areas' },
+      { code: 'areas:step3', desc: '스텝 3개 변형 — features 수만큼 자동', mo: '핀 340vh · 동일 스크럽', src: 'step3', sel: '[data-section=areas]', live: '#areas' },
+      { code: 'areas:grid', desc: '정적 2×2 파스텔 카드 변형 (variants.areas=grid)', src: 'varA', sel: '[data-section=areas]', live: '[data-section=areas]' },
+      { code: 'session:cards', desc: '세션 카드 — sessions + 이미지 슬롯 session.N', mo: '배경 존 전환(딥 톤)', bg: '#0E241A', src: 'base', sel: '[data-section=session]', live: '#session' },
+      { code: 'session:timetable', desc: '라이트 타임테이블 변형 (variants.session=timetable)', mo: '행 호버 lift', src: 'varA', sel: '[data-section=session]', live: '#session' },
+      { code: 'zig:alt3', desc: '지그재그 3 — zigs(팩 전용·편집 수정) + 이미지 슬롯 zig.N', src: 'base', sel: '[data-section=zig]', live: '[data-section=zig]' },
+      { code: 'event:benefit3', desc: '혜택 카드 3 — benefits(팩 전용) · 이미지 풀블리드 + 소프트 필 버튼', src: 'base', sel: '[data-section=event]', live: '#event' },
+      { code: 'event:list', desc: '아이콘 리스트 2열 변형 (variants.event=list)', src: 'varA', sel: '[data-section=event]', live: '#event' },
     ]},
     { id: 'g4', name: '04 · 신뢰 · 수치', blocks: [
-      { code: 'about:count3', desc: '수치 하이라이트 3열 — stats(value·label) · 없으면 섹션 자동 숨김', mo: '진입 시 카운트업 1.4s',
-        html: function () { return pick('base', '[data-section=about]'); } },
-      { code: 'about:dark', desc: '잉크 밴드 대형 수치 변형 — 배경 브레이크용 (variants.about=dark)', mo: '카운트업', bg: '#121419',
-        html: function () { return pick('varA', '[data-section=about]'); } },
-      { code: 'about:chart', desc: '바 차트 카드 변형 — stats를 좌 카피 + 우 차트로, 마지막 항목 그린 강조 (variants.about=chart)',
-        html: function () { return pick('varB', '[data-section=about]'); } },
+      { code: 'about:count3', desc: '수치 하이라이트 3열 — stats · 없으면 자동 숨김', mo: '진입 시 카운트업 1.4s', src: 'base', sel: '[data-section=about]', live: '#about' },
+      { code: 'about:dark', desc: '잉크 밴드 대형 수치 변형 (variants.about=dark)', mo: '카운트업', bg: '#121419', src: 'varA', sel: '[data-section=about]', live: '#about' },
+      { code: 'about:chart', desc: '바 차트 카드 변형 — 마지막 항목 포인트 강조 (variants.about=chart)', src: 'varB', sel: '[data-section=about]', live: '#about' },
     ]},
     { id: 'g5', name: '05 · 전환', blocks: [
-      { code: 'ctaband:solo', desc: 'CTA 밴드 기본형 — ctaTitle·ctaSub + 신청 버튼 1', mo: '흐르는 그라데이션 11s + 블롭 플로트 2',
-        html: function () { return pick('base', '[data-section=ctaband]'); } },
-      { code: 'ctaband:duo', desc: '버튼 2개 변형 — bannerCta가 있으면 자동 추가', mo: '동일',
-        html: function () { return pick('duo', '[data-section=ctaband]'); } },
-      { code: 'ctaband:dark', desc: '잉크 밴드 변형 — 그라데이션 대신 다크 (variants.ctaband=dark)', bg: '#121419',
-        html: function () { return pick('varA', '[data-section=ctaband]'); } },
-      { code: 'apply:form', desc: '신청 폼(고정 섹션) — 6필드 + 직책 체크 토글 + 동의 2줄 · 라벨 4언어 팩 내장', mo: '인풋 호버/포커스 · 체크 클릭 토글',
-        html: function () { return pick('base', '#apply'); } },
+      { code: 'ctaband:solo', desc: 'CTA 밴드 기본형 — ctaTitle·ctaSub + 신청 버튼', mo: '흐르는 그라데이션 11s + 블롭 2', src: 'base', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
+      { code: 'ctaband:duo', desc: '버튼 2개 변형 — bannerCta가 있으면 자동 추가', mo: '동일', src: 'duo', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
+      { code: 'ctaband:dark', desc: '잉크 밴드 변형 (variants.ctaband=dark)', bg: '#121419', src: 'varA', sel: '[data-section=ctaband]', live: '[data-section=ctaband]' },
+      { code: 'apply:form', desc: '신청 폼(고정) — 6필드 + 체크 토글 · 라벨 4언어', mo: '인풋 포커스 · 체크 토글', src: 'base', sel: '#apply', live: '#apply' },
     ]},
     { id: 'g6', name: '06 · 안내', blocks: [
-      { code: 'location:map', desc: '일정·장소 — 지도 SVG(역 밴드·출구·점선·주차 POI) + 주소 바(복사·지도로 보기). 역명=eventPlace 둘째 줄 첫 어절 자동',
-        html: function () { return pick('base', '[data-section=location]'); } },
-      { code: 'location:nostation', desc: '역 정보 없는 변형 — eventPlace가 한 줄이면 역 밴드·점선 자동 숨김',
-        html: function () { return pick('nostation', '[data-section=location]'); } },
-      { code: 'location:simple', desc: '지도 없는 센터 정보 카드 변형 (variants.location=simple)',
-        html: function () { return pick('varA', '[data-section=location]'); } },
-      { code: 'faq:accordion', desc: 'FAQ — faq(q·a) · 클릭 아코디언 (+ → × 회전, 열린 카드 단일톤)', mo: '펼침 .45s',
-        html: function () { return pick('base', '[data-section=faq]', function (el) { var f = el.querySelector('.fitem'); if (f) f.classList.add('open'); }); } },
-      { code: 'faq:cards', desc: '2열 카드 변형 — 답변 상시 노출, 클릭 없음 (variants.faq=cards)',
-        html: function () { return pick('varA', '[data-section=faq]'); } },
-      { code: 'footer:columns', desc: '푸터 — 좌 슬로건(tagline) + 링크 컬럼 3(행사/참여/문의) + 카피 줄', bg: '#121419',
-        html: function () { return pick('base', '.dawnfoot'); } },
+      { code: 'location:map', desc: '일정·장소 — 지도 SVG(역 밴드·출구·점선·주차) + 주소 바. 역명 자동', src: 'base', sel: '[data-section=location]', live: '#location' },
+      { code: 'location:nostation', desc: '역 정보 없는 변형 — eventPlace 한 줄이면 역 밴드 자동 숨김', src: 'nostation', sel: '[data-section=location]', live: '#location' },
+      { code: 'location:simple', desc: '지도 없는 센터 정보 카드 변형 (variants.location=simple)', src: 'varA', sel: '[data-section=location]', live: '#location' },
+      { code: 'faq:accordion', desc: 'FAQ — 클릭 아코디언 (+ → × 회전)', mo: '펼침 .45s', src: 'base', sel: '[data-section=faq]', live: '[data-section=faq]', edit: function (el) { var f = el.querySelector('.fitem'); if (f) f.classList.add('open'); } },
+      { code: 'faq:cards', desc: '2열 카드 변형 — 답변 상시 노출 (variants.faq=cards)', src: 'varA', sel: '[data-section=faq]', live: '[data-section=faq]' },
+      { code: 'footer:columns', desc: '푸터 — 좌 슬로건(tagline) + 링크 컬럼 3 + 카피 줄', bg: '#121419', src: 'base', sel: '.dawnfoot', live: '.dawnfoot' },
     ]},
   ];
 
+  /* ── 정적 카탈로그 조립 (테마 바뀌면 재조립) ── */
   var cat = document.getElementById('cat');
-  GROUPS.forEach(function (g) {
-    var gh = document.createElement('div'); gh.className = 'grp-h'; gh.id = g.id; gh.textContent = g.name;
-    cat.appendChild(gh);
-    g.blocks.forEach(function (b) {
-      var lbl = document.createElement('div'); lbl.className = 'lbl';
-      lbl.innerHTML = '<b>' + b.code + '</b><span>' + b.desc + '</span>' + (b.mo ? '<span class="mo">모션 · ' + b.mo + '</span>' : '');
-      var blk = document.createElement('div'); blk.className = 'blk';
-      var fr = document.createElement('iframe'); fr.setAttribute('scrolling', 'no');
-      blk.appendChild(fr);
-      cat.appendChild(lbl); cat.appendChild(blk);
-      var extra = b.dock ? '<style>.dock{position:static;margin:36px auto;opacity:1;transform:none;pointer-events:auto}</style>' : '';
-      fr.srcdoc = '<!doctype html><html class="nomo"><head><meta charset="utf-8">' + styleHtml + extra +
-        '<style>html{scroll-behavior:auto}body{transition:none!important;background:' + (b.bg || '#fff') + '!important;overflow:hidden}' +
-        '.gnb{position:relative}</style></head><body>' + b.html() + '</body></html>';
-      fr.addEventListener('load', function () {
-        try {
-          var d2 = fr.contentDocument;
-          var v = d2.querySelector('video'); if (v) { v.autoplay = false; v.pause(); }
-          fr.style.height = Math.min(1700, Math.max(70, d2.body.scrollHeight)) + 'px';
-        } catch (e) {}
+  function build() {
+    renderAll();
+    cat.innerHTML = '';
+    GROUPS.forEach(function (g) {
+      var gh = document.createElement('div'); gh.className = 'grp-h'; gh.id = g.id; gh.textContent = g.name;
+      gh.style.background = THEME_SW[theme];
+      cat.appendChild(gh);
+      g.blocks.forEach(function (b) {
+        var lbl = document.createElement('div'); lbl.className = 'lbl';
+        lbl.innerHTML = '<b>' + b.code + '</b><span>' + b.desc + '</span>' +
+          (b.mo ? '<span class="mo">모션 · ' + b.mo + '</span>' : '') +
+          '<button class="play' + (b.mo ? '' : ' still') + '" style="background:' + THEME_SW[theme] + '">▶ 모션 보기</button>';
+        lbl.querySelector('.play').addEventListener('click', function () { openLive(b); });
+        var blk = document.createElement('div'); blk.className = 'blk';
+        var fr = document.createElement('iframe'); fr.setAttribute('scrolling', 'no');
+        blk.appendChild(fr);
+        cat.appendChild(lbl); cat.appendChild(blk);
+        var extra = b.dock ? '<style>.dock{position:static;margin:36px auto;opacity:1;transform:none;pointer-events:auto}</style>' : '';
+        fr.srcdoc = '<!doctype html><html class="nomo"><head><meta charset="utf-8">' + styleHtml + extra +
+          '<style>html{scroll-behavior:auto}body{transition:none!important;background:' + (b.bg || '#fff') + '!important;overflow:hidden}.gnb{position:relative}</style>' +
+          '</head><body>' + pick(b.src, b.sel, b.edit) + '</body></html>';
+        fr.addEventListener('load', function () {
+          try { fr.style.height = Math.min(1700, Math.max(70, fr.contentDocument.body.scrollHeight)) + 'px'; } catch (e) {}
+        });
       });
     });
+  }
+
+  /* 테마 스위처 */
+  var thWrap = document.getElementById('themes');
+  Object.keys(THEME_SW).forEach(function (t) {
+    var btn = document.createElement('button');
+    btn.className = t === theme ? 'on' : '';
+    btn.title = t;
+    btn.innerHTML = '<i style="background:' + THEME_SW[t] + '"></i>';
+    btn.addEventListener('click', function () {
+      theme = t;
+      thWrap.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
+      btn.classList.add('on');
+      build();
+    });
+    thWrap.appendChild(btn);
   });
+
+  build();
+
+  /* ── 라이브 모션 모달 — 실제 페이지(motion:true) + 해당 섹션 자동 스크럽 재생 ── */
+  var live = document.getElementById('live');
+  var lvFrame = document.getElementById('lv-frame');
+  var lvHint = document.getElementById('lv-hint');
+  var cur = null, animId = 0;
+
+  function openLive(b) {
+    cur = b;
+    document.getElementById('lv-code').textContent = b.code + ' · ' + theme;
+    document.getElementById('lv-desc').textContent = b.mo ? '모션 · ' + b.mo : '실제 페이지 상태';
+    live.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    var shared = JSON.parse(JSON.stringify(SRC[b.src]));
+    shared.theme = theme;
+    lvFrame.srcdoc = window.renderMbmtossPage(shared, { motion: true });
+    lvFrame.onload = function () { setTimeout(function () { play(b); }, 350); };
+  }
+  function play(b) {
+    cancelAnimationFrame(animId);
+    try {
+      var W = lvFrame.contentWindow, D = lvFrame.contentDocument;
+      var target = D.querySelector(b.live || (Array.isArray(b.sel) ? b.sel[0] : b.sel));
+      if (!target) return;
+      var vh = W.innerHeight;
+      var top = 0, el = target;
+      while (el) { top += el.offsetTop; el = el.offsetParent; }
+      var isTrack = (target.className && String(target.className).indexOf('track') >= 0) || target.id === 'kvtrack';
+      var from = Math.max(0, top - (isTrack ? 0 : vh * 0.55));
+      var to = isTrack ? top + target.offsetHeight - vh : Math.max(from + vh * 0.35, top + Math.min(target.offsetHeight, vh * 1.2) - vh * 0.7);
+      if (b.code.indexOf('dock') === 0) { from = 0; to = vh * 2.2; }
+      var dur = Math.min(9000, Math.max(2400, (to - from) * 2.2));
+      W.scrollTo(0, from);
+      lvHint.classList.add('on');
+      var t0 = null;
+      function step(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        W.scrollTo(0, from + (to - from) * e);
+        if (p < 1) animId = requestAnimationFrame(step);
+        else lvHint.classList.remove('on');
+      }
+      animId = requestAnimationFrame(step);
+    } catch (e) {}
+  }
+  document.getElementById('lv-replay').addEventListener('click', function () { if (cur) play(cur); });
+  document.getElementById('lv-close').addEventListener('click', closeLive);
+  live.addEventListener('click', function (e) { if (e.target === live) closeLive(); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape' && live.classList.contains('on')) closeLive(); });
+  function closeLive() {
+    cancelAnimationFrame(animId);
+    live.classList.remove('on');
+    lvFrame.srcdoc = '';
+    document.body.style.overflow = '';
+  }
 })();
 </script>
 </body>

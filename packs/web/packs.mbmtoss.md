@@ -9,8 +9,12 @@ SK MBM 랜딩 콘텐츠 × toss.im 실측 스케일/모션 번안. 그린 포인
 - `MBMTOSS_SECTION_SPEC` (template/fixed/labels) · `MBMTOSS_STYLE` (id: `mbmtoss`)
 - 데이터: compose-web 평면 스키마. 팩 전용 필드 `zigs[]`(cap/title/desc)·`benefits[]`(cap/title/link)는 스키마 밖 — DEMO 폴백, 인라인 편집으로만 수정.
 
+## 2.5 컬러 테마 5종 (theme 필드)
+`shared.theme` = green(기본)·blue·purple·orange·red. 포인트/딥/민트/진한 텍스트/세션 존/카드 톤이 세트로 스왑.
+CSS는 var(--brand) + color-mix 기반이라 팩 전체(버튼·칩·차트·지도 SVG·존 배경)가 한 번에 따라온다.
+
 ## 3. 디자인 베리에이션 (variants 필드)
-`shared.variants = { 섹션: 변형명 }` — 미지정 시 기본형. 전체 사전 = docs/sections-mbmtoss.html (31블록).
+`shared.variants = { 섹션: 변형명 }` — 미지정 시 기본형. 전체 사전 = docs/sections-mbmtoss.html (31블록 · 테마 스위처 · ▶ 모션 보기 = 실페이지 모달 자동 스크럽 재생).
 - hero: video(기본·imgs.hero가 mp4/webm) / photo(jpg·png 자동) / **light**(흰 배경 타이포 온리·핀 없음·GNB 화이트 고정)
 - about: count(기본 3열) / **dark**(잉크 밴드 대형 수치 — 배경 브레이크) / **chart**(좌 카피+우 바 차트, 마지막 항목 강조)
 - areas: scrub(기본 핀) / **grid**(정적 2×2 파스텔 카드)
