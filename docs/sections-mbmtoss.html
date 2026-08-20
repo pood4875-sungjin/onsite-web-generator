@@ -617,8 +617,8 @@ a{text-decoration:none;color:inherit}
         '</table></div></div></section>' },
     ]},
     { id: 'g6', name: '06 · 안내', blocks: [
-      { code: 'location:map', desc: '일정·장소 — 지도 SVG(역 밴드·출구·점선·주차) + 주소 바. 역명 자동', src: 'base', sel: '[data-section=location]', live: '#location' },
-      { code: 'location:nostation', desc: '역 정보 없는 변형 — eventPlace 한 줄이면 역 밴드 자동 숨김', src: 'nostation', sel: '[data-section=location]', live: '#location' },
+      { code: 'location:map', desc: '일정·장소 — 구글맵 embed + 주소 바(복사)', src: 'base', sel: '[data-section=location]', live: '#location' },
+      { code: 'location:nostation', desc: '주소 한 줄 변형 — eventPlace 한 줄. 구글맵 embed + 주소 바(복사)', src: 'nostation', sel: '[data-section=location]', live: '#location' },
       { code: 'location:simple', desc: '지도 없는 센터 정보 카드 변형 (variants.location=simple)', src: 'varA', sel: '[data-section=location]', live: '#location' },
       { code: 'faq:accordion', desc: 'FAQ — 클릭 아코디언 (+ → × 회전)', mo: '펼침 .45s', src: 'base', sel: '[data-section=faq]', live: '[data-section=faq]', edit: function (el) { var f = el.querySelector('.fitem'); if (f) f.classList.add('open'); } },
       { code: 'faq:cards', desc: '2열 카드 변형 — 답변 상시 노출 (variants.faq=cards)', src: 'varA', sel: '[data-section=faq]', live: '[data-section=faq]' },

@@ -297,7 +297,7 @@
       '.ecard b{margin:6px 28px 26px;font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}',
       '.ecard .lnk{margin:0 28px;margin-top:auto;align-self:flex-start;background:rgba(7,25,76,.05);color:var(--g1);font-size:15px;font-weight:600;padding:14px 20px;border-radius:100px;cursor:pointer;transition:background .2s}.ecard .lnk:hover{background:rgba(7,25,76,.09)}',
       /* 일정·장소 */
-      '.mapsvg{position:absolute;inset:0;width:100%;height:100%}',
+      '.mapsvg{position:absolute;inset:0;width:100%;height:100%;border:0}',
       '.place{margin-top:56px;background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(3,7,18,.05);overflow:hidden;display:grid;grid-template-columns:0.9fr 1.4fr}',
       '.place .info{padding:44px 40px;text-align:left}',
       '.place .info b{font-size:24px;font-weight:700;letter-spacing:-.02em}',
@@ -310,7 +310,6 @@
       '.place .foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 22px;background:#fff;border-top:1px solid var(--bg2);font-size:13.5px}',
       '.place .foot .addr{display:flex;align-items:center;gap:8px;color:var(--g2);font-weight:600}',
       '.place .foot .cpy{cursor:pointer;color:var(--g4);font-size:15px;transition:color .2s}.place .foot .cpy:hover{color:var(--ink)}',
-      '.place .foot .mlink{color:var(--g4);font-weight:600;cursor:pointer;transition:color .2s}.place .foot .mlink:hover{color:var(--ink)}',
       /* ── 디자인 베리에이션 ── */
       /* hero:light — 밝은 타이포 온리 (핀 없음) */
       '.hero-light{padding:200px 0 150px;text-align:center;background:#fff}',
@@ -462,7 +461,7 @@
       ko: { aboutT: '숫자로 보는\n지금 이 흐름', chipsPre: '수많은 ', chipsPost: ' 앞에서', chipsTail: '막막함은 사라지고, ', chipsHl: '실전 해답', chipsEnd: '만 남도록.',
             areasT: '핵심 분야의\n실전 활용법을 다룹니다', learn: ' 알아보기 →', sesT: 'SESSION', sesS: '현장에서 만나는 실전 세션.', zigT: '놓치면\n안되는 이유',
             slog1: '막막했던 고민의 해답,', slog2p: '이것마저도 ', slog2s: '에서', evT: 'EVENT', evS: '참석 고객을 위해 준비한 특별한 혜택.',
-            locT: '일정 및 장소', dt: '일시', pl: '장소', note: '*신청자가 많은 경우 조기 마감될 수 있습니다.', cpy: '주소 복사', mlink: '지도로 보기',
+            locT: '일정 및 장소', dt: '일시', pl: '장소', note: '*신청자가 많은 경우 조기 마감될 수 있습니다.', cpy: '주소 복사',
             applyT: ' 신청하기', faqT: '도입 전,\n이런 점이 궁금하신가요?', dockTag: '사전 신청',
             fName: '성함', fPhone: '휴대전화번호', fCompany: '회사명', fEmail: '이메일', fSize: '임직원 수', fRole: '직책 혹은 직위',
             fRoles: ['대표/ 임원', 'HR 리더', 'HR 담당자', '기타'], fPh: '입력해주세요.', fPhTel: '입력해주세요. (ex.010-0000-0000)',
@@ -471,7 +470,7 @@
       en: { aboutT: 'The shift,\nin numbers', chipsPre: 'Facing countless ', chipsPost: ',', chipsTail: 'confusion fades — only ', chipsHl: 'real answers', chipsEnd: ' remain.',
             areasT: 'Practical playbooks\nfor every core area', learn: ' →', sesT: 'SESSION', sesS: 'Hands-on sessions, live on stage.', zigT: 'Why you can’t\nmiss this',
             slog1: 'The answer to what felt impossible,', slog2p: 'even this — with ', slog2s: '', evT: 'EVENT', evS: 'Special benefits for attendees.',
-            locT: 'Schedule & Venue', dt: 'Date', pl: 'Venue', note: '*Registration may close early if seats run out.', cpy: 'Copy address', mlink: 'Open map',
+            locT: 'Schedule & Venue', dt: 'Date', pl: 'Venue', note: '*Registration may close early if seats run out.', cpy: 'Copy address',
             applyT: ' — Register', faqT: 'Before you decide —\ncommon questions', dockTag: 'Register',
             fName: 'Name', fPhone: 'Phone', fCompany: 'Company', fEmail: 'Email', fSize: 'Company size', fRole: 'Role',
             fRoles: ['Executive', 'HR Leader', 'HR Manager', 'Other'], fPh: 'Type here.', fPhTel: 'Type here. (ex. 010-0000-0000)',
@@ -480,7 +479,7 @@
       ja: { aboutT: '数字で見る\n今の流れ', chipsPre: '数多くの', chipsPost: 'を前に', chipsTail: '迷いは消え、', chipsHl: '実践の答え', chipsEnd: 'だけが残るように。',
             areasT: '主要分野の\n実践活用法を扱います', learn: ' →', sesT: 'SESSION', sesS: '現場で出会う実践セッション。', zigT: '見逃せない\n理由',
             slog1: '悩みの答え、', slog2p: 'これさえも ', slog2s: 'で', evT: 'EVENT', evS: 'ご参加の皆さまへの特典。',
-            locT: '日程・会場', dt: '日時', pl: '会場', note: '※応募多数の場合、早期に締め切ることがあります。', cpy: '住所をコピー', mlink: '地図で見る',
+            locT: '日程・会場', dt: '日時', pl: '会場', note: '※応募多数の場合、早期に締め切ることがあります。', cpy: '住所をコピー',
             applyT: ' 申し込み', faqT: '導入前に、\nよくあるご質問', dockTag: '事前申込',
             fName: 'お名前', fPhone: '電話番号', fCompany: '会社名', fEmail: 'メール', fSize: '従業員数', fRole: '役職',
             fRoles: ['代表/役員', 'HRリーダー', 'HR担当者', 'その他'], fPh: 'ご入力ください。', fPhTel: 'ご入力ください。(例 010-0000-0000)',
@@ -489,7 +488,7 @@
       zh: { aboutT: '用数字看\n当下趋势', chipsPre: '面对无数', chipsPost: '，', chipsTail: '迷茫消失，只留下', chipsHl: '实战答案', chipsEnd: '。',
             areasT: '核心领域的\n实战应用方法', learn: ' →', sesT: 'SESSION', sesS: '现场实战分享。', zigT: '不容错过的\n理由',
             slog1: '难题的答案，', slog2p: '连这个也交给 ', slog2s: '', evT: 'EVENT', evS: '为参会者准备的专属福利。',
-            locT: '日程与地点', dt: '日期', pl: '地点', note: '*报名人数较多时可能提前截止。', cpy: '复制地址', mlink: '查看地图',
+            locT: '日程与地点', dt: '日期', pl: '地点', note: '*报名人数较多时可能提前截止。', cpy: '复制地址',
             applyT: ' 报名', faqT: '在决定之前——\n常见问题', dockTag: '提前报名',
             fName: '姓名', fPhone: '手机号', fCompany: '公司', fEmail: '邮箱', fSize: '员工人数', fRole: '职位',
             fRoles: ['高管', 'HR负责人', 'HR专员', '其他'], fPh: '请输入。', fPhTel: '请输入。(例 010-0000-0000)',
@@ -522,7 +521,6 @@
     var benefits = (Array.isArray(shared.benefits) && shared.benefits.length ? shared.benefits : BD.benefits).slice(0, 3);
     var placeLines = String(d.eventPlace || '').split('\n');
     var placeMain = (placeLines[0] || '').trim(), placeSub = placeLines.slice(1).join(' ').trim();
-    var stationWord = (placeSub.match(/^(\S+)/) || [])[1] || '';
 
     /* 숫자 감지 — 카운트업 + 민트 하이라이트 */
     function numHl(line, P) {
@@ -705,21 +703,7 @@
           '<span class="lnk"' + de(P + '.link') + '>' + esc(b.link || '') + '</span></div>';
       }).join('') + '</div></div></section>';
 
-    /* 지도 SVG — 역 밴드 텍스트는 eventPlace 둘째 줄 첫 어절(없으면 밴드 숨김) */
-    var mapSvg = '<svg class="mapsvg" viewBox="0 0 700 340" preserveAspectRatio="xMidYMid slice">' +
-      '<rect width="700" height="340" fill="#EDF1F6"/>' +
-      '<path d="M0 250 C140 210 240 300 420 262 C540 236 620 260 700 236 L700 340 L0 340 Z" fill="#DCE8F2"/>' +
-      '<g fill="#E2E7EE"><rect x="40" y="40" width="120" height="74" rx="10"/><rect x="180" y="28" width="96" height="60" rx="10"/><rect x="60" y="140" width="90" height="66" rx="10"/><rect x="470" y="30" width="110" height="70" rx="10"/><rect x="460" y="128" width="150" height="76" rx="10"/><rect x="184" y="112" width="88" height="88" rx="10"/><rect x="612" y="40" width="70" height="120" rx="10"/></g>' +
-      '<g stroke="#fff" stroke-width="12" stroke-linecap="round" fill="none"><path d="M20 120 H690"/><path d="M170 10 V330"/><path d="M290 10 V220"/><path d="M448 10 V330"/><path d="M20 218 H660"/></g>' +
-      '<g stroke="#C9D4E2" stroke-width="3" fill="none"><path d="M20 120 H690"/><path d="M448 10 V330"/></g>' +
-      (stationWord ? '<path d="M462 148 L332 186" stroke="' + TH.brand + '" stroke-width="3.5" stroke-dasharray="7 7" fill="none"/>' +
-        '<rect x="497" y="86" width="150" height="52" rx="14" fill="' + TH.brand + '"/>' +
-        '<text x="572" y="119" text-anchor="middle" font-size="19" font-weight="800" fill="#fff" font-family="inherit">' + esc(stationWord) + '</text>' : '') +
-      '<rect x="272" y="186" width="66" height="48" rx="9" fill="#191F28" stroke="' + TH.brand + '" stroke-width="3"/>' +
-      '<path d="M305 128c-14 0-24 10-24 23 0 16 24 34 24 34s24-18 24-34c0-13-10-23-24-23z" fill="' + TH.brand + '"/>' +
-      '<circle cx="305" cy="152" r="7.5" fill="#fff"/>' +
-      '<text x="305" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="' + TH.bink + '" font-family="inherit">' + esc(placeMain.slice(0, 14)) + '</text>' +
-      '</svg>';
+    /* 지도 — 구글맵 embed (q = eventPlace 첫 줄) */
     SEC.location = '<section class="sec" style="background:var(--bg1)" id="location" data-section="location"><div class="wrap center">' +
       '<h2 class="tt rv">' + esc(TT.locT) + '</h2>' +
       '<div class="place' + (V.location === 'simple' ? ' simple' : '') + ' rv d1"><div class="info">' +
@@ -728,9 +712,10 @@
       '<div class="row"><span class="k">' + esc(TT.pl) + '</span><span class="v"' + de('eventPlace') + '>' + esc(placeMain) + (placeSub ? '<small>' + esc(placeSub) + '</small>' : '') + '</span></div>' +
       '<a class="pill" href="#apply" style="display:inline-block;margin-top:30px;padding:15px 32px;font-size:15px"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a>' +
       '<p style="margin-top:14px;font-size:12.5px;color:var(--g4)">' + esc(TT.note) + '</p>' +
-      '</div>' + (V.location === 'simple' ? '' : '<div class="map"><div class="mapbody">' + mapSvg + '</div>' +
+      '</div>' + (V.location === 'simple' ? '' : '<div class="map"><div class="mapbody">' +
+      '<iframe class="mapsvg" src="https://maps.google.com/maps?q=' + encodeURIComponent(placeMain) + '&z=16&output=embed" loading="lazy" title="map" style="border:0"></iframe></div>' +
       '<div class="foot"><span class="addr">' + esc(placeMain) + ' <span class="cpy" id="addrcpy" data-addr="' + esc(placeMain) + '" title="' + esc(TT.cpy) + '">⧉</span></span>' +
-      '<a class="mlink" href="https://maps.google.com/maps?q=' + encodeURIComponent(placeMain) + '" target="_blank" rel="noopener">' + esc(TT.mlink) + '</a></div></div>') + '</div></div></section>';
+      '</div></div>') + '</div></div></section>';
 
     if (V.faq === 'cards') {
       SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
