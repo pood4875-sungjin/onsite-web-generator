@@ -1,8 +1,8 @@
-# packs.mbmtoss.js — Toss Green (세미나·이벤트 랜딩)
+# packs.skmbm.js — SK MBM (구 Toss Green·내부 id: mbmtoss) (세미나·이벤트 랜딩)
 
 ## 1. 정체성
 SK MBM 랜딩 콘텐츠 × toss.im 실측 스케일/모션 번안. 그린 포인트(#05D16E) · 다크그레이 히어로 · 다크그린 세션 존.
-원본 시안: `packs.mbmtoss.sample.html` (실측 근거 주석 포함).
+원본 시안: `packs.skmbm.sample.html` (실측 근거 주석 포함).
 
 ## 2. 계약
 - `renderMbmtossPage(shared, {volume, motion})` → 완성 HTML 문서 반환 (volume 미사용, motion=false 시 전면 정적)
@@ -14,7 +14,7 @@ SK MBM 랜딩 콘텐츠 × toss.im 실측 스케일/모션 번안. 그린 포인
 CSS는 var(--brand) + color-mix 기반이라 팩 전체(버튼·칩·차트·지도 SVG·존 배경)가 한 번에 따라온다.
 
 ## 3. 디자인 베리에이션 (variants 필드)
-`shared.variants = { 섹션: 변형명 }` — 미지정 시 기본형. 전체 사전 = docs/sections-mbmtoss.html — 피그마 "행사 랜딩 12블록" 정의 체계(Design Generator 484-83314)로 그룹핑된 82블록. 그룹 헤더에 피그마 정의(역할·반복·CTA·데이터 필드), 라이브 프레임(프레임 내 스크롤=실모션)·테마 5종 스위처·전체 페이지 모달.
+`shared.variants = { 섹션: 변형명 }` — 미지정 시 기본형. 전체 사전 = docs/sections-skmbm.html — 피그마 "행사 랜딩 12블록" 정의 체계(Design Generator 484-83314)로 그룹핑된 82블록. 그룹 헤더에 피그마 정의(역할·반복·CTA·데이터 필드), 라이브 프레임(프레임 내 스크롤=실모션)·테마 5종 스위처·전체 페이지 모달.
 - hero: video(기본·imgs.hero가 mp4/webm) / photo(jpg·png 자동) / **light**(흰 배경 타이포 온리·핀 없음·GNB 화이트 고정)
 - about: count(기본 3열) / **dark**(잉크 밴드 대형 수치 — 배경 브레이크) / **chart**(좌 카피+우 바 차트, 마지막 항목 강조)
 - areas: scrub(기본 핀) / **grid**(정적 2×2 파스텔 카드)

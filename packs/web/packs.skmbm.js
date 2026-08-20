@@ -1,5 +1,5 @@
-/* packs.mbmtoss.js — "Toss Green" 세미나·이벤트 랜딩 팩 (MBM × toss.im 번안). classic <script src>.
-   소스: packs.mbmtoss.sample.html 시안 (SK MBM Figma 412-46110 콘텐츠 × toss.im 실측 스케일/모션).
+/* packs.skmbm.js — "SK MBM" 세미나·이벤트 랜딩 팩 (MBM × toss.im 번안). classic <script src>.
+   소스: packs.skmbm.sample.html 시안 (SK MBM Figma 412-46110 콘텐츠 × toss.im 실측 스케일/모션).
    구성(고정 TEMPLATE): GNB(투명→화이트) → KV 핀 280vh(영상/실사 풀블리드 → 타이포 페이드 → 카드 축소+블러 → 슬로건)
    → [movable] about(수치 3열 카운트업) → chips(인라인 칩 슬로건) → areas(스텝 스크럽 340vh + 파스텔 글래스 패널)
    → narrative(다크 블러 리빌 250vh) → session(다크그린 존 카드) → zig(지그재그 3) → typeline(타이핑 스크럽 220vh)
@@ -246,6 +246,7 @@
       '.typeline .ghost{color:#E0E3E8}',
       '.typeline .fillw{position:absolute;left:0;top:0;white-space:nowrap}',
       '.typeline .done{color:var(--ink)}',
+      '.typeline .tw:last-of-type .done{background:linear-gradient(100deg,var(--brand) 10%,var(--accent2) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}',
       '.typeline .caret{display:inline-block;width:3px;height:.8em;background:var(--brand);margin-left:2px;vertical-align:-.05em;animation:mtBlink 1.1s steps(1) infinite}',
       '@keyframes mtBlink{0%,54%{opacity:1}55%,100%{opacity:0}}',
       /* 다크 내러티브 */
@@ -299,17 +300,15 @@
       /* 일정·장소 */
       '.mapsvg{position:absolute;inset:0;width:100%;height:100%;border:0}',
       '.place{margin-top:56px;background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(3,7,18,.05);overflow:hidden;display:grid;grid-template-columns:0.9fr 1.4fr}',
-      '.place .info{padding:44px 40px;text-align:left}',
-      '.place .info b{font-size:24px;font-weight:700;letter-spacing:-.02em}',
+      '.place .info{padding:44px 40px;text-align:left;display:flex;flex-direction:column;align-items:flex-start}',
+      '.place .info b{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.5}',
+      '.place .info .pill{margin-top:auto}.place.simple .info .pill{margin-top:30px}.place .info .row:last-of-type{margin-bottom:30px}',
       '.place .row{margin-top:16px;display:flex;gap:16px;font-size:15px}',
       '.place .row .k{color:var(--g4);font-weight:600;width:3.2em;flex:none}',
       '.place .row .v{font-weight:500;color:var(--g1);line-height:1.5}',
       '.place .row .v small{display:block;color:var(--g4);font-size:13.5px}',
       '.place .map{display:flex;flex-direction:column;background:#EDF1F6}',
-      '.place .mapbody{position:relative;flex:1;min-height:300px;overflow:hidden}',
-      '.place .foot{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 22px;background:#fff;border-top:1px solid var(--bg2);font-size:13.5px}',
-      '.place .foot .addr{display:flex;align-items:center;gap:8px;color:var(--g2);font-weight:600}',
-      '.place .foot .cpy{cursor:pointer;color:var(--g4);font-size:15px;transition:color .2s}.place .foot .cpy:hover{color:var(--ink)}',
+      '.place .mapbody{position:relative;flex:1;min-height:340px;overflow:hidden}',
       /* ── 디자인 베리에이션 ── */
       /* hero:light — 밝은 타이포 온리 (핀 없음) */
       '.hero-light{padding:200px 0 150px;text-align:center;background:#fff}',
@@ -324,15 +323,17 @@
       '.about-dark .num small{font-size:.45em;vertical-align:.2em;font-weight:600}',
       '.about-dark .nums b{display:block;margin-top:12px;font-size:18px;font-weight:600;line-height:1.5;color:rgba(255,255,255,.82);word-break:keep-all}',
       /* about:chart — 좌 카피 + 우 바 차트 카드 */
-      '.chart-card{background:var(--bg1);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;text-align:left;margin-top:64px}',
+      '.chart-card{background:var(--bg1);border:1px solid rgba(3,7,18,.04);border-radius:20px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;text-align:left;margin-top:64px}',
       '.chart-card .ct{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.4;word-break:keep-all}',
       '.chart-card .cs{margin-top:12px;font-size:16px;line-height:1.65;color:var(--g3);word-break:keep-all}',
       '.bars{display:flex;gap:36px;align-items:flex-end;height:190px;padding:0 8px}',
       '.bars>div{flex:1;text-align:center}',
-      '.bars .v{font-size:15px;font-weight:700;margin-bottom:8px}',
-      '.bars .bar{border-radius:8px 8px 0 0;background:#E3E6EB}',
-      '.bars .hot .v{color:var(--brand)}.bars .hot .bar{background:var(--brand)}',
-      '.bars .l{margin-top:10px;font-size:13px;color:var(--g3)}',
+      '.bars .v{font-size:17px;font-weight:700;margin-bottom:8px;font-variant-numeric:tabular-nums}',
+      '.bars .bar{border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#E9ECF1,#DDE1E8)}',
+      '.bars .hot .v{font-size:20px;background:linear-gradient(100deg,var(--brand) 10%,var(--accent2) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}',
+      '.bars .hot .bar{background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 45%,var(--accent2)))}',
+      '.bars .l{margin-top:10px;font-size:13px;color:var(--g3)}.bars .hot .l{color:var(--ink);font-weight:700}',
+      '@media (prefers-reduced-motion:no-preference){html:not(.nomo) .chart-card .bar{transform-origin:bottom;transform:scaleY(0);transition:transform 1s cubic-bezier(.22,.9,.24,1) .1s}html:not(.nomo) .chart-card.on .bar{transform:scaleY(1)}html:not(.nomo) .bars>div:nth-child(2) .bar{transition-delay:.25s}html:not(.nomo) .bars>div:nth-child(3) .bar{transition-delay:.4s}}',
       /* areas:grid — 정적 2×2 파스텔 카드 */
       '.agrid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:64px}',
       '.acard{border-radius:24px;padding:34px 32px;position:relative;min-height:250px;text-align:left;background:var(--pvbg,var(--bg2))}',
@@ -363,7 +364,7 @@
       '.cta-band.dark2 p{color:rgba(255,255,255,.55)}',
       /* location:simple — 지도 없는 센터 정보 카드 */
       '.place.simple{grid-template-columns:1fr;max-width:720px;margin-left:auto;margin-right:auto}',
-      '.place.simple .info{text-align:center;padding:52px 40px}',
+      '.place.simple .info{text-align:center;padding:52px 40px;align-items:center}',
       '.place.simple .row{justify-content:center}',
       /* narrative:statement — 정적 다크 선언 */
       '.nstate{padding:170px 0;text-align:center}',
@@ -385,7 +386,7 @@
       '.fitem{background:#fff;border-radius:14px;overflow:hidden}',
       '.frow{padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;text-align:left;cursor:pointer;transition:background .2s}',
       '.frow:hover{background:#ECEEF1}.fitem.open .frow,.fitem.open .frow:hover{background:#fff}',
-      '.frow b{font-size:16.5px;font-weight:600}.frow b i{font-style:normal;color:var(--brand);font-weight:700}',
+      '.frow b{font-size:18px;font-weight:600}.frow b i{font-style:normal;color:var(--brand);font-weight:700;font-size:22px}',
       '.frow span{color:var(--g4);font-size:22px;transition:transform .3s}.fitem.open .frow span{transform:rotate(45deg)}',
       '.fans{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}.fitem.open .fans{max-height:220px}',
       '.fans p{padding:2px 28px 26px;font-size:15.5px;line-height:1.7;color:var(--g3);text-align:left;word-break:keep-all}',
@@ -587,7 +588,7 @@
           '<div class="cs">' + esc(TT.evS) + '</div></div>' +
           '<div class="bars">' + stats.map(function (s, i) {
             var n = parseFloat(String(s.value).replace(/[^0-9.]/g, '')) || 0;
-            var h = Math.max(12, Math.round(160 * n / mx));
+            var h = Math.max(32, Math.round(160 * n / mx));
             return '<div' + (i === stats.length - 1 ? ' class="hot"' : '') + '><div class="v"' + de('stats.' + i + '.value') + '>' + esc(s.value || '') + '</div><div class="bar" style="height:' + h + 'px"></div><div class="l"' + de('stats.' + i + '.label') + '>' + esc(String(s.label || '').split('\n')[0]) + '</div></div>';
           }).join('') + '</div></div></div></section>';
       } else {
@@ -710,12 +711,10 @@
       '<b' + de('productName') + '>' + esc(d.productName) + '</b>' +
       '<div class="row" style="margin-top:26px"><span class="k">' + esc(TT.dt) + '</span><span class="v"' + de('eventDate') + '>' + esc(d.eventDate) + '</span></div>' +
       '<div class="row"><span class="k">' + esc(TT.pl) + '</span><span class="v"' + de('eventPlace') + '>' + esc(placeMain) + (placeSub ? '<small>' + esc(placeSub) + '</small>' : '') + '</span></div>' +
-      '<a class="pill" href="#apply" style="display:inline-block;margin-top:30px;padding:15px 32px;font-size:15px"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a>' +
-      '<p style="margin-top:14px;font-size:12.5px;color:var(--g4)">' + esc(TT.note) + '</p>' +
+      '<a class="pill" href="#apply" style="display:inline-block;padding:15px 32px;font-size:15px"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a>' +
       '</div>' + (V.location === 'simple' ? '' : '<div class="map"><div class="mapbody">' +
       '<iframe class="mapsvg" src="https://maps.google.com/maps?q=' + encodeURIComponent(placeMain) + '&z=16&output=embed" loading="lazy" title="map" style="border:0"></iframe></div>' +
-      '<div class="foot"><span class="addr">' + esc(placeMain) + ' <span class="cpy" id="addrcpy" data-addr="' + esc(placeMain) + '" title="' + esc(TT.cpy) + '">⧉</span></span>' +
-      '</div></div>') + '</div></div></section>';
+      '</div>') + '</div></div></section>';
 
     if (V.faq === 'cards') {
       SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
@@ -755,7 +754,7 @@
       '<div><div class="fl">' + esc(TT.fCompany) + ' <em>*</em></div><input class="fi" type="text" placeholder="' + esc(TT.fPh) + '"></div>' +
       '<div><div class="fl">' + esc(TT.fEmail) + ' <em>*</em></div><input class="fi" type="email" placeholder="' + esc(TT.fPh) + '"></div>' +
       '<div><div class="fl">' + esc(TT.fSize) + ' <em>*</em></div><input class="fi" type="text" placeholder="' + esc(TT.fPh) + '"></div>' +
-      '<div><div class="fl">' + esc(TT.fRole) + ' <em>*</em></div><div class="chkrow">' + TT.fRoles.map(function (r, i) {
+      '<div style="grid-column:1/-1"><div class="fl">' + esc(TT.fRole) + ' <em>*</em></div><div class="chkrow">' + TT.fRoles.map(function (r, i) {
         return '<span class="chk"><span class="box ' + (i < 2 ? 'on' : 'off') + '">✓</span>' + esc(r) + '</span>';
       }).join('') + '</div></div></div>' +
       '<div class="agree rv d3">' +
@@ -866,5 +865,5 @@
     fixed: ['dock'],
     labels: { about: '수치 하이라이트', chips: '칩 슬로건', areas: '핵심 분야 스텝', narrative: '다크 내러티브', session: '세션', zig: '지그재그', typeline: '타이핑 슬로건', event: '이벤트 혜택', location: '일정·장소', faq: 'FAQ', ctaband: 'CTA 밴드', dock: '플로팅 CTA' },
   };
-  window.MBMTOSS_STYLE = { id: 'mbmtoss', name: 'Toss Green', desc: '그린 포인트 · 영상 히어로 핀 스크럽 · 스텝/타이핑/블러 스크럽 · 배경 존 전환 · 플로팅 CTA', swatch: 'linear-gradient(135deg,#05D16E 0%,#04B863 50%,#121419 100%)' };
+  window.MBMTOSS_STYLE = { id: 'mbmtoss', name: 'SK MBM', desc: '그린 포인트 · 영상 히어로 핀 스크럽 · 스텝/타이핑/블러 스크럽 · 배경 존 전환 · 플로팅 CTA', swatch: 'linear-gradient(135deg,#05D16E 0%,#04B863 50%,#121419 100%)' };
 })();
