@@ -15,7 +15,11 @@ CSS는 `body[data-th]` 변수 세트(--t/--b/--a/--tn/--dp) — **렌더 우상�
 ## 4. 타입 13종 (독자 어휘 — HFD_ALLOWED)
 cover · greeting(인사말) · toc(2~4 밴드 컬럼) · divider · section(2~4 포인트) · cards(2~4, 마지막/tone:dark=딥 셀, `img:true`면 셀 상단 이미지 슬롯) · timeline(당일 일정 — 행 전부 동일 톤, 강조 밴드 없음) · table(첫 열 150px·둘째 열 1.5fr) · checklist(5개 초과 2열) · media(안내 rows 플레인 헤어라인+이미지 슬롯) · photos(2~3) · quote(풀블리드 딥) · closing.
 
-**이미지 계약**: 업로드 이미지는 덱 루트 `data.images{키:dataURL}` — media=`images.media`, 카드=`images['card-슬라이드idx-카드idx']`. 렌더러가 있으면 `<img>`, 없으면 `.hf-imgph` 슬롯(클릭 업로드). 2026-08-21 피드백 반영: 프레임 장 틴트 원(`.hf-deco`) 숨김(콘텐츠 겹침), 카드 gap 16px, stats/media/timeline 강조 박스 제거(심플), process 카드 허그(빈 공간 제거), compare 항목 헤어라인 행.
+**이미지 계약**: 업로드 이미지는 덱 루트 `data.images{키:dataURL}` — media=`images.media`, 카드=`images['card-슬라이드idx-카드idx']`, 포토=`images['photos-슬라이드idx-i']`, 히어로=`images['hero-슬라이드idx']`. 렌더러가 있으면 `<img>`, 없으면 `.hf-imgph` 슬롯(클릭 업로드). 카드 이미지는 셀 상단 풀블리드(여백 0).
+
+**+3타입(2026-08-21)**: word(한 단어 대형 타이포) · statement(타이틀+서브 중앙) · hero(풀블리드 배경 이미지+중앙 텍스트, 비프레임). photos frame 변형=대형 이미지 케이스(풀폭 프레임).
+
+2026-08-21 피드백 반영: 프레임 장 틴트 원(`.hf-deco`) 숨김(콘텐츠 겹침), 전역 `ul{padding:0}`(리스트 좌정렬), `.hf-lab.wh` 화이트(로드맵 NOW·프로세스 STEP 라벨 안 보이던 버그), toc 전 행 옅은 틴트+검정(5행), 카드 gap 16px, stats/media/timeline 강조 박스 제거(심플), checklist 행이 패널 높이 분할, media 우측 이미지 컬럼 확대·스트레치, kpi 콘텐츠 중앙, process 카드 허그, compare 플레인 문장, photos grid 타이틀 패널 중앙.
 
 ## 5. 배선 (pastel 풋프린트와 동일)
 - 로드 4페이지: index·studio(../../)·dashboard·projects (settings/resources/icons는 pastel도 미로드 — 동일)

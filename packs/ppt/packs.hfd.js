@@ -71,7 +71,7 @@
       var items = (s.items || []).slice(0, 5);
       var rows = items.map(function (it, i) {
         var IP = P + '.items.' + i;
-        return '<div class="hf-tocrow t' + (i % 4) + '">' +
+        return '<div class="hf-tocrow">' +
           '<span class="hf-tocno"' + de(IP + '.no') + '>' + esc(it.no || '0' + (i + 1)) + '</span>' +
           '<span class="hf-toclab"' + de(IP + '.label') + '>' + esc(it.label || '') + '</span>' +
           (it.desc ? '<span class="hf-tocdesc"' + de(IP + '.desc') + '>' + mb(it.desc) + '</span>' : '') +
@@ -302,6 +302,13 @@
        wide(기본)=풀폭 사진+하단 캡션 밴드 · grid=사진 3열+캡션 밴드 · frame=표지 기하 위 센터 화이트 프레임 */
     photos: function (s, P, ctx) {
       var v = s.variant === 'grid' || s.variant === 'frame' || s.variant === 'side' ? s.variant : 'wide';
+      var si = P.split('.')[1];
+      /* 이미지 슬롯 — 슬라이드별 키(photos-슬라이드-i)로 업로드 이미지 실렌더(키 충돌 방지) */
+      function slot(i, it) {
+        var ik = 'photos-' + si + '-' + i, src = ctx.images && ctx.images[ik];
+        if (src) return '<img class="hf-abimg s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">';
+        return '<div class="hf-imgph s-imgwrap" data-img="' + ik + '"><span' + de(P + '.items.' + i + '.label') + '>' + esc((it || {}).label || '사진') + '</span></div>';
+      }
       if (v === 'side') {
         /* 2024 덱(TFt0 39-55) 사이드 캡션 레이아웃 — 좌 캡션 컬럼 + 우 대형 화이트 사진 패널 */
         var it0 = (s.items && s.items[0]) || {};
@@ -312,14 +319,11 @@
           '<span class="hf-sdtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span>' +
           (s.caption ? '<span class="hf-sdtx"' + de(P + '.caption') + '>' + mb(s.caption) + '</span>' : '') +
           (s.foot ? '<span class="hf-sdfoot"' + de(P + '.foot') + '>' + esc(s.foot) + '</span>' : '') + '</div>' +
-          '<div class="hf-sdpanel"><div class="hf-imgph s-imgwrap" data-img="photos.0"><span' + de(P + '.items.0.label') + '>' + esc(it0.label || '사진') + '</span></div></div>' +
+          '<div class="hf-sdpanel">' + slot(0, it0) + '</div>' +
           '</section>';
       }
       var items = (s.items || []).slice(0, v === 'grid' ? 3 : 1);
       if (!items.length) items = [{}];
-      function slot(i, it) {
-        return '<div class="hf-imgph s-imgwrap" data-img="photos.' + i + '"><span' + de(P + '.items.' + i + '.label') + '>' + esc(it.label || '사진') + '</span></div>';
-      }
       /* 하단 캡션 밴드 — 좌 연도 칩 · 센터 타이틀 2줄 · 우측 캡션 줄들 · 우하단 소라벨 */
       var band = '<div class="hf-abband">' +
         '<span class="hf-abyear"' + de(P + '.year') + '>' + esc(s.year || '') + '</span>' +
@@ -347,6 +351,27 @@
       var media = '<div class="hf-abwide">' + slot(0, items[0]) + '</div>';
       return '<section class="slide hf ab" data-kind="' + kind(s, 'Photos') + '">' + media + band + '</section>';
     },
+    /* 한 단어 — 대형 타이포 임팩트(감사·환영) */
+    word: function (s, P, ctx) {
+      return '<section class="slide hf wd" data-kind="' + kind(s, 'Word') + '">' + runhead(s, P, ctx) +
+        '<div class="hf-wdmid"><span class="hf-word"' + de(P + '.text') + '>' + mb(s.text || '') + '</span>' +
+        (s.caption ? '<span class="hf-wdcap"' + de(P + '.caption') + '>' + mb(s.caption) + '</span>' : '') + '</div></section>';
+    },
+    /* 스테이트먼트 — 타이틀+서브 중앙 대형 */
+    statement: function (s, P, ctx) {
+      return '<section class="slide hf st2" data-kind="' + kind(s, 'Statement') + '">' + runhead(s, P, ctx) +
+        '<div class="hf-stmid"><h2 class="hf-sttitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
+        (s.sub ? '<p class="hf-stsub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div></section>';
+    },
+    /* 이미지 히어로 — 풀블리드 배경 이미지(업로드) + 중앙 텍스트 */
+    hero: function (s, P, ctx) {
+      var si = P.split('.')[1], ik = 'hero-' + si, src = ctx.images && ctx.images[ik];
+      var bg = src ? '<img class="hf-herobg s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">' :
+        '<div class="hf-herobg ph s-imgwrap" data-img="' + ik + '"><span>배경 이미지</span></div>';
+      return '<section class="slide hf hr" data-kind="' + kind(s, 'Hero') + '">' + bg + '<span class="hf-heroov"></span>' +
+        '<div class="hf-heromid"><h2 class="hf-herotitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
+        (s.sub ? '<p class="hf-herosub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div></section>';
+    },
     /* 엔딩 — 표지 기하 + 마무리 문장 */
     closing: function (s, P, ctx) {
       return '<section class="slide hf cl" data-kind="' + kind(s, 'Closing') + '">' +
@@ -360,7 +385,7 @@
   };
 
   /* 본문 장 기본 프레임 — 2024 덱 레이아웃: 기하 테두리 + 중앙 화이트 라운드 패널 (frame:false로 해제) */
-  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1 };
+  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1 };
   var GEO = '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>';
   function frameWrap(html) {
     return html
@@ -442,6 +467,8 @@
       ':root{--ink:#17211C;--body:#4E5B55;--muted:#8B968F;--rule:#E5EAE7;--slide-w:1280px;--slide-h:720px}' +
       thRules +
       '*{box-sizing:border-box;margin:0;word-break:keep-all}' +
+      /* ul 기본 들여쓰기 제거 — 리스트 좌정렬(라벨·제목과 같은 축) */
+      'ul,ol{padding:0}' +
       'body{background:#E9EDEB;font-family:Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}' +
       '.ppt-stack{display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px 0}' +
       '.slide{position:relative;width:var(--slide-w);height:var(--slide-h);flex:none;background:#fff;color:var(--ink);overflow:hidden;' +
@@ -462,6 +489,7 @@
       '.hf-sub{margin-top:10px;font-size:16px;color:var(--muted);flex:none}' +
       '.hf-lab{font-size:12.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--t)}' +
       '.hf-lab.in{color:inherit;opacity:.85}' +
+      '.hf-lab.wh{color:#fff}' +
       '.hf-cap{font-size:14px;color:var(--muted)}' +
       '.hf-body{font-size:19px;line-height:1.7;color:var(--body)}' +
       /* 본문 프레임 — 기하 테두리 + 중앙 화이트 패널 */
@@ -490,18 +518,18 @@
       '.hf-dvlead{font-size:20px;font-weight:400;line-height:1.6;max-width:44ch;opacity:.94}' +
       /* 인사말 */
       '.hf-grmid{position:relative;z-index:2;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:24px}' +
-      '.hf-grtx{font-size:34px;font-weight:400;line-height:1.66;letter-spacing:-.01em;white-space:pre-wrap;max-width:88%}' +
+      '.hf-grtx{font-size:34px;font-weight:600;line-height:1.66;letter-spacing:-.01em;white-space:pre-wrap;max-width:88%}' +
       '.hf-grtx b{color:var(--t)}' +
       '.hf-grby{font-size:16px;font-weight:700;color:var(--body)}' +
       /* 목차 — 아젠다형 행 리스트 */
-      '.hf-tocrows{flex:1;min-height:0;display:flex;flex-direction:column;gap:2px;margin-top:30px}' +
-      '.hf-tocrow{flex:1;min-height:0;color:#fff;display:flex;align-items:center;gap:34px;padding:0 40px;border-radius:14px}' +
-      '.hf-tocrow.t0{background:var(--t)}.hf-tocrow.t1{background:var(--b)}.hf-tocrow.t2{background:var(--a)}.hf-tocrow.t3{background:var(--dp)}' +
-      '.hf-tocno{flex:0 0 76px;font-size:42px;font-weight:800;line-height:1;opacity:.92}' +
+      /* 전 행 동일 톤 — 옅은 틴트 배경+검정 텍스트, 5행까지(피드백 반영) */
+      '.hf-tocrows{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;margin-top:30px}' +
+      '.hf-tocrow{flex:1;min-height:0;background:var(--tn);color:var(--ink);display:flex;align-items:center;gap:34px;padding:0 40px;border-radius:14px}' +
+      '.hf-tocno{flex:0 0 76px;font-size:42px;font-weight:800;line-height:1;color:var(--t)}' +
       '.hf-toclab{flex:0 0 220px;font-size:25px;font-weight:800;letter-spacing:-.01em}' +
-      '.hf-tocdesc{flex:1;font-size:16.5px;line-height:1.5;opacity:.92}' +
-      '.hf-tocpg{flex:0 0 auto;font-size:14px;font-weight:700;letter-spacing:.1em;opacity:.8;font-variant-numeric:tabular-nums}' +
-      '.hf-tocarr{flex:0 0 auto;font-size:22px;opacity:.85}' +
+      '.hf-tocdesc{flex:1;font-size:16.5px;line-height:1.5;color:var(--body)}' +
+      '.hf-tocpg{flex:0 0 auto;font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}' +
+      '.hf-tocarr{flex:0 0 auto;font-size:22px;color:var(--t)}' +
       /* 본문 표준 */
       '.hf-numgrid{flex:1;min-height:0;display:grid;gap:2px;align-content:center;padding:20px 0}' +
       '.hf-numgrid.c1{grid-template-columns:1fr}.hf-numgrid.c2{grid-template-columns:1fr 1fr}.hf-numgrid.c3{grid-template-columns:repeat(3,1fr)}.hf-numgrid.c4{grid-template-columns:repeat(4,1fr)}' +
@@ -514,9 +542,10 @@
       '.hf-grid.c2{grid-template-columns:1fr 1fr}.hf-grid.c3{grid-template-columns:repeat(3,1fr)}.hf-grid.c4{grid-template-columns:repeat(4,1fr)}' +
       '.hf-cell{background:var(--tn);padding:28px 26px;display:flex;flex-direction:column;gap:10px;min-height:190px;border-radius:16px}' +
       '.hf-cell.on{background:var(--b);color:#fff}.hf-cell.on .hf-lab.in{opacity:.95}' +
-      /* 카드 이미지 — 업로드=hf-cimg, 미업로드=hf-imgph.cell 슬롯 */
-      '.hf-cimg{width:100%;height:150px;object-fit:cover;border-radius:12px;margin-bottom:6px;display:block}' +
-      '.hf-imgph.cell{min-height:0;height:150px;margin-bottom:6px;background:rgba(0,0,0,.045);flex:0 0 auto}' +
+      /* 카드 이미지 — 셀 상단 풀블리드(여백 없음), 업로드=hf-cimg, 미업로드=hf-imgph.cell 슬롯 */
+      '.hf-cell{overflow:hidden}' +
+      '.hf-cimg{width:calc(100% + 52px);height:170px;object-fit:cover;border-radius:0;margin:-28px -26px 12px;display:block;flex:0 0 auto}' +
+      '.hf-imgph.cell{min-height:0;height:170px;width:calc(100% + 52px);margin:-28px -26px 12px;border-radius:0;background:rgba(0,0,0,.045);flex:0 0 auto}' +
       '.hf-cell.on .hf-imgph.cell{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}' +
       '.hf-cellhead{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.3}' +
       '.hf-celltx{font-size:15.5px;line-height:1.6;opacity:.92;margin-top:auto}' +
@@ -533,13 +562,21 @@
       '.hf-tbrow .f{font-weight:800;color:var(--t)}' +
       '.hf-tbrow.hd{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:10px 2px;border-bottom:2px solid var(--t)}' +
       /* 체크리스트 */
-      '.hf-list{list-style:none;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:14px 0;position:relative;z-index:2}' +
-      '.hf-list li{display:flex;align-items:center;gap:15px;padding:14px 0;border-bottom:1px solid var(--rule);font-size:19px;color:var(--body)}' +
-      '.hf-list.two{display:grid;grid-template-columns:1fr 1fr;column-gap:52px;align-content:center}' +
+      /* 행이 패널 높이를 나눠 갖게 — 위아래 빈틈 제거(피드백 반영) */
+      '.hf-list{list-style:none;flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-list li{flex:1;min-height:0;display:flex;align-items:center;gap:16px;padding:10px 2px;border-bottom:1px solid var(--rule);font-size:20px;color:var(--ink)}' +
+      '.hf-list li:first-child{border-top:2px solid var(--t)}.hf-list li:last-child{border-bottom:0}' +
+      '.hf-list.two{display:grid;grid-template-columns:1fr 1fr;column-gap:52px;grid-auto-rows:1fr}' +
+      '.hf-list.two li:nth-child(2){border-top:2px solid var(--t)}' +
       '.hf-dot{width:10px;height:10px;border-radius:50%;background:var(--a);flex:0 0 auto}' +
       /* 안내 rows */
       '.hf-mdgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr;align-content:center;padding:20px 0}' +
-      '.hf-mdgrid.hasimg{grid-template-columns:1.3fr 1fr;gap:34px;align-items:center}' +
+      /* 우측 이미지 크게 — 컬럼 절반 차지, 세로 풀 스트레치(피드백 반영) */
+      '.hf-mdgrid.hasimg{grid-template-columns:1fr 1.05fr;gap:40px;align-items:stretch;align-content:stretch}' +
+      '.hf-mdgrid.hasimg .hf-srows{align-self:center}' +
+      '.hf-mdgrid.hasimg .hf-imgcol{min-height:0}' +
+      '.hf-mdgrid.hasimg .hf-imgph{flex:1;min-height:0}' +
+      '.hf-mdgrid.hasimg .hf-mimg{flex:1;min-height:0;max-height:none;height:100%;object-fit:cover}' +
       /* 필 밴드 대신 플레인 행 — 심플 지시 반영 */
       '.hf-srows{display:flex;flex-direction:column}' +
       '.hf-srow{display:flex;align-items:baseline;gap:28px;padding:19px 2px;border-bottom:1px solid var(--rule)}' +
@@ -548,6 +585,12 @@
       '.hf-srow .t{font-size:18px;color:var(--ink)}' +
       '.hf-mimg{width:100%;max-height:420px;object-fit:cover;border-radius:14px;display:block}' +
       '.hf-imgph{background:var(--tn);min-height:210px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;border-radius:12px}' +
+      /* 업로드 이미지 공통 — 슬롯 자리를 그대로 채움 */
+      '.hf-abimg{display:block;object-fit:cover;min-height:0;border-radius:14px}' +
+      '.hf-abwide .hf-abimg,.hf-abframe .hf-abimg,.hf-sdpanel .hf-abimg{flex:1;width:100%}' +
+      '.hf-abframe .hf-abimg{border-radius:0}' +
+      '.hf-sdpanel .hf-abimg{border-radius:12px}' +
+      '.hf-abgrid .hf-abimg{width:100%;height:100%;border-radius:14px}' +
       '.hf-imgcol{display:flex;flex-direction:column;gap:9px}' +
       /* 포토 앨범 — 2024 템플릿 실측: 사진 존 + 하단 캡션 밴드 */
       '.slide.ab{padding:0}' +
@@ -563,9 +606,11 @@
       '.hf-sdpanel .hf-imgph{flex:1;min-height:0}' +
       '.slide.ab.gd{padding:36px}' +
       '.hf-abpanel{position:relative;z-index:2;flex:1;min-height:0;background:#fff;padding:34px 38px;display:flex;flex-direction:column;gap:22px}' +
-      '.hf-abphead{flex:none;display:flex;align-items:center;gap:16px}' +
+      /* 칩은 좌측 고정, 타이틀은 패널 정중앙(피드백 반영) */
+      '.hf-abphead{flex:none;position:relative;display:flex;align-items:center;justify-content:center;min-height:56px}' +
+      '.hf-abphead .hf-abyear{position:absolute;left:0;top:50%;transform:translateY(-50%)}' +
       '.hf-abyear.pv{color:var(--t);border-color:var(--t)}' +
-      '.hf-abptitle{font-size:24px;font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:pre-wrap}' +
+      '.hf-abptitle{font-size:24px;font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:pre-wrap;text-align:center}' +
       '.hf-abgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}' +
       '.hf-abgrid .hf-imgph{min-height:0;border-radius:14px}' +
       '.hf-abband{flex:none;height:206px;margin:30px 44px 36px;position:relative;background:var(--t);color:#fff;display:flex;align-items:center;gap:40px;padding:0 74px 0 54px;overflow:hidden;border-radius:16px}' +
@@ -577,10 +622,11 @@
       '.hf-abcap{flex:0 0 auto;max-width:236px;font-size:13.5px;line-height:1.7;opacity:.92;white-space:pre-wrap;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.55);padding-top:12px}' +
       '.hf-abcap:empty{display:none}' +
       '.hf-abfoot{position:absolute;right:22px;bottom:14px;font-size:11.5px;opacity:.75;z-index:1}' +
-      '.slide.ab.fr{padding:52px 64px}' +
-      '.hf-abframe{position:relative;z-index:2;flex:1;min-height:0;margin:28px 112px 0;background:#fff;padding:18px;display:flex}' +
+      /* frame = 대형 이미지 케이스(피드백 반영) — 여백 36px 균일, 프레임 풀폭 */
+      '.slide.ab.fr{padding:36px}' +
+      '.hf-abframe{position:relative;z-index:2;flex:1;min-height:0;margin:0;background:#fff;padding:14px;display:flex}' +
       '.hf-abframe .hf-imgph{flex:1;min-height:0}' +
-      '.hf-abfr-cap{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0 6px;color:#fff}' +
+      '.hf-abfr-cap{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:center;gap:18px;padding:20px 0 0;color:#fff}' +
       '.hf-abfr-cap .hf-abtitle{flex:0 1 auto;font-size:22px}' +
       /* 수치 */
       /* 수치 — 카드 박스 없이 플레인(심플 지시 반영): 좌 대형 수치, 우 슬림 바 */
@@ -598,7 +644,8 @@
       '.hf-brow .tr i{display:block;height:100%;background:var(--t);border-radius:999px}' +
       '.hf-brow .tx{font-size:13.5px;color:var(--muted)}' +
       /* KPI */
-      '.hf-cell.kp{min-height:210px}' +
+      /* KPI 카드 — 콘텐츠 세로 중앙, 아래 빈 공간 제거(피드백 반영) */
+      '.hf-cell.kp{min-height:190px;justify-content:center;gap:12px}' +
       '.hf-cell.kp.on{background:var(--b);color:#fff}.hf-cell.kp.on .hf-lab.in{opacity:.95}' +
       '.hf-kpval{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}' +
       '.hf-cell.kp:not(.on) .hf-kpval{color:var(--t)}' +
@@ -612,14 +659,11 @@
       '.hf-ptx{font-size:15px;line-height:1.6;color:var(--body)}' +
       '.hf-pstep.on .hf-ptx{color:#fff;opacity:.94}' +
       /* 비교 */
-      /* 비교 — 항목을 헤어라인 행으로(양쪽 카드 행 높이 맞춰 표처럼 읽히게) */
+      /* 비교 — 라벨+문장 플레인(표 아님, 피드백 반영). 좌정렬 한 축 */
       '.hf-cmpgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
-      '.hf-cmp{background:var(--tn);border-radius:16px;padding:28px 30px 20px;display:flex;flex-direction:column;min-height:240px}' +
-      '.hf-cmp .hf-lab{padding-bottom:14px;border-bottom:2px solid var(--t)}' +
-      '.hf-cmp ul{list-style:none;display:flex;flex-direction:column;font-size:17px;line-height:1.5;color:var(--body)}' +
-      '.hf-cmp li{padding:15px 2px;border-bottom:1px solid var(--rule)}.hf-cmp li:last-child{border-bottom:0}' +
+      '.hf-cmp{background:var(--tn);border-radius:16px;padding:32px 34px;display:flex;flex-direction:column;gap:20px;min-height:240px}' +
+      '.hf-cmp ul{list-style:none;display:flex;flex-direction:column;gap:14px;font-size:18px;line-height:1.6;color:var(--body)}' +
       '.hf-cmp.on{background:var(--b);color:#fff}.hf-cmp.on ul{color:#fff;font-weight:600}' +
-      '.hf-cmp.on .hf-lab{border-color:rgba(255,255,255,.7)}.hf-cmp.on li{border-color:rgba(255,255,255,.2)}' +
       /* 로드맵 */
       '.hf-rmgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
       '.hf-rmcol{background:var(--tn);border-radius:16px;padding:28px 26px;display:flex;flex-direction:column;gap:14px;min-height:250px}' +
@@ -650,6 +694,24 @@
       '.hf-half ul li{display:flex;align-items:center;gap:12px}' +
       '.hf-half .hf-dot.dim{background:var(--rule)}' +
       '.hf-half.on{border:0;background:var(--tn);color:var(--ink)}.hf-half.on ul{color:var(--ink);font-weight:600}' +
+      /* 한 단어 — 대형 타이포 중앙 */
+      '.hf-wdmid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;z-index:2}' +
+      '.hf-word{font-size:150px;font-weight:800;line-height:1.15;letter-spacing:-.03em;color:var(--t);white-space:pre-wrap;text-align:center}' +
+      '.hf-word b{color:var(--b)}' +
+      '.hf-wdcap{font-size:18px;color:var(--muted)}' +
+      /* 스테이트먼트 — 타이틀+서브 중앙 대형 */
+      '.hf-stmid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;z-index:2;text-align:center}' +
+      '.hf-sttitle{font-size:56px;font-weight:800;line-height:1.32;letter-spacing:-.02em;white-space:pre-wrap}' +
+      '.hf-sttitle b{color:var(--t)}' +
+      '.hf-stsub{font-size:20px;line-height:1.6;color:var(--muted);white-space:pre-wrap}' +
+      /* 이미지 히어로 — 풀블리드 배경+중앙 텍스트 */
+      '.slide.hf.hr{padding:0;position:relative;display:flex;align-items:center;justify-content:center;color:#fff}' +
+      '.hf-herobg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;min-height:0}' +
+      '.hf-herobg.ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,var(--t),var(--b) 72%);color:rgba(255,255,255,.55);font-size:14px}' +
+      '.hf-heroov{position:absolute;inset:0;background:rgba(8,22,16,.34);pointer-events:none}' +
+      '.hf-heromid{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}' +
+      '.hf-herotitle{font-size:62px;font-weight:800;line-height:1.25;letter-spacing:-.02em;white-space:pre-wrap}' +
+      '.hf-herosub{font-size:20px;line-height:1.6;color:rgba(255,255,255,.92);white-space:pre-wrap}' +
       /* 대형 수치 */
       '.hf-bsmid{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;position:relative;z-index:2}' +
       '.hf-bsval{font-size:132px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--t);font-variant-numeric:tabular-nums}' +
@@ -758,6 +820,9 @@
     { type: 'milestone', label: '마일스톤', use: '기간 준비 계획 간트 — 단계 카드+월축 라운드 바', needs: ['title', 'bars', 'axis'], opt: ['phases'] },
     { type: 'split', label: '좌우 대비', use: '회사 준비 vs 참여자 준비 등 두 축 대비 리스트', needs: ['left', 'right'], opt: ['title', 'sub'] },
     { type: 'bigstat', label: '대형 수치', use: '수치 하나로 임팩트 — 대형 숫자+캡션', needs: ['title', 'value'], opt: ['caption'] },
+    { type: 'word', label: '한 단어', use: '한 단어 임팩트 — 대형 타이포 중앙(감사·환영)', needs: ['text'], opt: ['caption'] },
+    { type: 'statement', label: '스테이트먼트', use: '타이틀+서브 문장 중앙 대형 — 메시지 전달 장', needs: ['title'], opt: ['sub'] },
+    { type: 'hero', label: '이미지 히어로', use: '풀블리드 배경 이미지+중앙 텍스트(이미지는 업로드)', needs: ['title'], opt: ['sub'] },
     { type: 'quote', label: '슬로건', use: '행사 슬로건·메시지 — 풀블리드 딥 밴드', needs: ['text'], opt: ['by'] },
     { type: 'closing', label: '엔딩', use: '마지막 장 — 표지 기하+마무리 인사·문의처', needs: ['title'], opt: ['sub', 'contact'] }
   ];
@@ -782,6 +847,9 @@
     milestone: { type: 'milestone', title: '월별 준비 계획', phases: [{ tag: '현재', head: '신청 접수', text: '사내 공지·가족 조사' }, { tag: '다음', head: '운영 준비', text: '부스·키트 제작', on: true }], bars: [{ label: '신청 접수', sub: '4월 — 사내 공지', start: 1, span: 2 }, { label: '부스·키트 준비', sub: '4~5월 — 제작·배정', start: 2, span: 2 }, { label: '행사 운영', sub: '5월 — 당일 운영·기록', start: 3, span: 2 }], axis: ['4월 초', '4월 말', '5월 초', '5월 말'] },
     split: { type: 'split', title: '준비는 회사가,\n가족은 오시기만 하면 돼요', left: { kicker: '회사가 준비해요', items: ['체험 부스·기념 선물', '가족 식사와 간식', '주차·안전 요원'] }, right: { kicker: '가족은 이것만', items: ['사전 신청 1분', '편한 복장', '즐길 마음'] } },
     bigstat: { type: 'bigstat', title: '올해 초청 규모', value: '120가족', caption: '작년보다 **40가족 더** — 전 임직원 가족 모두를 초대합니다' },
+    word: { type: 'word', text: '고마워요', caption: '함께해 준 모든 가족에게 전하는 마음' },
+    statement: { type: 'statement', title: '하루의 즐거움이\n일 년의 힘이 됩니다', sub: '가족과 함께하는 해피 패밀리 데이' },
+    hero: { type: 'hero', title: 'HAPPY\nFAMILY DAY', sub: '2026. 05. 22 FRI · 판교 사옥' },
     quote: { type: 'quote', text: '일하는 자리가\n**가족의 자랑**이 되도록.', by: 'Happy Family Day' },
     closing: { type: 'closing', title: '5월 22일,\n가족과 함께 만나요', sub: '마이다스 해피패밀리데이', contact: '문의 · 피플팀' }
   };
@@ -807,6 +875,9 @@
     'milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[구간 라벨 4~6]} | ' +
     'split:{title?,left:{kicker,items:[str]},right:{kicker,items:[str]},sub?} — 좌 흐림/우 강조 | ' +
     'bigstat:{title,value,caption?(**강조**)} | ' +
+    'word:{text(2~6자 대형 단어),caption?(한 줄)} | ' +
+    'statement:{title(중앙 대형 문장, \\n 2줄),sub?(한 줄)} | ' +
+    'hero:{title(중앙 대형, \\n 2줄),sub?(한 줄)}(배경 이미지는 사용자 업로드 — 창작 금지) | ' +
     'quote:{text(슬로건, **강조**, \\n 줄바꿈),by?} | ' +
     'closing:{title(마무리 인사, \\n 2줄),sub?,contact?(문의처)}' +
     '\n규칙: 행사 안내 톤 — 따뜻하고 간결한 한국어. 일정·장소·대상은 브리프에 있는 것만 쓰고 창작 금지. ' +
