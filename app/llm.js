@@ -197,7 +197,7 @@
   var MACHINE_ALLOWED = { cover: 1, statement: 1, toc: 1, twocol: 1, quote: 1, refcards: 1, linecards: 1, bignum: 1, agenda: 1, process: 1, darkhero: 1, spec: 1, beforeafter: 1, demo: 1, progress: 1, roadmap: 1, closing: 1, milestone: 1, chart: 1, shot: 1 };
   // rams 팩 — naver와 동일 타입 어휘(스타일만 다름)
   // hfd 팩(Happy Family Day) — 독자 13타입 (packs.hfd.js CATALOG와 동일 목록)
-  var HFD_ALLOWED = { cover: 1, greeting: 1, toc: 1, divider: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, photos: 1, quote: 1, closing: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1, hero: 1, duo: 1, flow: 1, hsteps: 1, profile: 1, band: 1, halfimg: 1, chart: 1, cycle: 1, dash: 1, matrix: 1, triple: 1, quad: 1, org: 1 };
+  var HFD_ALLOWED = { cover: 1, greeting: 1, toc: 1, divider: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, photos: 1, quote: 1, closing: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1, hero: 1, duo: 1, flow: 1, hsteps: 1, profile: 1, band: 1, halfimg: 1, chart: 1, cycle: 1, dash: 1, matrix: 1, triple: 1, quad: 1, org: 1, lineup: 1, branch: 1, highlight: 1, board: 1, list: 1 };
   function allowedFor(pack) { return pack === 'hfd' ? HFD_ALLOWED : pack === 'machine' ? MACHINE_ALLOWED : pack === 'sfmi' ? NAVER_ALLOWED : pack === 'pastel' ? NAVER_ALLOWED : pack === 'rams' ? NAVER_ALLOWED : pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
     var s = String(txt || '').trim();

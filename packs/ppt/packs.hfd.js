@@ -552,6 +552,84 @@
         (s.unit ? '<span class="hf-cnunit"' + de(P + '.unit') + '>' + esc(s.unit) + '</span>' : '') + '</div>' +
         '<div class="hf-cnnotes">' + notes + '</div></div></section>';
     },
+    /* 라인업 — 태그+이름+설명+상태 뱃지 행 3~5, 첫 강조·후보 dim (naver lineup 번안) */
+    lineup: function (s, P, ctx) {
+      var rows = (s.items || []).slice(0, 5).map(function (it, i) {
+        var IP = P + '.items.' + i;
+        var on = it.state === 'on' || (i === 0 && it.state !== 'dim');
+        return '<div class="hf-lnrow' + (on ? ' on' : '') + (it.state === 'dim' ? ' dim' : '') + '">' +
+          (it.tag ? '<span class="hf-lntag"' + de(IP + '.tag') + '>' + esc(it.tag) + '</span>' : '') +
+          '<span class="hf-lnhead"' + de(IP + '.head') + '>' + esc(it.head || '') + '</span>' +
+          (it.text ? '<span class="hf-lntx"' + de(IP + '.text') + '>' + mb(it.text) + '</span>' : '') +
+          (it.badge ? '<span class="hf-lnbadge"' + de(IP + '.badge') + '>' + esc(it.badge) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf ln" data-kind="' + kind(s, 'Lineup') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-lnrows">' + rows + '</div></section>';
+    },
+    /* 분기 구조 — 상단 리드 박스 → 하위 카드 2~4 (naver branch 번안) */
+    branch: function (s, P, ctx) {
+      var lead = s.lead || {};
+      var n = Math.min(Math.max((s.branches || []).length, 2), 4);
+      var cards = (s.branches || []).slice(0, 4).map(function (b, i) {
+        var IP = P + '.branches.' + i;
+        return '<div class="hf-bncard">' +
+          (b.label ? '<span class="l"' + de(IP + '.label') + '>' + esc(b.label) + '</span>' : '') +
+          '<span class="h"' + de(IP + '.head') + '>' + esc(b.head || '') + '</span>' +
+          (b.text ? '<span class="t"' + de(IP + '.text') + '>' + mb(b.text) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf bn" data-kind="' + kind(s, 'Branch') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-bnwrap"><div class="hf-bnlead">' +
+        (lead.label ? '<span class="l"' + de(P + '.lead.label') + '>' + esc(lead.label) + '</span>' : '') +
+        '<span class="t"' + de(P + '.lead.text') + '>' + mb(lead.text || '') + '</span></div>' +
+        '<span class="hf-bnstem"></span><span class="hf-bnbar" style="--bnc:' + n + '"></span>' +
+        '<div class="hf-bngrid" style="--bnc:' + n + '">' + cards + '</div></div></section>';
+    },
+    /* 하이라이트 — 대형 번호 재생 행 2~3 (naver highlight 번안) */
+    highlight: function (s, P, ctx) {
+      var rows = (s.items || []).slice(0, 3).map(function (it, i) {
+        var IP = P + '.items.' + i;
+        return '<div class="hf-hlrow">' +
+          '<span class="hf-hlno"' + de(IP + '.no') + '>' + esc(it.no || '0' + (i + 1)) + '</span>' +
+          '<span class="hf-hlhead"' + de(IP + '.head') + '>' + mb(it.head || '') + '</span>' +
+          (it.text ? '<span class="hf-hltx"' + de(IP + '.text') + '>' + mb(it.text) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf hl" data-kind="' + kind(s, 'Highlight') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-hlrows">' + rows + '</div>' +
+        (s.footnote ? '<p class="hf-hlfn"' + de(P + '.footnote') + '>' + mb(s.footnote) + '</p>' : '') + '</section>';
+    },
+    /* 보드 — 좌 카드 2 스택 + 우 딥 사이드 패널(리스트+필) (naver board 번안) */
+    board: function (s, P, ctx) {
+      var cards = (s.cards || []).slice(0, 2).map(function (c, i) {
+        var IP = P + '.cards.' + i;
+        return '<div class="hf-bocard">' +
+          (c.tag ? '<span class="tg"' + de(IP + '.tag') + '>' + esc(c.tag) + '</span>' : '') +
+          '<span class="h"' + de(IP + '.head') + '>' + mb(c.head || '') + '</span>' +
+          (c.text ? '<span class="t"' + de(IP + '.text') + '>' + mb(c.text) + '</span>' : '') + '</div>';
+      }).join('');
+      var side = '';
+      if (s.side) {
+        var lis = (s.side.items || []).map(function (t, j) { return '<li><span class="hf-dot"></span><span' + de(P + '.side.items.' + j) + '>' + mb(t) + '</span></li>'; }).join('');
+        var pills = (s.side.pills || []).map(function (t, j) { return '<span class="pill"' + de(P + '.side.pills.' + j) + '>' + esc(t) + '</span>'; }).join('');
+        side = '<div class="hf-boside">' +
+          (s.side.title ? '<span class="st"' + de(P + '.side.title') + '>' + esc(s.side.title) + '</span>' : '') +
+          (lis ? '<ul>' + lis + '</ul>' : '') +
+          (pills ? '<div class="pills">' + pills + '</div>' : '') + '</div>';
+      }
+      return '<section class="slide hf bo" data-kind="' + kind(s, 'Board') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-bogrid' + (side ? '' : ' solo') + '"><div class="hf-bomain">' + cards + '</div>' + side + '</div></section>';
+    },
+    /* 번호 카드 리스트 — 번호 원+라벨+보조 행 2~5, 첫 행 강조 (pitch list 번안) */
+    list: function (s, P, ctx) {
+      var rows = (s.rows || []).slice(0, 5).map(function (r, i) {
+        var IP = P + '.rows.' + i, on = i === (s.accent != null ? +s.accent : 0);
+        return '<div class="hf-lsrow' + (on ? ' on' : '') + '">' +
+          '<span class="hf-lsno">' + (i + 1) + '</span>' +
+          '<span class="hf-lslabel"' + de(IP + '.label') + '>' + esc(r.label || '') + '</span>' +
+          (r.sub ? '<span class="hf-lssub"' + de(IP + '.sub') + '>' + mb(r.sub) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf ls" data-kind="' + kind(s, 'List') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-lsrows">' + rows + '</div></section>';
+    },
     /* 매트릭스 — 좌 대형 이니셜 컬럼 + 우 틴트 그룹 패널 행 2~3 (ESG 경영 장 번안, 고밀도) */
     matrix: function (s, P, ctx) {
       var rows = (s.rows || []).slice(0, 3).map(function (r, i) {
@@ -635,8 +713,9 @@
         (s.topLabel ? '<span class="hf-cylab top"' + de(P + '.topLabel') + '>' + esc(s.topLabel) + '</span>' : '') +
         (s.bottomLabel ? '<span class="hf-cylab bot"' + de(P + '.bottomLabel') + '>' + esc(s.bottomLabel) + '</span>' : '') +
         blk(s.top, P + '.top', 'tp') + blk(s.bottom, P + '.bottom', 'bt') +
-        (s.left ? '<span class="hf-cyside l"' + de(P + '.left') + '>' + esc(s.left) + '</span>' : '') +
-        (s.right ? '<span class="hf-cyside r"' + de(P + '.right') + '>' + esc(s.right) + '</span>' : '') +
+        /* 좌우도 상하와 같은 블록 지원 — 문자열이면 짧은 라벨, 객체면 head+text */
+        (s.left ? (typeof s.left === 'object' ? blk(s.left, P + '.left', 'lf') : '<span class="hf-cyside l"' + de(P + '.left') + '>' + esc(s.left) + '</span>') : '') +
+        (s.right ? (typeof s.right === 'object' ? blk(s.right, P + '.right', 'rt') : '<span class="hf-cyside r"' + de(P + '.right') + '>' + esc(s.right) + '</span>') : '') +
         '<span class="hf-cycore"' + de(P + '.center') + '>' + mb(s.center || '') + '</span>' +
         '</div></div></section>';
     },
@@ -648,6 +727,10 @@
         if (ch.kind === 'donut') {
           var pct = Math.max(0, Math.min(100, +ch.pct || 0));
           return '<div class="hf-dmini dn"><i style="background:conic-gradient(var(--t) 0 ' + pct + '%,#E3E8E5 0)"></i><span>' + pct + '%</span></div>';
+        }
+        if (ch.kind === 'gauge') {
+          var gp = Math.max(0, Math.min(100, +ch.pct || 0));
+          return '<div class="hf-dmini gg"><i style="background:conic-gradient(from 270deg,var(--t) 0 ' + (gp / 2) + '%,#E3E8E5 ' + (gp / 2) + '% 50%,transparent 50%)"></i><span>' + gp + '%</span></div>';
         }
         if (ch.kind === 'area') {
           var vs = (ch.v || []).map(Number), mx = Math.max.apply(null, vs.concat([1]));
@@ -710,7 +793,7 @@
   };
 
   /* 본문 장 기본 프레임 — 2024 덱 레이아웃: 기하 테두리 + 중앙 화이트 라운드 패널 (frame:false로 해제) */
-  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1, duo: 1, flow: 1, hsteps: 1, profile: 1, band: 1, chart: 1, cycle: 1, dash: 1, matrix: 1, triple: 1, quad: 1, org: 1 };
+  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1, duo: 1, flow: 1, hsteps: 1, profile: 1, band: 1, chart: 1, cycle: 1, dash: 1, matrix: 1, triple: 1, quad: 1, org: 1, lineup: 1, branch: 1, highlight: 1, board: 1, list: 1 };
   var GEO = '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>';
   function frameWrap(html) {
     return html
@@ -1046,10 +1129,11 @@
       '.hf-flowfoot{flex:none;text-align:center;font-size:14px;color:var(--muted);padding-bottom:4px}' +
       /* 가로 노드 타임라인 (hsteps) */
       '.hf-hsrow{flex:0 1 auto;margin:auto 0;display:flex;gap:22px;padding:24px 0;position:relative;z-index:2;align-items:flex-start}' +
-      '.hf-hstep{flex:1;min-width:0;position:relative;padding-top:30px}' +
-      '.hf-hstep::before{content:"";position:absolute;left:16px;right:-22px;top:5px;height:2px;background:var(--tn)}' +
+      /* 노드 콘텐츠 센터 정렬 — 도트 중앙, 라인은 도트 중심끼리 연결(피드백 반영) */
+      '.hf-hstep{flex:1;min-width:0;position:relative;padding-top:30px;text-align:center}' +
+      '.hf-hstep::before{content:"";position:absolute;left:calc(50% + 14px);right:calc(-50% - 8px);top:5px;height:2px;background:var(--tn)}' +
       '.hf-hstep:last-child::before{display:none}' +
-      '.hf-hstep::after{content:"";position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:var(--t)}' +
+      '.hf-hstep::after{content:"";position:absolute;left:50%;transform:translateX(-50%);top:0;width:12px;height:12px;border-radius:50%;background:var(--t)}' +
       '.hf-hswhen{font-size:15px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
       '.hf-hshead{display:block;font-size:17.5px;font-weight:700;margin-top:5px;line-height:1.35;white-space:pre-wrap}' +
       '.hf-hstx{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:5px}' +
@@ -1139,6 +1223,64 @@
       '.hf-wfcol.vs .tr i{position:relative;background:var(--t);border-radius:8px 8px 0 0}' +
       '.hf-wfcol.vs .v{z-index:1}' +
       '.hf-wfcol.vs .gap{position:absolute;left:50%;transform:translate(-50%,50%);z-index:2;background:#fff;border-radius:999px;padding:9px 14px;font-size:12.5px;font-weight:800;color:var(--t);box-shadow:0 6px 18px rgba(10,30,20,.12);white-space:nowrap}' +
+      /* 라인업 (lineup) */
+      '.hf-lnrows{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;justify-content:center;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-lnrow{display:flex;align-items:center;gap:26px;background:var(--tn);border-radius:14px;padding:22px 30px}' +
+      '.hf-lnrow.on{background:var(--b);color:#fff}' +
+      '.hf-lnrow.dim{background:#F0F2F1;opacity:.65}' +
+      '.hf-lntag{flex:0 0 92px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--t)}' +
+      '.hf-lnrow.on .hf-lntag{color:#fff;opacity:.85}' +
+      '.hf-lnhead{flex:0 0 220px;font-size:19px;font-weight:800}' +
+      '.hf-lntx{flex:1;min-width:0;font-size:14px;line-height:1.5;color:var(--body)}' +
+      '.hf-lnrow.on .hf-lntx{color:#fff;opacity:.92}' +
+      '.hf-lnbadge{flex:none;background:#fff;border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:800;color:var(--t)}' +
+      '.hf-lnrow.on .hf-lnbadge{background:rgba(255,255,255,.16);color:#fff}' +
+      /* 분기 구조 (branch) */
+      '.hf-bnwrap{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;position:relative;z-index:2}' +
+      '.hf-bnlead{background:var(--dp);color:#fff;border-radius:14px;padding:20px 40px;display:flex;flex-direction:column;gap:5px;text-align:center;max-width:640px}' +
+      '.hf-bnlead .l{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.8}' +
+      '.hf-bnlead .t{font-size:18px;font-weight:800;line-height:1.4;white-space:pre-wrap}' +
+      '.hf-bnstem{width:2px;height:22px;background:var(--rule)}' +
+      /* 가로 분기선 폭 = 첫 카드 중심 ~ 끝 카드 중심 */
+      '.hf-bnbar{width:calc(100% - (100% - 16px*(var(--bnc) - 1))/var(--bnc));height:2px;background:var(--rule)}' +
+      '.hf-bngrid{width:100%;display:grid;grid-template-columns:repeat(var(--bnc),1fr);gap:16px}' +
+      '.hf-bncard{position:relative;background:var(--tn);border-radius:14px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;text-align:center;margin-top:20px}' +
+      '.hf-bncard::before{content:"";position:absolute;top:-22px;left:50%;width:2px;height:22px;background:var(--rule)}' +
+      '.hf-bncard .l{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--t)}' +
+      '.hf-bncard .h{font-size:18px;font-weight:800}' +
+      '.hf-bncard .t{font-size:13.5px;line-height:1.55;color:var(--body)}' +
+      /* 하이라이트 (highlight) */
+      /* 행이 잔여 높이를 나눠 갖는다 — 고정 패딩으로 패널을 넘쳐 타이틀을 침범하지 않게 */
+      '.hf-hlrows{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;z-index:2;margin-top:16px}' +
+      '.hf-hlrow{flex:1 1 0;min-height:0;display:flex;align-items:center;gap:34px;padding:12px 2px;border-bottom:1px solid var(--rule)}' +
+      '.hf-hlrow:first-child{border-top:2px solid var(--t)}.hf-hlrow:last-child{border-bottom:0}' +
+      '.hf-hlno{flex:0 0 92px;font-size:56px;font-weight:800;line-height:1;color:color-mix(in srgb,var(--t) 32%,#fff);font-variant-numeric:tabular-nums}' +
+      '.hf-hlhead{flex:0 0 350px;font-size:26px;font-weight:800;line-height:1.3;letter-spacing:-.01em;white-space:pre-wrap}' +
+      '.hf-hltx{flex:1;min-width:0;font-size:15px;line-height:1.6;color:var(--body)}' +
+      '.hf-hlfn{flex:none;text-align:right;font-size:12.5px;line-height:1.5;color:var(--muted);white-space:pre-wrap;padding-top:10px;position:relative;z-index:2}' +
+      /* 보드 (board) */
+      '.hf-bogrid{flex:1;min-height:0;display:grid;grid-template-columns:1.5fr 1fr;gap:16px;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-bogrid.solo{grid-template-columns:1fr}' +
+      '.hf-bomain{display:flex;flex-direction:column;gap:16px;min-height:0}' +
+      '.hf-bocard{flex:1;min-height:0;background:var(--tn);border-radius:16px;padding:26px 32px;display:flex;flex-direction:column;gap:8px;justify-content:center}' +
+      '.hf-bocard .tg{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--t)}' +
+      '.hf-bocard .h{font-size:23px;font-weight:800;line-height:1.3;white-space:pre-wrap}' +
+      '.hf-bocard .t{font-size:14.5px;line-height:1.6;color:var(--body)}' +
+      '.hf-boside{background:var(--dp);color:#fff;border-radius:16px;padding:30px 32px;display:flex;flex-direction:column;gap:16px}' +
+      '.hf-boside .st{font-size:17px;font-weight:800}' +
+      '.hf-boside ul{list-style:none;display:flex;flex-direction:column;gap:10px}' +
+      '.hf-boside li{display:flex;gap:10px;align-items:baseline;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.9)}' +
+      '.hf-boside .hf-dot{width:7px;height:7px;background:var(--tn);position:relative;top:-1px}' +
+      '.hf-boside .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}' +
+      '.hf-boside .pill{background:rgba(255,255,255,.14);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:700}' +
+      /* 번호 카드 리스트 (list) */
+      '.hf-lsrows{flex:1;min-height:0;display:flex;flex-direction:column;gap:14px;justify-content:center;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-lsrow{display:flex;align-items:center;gap:24px;background:#fff;border:1.5px solid var(--rule);border-radius:14px;padding:19px 28px}' +
+      '.hf-lsrow.on{background:var(--tn);border-color:transparent}' +
+      '.hf-lsno{flex:none;width:38px;height:38px;border-radius:50%;background:var(--tn);color:var(--t);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}' +
+      '.hf-lsrow.on .hf-lsno{background:var(--t);color:#fff}' +
+      '.hf-lslabel{flex:0 0 300px;font-size:18px;font-weight:800}' +
+      '.hf-lssub{flex:1;min-width:0;font-size:14px;line-height:1.5;color:var(--body)}' +
       /* 매트릭스 (matrix) */
       '.hf-mxrows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:12px 0;position:relative;z-index:2}' +
       '.hf-mxrow{flex:0 1 auto;min-height:0;display:flex;gap:24px;align-items:stretch}' +
@@ -1214,6 +1356,8 @@
       '.hf-cyblk{position:absolute;left:50%;transform:translateX(-50%);width:70%;display:flex;flex-direction:column;gap:7px;text-align:center}' +
       '.hf-cyblk.tp{top:13%}' +
       '.hf-cyblk.bt{bottom:13%}' +
+      '.hf-cyblk.lf{left:4%;right:auto;top:50%;transform:translateY(-50%);width:27%}' +
+      '.hf-cyblk.rt{left:auto;right:4%;top:50%;transform:translateY(-50%);width:27%}' +
       '.hf-cyblk .h{font-size:18px;font-weight:800}' +
       '.hf-cyblk .t{font-size:13px;line-height:1.55;color:var(--body)}' +
       '.hf-cyside{position:absolute;top:50%;transform:translateY(-50%);font-size:14.5px;font-weight:800;white-space:pre-wrap;text-align:center;max-width:140px;line-height:1.4}' +
@@ -1235,6 +1379,10 @@
       '.hf-dmini.dn i{width:104px;height:104px;border-radius:50%;display:block;-webkit-mask:radial-gradient(circle,transparent 34px,#000 35px);mask:radial-gradient(circle,transparent 34px,#000 35px)}' +
       '.hf-dmini.dn span{position:absolute;font-size:16px;font-weight:800;color:var(--t)}' +
       '.hf-dmini.ar i{flex:1;height:100%;display:block;background:linear-gradient(180deg,var(--t),color-mix(in srgb,var(--t) 18%,#fff))}' +
+      /* 반원 게이지 */
+      '.hf-dmini.gg{align-items:flex-end;justify-content:center;position:relative;overflow:hidden}' +
+      '.hf-dmini.gg i{width:130px;height:130px;display:block;border-radius:50%;margin-bottom:-65px;-webkit-mask:radial-gradient(circle,transparent 40px,#000 41px);mask:radial-gradient(circle,transparent 40px,#000 41px)}' +
+      '.hf-dmini.gg span{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:16px;font-weight:800;color:var(--t)}' +
       '.hf-dstrip{background:var(--tn);border-radius:14px;padding:20px 28px;display:flex;align-items:center;gap:0}' +
       '.hf-dstat{flex:1;display:flex;flex-direction:column;gap:5px;align-items:center;text-align:center}' +
       '.hf-dstat + .hf-dstat{border-left:1px solid var(--rule)}' +
@@ -1379,6 +1527,11 @@
     { type: 'triple', label: '3분할 보드', use: '헤더 밴드 3열 — 열마다 리드+리스트, 마지막 열 강조', needs: ['title', 'cols'], opt: ['sub'], cap: { cols: '3개' } },
     { type: 'quad', label: '4분할', use: '사분면 4블록+중앙 원 허브 — 영역별 실행 항목', needs: ['center', 'cells'], opt: ['title'], cap: { cells: '4개' } },
     { type: 'org', label: '구조도', use: '상단 조직 박스(밴드+칩)+커넥터+하단 조직 박스 — 계층 구조', needs: ['top', 'bottom'], opt: ['title'] },
+    { type: 'lineup', label: '라인업', use: '프로그램·연사·부스 라인업 행 3~5 — 태그+이름+설명+상태 뱃지, 첫 강조', needs: ['title', 'items'], opt: ['sub'], cap: { items: '3~5개' } },
+    { type: 'branch', label: '분기 구조', use: '상단 리드 → 하위 카드 2~4 분기 — 조직·역할 갈래', needs: ['lead', 'branches'], opt: ['title', 'sub'], cap: { branches: '2~4개' } },
+    { type: 'highlight', label: '하이라이트', use: '대형 번호 재생 행 2~3 — 핵심 포인트 임팩트', needs: ['title', 'items'], opt: ['footnote', 'sub'], cap: { items: '2~3개' } },
+    { type: 'board', label: '보드', use: '좌 카드 2 스택+우 딥 사이드(리스트+필) — 두 축+요약', needs: ['title', 'cards'], opt: ['side', 'sub'], cap: { cards: '2개' } },
+    { type: 'list', label: '번호 리스트', use: '번호 원 카드 행 2~5 — 절차·핵심 포인트, 첫 행 강조', needs: ['title', 'rows'], opt: ['accent', 'sub'], cap: { rows: '2~5개' } },
     { type: 'dash', label: '지표 대시보드', use: '미니 차트(막대·도넛·에어리어) 카드 3~4+하단 스탯 스트립', needs: ['title', 'cards'], opt: ['strip', 'sub'], cap: { cards: '3~4개' } },
     { type: 'word', label: '한 단어', use: '한 단어 임팩트 — 대형 타이포 중앙(감사·환영)', needs: ['text'], opt: ['caption'] },
     { type: 'statement', label: '스테이트먼트', use: '타이틀+서브 문장 중앙 대형 — 메시지 전달 장', needs: ['title'], opt: ['sub'] },
@@ -1439,9 +1592,11 @@
       { head: '재참여 92%', text: '작년 참여 가족 대부분이 다시 신청했어요' },
       { head: '첫 참여 증가', text: '동료 추천으로 새로 신청한 가족이 늘었어요' }
     ] },
-    cycle: { type: 'cycle', center: '해피\n패밀리 데이', topLabel: '회사가 가족에게', bottomLabel: '가족이 회사에게', left: '가족', right: '회사',
+    cycle: { type: 'cycle', center: '해피\n패밀리 데이', topLabel: '회사가 가족에게', bottomLabel: '가족이 회사에게',
       top: { head: '하루의 초대', text: '체험 부스와 기념 선물,\n일터를 여는 하루' },
-      bottom: { head: '이해와 응원', text: '가족의 응원이\n일할 힘이 됩니다' } },
+      bottom: { head: '이해와 응원', text: '가족의 응원이\n일할 힘이 됩니다' },
+      left: { head: '가족', text: '함께 즐기는 하루' },
+      right: { head: '회사', text: '일터를 여는 초대' } },
     dash: { type: 'dash', title: '한눈에 보는\n작년 성과', cards: [
       { label: '참여 가족', value: '106', unit: '가족', chart: { kind: 'bars', v: [74, 92, 106] } },
       { label: '만족도', value: '4.8', unit: '/ 5점', chart: { kind: 'donut', pct: 96 } },
@@ -1475,6 +1630,32 @@
       { head: '경품 추첨', items: ['전 가족 대상 이벤트', '기념 선물 증정'] }
     ] },
     org: { type: 'org', title: '행사 운영 조직', top: { head: '해피 패밀리 데이', cap: '운영본부', label: '운영 부문', band: '피플팀', items: ['등록·안내', '체험 부스', '안전 관리', '기념 선물'] }, bottom: { head: '지원 조직', items: ['총무팀', '홍보팀', '보안팀'] } },
+    lineup: { type: 'lineup', title: '체험 부스\n라인업', items: [
+      { tag: 'Booth', head: '패밀리 포토존', text: '가족 사진 촬영과 즉석 인화', badge: '인기 1위' },
+      { tag: 'Play', head: '키즈 플레이존', text: '연령별 놀이 공간, 안전 요원 상주', badge: '상시 운영' },
+      { tag: 'Craft', head: '만들기 부스', text: '가족 공예 체험, 완성품은 집으로', badge: '회차제' },
+      { tag: 'Gift', head: '경품 추첨', text: '전 가족 대상 이벤트', badge: '16:30', state: 'dim' }
+    ] },
+    branch: { type: 'branch', title: '운영 조직', lead: { label: '운영본부', text: '해피 패밀리 데이 · 피플팀' }, branches: [
+      { label: 'Zone A', head: '등록·안내', text: '로비 등록 데스크와 웰컴 키트' },
+      { label: 'Zone B', head: '체험 부스', text: '포토존·플레이존·만들기 부스' },
+      { label: 'Zone C', head: '안전·지원', text: '안전 요원과 주차·시설 지원' }
+    ] },
+    highlight: { type: 'highlight', title: '올해의\n세 가지 변화', items: [
+      { head: '하루 종일\n운영', text: '오후 반일에서 하루 종일로 — 여유 있게 즐기는 하루가 됩니다' },
+      { head: '부스 12개로\n확대', text: '체험 부스를 두 배로 늘려 연령별 프로그램을 준비했습니다' },
+      { head: '연령별 맞춤\n기념품', text: '공통 1종에서 연령별 맞춤 구성으로 바뀝니다' }
+    ], footnote: '작년 참여 가족 설문을 반영한 변화입니다' },
+    board: { type: 'board', title: '두 가지 축으로\n준비합니다', cards: [
+      { tag: 'Family', head: '가족이 주인공인\n하루', text: '체험 부스와 기념 선물, 일터 소개까지 — 가족 중심의 프로그램' },
+      { tag: 'Safety', head: '안심하고 즐기는\n공간', text: '안전 요원 상주와 연령별 보호자 동반 안내' }
+    ], side: { title: '한눈에 보기', items: ['5월 22일 금요일 13시', '판교 사옥 1층 로비·대강당', '전 임직원 및 가족'], pills: ['사전 신청', '주차 지원', '기념 선물'] } },
+    list: { type: 'list', title: '참여 방법\n네 단계', rows: [
+      { label: '사전 신청', sub: '사내 공지 링크에서 가족 인원 입력' },
+      { label: '확정 안내', sub: '문자로 확정·주차 안내 수신' },
+      { label: '당일 등록', sub: '로비 등록 데스크에서 웰컴 키트 수령' },
+      { label: '체험·추첨', sub: '부스 체험 후 경품 추첨 참여' }
+    ] },
     word: { type: 'word', text: '고마워요', caption: '함께해 준 모든 가족에게 전하는 마음' },
     statement: { type: 'statement', title: '하루의 즐거움이\n일 년의 힘이 됩니다', sub: '가족과 함께하는 해피 패밀리 데이' },
     hero: { type: 'hero', title: 'HAPPY\nFAMILY DAY', sub: '2026. 05. 22 FRI · 판교 사옥' },
@@ -1510,12 +1691,17 @@
     'band:{title,lead(밴드 선언 \\n 2줄),points?:[{head,text}](2~3개),cards:[{head,text?,tone?:"on"}](3~5개),sub?} | ' +
     'halfimg:{head(\\n 2줄),lead?,text?(\\n\\n 문단)}(이미지는 사용자 업로드 — 창작 금지) | ' +
     'chart:{title,bars:[{x(축 라벨),v(숫자),label?(표시값),on?:true}](3~8개, 브리프에 있는 수치만·창작 금지),notes?:[{head,text}](2~4개),badge?,unit?,sub?,variant?:"waterfall"(계단 누적 — total:{x,v,label?} 합계 딥 바, vs:{x,v,label?,gap?(GAP 칩)} 비교 컬럼)} | ' +
-    'cycle:{center(중앙 허브 \\n 2줄),top:{head,text?},bottom:{head,text?},left?,right?,topLabel?,bottomLabel?,title?} | ' +
+    'cycle:{center(중앙 허브 \\n 2줄),top:{head,text?},bottom:{head,text?},left?:{head,text?}|str(짧은 라벨),right?:{head,text?}|str,topLabel?,bottomLabel?,title?} | ' +
     'matrix:{title,rows:[{tag(대형 이니셜/2자 키워드),label(보조 라벨),sub?,groups:[{head,items:[str 2~4개]}](1~3개)}](2~3개),sub?} | ' +
     'triple:{title,cols:[{head(헤더 밴드),lead?(중앙 리드 \\n·**강조**),items?:[str],foot?(**강조** 결론),tone?:"on"(강조 열)}](3개),sub?} | ' +
     'quad:{center:{label(중앙 원 라벨 \\n),head(강조 키워드)},cells:[{head,items:[str 2~3개]}](4개),title?} | ' +
     'org:{top:{head,cap?("(신설)"류),label?(구분 소라벨),band?(풀폭 딥 밴드명),items:[str 2~4 칩]},bottom:{head,items:[str 2~4 박스]},title?} | ' +
-    'dash:{title,cards:[{label,value(수치),unit?,chart?:{kind:"bars"|"donut"|"area",v?:[숫자],pct?:숫자},text?}](3~4개, 수치는 브리프에 있는 것만),strip?:[{label,value}](1~3개),sub?} | ' +
+    'lineup:{title,items:[{tag?(짧은 영문),head(이름),text?,badge?(상태 라벨),state?:"dim"(후보 흐림)|"on"}](3~5개, 첫 항목 자동 강조),sub?} | ' +
+    'branch:{title,lead:{label?,text(중앙 리드)},branches:[{label?(짧은 영문),head,text?}](2~4개),sub?} | ' +
+    'highlight:{title,items:[{no?,head(\\n 2줄 임팩트),text?}](2~3개),footnote?(우하단 각주),sub?} | ' +
+    'board:{title,cards:[{tag?,head(\\n 2줄),text?}](2개),side?:{title?,items:[str],pills?:[str]},sub?} | ' +
+    'list:{title,rows:[{label,sub?}](2~5개),accent?:강조 행 인덱스(기본 0),sub?} | ' +
+    'dash:{title,cards:[{label,value(수치),unit?,chart?:{kind:"bars"|"donut"|"area"|"gauge",v?:[숫자],pct?:숫자},text?}](3~4개, 수치는 브리프에 있는 것만),strip?:[{label,value}](1~3개),sub?} | ' +
     'word:{text(2~6자 대형 단어),caption?(한 줄)} | ' +
     'statement:{title(중앙 대형 문장, \\n 2줄),sub?(한 줄)} | ' +
     'hero:{title(중앙 대형, \\n 2줄),sub?(한 줄)}(배경 이미지는 사용자 업로드 — 창작 금지) | ' +
