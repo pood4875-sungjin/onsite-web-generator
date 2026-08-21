@@ -39,3 +39,4 @@ cover · greeting(인사말) · toc(2~4 밴드 컬럼) · divider · section(2~4
 - CJK(ja/zh) 폰트 주입(cjkHead) 미구현 — 국문 사내 행사 전제. 다국어 확장 시 naver 팩 패턴 이식.
 - 컬러칩은 body[data-th]만 바꾼다 — 데이터(theme 필드)는 안 바뀜. 저장 컬러를 바꾸려면 채팅/인라인으로 theme 수정.
 - studio.html 배선을 perl로 하지 말 것 — `||` 체인이 구분자와 충돌해 파일 전체가 깨진 사고(2026-08-21, git checkout으로 복구). Edit 도구로만.
+- studio에는 팩 렌더 체인이 **두 곳**: `renderDeckFor`(라이브 생성·썸네일·HTML 내보내기)와 뷰어/미리보기 체인. 한쪽만 배선하면 라이브 생성이 레거시 ppt 렌더러로 떨어져 "스타일 안 나옴"(2026-08-21 실사고 — renderDeckFor 누락).
