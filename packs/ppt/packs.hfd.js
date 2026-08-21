@@ -88,7 +88,7 @@
       return '<section class="slide hf dv" data-kind="' + kind(s, 'Divider') + '">' +
         '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>' +
         runhead(s, P, ctx, true) +
-        '<div class="hf-dvmid"><span class="hf-dvno"' + de(P + '.no') + '>' + esc(s.no || '0' + (idx + 1)) + '</span>' +
+        '<div class="hf-dvmid">' +
         '<h1 class="hf-dvtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
         (s.lead ? '<p class="hf-dvlead"' + de(P + '.lead') + '>' + mb(s.lead) + '</p>' : '') + '</div>' + logo() + '</section>';
     },
@@ -349,6 +349,15 @@
     }
   };
 
+  /* 본문 장 기본 프레임 — 2024 덱 레이아웃: 기하 테두리 + 중앙 화이트 라운드 패널 (frame:false로 해제) */
+  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1 };
+  var GEO = '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>';
+  function frameWrap(html) {
+    return html
+      .replace(/^<section class="slide hf ([^"]*)"/, '<section class="slide hf $1 frm"')
+      .replace(/^(<section[^>]*>)/, '$1' + GEO + '<div class="hf-frpanel">')
+      .replace(/<\/section>$/, '</div></section>');
+  }
   function renderSlides(slides) {
     var divAt = [];
     slides.forEach(function (s, i) { if (s.type === 'divider') divAt.push(i + 1); });
@@ -359,6 +368,7 @@
       var html = '';
       try { html = fn(s, 'slides.' + i, { dividerIndex: dividerIndex, no: i + 1, total: total }); }
       catch (e) { html = '<section class="slide hf sc" data-kind="Error"><h2 class="hf-hl">' + esc(s.type) + ' 렌더 오류</h2></section>'; }
+      if (FRAMED[s.type] && s.frame !== false) html = frameWrap(html);
       return html;
     }).join('\n');
   }
@@ -444,6 +454,11 @@
       '.hf-lab.in{color:inherit;opacity:.85}' +
       '.hf-cap{font-size:14px;color:var(--muted)}' +
       '.hf-body{font-size:19px;line-height:1.7;color:var(--body)}' +
+      /* 본문 프레임 — 기하 테두리 + 중앙 화이트 패널 */
+      '.slide.hf.frm{padding:36px}' +
+      '.hf-frpanel{position:relative;z-index:2;flex:1;min-height:0;background:#fff;padding:44px 52px;display:flex;flex-direction:column;overflow:hidden}' +
+      '.slide.hf.ms .hf-frpanel{gap:16px}' +
+      '.slide.hf.frm .hf-deco{right:-260px;bottom:-290px}' +
       /* 기하 장식 — 표지 실측 */
       '.hf-bandT,.hf-bandB{position:absolute;left:0;right:0;height:50%;z-index:0}' +
       '.hf-bandT{top:0;background:var(--t)}.hf-bandB{bottom:0;background:var(--b)}' +
@@ -520,16 +535,16 @@
       '.slide.ab{padding:0}' +
       '.hf-abwide{flex:1;min-height:0;margin:36px 44px 0;display:flex}' +
       '.hf-abwide .hf-imgph{flex:1;min-height:0;border-radius:14px}' +
-      '.slide.ab.sd{flex-direction:row;gap:34px;padding:44px 56px;align-items:stretch}' +
+      '.slide.ab.sd{flex-direction:row;gap:34px;padding:36px;align-items:stretch}' +
       '.hf-sdcap{position:relative;z-index:2;flex:0 0 270px;display:flex;flex-direction:column;justify-content:center;gap:16px;color:#fff;padding:10px 0}' +
       '.hf-sdcap .hf-abyear{align-self:flex-start}' +
       '.hf-sdtitle{font-size:29px;font-weight:800;line-height:1.4;letter-spacing:-.01em;white-space:pre-wrap}' +
       '.hf-sdtx{font-size:14px;line-height:1.7;opacity:.92;white-space:pre-wrap;border-top:1px solid rgba(255,255,255,.5);padding-top:14px}' +
       '.hf-sdfoot{margin-top:auto;font-size:11.5px;opacity:.75}' +
-      '.hf-sdpanel{position:relative;z-index:2;flex:1;min-width:0;background:#fff;border-radius:16px;padding:14px;display:flex}' +
+      '.hf-sdpanel{position:relative;z-index:2;flex:1;min-width:0;background:#fff;padding:14px;display:flex}' +
       '.hf-sdpanel .hf-imgph{flex:1;min-height:0}' +
-      '.slide.ab.gd{padding:44px 56px}' +
-      '.hf-abpanel{position:relative;z-index:2;flex:1;min-height:0;background:#fff;border-radius:18px;padding:30px 34px 34px;display:flex;flex-direction:column;gap:22px}' +
+      '.slide.ab.gd{padding:36px}' +
+      '.hf-abpanel{position:relative;z-index:2;flex:1;min-height:0;background:#fff;padding:34px 38px;display:flex;flex-direction:column;gap:22px}' +
       '.hf-abphead{flex:none;display:flex;align-items:center;gap:16px}' +
       '.hf-abyear.pv{color:var(--t);border-color:var(--t)}' +
       '.hf-abptitle{font-size:24px;font-weight:800;letter-spacing:-.01em;color:var(--ink);white-space:pre-wrap}' +
@@ -545,7 +560,7 @@
       '.hf-abcap:empty{display:none}' +
       '.hf-abfoot{position:absolute;right:22px;bottom:14px;font-size:11.5px;opacity:.75;z-index:1}' +
       '.slide.ab.fr{padding:52px 64px}' +
-      '.hf-abframe{position:relative;z-index:2;flex:1;min-height:0;margin:28px 112px 0;background:#fff;padding:18px;display:flex;border-radius:14px}' +
+      '.hf-abframe{position:relative;z-index:2;flex:1;min-height:0;margin:28px 112px 0;background:#fff;padding:18px;display:flex}' +
       '.hf-abframe .hf-imgph{flex:1;min-height:0}' +
       '.hf-abfr-cap{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0 6px;color:#fff}' +
       '.hf-abfr-cap .hf-abtitle{flex:0 1 auto;font-size:22px}' +
