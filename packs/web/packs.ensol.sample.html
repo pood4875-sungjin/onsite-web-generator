@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>엔솔 MBM — 브랜드 랜딩 시안</title>
-<!-- 시안: 엔솔 MBM 스타일 v2 — toss.im/company 디자인 문법 실측 이식.
-     실측(2026-08-21 curl·스크린샷): 단어 단위 리빌(translateY 24px + blur 16px), 섹션 = 상단 1px 보더 + 좌 sticky 도트 라벨 / 우 콘텐츠 그리드,
-     연혁 연도 탭, 리더 3열 인물 카드(우하단 화살표 버튼) + 클릭 시 우측 슬라이드 패널(백드롭 블러, 소개·주요 경력).
-     히어로: 사용자 첨부 자산(파스텔 메시 + 그라데이션 타이포) 유지. 규칙: border-radius 0 전면. 문구는 자체 콘텐츠(MIDAS·AX DAY). -->
+<!-- 시안: 엔솔 MBM 스타일 v3 — toss.im/company 실물 캡처 6장 실측 반영.
+     섹션 문법: 상단 1px 룰 + 좌 ● 라벨 / 우 콘텐츠. Vision=우측 헤딩+본문·하단 풀폭 사진 3장.
+     History=라벨→대형 타이틀→언더라인 연도 탭(우측 화살표)→3열(선언문|연혁 리스트|사진).
+     Group(제품)=센터 자이언트 선언문 + 로고 포토카드. Culture=좌 그라데이션 아트카드+번호 리스트(활성/디밍).
+     Leaders=3열 인물 카드+우측 슬라이드 패널. 모션: 단어 blur(16px)+translateY(24px) 스태거.
+     히어로: 사용자 첨부 자산(파스텔 메시+그라데이션 타이포) 고정. 규칙: border-radius 0. 문구 자체 콘텐츠. -->
 <style>
 :root{
-  --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1;
+  --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1; --g5:#B0B8C1;
   --bg1:#F9FAFB; --bg2:#F2F4F6; --line:#E5E8EB;
   --blue:#3667E9; --blue2:#2F5BD6; --lime:#77A93C; --lime2:#A8D95C;
   --grad:linear-gradient(100deg,#4A79E8 5%,#77A93C 38%,#3667E9 72%,#2F5BD6 100%);
@@ -21,7 +23,7 @@ body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sa
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
-.wrap{width:min(1200px,92vw);margin:0 auto}
+.wrap{width:min(1280px,92vw);margin:0 auto}
 
 /* ── 단어 리빌 — toss 실측: translateY(24px)+blur(16px) ── */
 .wd{display:inline-block;opacity:0;transform:translateY(24px);filter:blur(16px);
@@ -31,17 +33,17 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .rv.on{opacity:1;transform:none}
 .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
 
-/* ── GNB ── */
+/* ── GNB — toss: 로고 좌 / 메뉴 센터 / 우 CTA ── */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;height:64px;display:flex;align-items:center;transition:background .3s,box-shadow .3s}
 .gnb.solid{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
-.gnb .in{width:min(1200px,92vw);margin:0 auto;display:flex;align-items:center;gap:34px}
-.gnb .logo{font-size:21px;font-weight:800;letter-spacing:-.02em}
-.gnb nav{display:flex;gap:26px;font-size:14.5px;font-weight:600;color:var(--g2)}
-.gnb nav a:hover{color:var(--ink)}
-.gnb .cta{margin-left:auto;background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px}
+.gnb .in{width:min(1280px,92vw);margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.gnb .logo{font-size:21px;font-weight:800;letter-spacing:-.02em;justify-self:start}
+.gnb nav{display:flex;gap:30px;font-size:14.5px;font-weight:600;color:var(--g1)}
+.gnb nav a:hover{color:var(--blue)}
+.gnb .cta{justify-self:end;background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px}
 .gnb .cta:hover{background:#333}
 
-/* ── Hero — 첨부 자산: 파스텔 메시 + 그라데이션 타이포 ── */
+/* ── Hero — 사용자 첨부 자산 고정: 파스텔 메시 + 그라데이션 타이포 ── */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
   background:
     radial-gradient(52% 44% at 50% -6%, #FEFFF4 0%, rgba(254,255,244,0) 70%),
@@ -67,58 +69,75 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .hero .scr:after{content:"";display:block;width:1px;height:34px;background:var(--g3);margin:10px auto 0;animation:scrline 1.8s ease-in-out infinite}
 @keyframes scrline{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ── 섹션 문법 — toss company 실측: 상단 1px 보더 + 좌 도트 라벨 / 우 콘텐츠 ── */
-.sec{padding:120px 0 140px}
-.sec .tt{font-size:clamp(32px,3.6vw,48px);line-height:1.3;font-weight:700;letter-spacing:-.025em;word-break:keep-all;margin-bottom:44px}
-.frame{border-top:1px solid var(--line);padding-top:28px;display:grid;grid-template-columns:240px 1fr;gap:40px;align-items:start}
-.lbl{position:sticky;top:92px;display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--g2)}
-.lbl:before{content:"";width:10px;height:10px;background:var(--g2);border-radius:50%!important}
-.big{font-size:clamp(24px,2.5vw,33px);line-height:1.55;font-weight:600;letter-spacing:-.02em;color:var(--g1);word-break:keep-all}
-.big b{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* ── 섹션 공통 ── */
+.sec{padding:130px 0}
+.rule{border-top:1px solid var(--line)}
+.lbl{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--g1)}
+.lbl:before{content:"";width:10px;height:10px;background:var(--g1);border-radius:50%!important}
+h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-spacing:-.025em;word-break:keep-all}
 
-/* Vision */
-.vgal{margin-top:64px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
-.vgal .ph{height:320px;background:var(--bg2);overflow:hidden}
+/* ── Vision — 좌 라벨 / 우 헤딩+본문, 하단 풀폭 사진 (toss 실측) ── */
+.vframe{padding-top:30px;display:grid;grid-template-columns:1fr 1.35fr;gap:40px;align-items:start}
+.vframe h3{font-size:clamp(20px,1.9vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1.5;word-break:keep-all}
+.vframe .bd{margin-top:16px;font-size:16.5px;line-height:1.8;color:var(--g2);word-break:keep-all}
+.vgal{margin-top:88px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.vgal .ph{height:min(46vw,560px);background:var(--bg2);overflow:hidden}
 .vgal .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
 .vgal .ph.on img{transform:scale(1)}
 
-/* History */
-.tabs{display:flex;gap:8px;margin-top:26px;flex-wrap:wrap}
-.tab{padding:10px 18px;font-size:14px;font-weight:700;color:var(--g3);background:var(--bg1);transition:all .2s}
-.tab.on{background:var(--ink);color:#fff}
-.hlist .hrow{padding:30px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:110px 1fr;gap:24px}
-.hlist .hrow:first-child{padding-top:6px}
+/* ── History — 라벨 → 대형 타이틀 → 언더라인 연도 탭 → 3열 (toss 실측) ── */
+.htabs{margin-top:72px;display:grid;grid-template-columns:repeat(3,1fr) auto;border-top:1px solid var(--line)}
+.htab{position:relative;text-align:left;padding:22px 0 6px;font-size:clamp(18px,1.8vw,24px);font-weight:700;color:var(--g5);transition:color .25s}
+.htab.on{color:var(--ink)}
+.htab:before{content:"";position:absolute;top:-1px;left:0;right:32px;height:2px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.htab.on:before{transform:scaleX(1)}
+.harr{display:flex;gap:18px;align-items:flex-start;padding-top:22px;font-size:20px;color:var(--g2)}
+.harr button:hover{color:var(--ink)}
+.hbody{margin-top:64px;display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:48px;align-items:start}
+.hlead{font-size:clamp(19px,1.8vw,24px);font-weight:700;line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
+.hitems .hrow{padding:0 0 30px}
 .hrow .yr{font-size:15px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums}
-.hrow b{font-size:20px;font-weight:700;letter-spacing:-.015em;display:block;word-break:keep-all}
-.hrow p{margin-top:8px;font-size:15px;line-height:1.65;color:var(--g3);word-break:keep-all}
-.hq{margin-top:48px;font-size:clamp(20px,2vw,26px);font-weight:700;letter-spacing:-.02em;color:var(--g1)}
-.hq i{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hrow b{display:block;margin-top:6px;font-size:18px;font-weight:700;letter-spacing:-.015em;word-break:keep-all}
+.hrow p{margin-top:5px;font-size:14.5px;line-height:1.6;color:var(--g3);word-break:keep-all}
+.hph{height:460px;background:var(--bg2);overflow:hidden}
+.hph img{width:100%;height:100%;object-fit:cover}
 
-/* Products */
-.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.pcard{background:var(--bg1);padding:34px 30px 38px;transition:background .25s}
-.pcard:hover{background:var(--bg2)}
-.pcard .nm{font-size:20px;font-weight:800}
-.pcard .nm small{font-size:12px;font-weight:700;color:var(--g4);margin-left:8px;letter-spacing:.06em}
-.pcard p{margin-top:10px;font-size:14.5px;line-height:1.65;color:var(--g3);word-break:keep-all}
-.pcard .go{margin-top:22px;display:inline-block;font-size:13.5px;font-weight:700;color:var(--blue)}
-.pcard .go .arr{display:inline-block;transition:transform .25s}
-.pcard:hover .go .arr{transform:translateX(4px)}
+/* ── 제품 — 센터 자이언트 선언문 + 로고 포토카드 (toss Group 실측) ── */
+.grp{text-align:center}
+.grp .lbl{justify-content:center}
+.giant{margin-top:34px;font-size:clamp(44px,6.4vw,88px);line-height:1.22;font-weight:800;letter-spacing:-.03em;word-break:keep-all}
+.gcards{margin-top:80px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:left}
+.gcard{position:relative;height:min(52vw,620px);background:var(--bg2);overflow:hidden}
+.gcard img{width:100%;height:100%;object-fit:cover}
+.gcard .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,7,18,0) 40%,rgba(3,7,18,.62) 100%)}
+.gcard .nm{position:absolute;left:28px;bottom:60px;color:#fff;font-size:26px;font-weight:800;letter-spacing:-.01em}
+.gcard .nm small{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;opacity:.7;margin-bottom:8px}
+.gcard .ds{position:absolute;left:28px;right:28px;bottom:24px;color:rgba(255,255,255,.85);font-size:14px;line-height:1.6;word-break:keep-all}
+.gcard:nth-child(2){transform:translateY(40px)}
+@media (max-width:900px){.gcard:nth-child(2){transform:none}}
 
-/* Culture — 아코디언 리스트 (toss company 문법) */
-.clist .crow{border-bottom:1px solid var(--line)}
-.clist .chd{width:100%;display:grid;grid-template-columns:52px 1fr 30px;gap:16px;align-items:baseline;text-align:left;padding:26px 0}
-.clist .no{font-size:14px;font-weight:800;color:var(--g4);font-variant-numeric:tabular-nums}
-.clist .chd b{font-size:21px;font-weight:700;letter-spacing:-.015em}
-.clist .chd b small{display:block;font-size:15px;font-weight:500;color:var(--g3);margin-top:6px;letter-spacing:0}
-.clist .x{justify-self:end;font-size:22px;color:var(--g4);transition:transform .3s;line-height:1}
-.crow.open .x{transform:rotate(45deg)}
-.clist .cbd{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.2,.7,.2,1)}
-.clist .cbd p{padding:0 0 28px 68px;font-size:15.5px;line-height:1.75;color:var(--g2);max-width:720px;word-break:keep-all}
-.crow:hover .chd b{color:var(--blue)}
+/* ── Culture — 좌 그라데이션 아트카드 + 번호 리스트(활성/디밍) (toss 실측) ── */
+.cframe{margin-top:56px;padding-top:34px;border-top:1px solid var(--line)}
+.cgrid{margin-top:34px;display:grid;grid-template-columns:380px 1fr;gap:64px;align-items:start}
+.cart{position:sticky;top:120px;height:460px;display:grid;place-items:center;overflow:hidden;
+  background:
+    radial-gradient(70% 60% at 20% 15%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
+    radial-gradient(70% 66% at 85% 30%, #C9DAF6 0%, rgba(201,218,246,0) 72%),
+    linear-gradient(180deg,#F3F8EC 0%,#CBDDF5 55%,#CDEC9F 100%)}
+.cart span{font-size:30px;font-weight:700;letter-spacing:-.02em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;padding:0 30px;word-break:keep-all}
+.clist .crow{display:grid;grid-template-columns:56px 1fr 1.1fr;gap:28px;padding:34px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .3s}
+.clist .crow:first-child{padding-top:6px}
+.clist .no{font-size:16px;font-weight:700;color:var(--g5);font-variant-numeric:tabular-nums}
+.clist b{font-size:20px;font-weight:700;letter-spacing:-.015em;line-height:1.45;display:block}
+.clist b small{display:block;font-size:15.5px;font-weight:600;margin-top:4px;letter-spacing:-.01em}
+.clist .ds{font-size:15px;line-height:1.75;color:var(--g2);word-break:keep-all}
+.crow.dim{opacity:.32}
+.crow.dim:hover{opacity:.6}
 
-/* People — 좌 sticky 라벨 / 우 3열 인물 카드 (toss 실측) */
-.lgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 14px}
+/* ── People — 좌 sticky 라벨 / 우 3열 인물 카드 ── */
+.pframe{margin-top:56px;padding-top:30px;border-top:1px solid var(--line);display:grid;grid-template-columns:240px 1fr;gap:40px;align-items:start}
+.pframe .lbl{position:sticky;top:100px}
+.lgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px 16px}
 .lcard{cursor:pointer}
 .lcard .ph{aspect-ratio:1/1.18;background:linear-gradient(165deg,#EDF0F3,#DFE4E9);position:relative;display:grid;place-items:center;font-size:38px;font-weight:800;color:var(--g4);overflow:hidden}
 .lcard .ph .arr{position:absolute;right:14px;bottom:14px;width:42px;height:42px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:17px;transition:transform .25s}
@@ -127,7 +146,7 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .lcard b i{font-style:normal;font-weight:600;color:var(--g3)}
 .lcard p{margin-top:8px;font-size:14.5px;line-height:1.6;color:var(--g3);word-break:keep-all}
 
-/* People 모달 — 우측 슬라이드 패널 (toss 실측: 백드롭 블러 + 우측 화이트 패널) */
+/* People 모달 — 우측 슬라이드 패널 */
 .pmask{position:fixed;inset:0;z-index:90;background:rgba(255,255,255,.55);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity .35s}
 .pmask.on{opacity:1;pointer-events:auto}
 .panel{position:fixed;top:0;right:0;bottom:0;z-index:91;width:min(720px,94vw);background:#fff;box-shadow:-24px 0 60px rgba(3,7,18,.12);
@@ -162,25 +181,35 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:64px 0 46px;font-size:13.5px;color:var(--g4)}
-footer .in{width:min(1200px,92vw);margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+footer .in{width:min(1280px,92vw);margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
 footer .slog{font-size:18px;font-weight:800;color:var(--ink);line-height:1.5}
 footer .col i{font-style:normal;display:block;font-weight:800;color:var(--g2);margin-bottom:12px}
 footer .col a{display:block;margin-top:8px}
 footer .col a:hover{color:var(--ink)}
-footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
 
 @media (max-width:900px){
   .gnb nav{display:none}
-  .frame{grid-template-columns:1fr;gap:22px}
-  .lbl{position:static}
-  .vgal{grid-template-columns:1fr}
+  .gnb .in{grid-template-columns:1fr auto}
+  .vframe{grid-template-columns:1fr;gap:18px}
+  .vgal{grid-template-columns:1fr;gap:14px}
   .vgal .ph{height:240px}
-  .pgrid{grid-template-columns:1fr}
+  .htabs{grid-template-columns:1fr 1fr 1fr}
+  .harr{display:none}
+  .hbody{grid-template-columns:1fr;gap:30px}
+  .hph{height:300px}
+  .gcards{grid-template-columns:1fr}
+  .gcard{height:340px}
+  .cgrid{grid-template-columns:1fr;gap:24px}
+  .cart{position:static;height:280px}
+  .clist .crow{grid-template-columns:40px 1fr;gap:14px}
+  .clist .ds{grid-column:2}
+  .pframe{grid-template-columns:1fr;gap:22px}
+  .pframe .lbl{position:static}
   .lgrid{grid-template-columns:1fr 1fr}
-  .sec{padding:84px 0 96px}
+  .sec{padding:88px 0}
   .panel .inn{padding:44px 26px 60px}
   footer .in{grid-template-columns:1fr;gap:26px}
-  .clist .cbd p{padding-left:0}
 }
 @media (prefers-reduced-motion:reduce){
   .wd,.rv{opacity:1!important;transform:none!important;filter:none!important;transition:none}
@@ -207,7 +236,7 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
   </div>
 </header>
 
-<!-- Hero — 첨부 자산 그대로 + toss 단어 리빌 -->
+<!-- Hero — 첨부 자산 고정 + 단어 리빌 -->
 <section class="hero">
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
   <div class="in">
@@ -217,85 +246,84 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
   <div class="scr">SCROLL</div>
 </section>
 
-<!-- Vision -->
+<!-- Vision — 좌 라벨 / 우 헤딩+본문, 하단 풀폭 사진 -->
 <section class="sec" id="vision">
   <div class="wrap">
-    <h2 class="tt wsplit">계산의 무게를 줄이면, 판단의 깊이가 달라집니다</h2>
-    <div class="frame">
+    <div class="vframe rule">
       <span class="lbl">Vision</span>
       <div>
-        <p class="big rv">건물을 세우는 모든 순간에는 수천 번의 계산이 있습니다.<br>
-        MIDAS는 그 계산의 무게를 <b>소프트웨어의 속도</b>로 바꿔,<br>
-        엔지니어가 더 중요한 판단에 집중하게 만듭니다.</p>
-        <div class="vgal">
-          <div class="ph rv"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
-          <div class="ph rv d1"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
-          <div class="ph rv d2"><img src="../../app/bg/mbmtoss-experience.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-experience.jpg'}"></div>
-        </div>
+        <h3 class="wsplit">당연했던 계산에 질문을 던지고, 더 나은 답을 만들어 설계의 기준을 바꾸다</h3>
+        <p class="bd rv">건물을 세우는 모든 순간에는 수천 번의 계산이 있습니다. MIDAS는 익숙하고 편한 방식보다 그 계산의 무게를 줄이는 험한 길을 택합니다.
+        해석을 기다리던 시간을 판단의 시간으로 바꾸고, 반복을 지운 자리에 엔지니어의 집중을 돌려놓습니다.<br>
+        그렇게 찾아낸 답은 새로운 설계 기준이 되고, 현장을 바꾸며, 도시를 움직입니다.</p>
       </div>
+    </div>
+    <div class="vgal">
+      <div class="ph rv"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
+      <div class="ph rv d1"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
+      <div class="ph rv d2"><img src="../../app/bg/mbmtoss-experience.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-experience.jpg'}"></div>
     </div>
   </div>
 </section>
 
-<!-- History -->
-<section class="sec" id="history" style="padding-top:0">
+<!-- History — 라벨 → 대형 타이틀 → 언더라인 탭 → 3열 -->
+<section class="sec" id="history" style="padding-top:40px">
   <div class="wrap">
-    <h2 class="tt wsplit">기준을 바꿔 온 MIDAS의 질문들</h2>
-    <div class="frame">
-      <div>
-        <span class="lbl">History</span>
-        <div class="tabs" id="htabs">
-          <button class="tab on" data-t="0">2026 — 2024</button>
-          <button class="tab" data-t="1">2023 — 2020</button>
-          <button class="tab" data-t="2">그 이전</button>
-        </div>
-      </div>
-      <div>
-        <div class="hlist" id="hrows"></div>
-        <p class="hq rv">“다음 30년의 설계는, <i>AI와 함께</i> 어디까지 갈 수 있을까?”</p>
-      </div>
+    <span class="lbl rv">History</span>
+    <h2 class="tt wsplit" style="margin-top:26px">기준을 바꿔 온 MIDAS의 질문들</h2>
+    <div class="htabs" id="htabs">
+      <button class="htab on" data-t="0">2026 — 2024</button>
+      <button class="htab" data-t="1">2023 — 2020</button>
+      <button class="htab" data-t="2">그 이전</button>
+      <div class="harr"><button id="hprev" aria-label="이전">←</button><button id="hnext" aria-label="다음">→</button></div>
+    </div>
+    <div class="hbody">
+      <p class="hlead" id="hlead"></p>
+      <div class="hitems" id="hrows"></div>
+      <div class="hph rv d1"><img id="himg" src="../../app/bg/mbmtoss-session.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-session.jpg'}"></div>
     </div>
   </div>
 </section>
 
-<!-- Products -->
-<section class="sec" id="products" style="padding-top:0">
+<!-- 제품 — 센터 자이언트 선언문 + 로고 포토카드 -->
+<section class="sec grp" id="products">
   <div class="wrap">
-    <h2 class="tt wsplit">구조 해석부터 현장 안전까지, 하나의 흐름으로</h2>
-    <div class="frame">
-      <span class="lbl">Products</span>
-      <div class="pgrid">
-        <div class="pcard rv"><div class="nm">GEN NX <small>STRUCTURE</small></div><p>건축 구조 설계의 차세대 표준. 모델링부터 해석·설계·도면까지 한 번에.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
-        <div class="pcard rv d1"><div class="nm">CIVIL NX <small>BRIDGE</small></div><p>교량·토목 구조물의 해석과 설계. 세계 120개국 엔지니어의 선택.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
-        <div class="pcard rv d2"><div class="nm">ONSITE <small>SAFETY</small></div><p>실시간 계측 데이터로 가시설 현장의 위험을 예측하는 안전 솔루션.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
-      </div>
+    <span class="lbl rv">Products</span>
+    <div class="giant wsplit">해석부터 현장까지 하나의 흐름이라는 단 하나의 기준을 위해</div>
+    <div class="gcards">
+      <div class="gcard rv"><img src="../../app/bg/mbmtoss-session.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-session.jpg'}"><div class="ov"></div><div class="nm"><small>STRUCTURE</small>GEN NX</div><div class="ds">건축 구조 설계의 차세대 표준. 모델링부터 해석·설계·도면까지 한 번에.</div></div>
+      <div class="gcard rv d1"><img src="../../app/bg/mbmtoss-mic.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-mic.jpg'}"><div class="ov"></div><div class="nm"><small>BRIDGE</small>CIVIL NX</div><div class="ds">교량·토목 구조물의 해석과 설계. 세계 120개국 엔지니어의 선택.</div></div>
+      <div class="gcard rv d2"><img src="../../app/bg/mbmtoss-network.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-network.jpg'}"><div class="ov"></div><div class="nm"><small>SAFETY</small>ONSITE</div><div class="ds">실시간 계측 데이터로 가시설 현장의 위험을 예측하는 안전 솔루션.</div></div>
     </div>
   </div>
 </section>
 
-<!-- Culture — 아코디언 -->
-<section class="sec" id="culture" style="padding-top:0">
+<!-- Culture — 좌 아트카드 + 번호 리스트 -->
+<section class="sec" id="culture" style="padding-top:40px">
   <div class="wrap">
     <h2 class="tt wsplit">일하는 방식이 곧 제품의 수준</h2>
-    <div class="frame">
-      <span class="lbl">Culture</span>
-      <div class="clist" id="clist"></div>
+    <div class="cframe">
+      <span class="lbl rv">Culture</span>
+      <div class="cgrid">
+        <div class="cart rv" id="cart"><span id="cartT">Question Every Assumption</span></div>
+        <div class="clist" id="clist"></div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- People -->
-<section class="sec" id="people" style="padding-top:0">
+<section class="sec" id="people" style="padding-top:40px">
   <div class="wrap">
     <h2 class="tt wsplit">기준을 만드는 사람들</h2>
-    <div class="frame">
+    <div class="pframe">
       <span class="lbl">Leaders</span>
       <div class="lgrid" id="lgrid"></div>
     </div>
   </div>
 </section>
 
-<!-- 인물 모달 — 우측 슬라이드 패널 -->
+<!-- 인물 모달 -->
 <div class="pmask" id="pmask"></div>
 <aside class="panel" id="panel" aria-hidden="true">
   <button class="close" id="pclose" aria-label="닫기">✕</button>
@@ -328,7 +356,7 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ── 단어 스플릿 — toss 실측 문법: 헤딩을 단어 단위 span으로 쪼개 스태거 블러 리빌 ── */
+  /* 단어 스플릿 — toss 실측: 헤딩을 단어 단위 스태거 블러 리빌 */
   function splitWords(el){
     var words = el.textContent.trim().split(/\s+/);
     el.innerHTML = words.map(function(w){ return '<span class="wd">' + w + '</span>'; }).join(' ');
@@ -341,11 +369,9 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
     el.classList.add('won');
     el.querySelectorAll('.wd').forEach(function(w,i){ w.style.transitionDelay = (i * 70) + 'ms'; });
   }
-  /* 히어로: 로드 직후 h1 → sub 순차 */
   setTimeout(function(){ stagger(document.getElementById('heroH')); }, 120);
   setTimeout(function(){ stagger(document.getElementById('heroS')); }, 620);
 
-  /* 스크롤 리빌 — 동적 콘텐츠(clist·lgrid) 주입 후 스크립트 끝에서 initReveal() 호출 */
   function initReveal(){
     if ('IntersectionObserver' in window && !reduce) {
       var io = new IntersectionObserver(function(es){
@@ -368,33 +394,47 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
   function gtick(){ gnb.classList.toggle('solid', scrollY > innerHeight * 0.72); }
   addEventListener('scroll', gtick, { passive: true }); gtick();
 
-  /* History 탭 */
+  /* History — 탭 + 선언문 + 리스트 + 사진 */
   var HIST = [
-    [ ['2026','“세미나가 아니라 전환점이 될 수는 없을까?”','GEN NX Seminar · AX DAY — AI 전환을 실무로 옮기는 연례 행사 시작.'],
-      ['2025','“해석 대기 시간은 왜 당연할까?”','차세대 해석 엔진 탑재, GEN NX 출시.'],
-      ['2024','“현장의 위험을 미리 알 수는 없을까?”','실시간 계측 기반 안전 예측, ONSITE 공개.'] ],
-    [ ['2023','“설계와 도면은 왜 두 번 일해야 할까?”','해석-설계-도면 원 플로우 완성.'],
-      ['2021','“글로벌 기준은 왜 따로 배워야 할까?”','국제 설계기준 라이브러리 확장 — 120개국 사용.'],
-      ['2020','“협업은 왜 파일 주고받기일까?”','클라우드 모델 공유 도입.'] ],
-    [ ['2010s','“고성능 해석은 왜 비싸야 할까?”','국산 구조 해석 소프트웨어의 표준화.'],
-      ['1989','“우리 손으로 만들 수는 없을까?”','MIDAS의 시작 — 첫 국산 구조 해석 코드.'] ]
+    { lead: '"우리가 찾은 답이 현장에서 어디까지 통할까?"\n설계실을 넘어 현장의 기준이 되다',
+      img: 'mbmtoss-session.jpg',
+      rows: [
+        ['2026','GEN NX Seminar · AX DAY 시작','AI 전환을 실무로 옮기는 연례 행사가 되다.'],
+        ['2025','차세대 해석 엔진, GEN NX 출시','해석 대기 시간을 판단의 시간으로 바꾸다.'],
+        ['2024','실시간 안전 예측, ONSITE 공개','현장의 위험을 미리 아는 세상이 오다.'] ] },
+    { lead: '"설계와 도면은 왜 두 번 일해야 할까?"\n끊긴 흐름을 하나로 잇다',
+      img: 'mbmtoss-insight.jpg',
+      rows: [
+        ['2023','해석–설계–도면 원 플로우 완성','도구 사이의 이음새에서 낭비를 지우다.'],
+        ['2021','국제 설계기준 라이브러리 확장','세계 120개국 엔지니어의 기준이 되다.'],
+        ['2020','클라우드 모델 공유 도입','협업이 파일 주고받기를 벗어나다.'] ] },
+    { lead: '"우리 손으로 만들 수는 없을까?"\n첫 질문이 30년의 시작이 되다',
+      img: 'mbmtoss-company.jpg',
+      rows: [
+        ['2010s','국산 구조 해석 소프트웨어의 표준화','고성능 해석의 문턱을 낮추다.'],
+        ['1989','첫 국산 구조 해석 코드','MIDAS의 시작.'] ] }
   ];
-  var rowsEl = document.getElementById('hrows');
+  var hcur = 0, rowsEl = document.getElementById('hrows'), leadEl = document.getElementById('hlead'), himg = document.getElementById('himg');
   function renderHist(i){
-    rowsEl.innerHTML = HIST[i].map(function(r){
-      return '<div class="hrow"><span class="yr">' + r[0] + '</span><div><b>' + r[1] + '</b><p>' + r[2] + '</p></div></div>';
+    hcur = i;
+    document.querySelectorAll('#htabs .htab').forEach(function(x,k){ x.classList.toggle('on', k === i); });
+    leadEl.innerHTML = HIST[i].lead.split('\n').join('<br>');
+    rowsEl.innerHTML = HIST[i].rows.map(function(r){
+      return '<div class="hrow"><span class="yr">' + r[0] + '</span><b>' + r[1] + '</b><p>' + r[2] + '</p></div>';
     }).join('');
+    himg.src = '../../app/bg/' + HIST[i].img;
+    himg.onerror = function(){ if (!himg._f) { himg._f = 1; himg.src = 'https://midas-drs.pages.dev/app/bg/' + HIST[i].img; } };
   }
   renderHist(0);
   document.getElementById('htabs').addEventListener('click', function(e){
-    var t = e.target.closest('.tab'); if (!t) return;
-    document.querySelectorAll('#htabs .tab').forEach(function(x){ x.classList.remove('on'); });
-    t.classList.add('on'); renderHist(+t.dataset.t);
+    var t = e.target.closest('.htab'); if (t) renderHist(+t.dataset.t);
   });
+  document.getElementById('hprev').addEventListener('click', function(){ renderHist((hcur + HIST.length - 1) % HIST.length); });
+  document.getElementById('hnext').addEventListener('click', function(){ renderHist((hcur + 1) % HIST.length); });
 
-  /* Culture 아코디언 */
+  /* Culture — 리스트 + 좌 아트카드 활성 연동 */
   var CUL = [
-    ['01','Question Every Assumption','당연했던 방식부터 의심한다','우리가 30년 동안 쌓아 온 방식도 예외가 아닙니다. 더 나은 답이 있다면, 기존의 정답부터 다시 검증합니다.'],
+    ['01','Question Every Assumption','당연했던 방식부터 의심한다','우리가 30년 동안 쌓아 온 방식도 예외가 아닙니다. 더 나은 답이 있다면 기존의 정답부터 다시 검증합니다.'],
     ['02','Engineer First','모든 결정의 기준은 엔지니어의 하루','기능의 개수가 아니라, 엔지니어의 하루에서 사라지는 반복의 양으로 제품을 평가합니다.'],
     ['03','Accuracy over Speed','정확도는 타협하지 않는다','해석 결과의 신뢰는 모든 것의 전제입니다. 속도는 정확도 위에서만 의미를 가집니다.'],
     ['04','Ship, then Sharpen','완벽한 계획보다 빠른 실행과 개선','작게 내보내고, 현장의 반응으로 날카롭게 다듬습니다.'],
@@ -403,15 +443,15 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
     ['07','Learn from Site','현장의 질문이 로드맵이 된다','다음 버전의 우선순위는 회의실이 아니라 현장에서 나옵니다.'],
     ['08','AI as a Colleague','AI를 도구가 아닌 동료로 쓴다','반복 계산은 AI에게, 판단과 책임은 엔지니어에게. 역할이 분명할 때 AI는 가장 강력합니다.']
   ];
-  document.getElementById('clist').innerHTML = CUL.map(function(c,i){
-    return '<div class="crow rv' + (i%3 ? ' d' + (i%3) : '') + '"><button class="chd" data-i="' + i + '"><span class="no">' + c[0] + '</span><b>' + c[1] + '<small>' + c[2] + '</small></b><span class="x">+</span></button>' +
-      '<div class="cbd"><p>' + c[3] + '</p></div></div>';
+  var clistEl = document.getElementById('clist'), cartT = document.getElementById('cartT');
+  clistEl.innerHTML = CUL.map(function(c,i){
+    return '<div class="crow' + (i ? ' dim' : '') + '" data-i="' + i + '"><span class="no">' + c[0] + '</span><b>' + c[1] + '<small>' + c[2] + '</small></b><span class="ds">' + c[3] + '</span></div>';
   }).join('');
-  document.getElementById('clist').addEventListener('click', function(e){
-    var hd = e.target.closest('.chd'); if (!hd) return;
-    var row = hd.parentElement, bd = row.querySelector('.cbd'), open = row.classList.contains('open');
-    document.querySelectorAll('.crow.open').forEach(function(r){ r.classList.remove('open'); r.querySelector('.cbd').style.maxHeight = '0'; });
-    if (!open) { row.classList.add('open'); bd.style.maxHeight = bd.scrollHeight + 'px'; }
+  clistEl.addEventListener('click', function(e){
+    var r = e.target.closest('.crow'); if (!r) return;
+    document.querySelectorAll('.crow').forEach(function(x){ x.classList.add('dim'); });
+    r.classList.remove('dim');
+    cartT.textContent = CUL[+r.dataset.i][1];
   });
 
   /* People — 카드 + 우측 슬라이드 패널 */
@@ -456,6 +496,10 @@ footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-t
   document.getElementById('pclose').addEventListener('click', closeP);
   mask.addEventListener('click', closeP);
   addEventListener('keydown', function(e){ if (e.key === 'Escape') closeP(); });
+
+  /* 캡처 하네스: ?modal=N 로 열면 해당 인물 패널 자동 오픈 */
+  var mm = location.search.match(/modal=(\d)/);
+  if (mm) openP(+mm[1]);
 
   /* 동적 콘텐츠까지 전부 주입된 뒤 리빌 관찰 시작 */
   initReveal();
