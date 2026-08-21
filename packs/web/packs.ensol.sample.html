@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>엔솔 MBM — 브랜드 랜딩 시안</title>
+<!-- 시안: 엔솔 MBM 스타일 v1.
+     구성·모션 근거: toss.im/company 실측(2026-08-21 WebFetch) — Hero 대형 타이포 → Vision → 연혁 질문 타임라인(탭) → 제품 카드 → 컬처 8카드 → 리더 그리드 → Closing CTA.
+     히어로 비주얼: 사용자 첨부 자산(파스텔 메시 그라데이션 + 블루·그린 그라데이션 타이포) 그대로.
+     콘텐츠: 엔솔 MBM 라인 자산(packs.axday.js AX DAY·GEN NX Seminar) + MIDAS 제품군.
+     규칙: border-radius 0 전면. -->
+<style>
+:root{
+  --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1;
+  --bg1:#F9FAFB; --bg2:#F2F4F6; --line:#E5E8EB;
+  --blue:#3667E9; --blue2:#2F5BD6; --lime:#77A93C; --lime2:#A8D95C;
+  --grad:linear-gradient(100deg,#4A79E8 5%,#77A93C 38%,#3667E9 72%,#2F5BD6 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
+html{scroll-behavior:smooth}
+body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1140px,92vw);margin:0 auto}
+.center{text-align:center}
+
+/* ── 리빌 ── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* ── GNB ── */
+.gnb{position:fixed;inset:0 0 auto;z-index:50;height:64px;display:flex;align-items:center;transition:background .3s,box-shadow .3s}
+.gnb.solid{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.gnb .in{width:min(1140px,92vw);margin:0 auto;display:flex;align-items:center;gap:34px}
+.gnb .logo{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.gnb nav{display:flex;gap:26px;font-size:14.5px;font-weight:600;color:var(--g2)}
+.gnb nav a:hover{color:var(--ink)}
+.gnb .cta{margin-left:auto;background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px}
+.gnb .cta:hover{background:#333}
+
+/* ── Hero — 첨부 자산: 파스텔 메시 + 그라데이션 타이포 ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:
+    radial-gradient(52% 44% at 50% -6%, #FEFFF4 0%, rgba(254,255,244,0) 70%),
+    radial-gradient(60% 52% at 12% 16%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
+    radial-gradient(64% 56% at 88% 18%, #DDEBFB 0%, rgba(221,235,251,0) 72%),
+    radial-gradient(70% 60% at 22% 92%, #C8EE92 0%, rgba(200,238,146,0) 74%),
+    radial-gradient(72% 62% at 82% 88%, #BFE29B 0%, rgba(191,226,155,0) 72%),
+    linear-gradient(180deg,#F3F8EC 0%,#C9DAF6 46%,#CDEC9F 100%)}
+.hero .blob{position:absolute;width:56vw;height:56vw;filter:blur(90px);opacity:.55;pointer-events:none}
+.hero .b1{left:-12vw;top:-8vw;background:radial-gradient(circle,#EDF9C9 0%,rgba(237,249,201,0) 62%);animation:drift1 22s ease-in-out infinite}
+.hero .b2{right:-14vw;top:16vh;background:radial-gradient(circle,#B9D2F9 0%,rgba(185,210,249,0) 60%);animation:drift2 26s ease-in-out infinite}
+.hero .b3{left:14vw;bottom:-18vh;background:radial-gradient(circle,#BEEA82 0%,rgba(190,234,130,0) 60%);animation:drift3 24s ease-in-out infinite}
+@keyframes drift1{50%{transform:translate(6vw,4vh) scale(1.08)}}
+@keyframes drift2{50%{transform:translate(-5vw,6vh) scale(.94)}}
+@keyframes drift3{50%{transform:translate(4vw,-5vh) scale(1.1)}}
+.hero .in{position:relative;text-align:center;padding:0 24px}
+.hero h1{font-size:clamp(52px,7.6vw,104px);line-height:1.14;font-weight:700;letter-spacing:-.025em}
+.hero h1 .ln{display:block;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;transform:translateY(34px);animation:hup 1s cubic-bezier(.2,.7,.2,1) forwards}
+.hero h1 .ln:nth-child(2){animation-delay:.14s}
+@keyframes hup{to{opacity:1;transform:none}}
+.hero .sub{margin-top:26px;font-size:clamp(16px,1.6vw,20px);font-weight:500;color:var(--g2);opacity:0;animation:hup .9s cubic-bezier(.2,.7,.2,1) .5s forwards}
+.hero .scr{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--g3);opacity:0;animation:hup .9s ease 1.1s forwards}
+.hero .scr:after{content:"";display:block;width:1px;height:34px;background:var(--g3);margin:10px auto 0;animation:scrline 1.8s ease-in-out infinite}
+@keyframes scrline{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ── 섹션 공통 ── */
+.sec{padding:140px 0}
+.eb{font-size:15px;font-weight:800;color:var(--blue);letter-spacing:-.01em}
+h2.tt{font-size:clamp(30px,3.4vw,44px);line-height:1.32;font-weight:700;letter-spacing:-.02em;margin-top:14px;word-break:keep-all}
+.sub2{margin-top:18px;font-size:17.5px;line-height:1.75;color:var(--g2);word-break:keep-all}
+
+/* ── Vision — 센터 선언 + 풀블리드 이미지 ── */
+.vision p.big{font-size:clamp(24px,2.6vw,34px);line-height:1.55;font-weight:600;letter-spacing:-.02em;color:var(--g1);word-break:keep-all}
+.vision p.big b{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.vgal{margin-top:72px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
+.vgal .ph{height:340px;background:var(--bg2);position:relative;overflow:hidden}
+.vgal .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.vgal .ph.on img{transform:scale(1)}
+
+/* ── 연혁 — 질문 타임라인(탭) ── */
+.hist{background:var(--bg1)}
+.tabs{display:flex;gap:8px;margin-top:40px;flex-wrap:wrap}
+.tab{padding:11px 20px;font-size:14.5px;font-weight:700;color:var(--g3);background:#fff;border:1px solid var(--line);cursor:pointer;transition:all .2s}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hrows{margin-top:44px}
+.hrow{display:grid;grid-template-columns:130px 1fr;gap:28px;padding:26px 0;border-top:1px solid var(--line)}
+.hrow .yr{font-size:15px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums}
+.hrow b{font-size:19px;font-weight:700;letter-spacing:-.01em;display:block}
+.hrow p{margin-top:6px;font-size:15px;line-height:1.65;color:var(--g3);word-break:keep-all}
+.hq{margin-top:56px;font-size:clamp(20px,2vw,26px);font-weight:700;letter-spacing:-.02em;color:var(--g1)}
+.hq i{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ── 제품 카드 그리드 ── */
+.pgrid{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pcard{background:var(--bg1);padding:34px 30px 38px;transition:background .25s;position:relative;overflow:hidden}
+.pcard:hover{background:var(--bg2)}
+.pcard .nm{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.pcard .nm small{font-size:12px;font-weight:700;color:var(--g4);margin-left:8px;letter-spacing:.06em}
+.pcard p{margin-top:10px;font-size:14.5px;line-height:1.65;color:var(--g3);word-break:keep-all}
+.pcard .go{margin-top:22px;display:inline-block;font-size:13.5px;font-weight:700;color:var(--blue)}
+.pcard .go .arr{display:inline-block;transition:transform .25s}
+.pcard:hover .go .arr{transform:translateX(4px)}
+
+/* ── 컬처 8카드 ── */
+.cul{background:var(--ink);color:#fff}
+.cul .eb{color:var(--lime2)}
+.cul h2.tt{color:#fff}
+.cul .sub2{color:rgba(255,255,255,.64)}
+.cgrid{margin-top:64px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ccard{background:rgba(255,255,255,.05);padding:28px 24px 32px;min-height:190px;display:flex;flex-direction:column;transition:background .25s}
+.ccard:hover{background:rgba(255,255,255,.1)}
+.ccard .no{font-size:13px;font-weight:800;color:var(--lime2);font-variant-numeric:tabular-nums}
+.ccard b{margin-top:12px;font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.4}
+.ccard p{margin-top:auto;padding-top:14px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.55);word-break:keep-all}
+
+/* ── 리더 그리드 ── */
+.lgrid{margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.lcard .ph{aspect-ratio:1/1.08;background:linear-gradient(160deg,var(--bg2),var(--bg1));display:grid;place-items:center;font-size:34px;font-weight:800;color:var(--g4)}
+.lcard b{display:block;margin-top:16px;font-size:17px;font-weight:800}
+.lcard span{display:block;margin-top:3px;font-size:13.5px;color:var(--g4);font-weight:600}
+.lcard p{margin-top:10px;font-size:14px;line-height:1.6;color:var(--g3);word-break:keep-all}
+
+/* ── Closing CTA — 메시 그라데이션 재등장 ── */
+.cta{position:relative;padding:180px 0;overflow:hidden;text-align:center;
+  background:
+    radial-gradient(56% 60% at 20% 20%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
+    radial-gradient(60% 64% at 84% 30%, #DDEBFB 0%, rgba(221,235,251,0) 72%),
+    linear-gradient(180deg,#FAFDF3 0%,#D5E2F7 60%,#CDEC9F 100%)}
+.cta h2{font-size:clamp(34px,4.2vw,56px);line-height:1.3;font-weight:700;letter-spacing:-.025em;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cta .sub{margin-top:20px;font-size:18px;color:var(--g2);font-weight:500}
+.cta .act{margin-top:40px;display:flex;gap:12px;justify-content:center}
+.cta .btn{padding:17px 36px;font-size:16px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s}
+.cta .btn:hover{transform:translateY(-2px)}
+.cta .btn.w{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* ── Footer ── */
+footer{background:#fff;border-top:1px solid var(--line);padding:64px 0 46px;font-size:13.5px;color:var(--g4)}
+footer .in{width:min(1140px,92vw);margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+footer .slog{font-size:18px;font-weight:800;color:var(--ink);line-height:1.5}
+footer .col i{font-style:normal;display:block;font-weight:800;color:var(--g2);margin-bottom:12px}
+footer .col a{display:block;margin-top:8px}
+footer .col a:hover{color:var(--ink)}
+footer .copy{width:min(1140px,92vw);margin:44px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+
+@media (max-width:900px){
+  .gnb nav{display:none}
+  .vgal{grid-template-columns:1fr}
+  .vgal .ph{height:240px}
+  .pgrid,.lgrid{grid-template-columns:1fr 1fr}
+  .cgrid{grid-template-columns:1fr 1fr}
+  .hrow{grid-template-columns:1fr;gap:8px}
+  .sec{padding:96px 0}
+  footer .in{grid-template-columns:1fr;gap:26px}
+}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .hero .ln,.hero .sub,.hero .scr{opacity:1!important;animation:none}
+  .hero .blob{animation:none}
+  .vgal .ph img{transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="gnb" id="gnb">
+  <div class="in">
+    <a class="logo" href="#">MIDAS</a>
+    <nav>
+      <a href="#vision">비전</a>
+      <a href="#history">걸어온 길</a>
+      <a href="#products">제품</a>
+      <a href="#culture">일하는 방식</a>
+      <a href="#people">사람들</a>
+    </nav>
+    <a class="cta" href="#join">AX DAY 신청</a>
+  </div>
+</header>
+
+<!-- Hero — 첨부 자산 그대로: 파스텔 메시 + 그라데이션 타이포 -->
+<section class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="in">
+    <h1><span class="ln">Question Every</span><span class="ln">Assumption</span></h1>
+    <p class="sub">엔지니어링의 당연함에 질문을 던져, 설계의 기준을 다시 씁니다.</p>
+  </div>
+  <div class="scr">SCROLL</div>
+</section>
+
+<!-- Vision -->
+<section class="sec vision center" id="vision">
+  <div class="wrap">
+    <div class="eb rv">Vision</div>
+    <p class="big rv d1" style="margin-top:26px">건물을 세우는 모든 순간에는 수천 번의 계산이 있습니다.<br>
+    MIDAS는 그 계산의 무게를 <b>소프트웨어의 속도</b>로 바꿔,<br>
+    엔지니어가 더 중요한 판단에 집중하게 만듭니다.</p>
+    <div class="vgal">
+      <div class="ph rv"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
+      <div class="ph rv d1"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
+      <div class="ph rv d2"><img src="../../app/bg/mbmtoss-experience.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-experience.jpg'}"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 연혁 — 질문 타임라인 -->
+<section class="sec hist" id="history">
+  <div class="wrap">
+    <div class="eb rv">History</div>
+    <h2 class="tt rv d1">기준을 바꿔 온<br>MIDAS의 질문들</h2>
+    <div class="tabs rv d2" id="htabs">
+      <span class="tab on" data-t="0">2026 — 2024</span>
+      <span class="tab" data-t="1">2023 — 2020</span>
+      <span class="tab" data-t="2">그 이전</span>
+    </div>
+    <div class="hrows" id="hrows"></div>
+    <p class="hq rv">“다음 30년의 설계는, <i>AI와 함께</i> 어디까지 갈 수 있을까?”</p>
+  </div>
+</section>
+
+<!-- 제품 -->
+<section class="sec" id="products">
+  <div class="wrap">
+    <div class="eb rv">Products</div>
+    <h2 class="tt rv d1">구조 해석부터 현장 안전까지,<br>하나의 흐름으로</h2>
+    <div class="pgrid">
+      <div class="pcard rv"><div class="nm">GEN NX <small>STRUCTURE</small></div><p>건축 구조 설계의 차세대 표준. 모델링부터 해석·설계·도면까지 한 번에.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+      <div class="pcard rv d1"><div class="nm">CIVIL NX <small>BRIDGE</small></div><p>교량·토목 구조물의 해석과 설계. 세계 120개국 엔지니어의 선택.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+      <div class="pcard rv d2"><div class="nm">ONSITE <small>SAFETY</small></div><p>실시간 계측 데이터로 가시설 현장의 위험을 예측하는 안전 솔루션.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 일하는 방식 — 8카드 -->
+<section class="sec cul" id="culture">
+  <div class="wrap">
+    <div class="eb rv">Culture</div>
+    <h2 class="tt rv d1">일하는 방식이<br>곧 제품의 수준</h2>
+    <p class="sub2 rv d2">여덟 가지 원칙이 모든 결정의 기준입니다.</p>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+</section>
+
+<!-- 사람들 -->
+<section class="sec" id="people">
+  <div class="wrap">
+    <div class="eb rv">People</div>
+    <h2 class="tt rv d1">기준을 만드는 사람들</h2>
+    <div class="lgrid">
+      <div class="lcard rv"><div class="ph">KM</div><b>김민준</b><span>CTO · 해석 엔진</span><p>“수치 해석의 정확도는 타협의 대상이 아닙니다.”</p></div>
+      <div class="lcard rv d1"><div class="ph">LS</div><b>이서연</b><span>CPO · 제품</span><p>“엔지니어의 하루에서 반복을 지우는 것이 제 일입니다.”</p></div>
+      <div class="lcard rv d2"><div class="ph">PJ</div><b>박지호</b><span>AX Lead · AI 전환</span><p>“AI는 도구가 아니라 새로운 설계 언어입니다.”</p></div>
+      <div class="lcard rv d3"><div class="ph">CH</div><b>최하은</b><span>CX · 고객 성공</span><p>“현장의 질문이 다음 버전의 로드맵이 됩니다.”</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Closing CTA -->
+<section class="cta" id="join">
+  <div class="wrap">
+    <h2 class="rv">설계부터 현장까지,<br>마침내 하나의 답으로.</h2>
+    <p class="sub rv d1">GEN NX Seminar 2026 · AX DAY에서 그 답을 확인하세요.</p>
+    <div class="act rv d2">
+      <a class="btn" href="#">AX DAY 신청하기</a>
+      <a class="btn w" href="#">제품 소개서 받기</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="in">
+    <div class="slog">엔지니어링의 기준을<br>다시 쓰는 MIDAS</div>
+    <div class="col"><i>회사</i><a href="#vision">비전</a><a href="#history">걸어온 길</a><a href="#people">사람들</a></div>
+    <div class="col"><i>제품</i><a href="#products">GEN NX</a><a href="#products">CIVIL NX</a><a href="#products">ONSITE</a></div>
+    <div class="col"><i>행사</i><a href="#join">AX DAY 신청</a><a href="#">지난 세미나</a><a href="#">브랜드 리소스</a></div>
+  </div>
+  <div class="copy"><span>ⓒ 2026 MIDAS IT.</span><span>Ensol MBM · Brand Landing</span></div>
+</footer>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 리빌
+  if ('IntersectionObserver' in window && !reduce) {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.16 });
+    document.querySelectorAll('.rv,.vgal .ph').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.rv,.vgal .ph').forEach(function(el){ el.classList.add('on'); });
+  }
+
+  // GNB — 히어로 지나면 솔리드
+  var gnb = document.getElementById('gnb');
+  function gtick(){ gnb.classList.toggle('solid', scrollY > innerHeight * 0.72); }
+  addEventListener('scroll', gtick, { passive: true }); gtick();
+
+  // 연혁 탭
+  var HIST = [
+    [ ['2026','“세미나가 아니라 전환점이 될 수는 없을까?”','GEN NX Seminar · AX DAY — AI 전환을 실무로 옮기는 연례 행사 시작.'],
+      ['2025','“해석 대기 시간은 왜 당연할까?”','차세대 해석 엔진 탑재, GEN NX 출시.'],
+      ['2024','“현장의 위험을 미리 알 수는 없을까?”','실시간 계측 기반 안전 예측, ONSITE 공개.'] ],
+    [ ['2023','“설계와 도면은 왜 두 번 일해야 할까?”','해석-설계-도면 원 플로우 완성.'],
+      ['2021','“글로벌 기준은 왜 따로 배워야 할까?”','국제 설계기준 라이브러리 확장 — 120개국 사용.'],
+      ['2020','“협업은 왜 파일 주고받기일까?”','클라우드 모델 공유 도입.'] ],
+    [ ['2010s','“고성능 해석은 왜 비싸야 할까?”','국산 구조 해석 소프트웨어의 표준화.'],
+      ['1989','“우리 손으로 만들 수는 없을까?”','MIDAS의 시작 — 첫 국산 구조 해석 코드.'] ]
+  ];
+  var rowsEl = document.getElementById('hrows');
+  function renderHist(i){
+    rowsEl.innerHTML = HIST[i].map(function(r){
+      return '<div class="hrow"><span class="yr">' + r[0] + '</span><div><b>' + r[1] + '</b><p>' + r[2] + '</p></div></div>';
+    }).join('');
+  }
+  renderHist(0);
+  document.getElementById('htabs').addEventListener('click', function(e){
+    var t = e.target.closest('.tab'); if (!t) return;
+    document.querySelectorAll('#htabs .tab').forEach(function(x){ x.classList.remove('on'); });
+    t.classList.add('on'); renderHist(+t.dataset.t);
+  });
+
+  // 컬처 8카드
+  var CUL = [
+    ['01','Question Every Assumption','당연했던 방식부터 의심한다.'],
+    ['02','Engineer First','모든 결정의 기준은 엔지니어의 하루.'],
+    ['03','Accuracy over Speed','정확도는 타협하지 않는다. 속도는 그 다음.'],
+    ['04','Ship, then Sharpen','완벽한 계획보다 빠른 실행과 개선.'],
+    ['05','One Flow','해석·설계·도면·현장을 하나의 흐름으로.'],
+    ['06','Open Standards','기준은 감추지 않고 공유한다.'],
+    ['07','Learn from Site','현장의 질문이 로드맵이 된다.'],
+    ['08','AI as a Colleague','AI를 도구가 아닌 동료로 쓴다.']
+  ];
+  document.getElementById('cgrid').innerHTML = CUL.map(function(c,i){
+    return '<div class="ccard rv' + (i%4 ? ' d' + (i%4) : '') + '"><span class="no">' + c[0] + '</span><b>' + c[1] + '</b><p>' + c[2] + '</p></div>';
+  }).join('');
+  if ('IntersectionObserver' in window && !reduce) {
+    var io2 = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('on'); io2.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('#cgrid .rv').forEach(function(el){ io2.observe(el); });
+  } else {
+    document.querySelectorAll('#cgrid .rv').forEach(function(el){ el.classList.add('on'); });
+  }
+})();
+</script>
+</body>
+</html>
