@@ -108,9 +108,14 @@
     /* N열 카드 — 라운드 없는 톤 카드(첫 장=틴트, 마지막=딥 화이트 텍스트) */
     cards: function (s, P, ctx) {
       var n = (s.cards || []).length || 3;
+      var si = P.split('.')[1];
       var cells = (s.cards || []).map(function (it, i) {
         var IP = P + '.cards.' + i, on = it.tone === 'dark' || i === n - 1;
-        return '<div class="hf-cell' + (on ? ' on' : '') + '">' +
+        /* 이미지 슬롯 — it.img(truthy)면 슬롯 노출, 업로드는 data.images['card-슬라이드-i'] */
+        var ik = 'card-' + si + '-' + i, src = ctx.images && ctx.images[ik];
+        var im = src ? '<img class="hf-cimg s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">' :
+          (it.img ? '<div class="hf-imgph cell s-imgwrap" data-img="' + ik + '"><span>' + esc(typeof it.img === 'string' ? it.img : '이미지') + '</span></div>' : '');
+        return '<div class="hf-cell' + (on ? ' on' : '') + '">' + im +
           (it.tag ? '<span class="hf-lab in"' + de(IP + '.tag') + '>' + esc(it.tag) + '</span>' : '') +
           '<span class="hf-cellhead"' + de(IP + '.head') + '>' + esc(noNum(it.head) || '') + '</span>' +
           (it.text ? '<p class="hf-celltx"' + de(IP + '.text') + '>' + mb(it.text) + '</p>' : '') + '</div>';
@@ -133,9 +138,11 @@
     /* 표 — 장소·대상·문의 등 정보 표 */
     table: function (s, P, ctx) {
       var nc = (s.columns || []).length || 3;
-      var head = '<div class="hf-tbrow hd" style="--tbc:' + nc + '">' + (s.columns || []).map(function (cc, i) { return '<span' + de(P + '.columns.' + i) + '>' + esc(cc) + '</span>'; }).join('') + '</div>';
+      /* 첫 열(구분)은 좁게, 둘째 열(내용)에 무게 — 균등 1fr이면 첫 열이 휑해짐 */
+      var tct = '150px' + (nc > 1 ? ' 1.5fr' : '') + (nc > 2 ? ' repeat(' + (nc - 2) + ',1fr)' : '');
+      var head = '<div class="hf-tbrow hd" style="grid-template-columns:' + tct + '">' + (s.columns || []).map(function (cc, i) { return '<span' + de(P + '.columns.' + i) + '>' + esc(cc) + '</span>'; }).join('') + '</div>';
       var rows = (s.rows || []).map(function (r, ri) {
-        return '<div class="hf-tbrow" style="--tbc:' + nc + '">' + (r.cells || []).map(function (cc, ci) { return '<span' + (ci === 0 ? ' class="f"' : '') + de(P + '.rows.' + ri + '.cells.' + ci) + '>' + mb(cc) + '</span>'; }).join('') + '</div>';
+        return '<div class="hf-tbrow" style="grid-template-columns:' + tct + '">' + (r.cells || []).map(function (cc, ci) { return '<span' + (ci === 0 ? ' class="f"' : '') + de(P + '.rows.' + ri + '.cells.' + ci) + '>' + mb(cc) + '</span>'; }).join('') + '</div>';
       }).join('');
       return '<section class="slide hf tb" data-kind="' + kind(s, 'Table') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
         '<div class="hf-tbl">' + head + rows + '</div>' + deco() + '</section>';
@@ -158,7 +165,10 @@
           '<span class="k"' + de(IP + '.label') + '>' + esc(sp.label || '') + '</span>' +
           '<span class="t"' + de(IP + '.text') + '>' + mb(sp.text || '') + '</span></div>';
       }).join('');
-      var img = s.image ? '<div class="hf-imgcol"><div class="hf-imgph s-imgwrap" data-img="media"><span' + de(P + '.image.label') + '>' + esc(s.image.label || '이미지') + '</span></div>' +
+      var msrc = ctx.images && ctx.images.media;
+      var img = s.image ? '<div class="hf-imgcol">' +
+        (msrc ? '<img class="hf-mimg s-imgwrap" data-img="media" src="' + esc(msrc) + '">' :
+          '<div class="hf-imgph s-imgwrap" data-img="media"><span' + de(P + '.image.label') + '>' + esc(s.image.label || '이미지') + '</span></div>') +
         (s.caption ? '<span class="hf-cap"' + de(P + '.caption') + '>' + mb(s.caption) + '</span>' : '') + '</div>' : '';
       return '<section class="slide hf md" data-kind="' + kind(s, 'Media') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
         '<div class="hf-mdgrid' + (img ? ' hasimg' : '') + '"><div class="hf-srows">' + rows + '</div>' + img + '</div>' + '</section>';
@@ -358,7 +368,7 @@
       .replace(/^(<section[^>]*>)/, '$1' + GEO + '<div class="hf-frpanel">')
       .replace(/<\/section>$/, '</div></section>');
   }
-  function renderSlides(slides) {
+  function renderSlides(slides, images) {
     var divAt = [];
     slides.forEach(function (s, i) { if (s.type === 'divider') divAt.push(i + 1); });
     function dividerIndex(no) { return Math.max(0, divAt.indexOf(no)); }
@@ -366,7 +376,7 @@
     return slides.map(function (s, i) {
       var fn = R[s.type] || R.section;
       var html = '';
-      try { html = fn(s, 'slides.' + i, { dividerIndex: dividerIndex, no: i + 1, total: total }); }
+      try { html = fn(s, 'slides.' + i, { dividerIndex: dividerIndex, no: i + 1, total: total, images: images || {} }); }
       catch (e) { html = '<section class="slide hf sc" data-kind="Error"><h2 class="hf-hl">' + esc(s.type) + ' 렌더 오류</h2></section>'; }
       if (FRAMED[s.type] && s.frame !== false) html = frameWrap(html);
       return html;
@@ -458,7 +468,8 @@
       '.slide.hf.frm{padding:36px}' +
       '.hf-frpanel{position:relative;z-index:2;flex:1;min-height:0;background:#fff;padding:44px 52px;display:flex;flex-direction:column;overflow:hidden}' +
       '.slide.hf.ms .hf-frpanel{gap:16px}' +
-      '.slide.hf.frm .hf-deco{right:-260px;bottom:-290px}' +
+      /* 프레임 장에선 틴트 원 숨김 — 화이트 패널 안에서 콘텐츠와 겹침 */
+      '.slide.hf.frm .hf-deco{display:none}' +
       /* 기하 장식 — 표지 실측 */
       '.hf-bandT,.hf-bandB{position:absolute;left:0;right:0;height:50%;z-index:0}' +
       '.hf-bandT{top:0;background:var(--t)}.hf-bandB{bottom:0;background:var(--b)}' +
@@ -499,23 +510,28 @@
       '.hf-numhead{font-size:23px;font-weight:700;margin-top:auto}' +
       '.hf-numtx{font-size:16px;line-height:1.6;color:var(--body)}' +
       /* 카드 */
-      '.hf-grid{flex:1;min-height:0;display:grid;gap:2px;align-content:center;padding:20px 0}' +
+      '.hf-grid{flex:1;min-height:0;display:grid;gap:16px;align-content:center;padding:20px 0}' +
       '.hf-grid.c2{grid-template-columns:1fr 1fr}.hf-grid.c3{grid-template-columns:repeat(3,1fr)}.hf-grid.c4{grid-template-columns:repeat(4,1fr)}' +
       '.hf-cell{background:var(--tn);padding:28px 26px;display:flex;flex-direction:column;gap:10px;min-height:190px;border-radius:16px}' +
       '.hf-cell.on{background:var(--b);color:#fff}.hf-cell.on .hf-lab.in{opacity:.95}' +
+      /* 카드 이미지 — 업로드=hf-cimg, 미업로드=hf-imgph.cell 슬롯 */
+      '.hf-cimg{width:100%;height:150px;object-fit:cover;border-radius:12px;margin-bottom:6px;display:block}' +
+      '.hf-imgph.cell{min-height:0;height:150px;margin-bottom:6px;background:rgba(0,0,0,.045);flex:0 0 auto}' +
+      '.hf-cell.on .hf-imgph.cell{background:rgba(255,255,255,.16);color:rgba(255,255,255,.8)}' +
       '.hf-cellhead{font-size:24px;font-weight:700;letter-spacing:-.01em;line-height:1.3}' +
       '.hf-celltx{font-size:15.5px;line-height:1.6;opacity:.92;margin-top:auto}' +
       /* 타임라인 */
       '.hf-trows{flex:0 1 auto;min-height:0;margin:auto 0;display:flex;flex-direction:column;padding:14px 0;position:relative;z-index:2}' +
-      '.hf-trow{display:grid;grid-template-columns:150px 250px 1fr;gap:26px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--rule)}' +
-      '.hf-trow .w{font-size:16px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
-      '.hf-trow .h{font-size:20px;font-weight:700}.hf-trow .t{font-size:16px;color:var(--body)}' +
-      '.hf-trow.on{background:var(--tn);padding:15px 16px;border-bottom:0;border-radius:12px}' +
+      /* 행 전부 동일 톤 — 중간에 면(틴트 밴드) 끼우면 표가 어긋나 보임(피드백 반영) */
+      '.hf-trow{display:grid;grid-template-columns:130px 300px 1fr;gap:26px;align-items:baseline;padding:19px 2px;border-bottom:1px solid var(--rule)}' +
+      '.hf-trow:first-child{border-top:2px solid var(--t)}' +
+      '.hf-trow .w{font-size:17px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
+      '.hf-trow .h{font-size:20px;font-weight:700}.hf-trow .t{font-size:16px;color:var(--muted)}' +
       /* 표 */
       '.hf-tbl{flex:0 1 auto;min-height:0;margin:auto 0;display:flex;flex-direction:column;padding:14px 0;position:relative;z-index:2}' +
-      '.hf-tbrow{display:grid;grid-template-columns:repeat(var(--tbc),1fr);gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--rule);font-size:17px;color:var(--body)}' +
-      '.hf-tbrow .f{font-weight:700;color:var(--ink)}' +
-      '.hf-tbrow.hd{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t);padding:8px 0;border-bottom:2px solid var(--t)}' +
+      '.hf-tbrow{display:grid;gap:24px;align-items:center;padding:18px 2px;border-bottom:1px solid var(--rule);font-size:17.5px;color:var(--body)}' +
+      '.hf-tbrow .f{font-weight:800;color:var(--t)}' +
+      '.hf-tbrow.hd{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:10px 2px;border-bottom:2px solid var(--t)}' +
       /* 체크리스트 */
       '.hf-list{list-style:none;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:14px 0;position:relative;z-index:2}' +
       '.hf-list li{display:flex;align-items:center;gap:15px;padding:14px 0;border-bottom:1px solid var(--rule);font-size:19px;color:var(--body)}' +
@@ -524,11 +540,13 @@
       /* 안내 rows */
       '.hf-mdgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr;align-content:center;padding:20px 0}' +
       '.hf-mdgrid.hasimg{grid-template-columns:1.3fr 1fr;gap:34px;align-items:center}' +
-      '.hf-srows{display:flex;flex-direction:column;gap:2px}' +
-      '.hf-srow{display:flex;align-items:center;gap:28px;padding:16px 22px;background:var(--tn);border-radius:12px;margin-bottom:6px}' +
-      '.hf-srow .k{width:150px;flex:0 0 auto;font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t)}' +
+      /* 필 밴드 대신 플레인 행 — 심플 지시 반영 */
+      '.hf-srows{display:flex;flex-direction:column}' +
+      '.hf-srow{display:flex;align-items:baseline;gap:28px;padding:19px 2px;border-bottom:1px solid var(--rule)}' +
+      '.hf-srow:first-child{border-top:2px solid var(--t)}' +
+      '.hf-srow .k{width:130px;flex:0 0 auto;font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t)}' +
       '.hf-srow .t{font-size:18px;color:var(--ink)}' +
-      '.hf-srow.on{background:var(--b);color:#fff}.hf-srow.on .k{color:#fff;opacity:.9}.hf-srow.on .t{color:#fff;font-weight:600}' +
+      '.hf-mimg{width:100%;max-height:420px;object-fit:cover;border-radius:14px;display:block}' +
       '.hf-imgph{background:var(--tn);min-height:210px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;border-radius:12px}' +
       '.hf-imgcol{display:flex;flex-direction:column;gap:9px}' +
       /* 포토 앨범 — 2024 템플릿 실측: 사진 존 + 하단 캡션 밴드 */
@@ -565,39 +583,43 @@
       '.hf-abfr-cap{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:center;gap:18px;padding:24px 0 6px;color:#fff}' +
       '.hf-abfr-cap .hf-abtitle{flex:0 1 auto;font-size:22px}' +
       /* 수치 */
-      '.hf-stgrid{flex:1;min-height:0;display:grid;grid-template-columns:0.8fr 1.2fr;gap:24px;align-items:center;padding:20px 0;position:relative;z-index:2}' +
+      /* 수치 — 카드 박스 없이 플레인(심플 지시 반영): 좌 대형 수치, 우 슬림 바 */
+      '.hf-stgrid{flex:1;min-height:0;display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;align-items:center;padding:20px 0;position:relative;z-index:2}' +
       '.hf-stgrid.solo{grid-template-columns:1fr}' +
-      '.hf-stbig{background:var(--tn);border-radius:18px;padding:38px 34px;display:flex;flex-direction:column;gap:8px}' +
-      '.hf-stnum{font-size:104px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--t);font-variant-numeric:tabular-nums}' +
+      '.hf-stbig{display:flex;flex-direction:column;gap:8px}' +
+      '.hf-stnum{font-size:116px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--t);font-variant-numeric:tabular-nums}' +
       '.hf-stnum i{font-style:normal}.hf-stnum em{font-style:normal;font-size:44px;font-weight:700}' +
-      '.hf-stcap{font-size:15px;color:var(--body);margin-top:6px}' +
-      '.hf-brows{display:flex;flex-direction:column;gap:14px}' +
-      '.hf-brow{display:flex;flex-direction:column;gap:7px}' +
+      '.hf-stcap{font-size:15px;color:var(--muted);margin-top:6px}' +
+      '.hf-brows{display:flex;flex-direction:column;gap:22px}' +
+      '.hf-brow{display:flex;flex-direction:column;gap:8px}' +
       '.hf-brow .hd{display:flex;justify-content:space-between;align-items:baseline}' +
       '.hf-brow .l{font-size:17px;font-weight:700}.hf-brow .v{font-size:19px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
-      '.hf-brow .tr{height:10px;background:var(--tn);border-radius:999px;overflow:hidden}' +
+      '.hf-brow .tr{height:8px;background:var(--tn);border-radius:999px;overflow:hidden}' +
       '.hf-brow .tr i{display:block;height:100%;background:var(--t);border-radius:999px}' +
       '.hf-brow .tx{font-size:13.5px;color:var(--muted)}' +
-      '.hf-brow.on{background:var(--tn);border-radius:14px;padding:16px 20px}' +
-      '.hf-brow.on .tr{background:#fff}' +
       /* KPI */
       '.hf-cell.kp{min-height:210px}' +
       '.hf-cell.kp.on{background:var(--b);color:#fff}.hf-cell.kp.on .hf-lab.in{opacity:.95}' +
       '.hf-kpval{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}' +
       '.hf-cell.kp:not(.on) .hf-kpval{color:var(--t)}' +
       /* 프로세스 */
-      '.hf-procrow{flex:1;min-height:0;display:flex;align-items:stretch;gap:12px;padding:20px 0;position:relative;z-index:2}' +
-      '.hf-parr{align-self:center;font-size:24px;font-weight:700;color:var(--t);flex:0 0 auto}' +
-      '.hf-pstep{flex:1;background:var(--tn);border-radius:16px;padding:28px 26px;display:flex;flex-direction:column;gap:12px;min-height:230px}' +
+      /* 카드가 패널 높이만큼 늘어나 가운데가 텅 비던 문제 — 콘텐츠 허그 + 세로 중앙 */
+      '.hf-procrow{flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:20px 0;position:relative;z-index:2}' +
+      '.hf-parr{font-size:24px;font-weight:700;color:var(--t);flex:0 0 auto}' +
+      '.hf-pstep{flex:1;background:var(--tn);border-radius:16px;padding:30px 28px;display:flex;flex-direction:column;gap:11px;min-height:200px}' +
       '.hf-pstep.on{background:var(--t);color:#fff}' +
       '.hf-phead{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.3;white-space:pre-wrap}' +
-      '.hf-ptx{margin-top:auto;font-size:15px;line-height:1.6;color:var(--body)}' +
+      '.hf-ptx{font-size:15px;line-height:1.6;color:var(--body)}' +
       '.hf-pstep.on .hf-ptx{color:#fff;opacity:.94}' +
       /* 비교 */
-      '.hf-cmpgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
-      '.hf-cmp{background:var(--tn);border-radius:16px;padding:30px 28px;display:flex;flex-direction:column;gap:16px;min-height:240px}' +
-      '.hf-cmp ul{list-style:none;display:flex;flex-direction:column;gap:10px;font-size:17px;line-height:1.55;color:var(--body)}' +
+      /* 비교 — 항목을 헤어라인 행으로(양쪽 카드 행 높이 맞춰 표처럼 읽히게) */
+      '.hf-cmpgrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
+      '.hf-cmp{background:var(--tn);border-radius:16px;padding:28px 30px 20px;display:flex;flex-direction:column;min-height:240px}' +
+      '.hf-cmp .hf-lab{padding-bottom:14px;border-bottom:2px solid var(--t)}' +
+      '.hf-cmp ul{list-style:none;display:flex;flex-direction:column;font-size:17px;line-height:1.5;color:var(--body)}' +
+      '.hf-cmp li{padding:15px 2px;border-bottom:1px solid var(--rule)}.hf-cmp li:last-child{border-bottom:0}' +
       '.hf-cmp.on{background:var(--b);color:#fff}.hf-cmp.on ul{color:#fff;font-weight:600}' +
+      '.hf-cmp.on .hf-lab{border-color:rgba(255,255,255,.7)}.hf-cmp.on li{border-color:rgba(255,255,255,.2)}' +
       /* 로드맵 */
       '.hf-rmgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
       '.hf-rmcol{background:var(--tn);border-radius:16px;padding:28px 26px;display:flex;flex-direction:column;gap:14px;min-height:250px}' +
@@ -652,7 +674,7 @@
     var slides = (data.slides && data.slides.length) ? data.slides : DEFAULT_DECK.slides;
     var th = themeOf(data);
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + '</style></head><body data-th="' + th + '">' +
-      '<div class="ppt-stack">' + renderSlides(slides) + '</div>' + chipScript(th) + stateScript(slides) + '</body></html>';
+      '<div class="ppt-stack">' + renderSlides(slides, data.images) + '</div>' + chipScript(th) + stateScript(slides) + '</body></html>';
   }
 
   /* ---- 발표 뷰어 ---- */
@@ -709,7 +731,7 @@
       'else if(e.key==="Escape"&&!document.fullscreenElement)setPseudo(false);});' +
       '})();';
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>' + css() + vcss + '</style></head><body data-th="' + th + '">' +
-      '<div class="vwrap"><div class="vscale">' + renderSlides(slides) + '</div></div>' +
+      '<div class="vwrap"><div class="vscale">' + renderSlides(slides, data.images) + '</div></div>' +
       '<div class="vbar"><button class="vbtn vprev">‹</button><span class="vcount"></span><button class="vbtn vnext">›</button><button class="vbtn vfs">⛶</button></div>' +
       chipScript(th) + stateScript(slides) +
       '<scr' + 'ipt>' + vjs + '</scr' + 'ipt></body></html>';
@@ -746,13 +768,13 @@
     toc: { type: 'toc', title: '안내 순서', items: [{ label: '행사 개요', desc: '취지와 한눈에 보기', pages: '03 — 05' }, { label: '프로그램', desc: '당일 일정과 체험 부스', pages: '06 — 09' }, { label: '참여 안내', desc: '준비물·오시는 길', pages: '10 — 12' }] },
     divider: { type: 'divider', no: '01', title: '행사 개요', lead: '해피 패밀리 데이가 준비한 하루를 소개합니다' },
     section: { type: 'section', title: '이런 하루를\n준비했습니다', points: [{ head: '가족 초청', text: '임직원 가족을 회사로 초대해 일터를 소개합니다' }, { head: '체험 프로그램', text: '아이와 함께하는 만들기·놀이 부스를 운영합니다' }, { head: '기념 선물', text: '참여 가족 모두에게 기념 선물을 드립니다' }] },
-    cards: { type: 'cards', title: '프로그램\n하이라이트', cards: [{ tag: 'Booth', head: '패밀리 포토존', text: '가족 사진 촬영과 즉석 인화' }, { tag: 'Play', head: '키즈 플레이존', text: '연령별 놀이·만들기 체험' }, { tag: 'Gift', head: '경품 추첨', text: '전 가족 대상 경품 이벤트' }] },
-    timeline: { type: 'timeline', title: '당일 일정', items: [{ when: '13:00', head: '등록 · 웰컴 키트', text: '로비에서 가족 확인 후 입장' }, { when: '13:30', head: '환영 인사', text: '대표 인사 및 행사 안내', on: true }, { when: '14:00', head: '체험 부스 운영', text: '포토존·플레이존·만들기 부스' }, { when: '16:30', head: '경품 추첨 · 마무리', text: '기념 선물 증정' }] },
+    cards: { type: 'cards', title: '프로그램\n하이라이트', cards: [{ tag: 'Booth', head: '패밀리 포토존', text: '가족 사진 촬영과 즉석 인화', img: true }, { tag: 'Play', head: '키즈 플레이존', text: '연령별 놀이·만들기 체험', img: true }, { tag: 'Gift', head: '경품 추첨', text: '전 가족 대상 경품 이벤트', img: true }] },
+    timeline: { type: 'timeline', title: '당일 일정', items: [{ when: '13:00', head: '등록 · 웰컴 키트', text: '로비에서 가족 확인 후 입장' }, { when: '13:30', head: '환영 인사', text: '대표 인사 및 행사 안내' }, { when: '14:00', head: '체험 부스 운영', text: '포토존·플레이존·만들기 부스' }, { when: '16:30', head: '경품 추첨 · 마무리', text: '기념 선물 증정' }] },
     table: { type: 'table', title: '행사 정보', columns: ['구분', '내용', '비고'], rows: [{ cells: ['일시', '2026. 05. 22 (금) 13:00 - 17:00', '—'] }, { cells: ['장소', '판교 사옥 1층 로비 · 대강당', '주차 지원'] }, { cells: ['대상', '전 임직원 및 가족', '사전 신청'] }] },
     checklist: { type: 'checklist', title: '참여 전\n확인해 주세요', items: ['사전 신청 후 확정 문자를 확인해 주세요', '어린이는 보호자와 동반 입장합니다', '주차권은 등록 데스크에서 배부합니다', '편한 복장으로 참여해 주세요'] },
-    media: { type: 'media', title: '오시는 길', specs: [{ label: 'Address', text: '경기 성남시 분당구 판교로 000' }, { label: 'Subway', text: '판교역 4번 출구 도보 10분', on: true }, { label: 'Parking', text: '사옥 지하주차장 이용(등록 시 주차권 배부)' }], caption: '', image: { label: '약도 이미지' } },
+    media: { type: 'media', title: '오시는 길', specs: [{ label: 'Address', text: '경기 성남시 분당구 판교로 000' }, { label: 'Subway', text: '판교역 4번 출구 도보 10분' }, { label: 'Parking', text: '사옥 지하주차장 이용(등록 시 주차권 배부)' }], caption: '', image: { label: '약도 이미지' } },
     photos: { type: 'photos', variant: 'wide', year: '2026년', title: '5월에 함께한\n해피 패밀리 데이', caption: '가족과 함께한 하루의 기록.\n포토존과 체험 부스의 순간들을\n사진으로 남겼습니다.', foot: 'MIDAS', items: [{ label: '대표 사진' }] },
-    stats: { type: 'stats', title: '지금까지\n이만큼 모였어요', donut: { pct: 88, label: '사전 신청률', caption: '신청 마감 D-7 기준' }, bars: [{ label: '신청 완료 가족', pct: 88, value: '106가족', on: true }, { label: '가족 동반 참여', pct: 64 }, { label: '첫 참여 가족', pct: 41 }] },
+    stats: { type: 'stats', title: '지금까지\n이만큼 모였어요', donut: { pct: 88, label: '사전 신청률', caption: '신청 마감 D-7 기준' }, bars: [{ label: '신청 완료 가족', pct: 88, value: '106가족' }, { label: '가족 동반 참여', pct: 64 }, { label: '첫 참여 가족', pct: 41 }] },
     kpi: { type: 'kpi', title: '한눈에 보는\n올해 준비', items: [{ value: '120', label: '초청 가족' }, { value: '12', label: '체험 부스' }, { value: '4.8', label: '작년 만족도', tone: 'on' }] },
     process: { type: 'process', title: '참여는\n세 단계면 끝나요', steps: [{ tag: 'STEP 1', head: '사전 신청', text: '사내 공지 링크에서 가족 인원 입력' }, { tag: 'STEP 2', head: '확정 안내', text: '문자로 확정·주차 안내를 받아요' }, { tag: 'STEP 3', head: '당일 입장', text: '로비 등록 데스크에서 웰컴 키트 수령' }] },
     compare: { type: 'compare', title: '올해는\n이렇게 달라져요', items: [{ head: '작년', items: ['오후 반일 운영', '체험 부스 6개', '기념품 공통 1종'] }, { head: '올해', items: ['하루 종일 운영', '체험 부스 12개로 확대', '연령별 맞춤 기념품'] }] },

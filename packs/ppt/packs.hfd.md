@@ -13,7 +13,9 @@ MIDAS 해피 패밀리 데이 사내 행사 안내 덱 — 대표 전달용(받�
 CSS는 `body[data-th]` 변수 세트(--t/--b/--a/--tn/--dp) — **렌더 우상단 컬러칩**으로 즉시 전환(미리보기, `@media print` 숨김). AI는 덱 루트 `theme` 1개 출력.
 
 ## 4. 타입 13종 (독자 어휘 — HFD_ALLOWED)
-cover · greeting(인사말) · toc(2~4 밴드 컬럼) · divider · section(2~4 포인트) · cards(2~4, 마지막/tone:dark=딥 셀) · timeline(당일 일정, on=틴트) · table · checklist(5개 초과 2열) · media(안내 rows+이미지 슬롯) · photos(2~3) · quote(풀블리드 딥) · closing.
+cover · greeting(인사말) · toc(2~4 밴드 컬럼) · divider · section(2~4 포인트) · cards(2~4, 마지막/tone:dark=딥 셀, `img:true`면 셀 상단 이미지 슬롯) · timeline(당일 일정 — 행 전부 동일 톤, 강조 밴드 없음) · table(첫 열 150px·둘째 열 1.5fr) · checklist(5개 초과 2열) · media(안내 rows 플레인 헤어라인+이미지 슬롯) · photos(2~3) · quote(풀블리드 딥) · closing.
+
+**이미지 계약**: 업로드 이미지는 덱 루트 `data.images{키:dataURL}` — media=`images.media`, 카드=`images['card-슬라이드idx-카드idx']`. 렌더러가 있으면 `<img>`, 없으면 `.hf-imgph` 슬롯(클릭 업로드). 2026-08-21 피드백 반영: 프레임 장 틴트 원(`.hf-deco`) 숨김(콘텐츠 겹침), 카드 gap 16px, stats/media/timeline 강조 박스 제거(심플), process 카드 허그(빈 공간 제거), compare 항목 헤어라인 행.
 
 ## 5. 배선 (pastel 풋프린트와 동일)
 - 로드 4페이지: index·studio(../../)·dashboard·projects (settings/resources/icons는 pastel도 미로드 — 동일)
