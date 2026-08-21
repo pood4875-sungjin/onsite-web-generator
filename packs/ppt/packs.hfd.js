@@ -942,7 +942,7 @@
       '.hf-tocpg{flex:0 0 auto;font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}' +
       '.hf-tocarr{flex:0 0 auto;font-size:22px;color:var(--t)}' +
       /* 본문 표준 */
-      '.hf-numgrid{flex:1;min-height:0;display:grid;gap:2px;align-content:center;padding:20px 0}' +
+      '.hf-numgrid{flex:1;min-height:0;display:grid;gap:16px;align-content:center;padding:20px 0}' +
       '.hf-numgrid.c1{grid-template-columns:1fr}.hf-numgrid.c2{grid-template-columns:1fr 1fr}.hf-numgrid.c3{grid-template-columns:repeat(3,1fr)}.hf-numgrid.c4{grid-template-columns:repeat(4,1fr)}' +
       '.hf-num{position:relative;z-index:2;display:flex;flex-direction:column;gap:12px;background:var(--tn);padding:30px 26px;min-height:250px;border-radius:16px}' +
       '.hf-numno{font-size:38px;font-weight:800;line-height:1;color:var(--t)}' +
