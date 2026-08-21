@@ -170,16 +170,33 @@
         '<div class="hf-qmid"><p class="hf-qtx"' + de(P + '.text') + '>' + mb(s.text || '') + '</p>' +
         (s.by ? '<span class="hf-qby"' + de(P + '.by') + '>' + esc(s.by) + '</span>' : '') + '</div>' + logo() + '</section>';
     },
-    /* 포토 그리드 — 행사 사진·이미지 슬롯 2~3 */
+    /* 포토 앨범 — 2024 템플릿 실측(290-3346/3384/3658 계열) 3변형
+       wide(기본)=풀폭 사진+하단 캡션 밴드 · grid=사진 3열+캡션 밴드 · frame=표지 기하 위 센터 화이트 프레임 */
     photos: function (s, P, ctx) {
-      var items = (s.items || []).slice(0, 3);
-      var cells = items.map(function (it, i) {
-        var IP = P + '.items.' + i;
-        return '<div class="hf-phcell"><div class="hf-imgph s-imgwrap" data-img="photos.' + i + '"><span' + de(IP + '.label') + '>' + esc(it.label || '사진') + '</span></div>' +
-          (it.caption ? '<span class="hf-cap"' + de(IP + '.caption') + '>' + mb(it.caption) + '</span>' : '') + '</div>';
-      }).join('');
-      return '<section class="slide hf ph" data-kind="' + kind(s, 'Photos') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
-        '<div class="hf-phgrid c' + Math.min(items.length || 2, 3) + '">' + cells + '</div>' + footband(s, P) + '</section>';
+      var v = s.variant === 'grid' || s.variant === 'frame' ? s.variant : 'wide';
+      var items = (s.items || []).slice(0, v === 'grid' ? 3 : 1);
+      if (!items.length) items = [{}];
+      function slot(i, it) {
+        return '<div class="hf-imgph s-imgwrap" data-img="photos.' + i + '"><span' + de(P + '.items.' + i + '.label') + '>' + esc(it.label || '사진') + '</span></div>';
+      }
+      /* 하단 캡션 밴드 — 좌 연도 칩 · 센터 타이틀 2줄 · 우측 캡션 줄들 · 우하단 소라벨 */
+      var band = '<div class="hf-abband">' +
+        '<span class="hf-abyear"' + de(P + '.year') + '>' + esc(s.year || '') + '</span>' +
+        '<span class="hf-abtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span>' +
+        '<span class="hf-abcap"' + de(P + '.caption') + '>' + mb(s.caption || '') + '</span>' +
+        (s.foot ? '<span class="hf-abfoot"' + de(P + '.foot') + '>' + esc(s.foot) + '</span>' : '') +
+        '<span class="hf-abarc"></span></div>';
+      if (v === 'frame') {
+        return '<section class="slide hf ab fr" data-kind="' + kind(s, 'Photos') + '">' +
+          '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>' +
+          '<div class="hf-abframe">' + slot(0, items[0]) + '</div>' +
+          '<div class="hf-abfr-cap"><span class="hf-abyear iv"' + de(P + '.year') + '>' + esc(s.year || '') + '</span>' +
+          '<span class="hf-abtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span></div></section>';
+      }
+      var media = v === 'grid'
+        ? '<div class="hf-abgrid">' + items.map(function (it, i) { return slot(i, it); }).join('') + '</div>'
+        : '<div class="hf-abwide">' + slot(0, items[0]) + '</div>';
+      return '<section class="slide hf ab" data-kind="' + kind(s, 'Photos') + '">' + media + band + '</section>';
     },
     /* 엔딩 — 표지 기하 + 마무리 문장 */
     closing: function (s, P, ctx) {
@@ -360,11 +377,26 @@
       '.hf-srow.on{background:var(--b);color:#fff}.hf-srow.on .k{color:#fff;opacity:.9}.hf-srow.on .t{color:#fff;font-weight:600}' +
       '.hf-imgph{background:var(--tn);min-height:210px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}' +
       '.hf-imgcol{display:flex;flex-direction:column;gap:9px}' +
-      /* 포토 그리드 */
-      '.hf-phgrid{flex:1;min-height:0;display:grid;gap:14px;align-content:center;padding:20px 0}' +
-      '.hf-phgrid.c2{grid-template-columns:1fr 1fr}.hf-phgrid.c3{grid-template-columns:repeat(3,1fr)}' +
-      '.hf-phcell{display:flex;flex-direction:column;gap:9px}' +
-      '.hf-phcell .hf-imgph{min-height:300px}' +
+      /* 포토 앨범 — 2024 템플릿 실측: 사진 존 + 하단 캡션 밴드 */
+      '.slide.ab{padding:0}' +
+      '.hf-abwide{flex:1;min-height:0;margin:36px 44px 0;display:flex}' +
+      '.hf-abwide .hf-imgph{flex:1;min-height:0}' +
+      '.hf-abgrid{flex:1;min-height:0;margin:36px 44px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}' +
+      '.hf-abgrid .hf-imgph{min-height:0}' +
+      '.hf-abband{flex:none;height:214px;margin-top:34px;position:relative;background:var(--t);color:#fff;display:flex;align-items:center;gap:44px;padding:0 64px;overflow:hidden}' +
+      '.hf-abband .hf-abarc{position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.12);right:-140px;top:-40px;pointer-events:none}' +
+      '.hf-abyear{flex:0 0 auto;font-size:14px;font-weight:700;padding:7px 18px;border:1.5px solid rgba(255,255,255,.8);border-radius:999px!important}' +
+      '.hf-abyear:empty{display:none}' +
+      '.hf-abyear.iv{border-color:rgba(255,255,255,.85)}' +
+      '.hf-abtitle{flex:1;text-align:center;font-size:27px;font-weight:800;line-height:1.4;letter-spacing:-.01em;white-space:pre-wrap;position:relative;z-index:1}' +
+      '.hf-abcap{flex:0 0 auto;max-width:250px;font-size:13.5px;line-height:1.7;opacity:.92;white-space:pre-wrap;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.55);padding-top:12px}' +
+      '.hf-abcap:empty{display:none}' +
+      '.hf-abfoot{position:absolute;right:22px;bottom:14px;font-size:11.5px;opacity:.75;z-index:1}' +
+      '.slide.ab.fr{padding:52px 64px}' +
+      '.hf-abframe{position:relative;z-index:2;flex:1;min-height:0;margin:16px 96px 0;background:#fff;padding:18px;display:flex}' +
+      '.hf-abframe .hf-imgph{flex:1;min-height:0}' +
+      '.hf-abfr-cap{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:center;gap:20px;padding:22px 0 0;color:#fff}' +
+      '.hf-abfr-cap .hf-abtitle{flex:0 1 auto;font-size:22px}' +
       /* 인용 — 풀블리드 딥 */
       '.slide.qt{background:var(--b)}' +
       '.hf-circ.q{background:rgba(255,255,255,.1)}' +
@@ -460,7 +492,7 @@
     { type: 'table', label: '표', use: '장소·대상·문의 등 정보 표', needs: ['title', 'columns', 'rows'], opt: ['sub', 'note'] },
     { type: 'checklist', label: '체크리스트', use: '준비물·유의사항 — 도트 리스트, 5개 초과 시 2열', needs: ['title', 'items'], opt: ['cols', 'sub', 'note'] },
     { type: 'media', label: '안내 rows', use: '오시는 길·운영 정보(라벨+내용, 핵심 행 강조)+이미지 슬롯', needs: ['title', 'specs'], opt: ['image', 'caption', 'sub', 'note'] },
-    { type: 'photos', label: '포토', use: '행사 사진·포스터 이미지 2~3', needs: ['title', 'items'], opt: ['sub', 'note'], cap: { items: '2~3개' } },
+    { type: 'photos', label: '포토 앨범', use: '행사 사진 장 — wide(풀폭 1장+캡션 밴드)/grid(3장+밴드)/frame(기하 위 화이트 프레임)', needs: ['title', 'items'], opt: ['variant', 'year', 'caption', 'foot'], cap: { items: 'wide·frame 1개, grid 3개' } },
     { type: 'quote', label: '슬로건', use: '행사 슬로건·메시지 — 풀블리드 딥 밴드', needs: ['text'], opt: ['by'] },
     { type: 'closing', label: '엔딩', use: '마지막 장 — 표지 기하+마무리 인사·문의처', needs: ['title'], opt: ['sub', 'contact'] }
   ];
@@ -476,7 +508,7 @@
     table: { type: 'table', title: '행사 정보', columns: ['구분', '내용', '비고'], rows: [{ cells: ['일시', '2026. 05. 22 (금) 13:00 - 17:00', '—'] }, { cells: ['장소', '판교 사옥 1층 로비 · 대강당', '주차 지원'] }, { cells: ['대상', '전 임직원 및 가족', '사전 신청'] }] },
     checklist: { type: 'checklist', title: '참여 전\n확인해 주세요', items: ['사전 신청 후 확정 문자를 확인해 주세요', '어린이는 보호자와 동반 입장합니다', '주차권은 등록 데스크에서 배부합니다', '편한 복장으로 참여해 주세요'] },
     media: { type: 'media', title: '오시는 길', specs: [{ label: 'Address', text: '경기 성남시 분당구 판교로 000' }, { label: 'Subway', text: '판교역 4번 출구 도보 10분', on: true }, { label: 'Parking', text: '사옥 지하주차장 이용(등록 시 주차권 배부)' }], caption: '', image: { label: '약도 이미지' } },
-    photos: { type: 'photos', title: '지난 행사\n모습', items: [{ label: '포토존', caption: '가족 사진 촬영' }, { label: '체험 부스', caption: '만들기 프로그램' }] },
+    photos: { type: 'photos', variant: 'wide', year: '2026년', title: '5월에 함께한\n해피 패밀리 데이', caption: '가족과 함께한 하루의 기록.\n포토존과 체험 부스의 순간들을\n사진으로 남겼습니다.', foot: 'MIDAS', items: [{ label: '대표 사진' }] },
     quote: { type: 'quote', text: '일하는 자리가\n**가족의 자랑**이 되도록.', by: 'Happy Family Day' },
     closing: { type: 'closing', title: '5월 22일,\n가족과 함께 만나요', sub: '마이다스 해피패밀리데이', contact: '문의 · 피플팀' }
   };
@@ -493,7 +525,7 @@
     'table:{title,columns:[str],rows:[{cells:[str]}],sub?,note?} | ' +
     'checklist:{title,items:[str],cols?:1~2,sub?,note?} | ' +
     'media:{title,specs:[{label(짧은 영문),text,on?:true(딥 강조 행)}](3~5개),image?:{label},caption?,sub?,note?} | ' +
-    'photos:{title,items:[{label(이미지 라벨),caption?}](2~3개),sub?,note?} | ' +
+    'photos:{variant?:"wide|grid|frame"(기본 wide),year?(연도 칩 "2026년"),title(캡션 밴드 타이틀 \\n 2줄),caption?(우측 캡션 \\n 2~3줄),foot?(우하단 소라벨),items:[{label}](wide·frame 1개, grid 3개)} | ' +
     'quote:{text(슬로건, **강조**, \\n 줄바꿈),by?} | ' +
     'closing:{title(마무리 인사, \\n 2줄),sub?,contact?(문의처)}' +
     '\n규칙: 행사 안내 톤 — 따뜻하고 간결한 한국어. 일정·장소·대상은 브리프에 있는 것만 쓰고 창작 금지. ' +
@@ -506,6 +538,8 @@
       STARTERS.divider, STARTERS.section, STARTERS.quote,
       { type: 'divider', no: '02', title: '프로그램', lead: '당일 일정과 체험 부스를 안내합니다' },
       STARTERS.timeline, STARTERS.cards, STARTERS.photos,
+      { type: 'photos', variant: 'grid', year: '2026년', title: '체험 부스\n미리 보기', caption: '포토존 · 플레이존 · 만들기 부스.\n연령별 프로그램을 준비했습니다.', foot: 'MIDAS', items: [{ label: '포토존' }, { label: '플레이존' }, { label: '만들기 부스' }] },
+      { type: 'photos', variant: 'frame', year: '2026년', title: '올해의 한 컷', items: [{ label: '대표 사진' }] },
       { type: 'divider', no: '03', title: '참여 안내', lead: '준비물과 오시는 길을 확인해 주세요' },
       STARTERS.table, STARTERS.checklist, STARTERS.media,
       STARTERS.closing
