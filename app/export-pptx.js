@@ -51,6 +51,13 @@
     '.hf-stnum', '.hf-stcap', '.hf-brow .l', '.hf-brow .v', '.hf-brow .tx', '.hf-kpval', '.hf-phead', '.hf-ptx', '.hf-parr',
     '.hf-cmp ul li', '.hf-rmhead', '.hf-rmlist li', '.hf-half ul li span', '.hf-bsval', '.hf-bscap',
     '.hf-word', '.hf-wdcap', '.hf-sttitle', '.hf-stsub', '.hf-herotitle', '.hf-herosub',
+    '.hf-duoval', '.hf-duotx', '.hf-duochip', '.hf-flowhead', '.hf-flowrow b', '.hf-flowrow span', '.hf-flowft', '.hf-flowarr', '.hf-flowfoot',
+    '.hf-hswhen', '.hf-hshead', '.hf-hstx', '.hf-pfbadge', '.hf-pfkick', '.hf-pfname', '.hf-pfbody li span', '.hf-pffocus .fl', '.hf-pffocus li', '.hf-pffoot',
+    '.hf-bdtitle', '.hf-bdpt .h', '.hf-bdpt .t', '.hf-bdcard .h', '.hf-bdcard .t',
+    '.hf-hihead', '.hf-hilead', '.hf-hitx', '.hf-hiimg .ph span',
+    '.hf-cnbadge', '.hf-cnbar .v', '.hf-cnbar .x', '.hf-cnunit', '.hf-cnnote .h', '.hf-cnnote .t',
+    '.hf-cylab', '.hf-cyblk .h', '.hf-cyblk .t', '.hf-cyside', '.hf-cycore',
+    '.hf-dval i', '.hf-dval em', '.hf-dtx', '.hf-dmini.dn span', '.hf-dstat .l', '.hf-dstat .v',
     '.pg-hlrow .no', '.pg-hlrow .h', '.pg-hlrow .t', '.pg-hlfn', '.pg-hltitle', '.pg-bdtitle', '.pg-side li', '.pg-side .pl span', '.pg-leadbox .tx',
     '.pg-cltitle', '.pg-clsub', '.pg-clfoot .big', '.pg-clfoot .ct i', '.pg-key.tb .mi b', '.pg-key.tb .mi i', '.pg-imgph span',
     /* sfmi 팩(SFMI Report) */ '.sf-runl i', '.sf-runr', '.sf-hl', '.sf-sub', '.sf-body', '.sf-lab', '.sf-ftx', '.sf-cap', '.sf-hfoot',
@@ -86,6 +93,8 @@
     /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
     /* hfd 팩 — 밴드·원 기하·셀·카드류(srow·trow는 플레인 행이라 제외) */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-cell, .hf-toccol, .hf-key, .hf-imgph, .hf-dot, .hf-pstep, .hf-cmp, .hf-rmcol, .hf-half, .hf-brow .tr, .hf-brow .tr i, .hf-tocrow, .hf-herobg, .hf-heroov, ' +
+    '.hf-duo, .hf-flowcol, .hf-flowhead, .hf-flowrow, .hf-hstep, .hf-pfcard, .hf-pfhead, .hf-pffocus, .hf-bdband, .hf-bdcard, .hf-hipanel, .hf-hiimg .ph, .hf-cnchart, .hf-cnbar i, ' +
+    '.hf-cyring, .hf-cycore, .hf-dcard, .hf-dstrip, .hf-dmini.br i, .hf-dmini.dn i, .hf-dmini.ar i, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }

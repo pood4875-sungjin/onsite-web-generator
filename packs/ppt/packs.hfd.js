@@ -351,6 +351,189 @@
       var media = '<div class="hf-abwide">' + slot(0, items[0]) + '</div>';
       return '<section class="slide hf ab" data-kind="' + kind(s, 'Photos') + '">' + media + band + '</section>';
     },
+    /* 대형 수치 2패널 — 값+라벨+칩 (카카오 IR p32·43 번안) */
+    duo: function (s, P, ctx) {
+      var cells = (s.items || []).slice(0, 2).map(function (it, i) {
+        var IP = P + '.items.' + i, on = it.tone === 'on' || i === 1;
+        var chips = (it.chips || []).map(function (c, j) {
+          return '<span class="hf-duochip"' + de(IP + '.chips.' + j) + '>' + mb(c) + '</span>';
+        }).join('');
+        return '<div class="hf-duo' + (on ? ' on' : '') + '">' +
+          '<span class="hf-lab' + (on ? ' wh' : '') + '"' + de(IP + '.label') + '>' + esc(it.label || '') + '</span>' +
+          '<span class="hf-duoval"' + de(IP + '.value') + '>' + esc(it.value || '') + '</span>' +
+          (it.text ? '<p class="hf-duotx"' + de(IP + '.text') + '>' + mb(it.text) + '</p>' : '') +
+          (chips ? '<div class="hf-duochips">' + chips + '</div>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf du" data-kind="' + kind(s, 'Duo') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-duogrid">' + cells + '</div></section>';
+    },
+    /* 전환 구조도 — 전(중립) → 후(틴트·딥) 패널 (카카오 IR p5 번안) */
+    flow: function (s, P, ctx) {
+      function col(c, CP, cls) {
+        c = c || {};
+        var rows = (c.items || []).map(function (r, j) {
+          var RP = CP + '.items.' + j;
+          if (typeof r === 'string') return '<div class="hf-flowrow"><span' + de(RP) + '>' + mb(r) + '</span></div>';
+          return '<div class="hf-flowrow"><b' + de(RP + '.k') + '>' + esc(r.k || '') + '</b><span' + de(RP + '.v') + '>' + mb(r.v || '') + '</span></div>';
+        }).join('');
+        return '<div class="hf-flowcol' + cls + '">' +
+          '<span class="hf-flowhead"' + de(CP + '.head') + '>' + esc(c.head || '') + '</span>' + rows +
+          (c.foot ? '<span class="hf-flowft"' + de(CP + '.foot') + '>' + mb(c.foot) + '</span>' : '') + '</div>';
+      }
+      var tos = (s.to || []).slice(0, 2).map(function (c, i) {
+        return col(c, P + '.to.' + i, c.tone === 'on' ? ' on' : '');
+      }).join('');
+      return '<section class="slide hf fl" data-kind="' + kind(s, 'Flow') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-flowgrid">' + col(s.from, P + '.from', ' from') +
+        '<span class="hf-flowarr">→</span>' + tos + '</div>' +
+        (s.foot ? '<p class="hf-flowfoot"' + de(P + '.foot') + '>' + mb(s.foot) + '</p>' : '') + '</section>';
+    },
+    /* 가로 노드 타임라인 — 도트+라인 4~6단계 (카카오 IR p8 번안) */
+    hsteps: function (s, P, ctx) {
+      var steps = (s.steps || []).slice(0, 6).map(function (st, i) {
+        var IP = P + '.steps.' + i;
+        return '<div class="hf-hstep">' +
+          '<span class="hf-hswhen"' + de(IP + '.when') + '>' + esc(st.when || '') + '</span>' +
+          '<span class="hf-hshead"' + de(IP + '.head') + '>' + mb(st.head || '') + '</span>' +
+          (st.text ? '<p class="hf-hstx"' + de(IP + '.text') + '>' + mb(st.text) + '</p>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf hs" data-kind="' + kind(s, 'HSteps') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-hsrow">' + steps + '</div></section>';
+    },
+    /* 프로필 카드 — 뱃지+딥 헤더+리스트+포커스 박스 2~3열 (카카오 IR p27 번안) */
+    profile: function (s, P, ctx) {
+      var n = Math.min(Math.max((s.cards || []).length, 2), 3);
+      var cells = (s.cards || []).slice(0, 3).map(function (c, i) {
+        var IP = P + '.cards.' + i;
+        var pts = (c.points || []).map(function (t, j) {
+          return '<li><span class="hf-dot"></span><span' + de(IP + '.points.' + j) + '>' + mb(t) + '</span></li>';
+        }).join('');
+        var fc = '';
+        if (c.focus) {
+          fc = '<div class="hf-pffocus"><span class="fl"' + de(IP + '.focus.label') + '>' + esc(c.focus.label || '') + '</span>' +
+            (c.focus.items || []).map(function (t, j) { return '<li' + de(IP + '.focus.items.' + j) + '>' + mb(t) + '</li>'; }).join('') + '</div>';
+        }
+        return '<div class="hf-pfcard">' +
+          (c.badge ? '<span class="hf-pfbadge"' + de(IP + '.badge') + '>' + esc(c.badge) + '</span>' : '') +
+          '<div class="hf-pfhead">' +
+          (c.kicker ? '<span class="hf-pfkick"' + de(IP + '.kicker') + '>' + esc(c.kicker) + '</span>' : '') +
+          '<span class="hf-pfname"' + de(IP + '.head') + '>' + mb(c.head || '') + '</span></div>' +
+          '<ul class="hf-pfbody">' + pts + '</ul>' + fc +
+          (c.foot ? '<div class="hf-pffoot"' + de(IP + '.foot') + '>' + mb(c.foot) + '</div>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf pf" data-kind="' + kind(s, 'Profile') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-pfgrid" style="--pfc:' + n + '">' + cells + '</div></section>';
+    },
+    /* 와이드 밴드 — 딥 밴드(타이틀+포인트 2~3)+하단 카드 3~5 (카카오 IR p26 번안) */
+    band: function (s, P, ctx) {
+      var pts = (s.points || []).slice(0, 3).map(function (p, i) {
+        var IP = P + '.points.' + i;
+        return '<div class="hf-bdpt"><span class="h"' + de(IP + '.head') + '>' + esc(p.head || '') + '</span>' +
+          (p.text ? '<span class="t"' + de(IP + '.text') + '>' + mb(p.text) + '</span>' : '') + '</div>';
+      }).join('');
+      var n = Math.min(Math.max((s.cards || []).length, 3), 5);
+      var cards = (s.cards || []).slice(0, 5).map(function (c, i) {
+        var IP = P + '.cards.' + i;
+        return '<div class="hf-bdcard' + (c.tone === 'on' ? ' on' : '') + '">' +
+          '<span class="h"' + de(IP + '.head') + '>' + esc(c.head || '') + '</span>' +
+          (c.text ? '<span class="t"' + de(IP + '.text') + '>' + mb(c.text) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf bd" data-kind="' + kind(s, 'Band') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-bdwrap"><div class="hf-bdband"><span class="hf-bdtitle"' + de(P + '.lead') + '>' + mb(s.lead || '') + '</span>' +
+        '<div class="hf-bdpts">' + pts + '</div></div>' +
+        '<div class="hf-bdgrid" style="--bdc:' + n + '">' + cards + '</div></div></section>';
+    },
+    /* 하프 이미지 — 좌 딥 텍스트 패널+우 절반 이미지 (카카오 IR p25·35 번안) */
+    halfimg: function (s, P, ctx) {
+      var si = P.split('.')[1], ik = 'half-' + si, src = ctx.images && ctx.images[ik];
+      var img = src ? '<img class="s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">' :
+        '<div class="ph s-imgwrap" data-img="' + ik + '"><span>이미지</span></div>';
+      return '<section class="slide hf hi" data-kind="' + kind(s, 'HalfImg') + '">' +
+        '<div class="hf-hipanel">' +
+        '<h2 class="hf-hihead"' + de(P + '.head') + '>' + mb(s.head || '') + '</h2>' +
+        (s.lead ? '<span class="hf-hilead"' + de(P + '.lead') + '>' + mb(s.lead) + '</span>' : '') +
+        (s.text ? '<p class="hf-hitx"' + de(P + '.text') + '>' + mb(s.text) + '</p>' : '') + '</div>' +
+        '<div class="hf-hiimg">' + img + '</div></section>';
+    },
+    /* 차트 — 좌 막대(값 실측만)+우 코멘트 리스트 (카카오 IR p12·45 번안) */
+    chart: function (s, P, ctx) {
+      var bars = s.bars || [], max = 0;
+      bars.forEach(function (b) { if (+b.v > max) max = +b.v; });
+      var bs = bars.slice(0, 8).map(function (b, i) {
+        var IP = P + '.bars.' + i, h = max ? Math.max(6, Math.round((+b.v || 0) / max * 100)) : 0;
+        return '<div class="hf-cnbar' + (b.on ? ' on' : '') + '">' +
+          '<span class="v"' + de(IP + '.label') + '>' + esc(b.label != null ? b.label : String(b.v)) + '</span>' +
+          '<i style="height:' + h + '%"></i>' +
+          '<span class="x"' + de(IP + '.x') + '>' + esc(b.x || '') + '</span></div>';
+      }).join('');
+      var notes = (s.notes || []).slice(0, 4).map(function (nt, i) {
+        var IP = P + '.notes.' + i;
+        return '<div class="hf-cnnote"><span class="h"' + de(IP + '.head') + '>' + mb(nt.head || '') + '</span>' +
+          (nt.text ? '<span class="t"' + de(IP + '.text') + '>' + mb(nt.text) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf cn" data-kind="' + kind(s, 'Chart') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-cngrid"><div class="hf-cnchart">' +
+        (s.badge ? '<span class="hf-cnbadge"' + de(P + '.badge') + '>' + mb(s.badge) + '</span>' : '') +
+        '<div class="hf-cnbars">' + bs + '</div>' +
+        (s.unit ? '<span class="hf-cnunit"' + de(P + '.unit') + '>' + esc(s.unit) + '</span>' : '') + '</div>' +
+        '<div class="hf-cnnotes">' + notes + '</div></div></section>';
+    },
+    /* 순환 다이어그램 — 상하 아크+중앙 허브+상하 설명 (이중 중대성 다이어그램 번안) */
+    cycle: function (s, P, ctx) {
+      function blk(b, BP, cls) {
+        b = b || {};
+        return '<div class="hf-cyblk ' + cls + '">' +
+          '<span class="h"' + de(BP + '.head') + '>' + esc(b.head || '') + '</span>' +
+          (b.text ? '<span class="t"' + de(BP + '.text') + '>' + mb(b.text) + '</span>' : '') + '</div>';
+      }
+      return '<section class="slide hf cy" data-kind="' + kind(s, 'Cycle') + '">' + runhead(s, P, ctx) +
+        (s.title ? headline(s, P) : '') +
+        '<div class="hf-cywrap"><div class="hf-cyring">' +
+        '<span class="hf-cyarc top"></span><span class="hf-cyarc bot"></span>' +
+        (s.topLabel ? '<span class="hf-cylab top"' + de(P + '.topLabel') + '>' + esc(s.topLabel) + '</span>' : '') +
+        (s.bottomLabel ? '<span class="hf-cylab bot"' + de(P + '.bottomLabel') + '>' + esc(s.bottomLabel) + '</span>' : '') +
+        blk(s.top, P + '.top', 'tp') + blk(s.bottom, P + '.bottom', 'bt') +
+        (s.left ? '<span class="hf-cyside l"' + de(P + '.left') + '>' + esc(s.left) + '</span>' : '') +
+        (s.right ? '<span class="hf-cyside r"' + de(P + '.right') + '>' + esc(s.right) + '</span>' : '') +
+        '<span class="hf-cycore"' + de(P + '.center') + '>' + mb(s.center || '') + '</span>' +
+        '</div></div></section>';
+    },
+    /* 지표 대시보드 — 미니 차트 카드 3~4 + 하단 스탯 스트립 (지표 하이라이트 장 번안) */
+    dash: function (s, P, ctx) {
+      var n = Math.min(Math.max((s.cards || []).length, 3), 4);
+      function mini(c, IP) {
+        var ch = c.chart || {};
+        if (ch.kind === 'donut') {
+          var pct = Math.max(0, Math.min(100, +ch.pct || 0));
+          return '<div class="hf-dmini dn"><i style="background:conic-gradient(var(--t) 0 ' + pct + '%,#E3E8E5 0)"></i><span>' + pct + '%</span></div>';
+        }
+        if (ch.kind === 'area') {
+          var vs = (ch.v || []).map(Number), mx = Math.max.apply(null, vs.concat([1]));
+          var pts = vs.map(function (v, i) { return (vs.length > 1 ? Math.round(i / (vs.length - 1) * 100) : 100) + '% ' + (100 - Math.round(v / mx * 92)) + '%'; });
+          return '<div class="hf-dmini ar"><i style="clip-path:polygon(0 100%,' + pts.join(',') + ',100% 100%)"></i></div>';
+        }
+        var bs = (ch.v || []).map(Number), bmx = Math.max.apply(null, bs.concat([1]));
+        return '<div class="hf-dmini br">' + bs.map(function (v, i) {
+          return '<i class="' + (i === bs.length - 1 ? 'on' : '') + '" style="height:' + Math.max(8, Math.round(v / bmx * 100)) + '%"></i>';
+        }).join('') + '</div>';
+      }
+      var cells = (s.cards || []).slice(0, 4).map(function (c, i) {
+        var IP = P + '.cards.' + i;
+        return '<div class="hf-dcard">' +
+          '<span class="hf-lab"' + de(IP + '.label') + '>' + esc(c.label || '') + '</span>' +
+          '<span class="hf-dval"' + de(IP + '.value') + '><i>' + esc(c.value || '') + '</i>' + (c.unit ? '<em' + de(IP + '.unit') + '>' + esc(c.unit) + '</em>' : '') + '</span>' +
+          (c.chart ? mini(c, IP) : '') +
+          (c.text ? '<span class="hf-dtx"' + de(IP + '.text') + '>' + mb(c.text) + '</span>' : '') + '</div>';
+      }).join('');
+      var strip = (s.strip || []).slice(0, 3).map(function (st, i) {
+        var IP = P + '.strip.' + i;
+        return '<div class="hf-dstat"><span class="l"' + de(IP + '.label') + '>' + mb(st.label || '') + '</span>' +
+          '<span class="v"' + de(IP + '.value') + '>' + esc(st.value || '') + '</span></div>';
+      }).join('');
+      return '<section class="slide hf da" data-kind="' + kind(s, 'Dash') + '">' + runhead(s, P, ctx) + headline(s, P) + sub(s, P) +
+        '<div class="hf-dwrap"><div class="hf-dgrid" style="--dac:' + n + '">' + cells + '</div>' +
+        (strip ? '<div class="hf-dstrip">' + strip + '</div>' : '') + '</div></section>';
+    },
     /* 한 단어 — 대형 타이포 임팩트(감사·환영) */
     word: function (s, P, ctx) {
       return '<section class="slide hf wd" data-kind="' + kind(s, 'Word') + '">' + runhead(s, P, ctx) +
@@ -385,7 +568,7 @@
   };
 
   /* 본문 장 기본 프레임 — 2024 덱 레이아웃: 기하 테두리 + 중앙 화이트 라운드 패널 (frame:false로 해제) */
-  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1 };
+  var FRAMED = { greeting: 1, toc: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, stats: 1, kpi: 1, process: 1, compare: 1, roadmap: 1, milestone: 1, split: 1, bigstat: 1, word: 1, statement: 1, duo: 1, flow: 1, hsteps: 1, profile: 1, band: 1, chart: 1, cycle: 1, dash: 1 };
   var GEO = '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>';
   function frameWrap(html) {
     return html
@@ -694,6 +877,127 @@
       '.hf-half ul li{display:flex;align-items:center;gap:12px}' +
       '.hf-half .hf-dot.dim{background:var(--rule)}' +
       '.hf-half.on{border:0;background:var(--tn);color:var(--ink)}.hf-half.on ul{color:var(--ink);font-weight:600}' +
+      /* 대형 수치 2패널 (duo) */
+      '.hf-duogrid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:center;padding:20px 0;position:relative;z-index:2}' +
+      '.hf-duo{background:var(--tn);border-radius:16px;padding:36px 38px;display:flex;flex-direction:column;gap:10px;justify-content:center;min-height:300px}' +
+      '.hf-duoval{font-size:66px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:var(--t);font-variant-numeric:tabular-nums}' +
+      '.hf-duotx{font-size:15.5px;line-height:1.6;color:var(--body)}' +
+      '.hf-duochips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}' +
+      '.hf-duochip{font-size:13px;font-weight:600;background:#fff;border-radius:999px;padding:8px 15px;color:var(--ink)}' +
+      '.hf-duo.on{background:var(--b);color:#fff}.hf-duo.on .hf-duoval{color:#fff}' +
+      '.hf-duo.on .hf-duotx{color:#fff;opacity:.92}.hf-duo.on .hf-duochip{background:rgba(255,255,255,.16);color:#fff}' +
+      /* 전환 구조도 (flow) */
+      '.hf-flowgrid{flex:1;min-height:0;display:flex;align-items:stretch;gap:0;padding:16px 0 8px;position:relative;z-index:2}' +
+      '.hf-flowcol{flex:1;min-width:0;background:var(--tn);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:7px}' +
+      '.hf-flowcol.from{background:#EFF1F0}' +
+      '.hf-flowcol + .hf-flowcol{margin-left:12px}' +
+      '.hf-flowhead{font-size:15.5px;font-weight:800;text-align:center;color:#fff;background:var(--dp);border-radius:10px;padding:11px;margin-bottom:4px}' +
+      '.hf-flowcol.from .hf-flowhead{background:#3A423E}' +
+      '.hf-flowcol.on .hf-flowhead{background:var(--t)}' +
+      '.hf-flowrow{background:#fff;border-radius:10px;padding:11px 14px;font-size:13.5px;line-height:1.45;display:flex;gap:10px;align-items:baseline}' +
+      '.hf-flowrow b{color:var(--ink);flex:0 0 auto}.hf-flowrow span{color:var(--muted)}' +
+      '.hf-flowft{font-size:12px;color:var(--muted);margin-top:auto;padding-top:6px}' +
+      '.hf-flowarr{flex:0 0 auto;align-self:center;font-size:28px;font-weight:700;color:var(--t);padding:0 16px}' +
+      '.hf-flowfoot{flex:none;text-align:center;font-size:14px;color:var(--muted);padding-bottom:4px}' +
+      /* 가로 노드 타임라인 (hsteps) */
+      '.hf-hsrow{flex:0 1 auto;margin:auto 0;display:flex;gap:22px;padding:24px 0;position:relative;z-index:2;align-items:flex-start}' +
+      '.hf-hstep{flex:1;min-width:0;position:relative;padding-top:30px}' +
+      '.hf-hstep::before{content:"";position:absolute;left:16px;right:-22px;top:5px;height:2px;background:var(--tn)}' +
+      '.hf-hstep:last-child::before{display:none}' +
+      '.hf-hstep::after{content:"";position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:var(--t)}' +
+      '.hf-hswhen{font-size:15px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
+      '.hf-hshead{display:block;font-size:17.5px;font-weight:700;margin-top:5px;line-height:1.35;white-space:pre-wrap}' +
+      '.hf-hstx{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:5px}' +
+      /* 프로필 카드 (profile) */
+      '.hf-pfgrid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--pfc),1fr);gap:16px;align-content:center;padding:22px 0 10px;position:relative;z-index:2}' +
+      '.hf-pfcard{position:relative;border:1.5px solid var(--rule);border-radius:16px;display:flex;flex-direction:column;background:#fff}' +
+      '.hf-pfbadge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:2;background:var(--t);color:#fff;border-radius:999px;padding:7px 16px;font-size:12.5px;font-weight:800;white-space:nowrap}' +
+      '.hf-pfhead{background:var(--dp);color:#fff;border-radius:14px 14px 0 0;padding:24px 20px 16px;display:flex;flex-direction:column;gap:4px;text-align:center}' +
+      '.hf-pfkick{font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.8}' +
+      '.hf-pfname{font-size:19px;font-weight:800;line-height:1.3;white-space:pre-wrap}' +
+      '.hf-pfbody{list-style:none;padding:16px 20px;display:flex;flex-direction:column;gap:8px;flex:1}' +
+      '.hf-pfbody li{display:flex;gap:9px;align-items:baseline;font-size:13.5px;line-height:1.5;color:var(--body)}' +
+      '.hf-pfbody .hf-dot{width:7px;height:7px;position:relative;top:-1px}' +
+      '.hf-pffocus{list-style:none;background:var(--tn);border-radius:12px;padding:13px 16px;margin:0 14px 14px;display:flex;flex-direction:column;gap:5px}' +
+      '.hf-pffocus .fl{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--t)}' +
+      '.hf-pffocus li{font-size:13px;line-height:1.5;color:var(--body);list-style:none}' +
+      '.hf-pffoot{border-top:1px solid var(--rule);padding:12px 20px;font-size:12.5px;line-height:1.5;color:var(--muted)}' +
+      /* 와이드 밴드 (band) */
+      '.hf-bdwrap{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-bdband{background:var(--dp);color:#fff;border-radius:16px;padding:30px 34px;display:flex;gap:28px;align-items:center}' +
+      '.hf-bdtitle{flex:0 0 300px;font-size:29px;font-weight:800;line-height:1.3;letter-spacing:-.01em;white-space:pre-wrap}' +
+      '.hf-bdpts{flex:1;display:flex}' +
+      '.hf-bdpt{flex:1;min-width:0;padding:2px 22px;border-left:1px solid rgba(255,255,255,.28);display:flex;flex-direction:column;gap:6px}' +
+      '.hf-bdpt .h{font-size:15.5px;font-weight:800}' +
+      '.hf-bdpt .t{font-size:13px;line-height:1.55;color:rgba(255,255,255,.85)}' +
+      '.hf-bdgrid{display:grid;grid-template-columns:repeat(var(--bdc),1fr);gap:14px}' +
+      '.hf-bdcard{background:var(--tn);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px;min-height:150px}' +
+      '.hf-bdcard .h{font-size:16.5px;font-weight:800;line-height:1.35}' +
+      '.hf-bdcard .t{font-size:13px;line-height:1.5;color:var(--body)}' +
+      '.hf-bdcard.on{background:var(--t);color:#fff}.hf-bdcard.on .t{color:#fff;opacity:.92}' +
+      /* 하프 이미지 (halfimg) — 좌 딥 패널+우 절반 이미지 */
+      '.slide.hf.hi{padding:0;flex-direction:row}' +
+      '.hf-hipanel{flex:0 0 46%;min-width:0;background:var(--dp);color:#fff;padding:70px 62px;display:flex;flex-direction:column;justify-content:center;gap:22px}' +
+      '.hf-hihead{font-size:46px;font-weight:800;line-height:1.18;letter-spacing:-.02em;white-space:pre-wrap}' +
+      '.hf-hilead{font-size:17px;font-weight:700;color:var(--tn);white-space:pre-wrap}' +
+      '.hf-hitx{font-size:15px;line-height:1.85;color:rgba(255,255,255,.88);white-space:pre-wrap}' +
+      '.hf-hiimg{flex:1;min-width:0;position:relative}' +
+      '.hf-hiimg img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.hf-hiimg .ph{width:100%;height:100%;background:var(--tn);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}' +
+      /* 차트+코멘트 (chart) */
+      '.hf-cngrid{flex:1;min-height:0;display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:stretch;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-cnchart{background:var(--tn);border-radius:16px;padding:24px 26px 18px;display:flex;flex-direction:column;min-height:0}' +
+      '.hf-cnbadge{align-self:flex-start;background:#fff;border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:800;color:var(--t)}' +
+      '.hf-cnbars{flex:1;min-height:0;display:flex;align-items:stretch;gap:14px;padding-top:16px}' +
+      '.hf-cnbar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px}' +
+      '.hf-cnbar .v{font-size:12.5px;font-weight:800;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums}' +
+      '.hf-cnbar i{display:block;background:color-mix(in srgb,var(--t) 42%,#fff);border-radius:8px 8px 0 0}' +
+      '.hf-cnbar.on i{background:var(--t)}' +
+      '.hf-cnbar .x{font-size:11.5px;text-align:center;color:var(--muted);padding-top:7px;border-top:1px solid var(--rule)}' +
+      '.hf-cnunit{font-size:11.5px;color:var(--muted);margin-top:8px}' +
+      '.hf-cnnotes{display:flex;flex-direction:column;justify-content:center}' +
+      '.hf-cnnote{padding:16px 2px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:5px}' +
+      '.hf-cnnote:first-child{border-top:2px solid var(--t)}' +
+      '.hf-cnnote .h{font-size:16.5px;font-weight:800;line-height:1.4}' +
+      '.hf-cnnote .t{font-size:14px;line-height:1.55;color:var(--body)}' +
+      /* 순환 다이어그램 (cycle) */
+      '.hf-cywrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}' +
+      '.hf-cyring{position:relative;width:520px;height:520px;background:var(--tn);border-radius:50%;flex:0 0 auto}' +
+      '.hf-cyarc{position:absolute;inset:16px;border:2.5px solid var(--t);border-radius:50%;pointer-events:none}' +
+      '.hf-cyarc.top{clip-path:inset(0 0 52% 0)}' +
+      '.hf-cyarc.bot{border-color:var(--b);clip-path:inset(52% 0 0 0)}' +
+      '.hf-cylab{position:absolute;left:50%;transform:translateX(-50%);font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:#fff;border-radius:999px;padding:7px 16px;white-space:nowrap}' +
+      '.hf-cylab.top{top:-8px;color:var(--t)}' +
+      '.hf-cylab.bot{bottom:-8px;color:var(--b)}' +
+      '.hf-cyblk{position:absolute;left:50%;transform:translateX(-50%);width:70%;display:flex;flex-direction:column;gap:7px;text-align:center}' +
+      '.hf-cyblk.tp{top:13%}' +
+      '.hf-cyblk.bt{bottom:13%}' +
+      '.hf-cyblk .h{font-size:18px;font-weight:800}' +
+      '.hf-cyblk .t{font-size:13px;line-height:1.55;color:var(--body)}' +
+      '.hf-cyside{position:absolute;top:50%;transform:translateY(-50%);font-size:14.5px;font-weight:800;white-space:pre-wrap;text-align:center;max-width:140px;line-height:1.4}' +
+      '.hf-cyside.l{left:5%;color:var(--t)}' +
+      '.hf-cyside.r{right:5%;color:var(--b)}' +
+      '.hf-cycore{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:150px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;font-weight:800;line-height:1.35;box-shadow:0 10px 30px rgba(10,30,20,.08);padding:16px;white-space:pre-wrap}' +
+      /* 지표 대시보드 (dash) */
+      '.hf-dwrap{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:14px 0;position:relative;z-index:2}' +
+      '.hf-dgrid{display:grid;grid-template-columns:repeat(var(--dac),1fr);gap:14px}' +
+      '.hf-dcard{background:var(--tn);border-radius:14px;padding:20px 20px 16px;display:flex;flex-direction:column;gap:10px;min-height:230px}' +
+      '.hf-dval{display:flex;align-items:baseline;gap:4px}' +
+      '.hf-dval i{font-style:normal;font-size:40px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}' +
+      '.hf-dval em{font-style:normal;font-size:15px;font-weight:700;color:var(--muted)}' +
+      '.hf-dtx{font-size:12.5px;color:var(--muted);line-height:1.5}' +
+      '.hf-dmini{flex:1;min-height:0;display:flex;align-items:flex-end;gap:8px;margin-top:auto}' +
+      '.hf-dmini.br i{flex:1;display:block;background:color-mix(in srgb,var(--t) 35%,#fff);border-radius:6px 6px 0 0}' +
+      '.hf-dmini.br i.on{background:var(--t)}' +
+      '.hf-dmini.dn{align-items:center;justify-content:center;position:relative}' +
+      '.hf-dmini.dn i{width:104px;height:104px;border-radius:50%;display:block;-webkit-mask:radial-gradient(circle,transparent 34px,#000 35px);mask:radial-gradient(circle,transparent 34px,#000 35px)}' +
+      '.hf-dmini.dn span{position:absolute;font-size:16px;font-weight:800;color:var(--t)}' +
+      '.hf-dmini.ar i{flex:1;height:100%;display:block;background:linear-gradient(180deg,var(--t),color-mix(in srgb,var(--t) 18%,#fff))}' +
+      '.hf-dstrip{background:var(--tn);border-radius:14px;padding:20px 28px;display:flex;align-items:center;gap:0}' +
+      '.hf-dstat{flex:1;display:flex;flex-direction:column;gap:5px;align-items:center;text-align:center}' +
+      '.hf-dstat + .hf-dstat{border-left:1px solid var(--rule)}' +
+      '.hf-dstat .l{font-size:13px;font-weight:600;color:var(--body)}' +
+      '.hf-dstat .v{font-size:30px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
       /* 한 단어 — 대형 타이포 중앙 */
       '.hf-wdmid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;position:relative;z-index:2}' +
       '.hf-word{font-size:150px;font-weight:800;line-height:1.15;letter-spacing:-.03em;color:var(--t);white-space:pre-wrap;text-align:center}' +
@@ -820,6 +1124,15 @@
     { type: 'milestone', label: '마일스톤', use: '기간 준비 계획 간트 — 단계 카드+월축 라운드 바', needs: ['title', 'bars', 'axis'], opt: ['phases'] },
     { type: 'split', label: '좌우 대비', use: '회사 준비 vs 참여자 준비 등 두 축 대비 리스트', needs: ['left', 'right'], opt: ['title', 'sub'] },
     { type: 'bigstat', label: '대형 수치', use: '수치 하나로 임팩트 — 대형 숫자+캡션', needs: ['title', 'value'], opt: ['caption'] },
+    { type: 'duo', label: '수치 2패널', use: '대형 수치·문구 두 개 나란히 — 값+라벨+구성 칩', needs: ['title', 'items'], opt: ['sub'], cap: { items: '2개' } },
+    { type: 'flow', label: '전환 구조도', use: '전 → 후 변화 구조 — 좌 이전 패널, 화살표, 우 이후 패널 1~2', needs: ['title', 'from', 'to'], opt: ['sub', 'foot'] },
+    { type: 'hsteps', label: '가로 단계', use: '일정·절차를 가로 노드 4~6개로 — 도트+라인+날짜', needs: ['title', 'steps'], opt: ['sub'], cap: { steps: '4~6개' } },
+    { type: 'profile', label: '프로필 카드', use: '팀·부스·조직 소개 2~3열 — 뱃지+딥 헤더+리스트+포커스 박스', needs: ['title', 'cards'], opt: ['sub'], cap: { cards: '2~3개' } },
+    { type: 'band', label: '와이드 밴드', use: '딥 밴드(선언+포인트 2~3)+하단 카드 3~5 — 개요 한 장 요약', needs: ['title', 'lead', 'cards'], opt: ['points', 'sub'], cap: { cards: '3~5개' } },
+    { type: 'halfimg', label: '하프 이미지', use: '좌 딥 텍스트 패널+우 절반 이미지(업로드) — 브랜드·인사 선언 장', needs: ['head'], opt: ['lead', 'text'] },
+    { type: 'chart', label: '차트+노트', use: '좌 막대 차트+우 코멘트 리스트 — 추이·실적(수치는 실측만)', needs: ['title', 'bars'], opt: ['notes', 'badge', 'unit', 'sub'], cap: { bars: '3~8개' } },
+    { type: 'cycle', label: '순환 다이어그램', use: '상하 아크+중앙 허브 — 주고받는 관계·선순환 구조', needs: ['center', 'top', 'bottom'], opt: ['title', 'left', 'right', 'topLabel', 'bottomLabel'] },
+    { type: 'dash', label: '지표 대시보드', use: '미니 차트(막대·도넛·에어리어) 카드 3~4+하단 스탯 스트립', needs: ['title', 'cards'], opt: ['strip', 'sub'], cap: { cards: '3~4개' } },
     { type: 'word', label: '한 단어', use: '한 단어 임팩트 — 대형 타이포 중앙(감사·환영)', needs: ['text'], opt: ['caption'] },
     { type: 'statement', label: '스테이트먼트', use: '타이틀+서브 문장 중앙 대형 — 메시지 전달 장', needs: ['title'], opt: ['sub'] },
     { type: 'hero', label: '이미지 히어로', use: '풀블리드 배경 이미지+중앙 텍스트(이미지는 업로드)', needs: ['title'], opt: ['sub'] },
@@ -847,6 +1160,48 @@
     milestone: { type: 'milestone', title: '월별 준비 계획', phases: [{ tag: '현재', head: '신청 접수', text: '사내 공지·가족 조사' }, { tag: '다음', head: '운영 준비', text: '부스·키트 제작', on: true }], bars: [{ label: '신청 접수', sub: '4월 — 사내 공지', start: 1, span: 2 }, { label: '부스·키트 준비', sub: '4~5월 — 제작·배정', start: 2, span: 2 }, { label: '행사 운영', sub: '5월 — 당일 운영·기록', start: 3, span: 2 }], axis: ['4월 초', '4월 말', '5월 초', '5월 말'] },
     split: { type: 'split', title: '준비는 회사가,\n가족은 오시기만 하면 돼요', left: { kicker: '회사가 준비해요', items: ['체험 부스·기념 선물', '가족 식사와 간식', '주차·안전 요원'] }, right: { kicker: '가족은 이것만', items: ['사전 신청 1분', '편한 복장', '즐길 마음'] } },
     bigstat: { type: 'bigstat', title: '올해 초청 규모', value: '120가족', caption: '작년보다 **40가족 더** — 전 임직원 가족 모두를 초대합니다' },
+    duo: { type: 'duo', title: '올해 목표\n두 가지', items: [
+      { value: '120가족', label: '초청 규모', text: '전 임직원 가족 모두를 초대합니다', chips: ['전 임직원', '가족 동반', '사전 신청'] },
+      { value: '부스 12개', label: '체험 프로그램', text: '연령별 만들기·놀이 부스로 확대', chips: ['포토존', '플레이존', '만들기'], tone: 'on' }
+    ] },
+    flow: { type: 'flow', title: '올해 운영,\n이렇게 바뀌어요', from: { head: '작년', items: [{ k: '운영', v: '오후 반일' }, { k: '부스', v: '체험 부스 6개' }, { k: '기념품', v: '공통 1종' }] }, to: [
+      { head: '올해', items: [{ k: '운영', v: '하루 종일' }, { k: '부스', v: '체험 부스 12개' }, { k: '기념품', v: '연령별 맞춤' }], tone: 'on' }
+    ] },
+    hsteps: { type: 'hsteps', title: '당일 흐름\n한눈에', steps: [
+      { when: '13:00', head: '등록', text: '로비에서 웰컴 키트 수령' },
+      { when: '13:30', head: '환영 인사', text: '대표 인사 및 행사 안내' },
+      { when: '14:00', head: '체험 부스', text: '포토존·플레이존·만들기' },
+      { when: '16:30', head: '경품 추첨', text: '기념 선물 증정' }
+    ] },
+    profile: { type: 'profile', title: '체험 부스\n소개', cards: [
+      { badge: '인기 1위', kicker: 'Booth', head: '패밀리 포토존', points: ['가족 사진 촬영과 즉석 인화', '소품·의상 대여'], focus: { label: 'Tip', items: ['오후 2시 이전이 한산해요'] } },
+      { kicker: 'Play', head: '키즈 플레이존', points: ['연령별 놀이 공간', '안전 요원 상주'], focus: { label: 'Tip', items: ['5세 미만은 보호자 동반'] } },
+      { kicker: 'Craft', head: '만들기 부스', points: ['가족 공예 체험', '완성품은 집으로'], focus: { label: 'Tip', items: ['회차별 선착순 운영'] } }
+    ] },
+    band: { type: 'band', title: '프로그램\n한눈에', lead: '가족과 함께하는\n하루를 준비했습니다', points: [
+      { head: '가족 초청', text: '임직원 가족을 회사로 초대해 일터를 소개합니다' },
+      { head: '체험 프로그램', text: '아이와 함께하는 만들기·놀이 부스' },
+      { head: '기념 선물', text: '참여 가족 모두에게 증정' }
+    ], cards: [
+      { head: '포토존', text: '가족 사진 촬영' }, { head: '플레이존', text: '연령별 놀이' }, { head: '만들기 부스', text: '가족 공예' }, { head: '경품 추첨', text: '전 가족 대상', tone: 'on' }
+    ] },
+    halfimg: { type: 'halfimg', head: 'HAPPY\nFAMILY DAY', lead: '가족과 함께하는 하루', text: '일 년에 단 하루,\n회사가 가족의 놀이터가 됩니다.\n\n2026년 5월 22일 금요일,\n판교 사옥에서 만나요.' },
+    chart: { type: 'chart', title: '참여 가족,\n해마다 늘고 있어요', badge: '3년 연속 증가', unit: '단위 : 가족', bars: [
+      { x: '2023', v: 74 }, { x: '2024', v: 92 }, { x: '2025', v: 106, on: true }
+    ], notes: [
+      { head: '재참여 92%', text: '작년 참여 가족 대부분이 다시 신청했어요' },
+      { head: '첫 참여 증가', text: '동료 추천으로 새로 신청한 가족이 늘었어요' }
+    ] },
+    cycle: { type: 'cycle', center: '해피\n패밀리 데이', topLabel: '회사가 가족에게', bottomLabel: '가족이 회사에게', left: '가족', right: '회사',
+      top: { head: '하루의 초대', text: '체험 부스와 기념 선물,\n일터를 여는 하루' },
+      bottom: { head: '이해와 응원', text: '가족의 응원이\n일할 힘이 됩니다' } },
+    dash: { type: 'dash', title: '한눈에 보는\n작년 성과', cards: [
+      { label: '참여 가족', value: '106', unit: '가족', chart: { kind: 'bars', v: [74, 92, 106] } },
+      { label: '만족도', value: '4.8', unit: '/ 5점', chart: { kind: 'donut', pct: 96 } },
+      { label: '체험 부스 이용', value: '1,200', unit: '회+', chart: { kind: 'area', v: [3, 5, 8, 12] } }
+    ], strip: [
+      { label: '재참여 의사', value: '92%' }, { label: '추천 의향', value: '89%' }
+    ] },
     word: { type: 'word', text: '고마워요', caption: '함께해 준 모든 가족에게 전하는 마음' },
     statement: { type: 'statement', title: '하루의 즐거움이\n일 년의 힘이 됩니다', sub: '가족과 함께하는 해피 패밀리 데이' },
     hero: { type: 'hero', title: 'HAPPY\nFAMILY DAY', sub: '2026. 05. 22 FRI · 판교 사옥' },
@@ -875,6 +1230,15 @@
     'milestone:{title,phases?:[{tag,head,text?,on?:true}](2~3),bars:[{label,sub?,start:1~축개수,span:칸수}](3~5 시간순 계단),axis:[구간 라벨 4~6]} | ' +
     'split:{title?,left:{kicker,items:[str]},right:{kicker,items:[str]},sub?} — 좌 흐림/우 강조 | ' +
     'bigstat:{title,value,caption?(**강조**)} | ' +
+    'duo:{title,items:[{value(대형 수치/문구),label,text?,chips?:[str],tone?:"on"(딥)}](2개),sub?} | ' +
+    'flow:{title,from:{head,items:[{k,v}|str]},to:[{head,items:[{k,v}|str],tone?:"on"}](1~2개),foot?,sub?} | ' +
+    'hsteps:{title,steps:[{when(날짜/시각),head,text?}](4~6개),sub?} | ' +
+    'profile:{title,cards:[{badge?,kicker?(짧은 영문),head,points:[str],focus?:{label,items:[str]},foot?}](2~3개),sub?} | ' +
+    'band:{title,lead(밴드 선언 \\n 2줄),points?:[{head,text}](2~3개),cards:[{head,text?,tone?:"on"}](3~5개),sub?} | ' +
+    'halfimg:{head(\\n 2줄),lead?,text?(\\n\\n 문단)}(이미지는 사용자 업로드 — 창작 금지) | ' +
+    'chart:{title,bars:[{x(축 라벨),v(숫자),label?(표시값),on?:true}](3~8개, 브리프에 있는 수치만·창작 금지),notes?:[{head,text}](2~4개),badge?,unit?,sub?} | ' +
+    'cycle:{center(중앙 허브 \\n 2줄),top:{head,text?},bottom:{head,text?},left?,right?,topLabel?,bottomLabel?,title?} | ' +
+    'dash:{title,cards:[{label,value(수치),unit?,chart?:{kind:"bars"|"donut"|"area",v?:[숫자],pct?:숫자},text?}](3~4개, 수치는 브리프에 있는 것만),strip?:[{label,value}](1~3개),sub?} | ' +
     'word:{text(2~6자 대형 단어),caption?(한 줄)} | ' +
     'statement:{title(중앙 대형 문장, \\n 2줄),sub?(한 줄)} | ' +
     'hero:{title(중앙 대형, \\n 2줄),sub?(한 줄)}(배경 이미지는 사용자 업로드 — 창작 금지) | ' +
