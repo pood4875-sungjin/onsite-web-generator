@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>카카오 인적분할 설명자료 — HFD 템플릿</title>
+<!-- 지배구조 개편 설명자료(카카오, 52p PDF)를 Happy Family Day 팩(그린 톤)에 재구성.
+     내용은 원문 실측 — 수치·일정·표기는 PDF에 있는 것만. 팩 수정 후 새로고침하면 최신. -->
+</head>
+<body>
+<script src="../packs/ppt/packs.hfd.js"></script>
+<script>
+var DECK = {
+  style: 'hfd', theme: 'green',
+  slides: [
+    { type: 'cover', title: '카카오 인적분할 통한\n성장 가속화 및 주주가치 제고', sub: 'Kakao Corporation', date: '2026 카카오' },
+    { type: 'toc', title: 'CONTENTS', items: [
+      { label: '인적분할 개요', desc: '분할 개요 · 목적 · 일정' },
+      { label: '인적분할 배경', desc: '복합기업 할인 · AI Re-rating · 의사결정 비효율' },
+      { label: '인적분할 기대효과', desc: '기업가치 · 전문성 · 자본배분 · 주주가치' },
+      { label: '카카오X', desc: '미래가치 투자회사' },
+      { label: '카카오AI', desc: 'Hyper-Growth Architect' }
+    ] },
+    { type: 'divider', no: '01', title: '인적분할 개요', lead: '분할 개요 · 목적 · 일정' },
+    { type: 'statement', title: '사업영역별 최적화된 자본배분과 전략 수행,\nAI 기업의 정체성 명확화를 통한 **Re-rating**', sub: '인적분할로 사업영역별 의사결정과 자본배분이 최적화되는 지배구조를 구축하고, 복합기업 디스카운트를 해소하여 주주가치를 제고합니다' },
+    { type: 'compare', title: '카카오X와 카카오AI로\n분할하여 성장 가속화', items: [
+      { head: '카카오X — 존속법인 · 미래가치 투자회사', items: ['테크핀 — 카카오뱅크 · 카카오페이 · 카카오페이증권', '콘텐츠 — 카카오엔터테인먼트 · SM엔터테인먼트 · 카카오픽코마', '모빌리티 — 카카오모빌리티', '핵심 사업 발굴 · 혁신 기업 투자'] },
+      { head: '카카오AI — 신설법인 · AI Core Company', items: ['AI · 톡플랫폼 · 맵플랫폼 · 광고 · 커머스', '카카오톡 중심, Agentic AI 시대의 차별화된 사용자 경험과 수익모델 창출', '인프라/운영 — 디케이테크인 · 케이앤웍스 · 링키지랩'] }
+    ] },
+    { type: 'timeline', title: '분할 일정 (잠정)', sub: '이사회 및 주주총회 결의 등에 따라 변경될 수 있습니다', items: [
+      { when: '8.21', head: '분할 이사회 결의' },
+      { when: '11.23', head: '주주총회를 위한 주주확정일' },
+      { when: '12.17', head: '분할 승인 임시주주총회' },
+      { when: '12.31', head: '분할 신주 배정 기준일' },
+      { when: '1.1', head: '분할기일' },
+      { when: '1.27', head: '카카오X · 카카오AI 변경상장 · 재상장일' }
+    ] },
+    { type: 'table', title: '분할비율', sub: "26.6.30 기준", columns: ['구분', '카카오X (존속)', '카카오AI (신설)'], rows: [
+      { cells: ['자산', '6.2조원', '5.9조원'] },
+      { cells: ['부채', '1.1조원', '3.0조원'] },
+      { cells: ['순자산', '5.1조원', '2.9조원'] },
+      { cells: ['분할비율', '0.64', '0.36'] }
+    ] },
+    { type: 'divider', no: '02', title: '인적분할 배경', lead: '복합기업 할인 · AI Re-rating 요구 심화 · 의사결정/자본배분 비효율' },
+    { type: 'section', title: '왜 지금\n인적분할인가', points: [
+      { head: '현저한 복합 기업 할인', text: '국내외 증권사 개별 평가 합산(SOTP) 가치 대비 50% 이상 저평가' },
+      { head: 'AI Re-rating 요구 심화', text: 'AI 수익화 지연으로 낮아진 주주 기대감 — 전체 Valuation Multiple 하락' },
+      { head: '의사결정·자본배분 효율화', text: '이사회 비경상 안건의 85%가 자회사 지원·관리에 편중, 기회비용 증대' }
+    ] },
+    { type: 'stats', title: '합산 잠재가치와\n시가총액의 간극', sub: "Sum-of-the-Parts, 2026년 8월 기준 국내외 증권사 각 사업 개별평가의 합산", donut: { pct: 50, label: '복합기업 할인', caption: 'SOTP 가치 대비 50% 이상 저평가' }, bars: [
+      { label: '합산 잠재가치', pct: 100, value: '34.2조원' },
+      { label: '카카오 시가총액 (3개월 평균)', pct: 49, value: '16.8조원' },
+      { label: 'GAP', pct: 51, value: '17.4조원' }
+    ] },
+    { type: 'divider', no: '03', title: '인적분할 기대효과', lead: '기업가치 극대화 · 사업별 전문성 강화 · 효율적 자본배분 · 주주가치 제고' },
+    { type: 'checklist', title: '기대효과\n다섯 가지', items: [
+      '**기업가치 극대화** — 분할을 통한 복합기업 할인 해소로 기업가치 상승',
+      '**사업별 전문성 강화** — 독립적 전략 수립 및 전문성 확보로 핵심 경쟁력 강화',
+      '**효율적 자본배분** — 각 사업 특성에 최적화된 자본 배분 및 투자 집행',
+      '**의사결정 체계 효율화** — 양사 이사회 전문성 증대로 효율적 의사결정 집행',
+      '**주주가치 제고** — 자사주 소각, 특별배당 등 발생 수익의 적극적 주주 환원'
+    ] },
+    { type: 'kpi', title: '국내 인적분할 사례,\n입증된 unlocking', sub: '분할 이사회 전일 시총 vs 분할 재상장/변경상장일 시총 변동률', items: [
+      { value: '+84%', label: '삼양홀딩스 (25Q2)' },
+      { value: '+48%', label: '효성 (24Q1)' },
+      { value: '+36%', label: '한화에어로스페이스 (24Q2)' },
+      { value: '+32%', label: '평균 · 6개 국내 사례', tone: 'on' }
+    ] },
+    { type: 'compare', title: '분할 후\n주주환원 정책', items: [
+      { head: '카카오X — 성과·투자 성과 공유', items: ['자회사 배당금(세후기준)의 30%를 배당·자사주 매입/소각 등 기본 주주환원', '투자차익 발생 시 특별 배당 · 자사주 매입/소각 진행', '분할 후 3개년간 총 3천억원 자사주 매입소각'] },
+      { head: '카카오AI — 성장의 과실 공유', items: ['기본 주주환원은 별도 조정 FCF의 20~35% 환원', '별도 조정 FCF 전년 대비 50% 이상 성장 시, 동일 기준 40%까지 환원 비율 상향'] }
+    ] },
+    { type: 'divider', no: '04', title: '카카오X : 미래가치 투자회사', lead: '자회사 성장 가속 · 신규 핵심사업 발굴 · 혁신기업 투자' },
+    { type: 'statement', title: '미래 가치를 키우는\n**투자 전문회사**', sub: 'Next Growth Investment Company — 각 사업영역 1위 핵심 사업의 경쟁력을 높이고, 제로투원 DNA로 신성장 사업 발굴과 투자를 통해 미래 성장 동력을 구축합니다' },
+    { type: 'cards', title: '핵심 자회사\n성장 전략', cards: [
+      { tag: 'Techfin', head: '테크핀', text: '카카오뱅크 · 카카오페이 · 카카오페이증권\n전략 방향성 : 가상자산 생태계 주도' },
+      { tag: 'Contents', head: '콘텐츠', text: '카카오엔터 · SM엔터 · 픽코마\n전략 방향성 : 글로벌 팬덤 강화' },
+      { tag: 'Mobility', head: '모빌리티', text: '카카오모빌리티\n전략 방향성 : 로보택시 · 물류 선도' }
+    ] },
+    { type: 'kpi', title: '카카오X\n성장 목표', items: [
+      { value: '10조원+', label: '2030년 매출 목표' },
+      { value: '약 13%', label: "CAGR ('25~'30)" },
+      { value: '6.4조원', label: '투자 재원 (카카오X 2.3조원 + 자회사 4.1조원)', tone: 'on' }
+    ] },
+    { type: 'divider', no: '05', title: '카카오AI : Hyper-Growth Architect', lead: 'AI로 시작되는 신규 성장 모멘텀과 기존 사업의 재도약이 만드는 강력한 시너지' },
+    { type: 'statement', title: '"누구나 톡 한 줄로 나를 위한\nAI 에이전트를 만들 수 있다면?"', sub: '카카오톡은 5천만 개개인의 의도와 맥락을 가장 잘 이해하는 Agentic AI Interface로 진화합니다' },
+    { type: 'cards', title: 'AI Core Company\n사업 구성', cards: [
+      { tag: 'Talk', head: '톡플랫폼', text: 'AI 기반 개인 비서' },
+      { tag: 'Map', head: '맵플랫폼', text: '사람·장소·행동을 연결하는 Agentic Map' },
+      { tag: 'Ad', head: '광고', text: 'AI 타겟팅 최적화로 광고 효율 극대화' },
+      { tag: 'Commerce', head: '커머스', text: 'AI 추천/검색으로 발견부터 구매까지 완결' }
+    ] },
+    { type: 'section', title: '카카오AI만이 보유한\n핵심 자산', points: [
+      { head: '전 국민이 매일 여는 관문', text: 'MAU 5,000만 — 늘 쓰던 대화창에서 바로 닿는 AI 접점' },
+      { head: '사용자를 가장 잘 아는 맥락 데이터', text: '대화·행동 패턴 기반 메모리 루프로 개인 선호까지 학습하는 성장형 AI' },
+      { head: '톡 내 서비스 실행 완결성', text: '검색부터 결제, 알림까지 Seamless한 거래 경험 제공' },
+      { head: '자체 Foundation Model', text: 'On-Device부터 Frontier까지 라인업 보유 — 고성능·저비용' }
+    ] },
+    { type: 'kpi', title: '2030년\nFinancial Target', sub: '향후 5년간 매출 CAGR 20% 목표', items: [
+      { value: '6조원+', label: '매출' },
+      { value: '2조원+', label: 'EBITDA' },
+      { value: '30%+', label: '영업이익률' },
+      { value: '25%+', label: 'ROE', tone: 'on' }
+    ] },
+    { type: 'closing', title: 'THANK YOU.', sub: '2026 카카오', contact: 'Copyright © 2026 Kakao Corp. All Rights Reserved.' }
+  ]
+};
+/* 카카오 자료 — 팩 기본 브랜드(MIDAS 러닝헤드·로고)를 원문 표기로 치환 */
+var html = renderHfdDeck(DECK)
+  .replace(/>MIDAS Happy Family Day</g, '>Kakao Corporation<')
+  .replace('</style>', '.hf-logo{display:none!important}</style>');
+document.open(); document.write(html); document.close();
+</script>
+</body>
+</html>
