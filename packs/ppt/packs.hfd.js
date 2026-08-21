@@ -857,7 +857,9 @@
     var js = '(function(){var bar=document.getElementById("hfchips");if(!bar)return;' +
       'bar.addEventListener("click",function(e){var s=e.target.closest("[data-th]");if(!s)return;' +
       'document.body.setAttribute("data-th",s.getAttribute("data-th"));' +
-      'var all=bar.querySelectorAll("[data-th]");for(var i=0;i<all.length;i++)all[i].classList.toggle("on",all[i]===s);});' +
+      'var all=bar.querySelectorAll("[data-th]");for(var i=0;i<all.length;i++)all[i].classList.toggle("on",all[i]===s);' +
+      /* 스튜디오에 테마 저장 요청 — 덱 데이터(theme)가 바뀌어 썸네일·뷰어·PPTX/HTML 추출까지 일괄 반영 */
+      'try{parent.postMessage({hfdTheme:s.getAttribute("data-th")},"*")}catch(x){}});' +
       '})();';
     var chips = Object.keys(THEMES).map(function (k) {
       var th = THEMES[k];

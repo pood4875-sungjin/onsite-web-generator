@@ -2646,6 +2646,8 @@
     try{ pvfFrame.contentWindow.postMessage({pptFsUi:document.fullscreenElement?1:0},'*'); }catch(_){} });
   // 유사 전체화면(pfs) — 뷰어가 네이티브 전체화면을 거부당했을 때: 상단바 숨겨 꽉 채움
   window.addEventListener('message',(e)=>{ if(e.data && 'pptViewerPseudoFs' in e.data) pvFull.classList.toggle('pfs', !!e.data.pptViewerPseudoFs); });
+  // hfd 컬러칩 — 미리보기 전환에 그치지 않고 덱 테마를 저장(본문·썸네일·발표뷰어·내보내기 일괄 반영)
+  window.addEventListener('message',(e)=>{ if(e.data && e.data.hfdTheme){ pptMutate(()=>{ setField('theme', e.data.hfdTheme); }); } });
   window.addEventListener('message',(e)=>{ if(e.data && e.data.pptViewerClose) closePreview(); });
 
   /* ---- 저장: 현재 페이지를 프로젝트에 저장 ---- */

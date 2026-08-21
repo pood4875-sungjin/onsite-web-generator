@@ -48,6 +48,7 @@
     '.hf-cvtitle', '.hf-cvsub', '.hf-cvdate', '.hf-logo', '.hf-dvno', '.hf-dvtitle', '.hf-dvlead', '.hf-grtx', '.hf-grby',
     '.hf-tocno', '.hf-toclab', '.hf-tocdesc', '.hf-tocpg', '.hf-numno', '.hf-numhead', '.hf-numtx', '.hf-cellhead', '.hf-celltx',
     '.hf-trow > span', '.hf-tbrow > span', '.hf-srow .k', '.hf-srow .t', '.hf-list li span', '.hf-qtx', '.hf-qby', '.hf-imgph span',
+    '.hf-abyear', '.hf-abtitle', '.hf-abcap', '.hf-abfoot', '.hf-abptitle', '.hf-sdtitle', '.hf-sdtx', '.hf-sdfoot',
     '.hf-stnum', '.hf-stcap', '.hf-brow .l', '.hf-brow .v', '.hf-brow .tx', '.hf-kpval', '.hf-phead', '.hf-ptx', '.hf-parr',
     '.hf-cmp ul li', '.hf-rmhead', '.hf-rmlist li', '.hf-half ul li span', '.hf-bsval', '.hf-bscap',
     '.hf-word', '.hf-wdcap', '.hf-sttitle', '.hf-stsub', '.hf-herotitle', '.hf-herosub',
@@ -103,6 +104,8 @@
     /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
     /* hfd 팩 — 밴드·원 기하·셀·카드류(srow·trow는 플레인 행이라 제외) */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-cell, .hf-toccol, .hf-key, .hf-imgph, .hf-dot, .hf-pstep, .hf-cmp, .hf-rmcol, .hf-half, .hf-brow .tr, .hf-brow .tr i, .hf-tocrow, .hf-herobg, .hf-heroov, ' +
+    /* 화이트 패널 계열 — 이게 빠지면 기하 위에 텍스트만 떠서 "추출이 안 된" 덱이 된다 */
+    '.hf-frpanel, .hf-abpanel, .hf-sdcap, .hf-sdpanel, .hf-abframe, .hf-abband, ' +
     '.hf-duo, .hf-flowcol, .hf-flowhead, .hf-flowrow, .hf-hstep, .hf-pfcard, .hf-pfhead, .hf-pffocus, .hf-bdband, .hf-bdcard, .hf-hipanel, .hf-hiimg .ph, .hf-cnchart, .hf-cnbar i, ' +
     '.hf-cyring, .hf-cycore, .hf-dcard, .hf-dstrip, .hf-dmini.br i, .hf-dmini.dn i, .hf-dmini.ar i, ' +
     '.hf-tcblob, .hf-kbcard, .hf-wfcol .tr i, .hf-mxpanel, .hf-t3col, .hf-t3head, .hf-qdring, .hf-qdcore, .hf-ogbox, .hf-ogband, .hf-ogchip, .hf-ogline, ' +
@@ -323,12 +326,37 @@
         g.strokeStyle = col5; g.beginPath(); g.arc(outerR, outerR, midR, -Math.PI / 2, -Math.PI / 2 + pct / 100 * Math.PI * 2); g.stroke();
         try { s.addImage({ data: c5.toDataURL('image/png'), x: r5.x * IN, y: r5.y * IN, w: r5.w * IN, h: r5.h * IN }); } catch (e) {}
       });
+      /* hfd 원형 그래픽 — conic·마스크는 html2canvas가 못 그린다 → 캔버스로 직접.
+         색은 computed backgroundImage에 브라우저가 var()를 치환해 넣은 rgb를 그대로 쓴다. */
+      function hfArc(el, opts) {
+        var r6 = rel(el, origin); if (r6.w < 6) return;
+        var cs6 = win.getComputedStyle(el);
+        var cols = String(cs6.backgroundImage || '').match(/rgba?\([^)]+\)/g) || [];
+        var accent = cols[0] || '#309479', track = opts.track ? (cols[1] || '#E3E8E5') : null;
+        var pm = String(el.getAttribute('style') || '').match(/0 ([\d.]+)%/);
+        var pct = pm ? Math.min(100, parseFloat(pm[1]) * (opts.half ? 2 : 1)) : 100;
+        var W6 = r6.w, H6 = opts.half ? r6.w / 2 : r6.h;
+        var c6 = doc.createElement('canvas'); c6.width = W6 * 2; c6.height = H6 * 2;
+        var g6 = c6.getContext('2d'); g6.scale(2, 2);
+        var outR = W6 / 2, holeR = opts.hole, midR = (outR + holeR) / 2;
+        g6.lineWidth = outR - holeR;
+        var a0 = opts.half ? Math.PI : -Math.PI / 2;
+        var span = opts.half ? Math.PI : Math.PI * 2;
+        if (track) { g6.strokeStyle = track; g6.beginPath(); g6.arc(outR, outR * (opts.half ? 1 : (r6.h / r6.w)), midR, a0, a0 + span); g6.stroke(); }
+        g6.strokeStyle = accent; g6.beginPath(); g6.arc(outR, outR, midR, a0, a0 + span * pct / 100); g6.stroke();
+        try { s.addImage({ data: c6.toDataURL('image/png'), x: r6.x * IN, y: r6.y * IN, w: W6 * IN, h: H6 * IN }); } catch (e) {}
+      }
+      [].slice.call(slide.querySelectorAll('.hf-dmini.dn i')).forEach(function (el) { hfArc(el, { hole: 35, track: true }); });
+      [].slice.call(slide.querySelectorAll('.hf-dmini.gg i')).forEach(function (el) { hfArc(el, { hole: 41, track: true, half: true }); });
+      [].slice.call(slide.querySelectorAll('.hf-qdring')).forEach(function (el) { hfArc(el, { hole: 117 }); });
       /* 그라데이션 배경 요소(pastel 셀·키밴드·5색 바 등) — backgroundColor가 없어 addShapeBox가 못 낸다.
          자식을 잠시 숨기고 그 요소만 래스터 → 배경 이미지로. 텍스트는 아래 TEXT 패스가 개체로 얹는다. */
       var shapeEls = [].slice.call(slide.querySelectorAll(SHAPE_SEL));
       for (var ge = 0; ge < shapeEls.length; ge++) {
         var gel = shapeEls[ge], gcs = win.getComputedStyle(gel);
         if (!gcs.backgroundImage || gcs.backgroundImage.indexOf('gradient') < 0 || !win.html2canvas) continue;
+        // hfd 원형(도넛·게이지·링)은 위 캔버스 핸들러가 그림 — html2canvas가 마스크를 무시해 꽉 찬 원으로 이중 추출되는 것 방지
+        if (gel.matches && gel.matches('.hf-dmini.dn i,.hf-dmini.gg i,.hf-qdring')) continue;
         var gr = rel(gel, origin); if (gr.w < 3 || gr.h < 3) continue;
         var gkids = [].slice.call(gel.children), gprev = gkids.map(function (k) { return k.style.visibility; });
         gkids.forEach(function (k) { k.style.visibility = 'hidden'; });
