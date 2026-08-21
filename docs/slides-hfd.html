@@ -15,6 +15,16 @@
   d.slides.push({ type: 'photos', variant: 'grid', year: '2026년', title: '체험 부스\n미리 보기', caption: '포토존 · 플레이존 · 만들기 부스.\n연령별 프로그램을 준비했습니다.', foot: 'MIDAS', items: [{ label: '포토존' }, { label: '플레이존' }, { label: '만들기 부스' }] });
   d.slides.push({ type: 'photos', variant: 'frame', year: '2026년', title: '올해의 한 컷', items: [{ label: '대표 사진' }] });
   d.slides.push({ type: 'photos', variant: 'side', year: '2026년', title: '5월에 함께한\n해피 패밀리 데이', caption: '가족과 함께한 하루의 기록.\n포토존과 체험 부스의 순간들.', foot: 'MIDAS', items: [{ label: '대표 사진' }] });
+  // 변형 3종 — toc panel · kpi badge · chart waterfall
+  d.slides.push({ type: 'toc', variant: 'panel', title: 'CONTENTS', foot: '2026 해피 패밀리 데이\n행사 안내', items: [
+    { label: '행사 개요', desc: 'Overview' }, { label: '프로그램', desc: 'Program' }, { label: '당일 일정', desc: 'Schedule' }, { label: '참여 안내', desc: 'Guide' }, { label: '오시는 길', desc: 'Access' }
+  ] });
+  d.slides.push({ type: 'kpi', variant: 'badge', title: '올해 목표\n네 가지', items: [
+    { value: '120가족', label: '초청 규모' }, { value: '12개', label: '체험 부스' }, { value: '95%', label: '만족도 목표' }, { value: '100%', label: '안전 운영' }
+  ] });
+  d.slides.push({ type: 'chart', variant: 'waterfall', title: '부서별 신청 현황', unit: '단위 : 가족', bars: [
+    { x: '개발', v: 38 }, { x: '사업', v: 27 }, { x: '스태프', v: 21 }, { x: '계열', v: 20 }
+  ], total: { x: '누적 신청', v: 106 }, vs: { x: '목표', v: 120, gap: '14가족 남음' } });
 
   var labels = d.slides.map(function (s, i) {
     var lb = (window.HFD_TYPE_LABEL && HFD_TYPE_LABEL[s.type]) || s.type;

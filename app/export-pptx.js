@@ -58,6 +58,13 @@
     '.hf-cnbadge', '.hf-cnbar .v', '.hf-cnbar .x', '.hf-cnunit', '.hf-cnnote .h', '.hf-cnnote .t',
     '.hf-cylab', '.hf-cyblk .h', '.hf-cyblk .t', '.hf-cyside', '.hf-cycore',
     '.hf-dval i', '.hf-dval em', '.hf-dtx', '.hf-dmini.dn span', '.hf-dstat .l', '.hf-dstat .v',
+    '.hf-tcbig', '.hf-tcdeck', '.hf-tcprow .no', '.hf-tcprow .lb', '.hf-tcprow .ds',
+    '.hf-kbno', '.hf-kblab', '.hf-kbval i', '.hf-kbval em',
+    '.hf-wfcol .v', '.hf-wfcol .x', '.hf-wfcol .gap',
+    '.hf-mxtag', '.hf-mxlab', '.hf-mxsub', '.hf-mxgroup .h', '.hf-mxgroup li',
+    '.hf-t3head', '.hf-t3lead', '.hf-t3body li', '.hf-t3foot',
+    '.hf-qdcell .h', '.hf-qdcell li', '.hf-qdcore .l', '.hf-qdcore .h',
+    '.hf-oghead', '.hf-oglab', '.hf-ogband', '.hf-ogchip',
     '.pg-hlrow .no', '.pg-hlrow .h', '.pg-hlrow .t', '.pg-hlfn', '.pg-hltitle', '.pg-bdtitle', '.pg-side li', '.pg-side .pl span', '.pg-leadbox .tx',
     '.pg-cltitle', '.pg-clsub', '.pg-clfoot .big', '.pg-clfoot .ct i', '.pg-key.tb .mi b', '.pg-key.tb .mi i', '.pg-imgph span',
     /* sfmi 팩(SFMI Report) */ '.sf-runl i', '.sf-runr', '.sf-hl', '.sf-sub', '.sf-body', '.sf-lab', '.sf-ftx', '.sf-cap', '.sf-hfoot',
@@ -95,6 +102,7 @@
     /* hfd 팩 — 밴드·원 기하·셀·카드류(srow·trow는 플레인 행이라 제외) */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-cell, .hf-toccol, .hf-key, .hf-imgph, .hf-dot, .hf-pstep, .hf-cmp, .hf-rmcol, .hf-half, .hf-brow .tr, .hf-brow .tr i, .hf-tocrow, .hf-herobg, .hf-heroov, ' +
     '.hf-duo, .hf-flowcol, .hf-flowhead, .hf-flowrow, .hf-hstep, .hf-pfcard, .hf-pfhead, .hf-pffocus, .hf-bdband, .hf-bdcard, .hf-hipanel, .hf-hiimg .ph, .hf-cnchart, .hf-cnbar i, ' +
     '.hf-cyring, .hf-cycore, .hf-dcard, .hf-dstrip, .hf-dmini.br i, .hf-dmini.dn i, .hf-dmini.ar i, ' +
+    '.hf-tcblob, .hf-kbcard, .hf-wfcol .tr i, .hf-mxpanel, .hf-t3col, .hf-t3head, .hf-qdring, .hf-qdcore, .hf-ogbox, .hf-ogband, .hf-ogchip, .hf-ogline, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }

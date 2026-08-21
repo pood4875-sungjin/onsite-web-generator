@@ -19,6 +19,8 @@ cover · greeting(인사말) · toc(2~4 밴드 컬럼) · divider · section(2~4
 
 **+3타입(2026-08-21)**: word(한 단어 대형 타이포) · statement(타이틀+서브 중앙) · hero(풀블리드 배경 이미지+중앙 텍스트, 비프레임). photos frame 변형=대형 이미지 케이스(풀폭 프레임).
 
+**+4타입·변형 3종(2026-08-21 저녁, 카카오 밸류업 자료 이식)**: matrix(좌 이니셜+그룹 패널, ESG형 고밀도) · triple(헤더 밴드 3열 보드) · quad(사분면+중앙 원 허브) · org(계층 구조도) / toc `variant:"panel"`(좌 컬러면+우 라운드 패널 CONTENTS) · kpi `variant:"badge"`(넘버 뱃지+대형 수치) · chart `variant:"waterfall"`(계단 누적+total+vs·GAP 칩 — 바는 absolute, margin%는 폭 기준이라 금지).
+
 **+9타입(2026-08-21, 카카오 인적분할 IR 52p 레이아웃 이식)**: duo(수치 2패널+칩, p32·43) · flow(전환 구조도 전→후, p5) · hsteps(가로 노드 타임라인, p8) · profile(뱃지+딥 헤더+포커스 카드 2~3열, p6·27) · band(딥 밴드 선언+하단 카드 3~5, p26) · halfimg(좌 딥 패널+우 절반 이미지 `images['half-i']`, 비프레임, p25·35) · chart(막대+코멘트, 수치 실측만, p12) · cycle(상하 아크+중앙 허브 순환, 이중 중대성 다이어그램) · dash(미니 차트 카드—bars/donut/area—+스탯 스트립). 실전 검증 덱 = `docs/deck-kakao-hfd.html`(29장, 러닝헤드 kicker 치환+로고 숨김 후처리 예시 포함).
 
 2026-08-21 피드백 반영: 프레임 장 틴트 원(`.hf-deco`) 숨김(콘텐츠 겹침), 전역 `ul{padding:0}`(리스트 좌정렬), `.hf-lab.wh` 화이트(로드맵 NOW·프로세스 STEP 라벨 안 보이던 버그), toc 전 행 옅은 틴트+검정(5행), 카드 gap 16px, stats/media/timeline 강조 박스 제거(심플), checklist 행이 패널 높이 분할, media 우측 이미지 컬럼 확대·스트레치, kpi 콘텐츠 중앙, process 카드 허그, compare 플레인 문장, photos grid 타이틀 패널 중앙.
