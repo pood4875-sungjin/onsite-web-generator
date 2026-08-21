@@ -4,11 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>엔솔 MBM — 브랜드 랜딩 시안</title>
-<!-- 시안: 엔솔 MBM 스타일 v1.
-     구성·모션 근거: toss.im/company 실측(2026-08-21 WebFetch) — Hero 대형 타이포 → Vision → 연혁 질문 타임라인(탭) → 제품 카드 → 컬처 8카드 → 리더 그리드 → Closing CTA.
-     히어로 비주얼: 사용자 첨부 자산(파스텔 메시 그라데이션 + 블루·그린 그라데이션 타이포) 그대로.
-     콘텐츠: 엔솔 MBM 라인 자산(packs.axday.js AX DAY·GEN NX Seminar) + MIDAS 제품군.
-     규칙: border-radius 0 전면. -->
+<!-- 시안: 엔솔 MBM 스타일 v2 — toss.im/company 디자인 문법 실측 이식.
+     실측(2026-08-21 curl·스크린샷): 단어 단위 리빌(translateY 24px + blur 16px), 섹션 = 상단 1px 보더 + 좌 sticky 도트 라벨 / 우 콘텐츠 그리드,
+     연혁 연도 탭, 리더 3열 인물 카드(우하단 화살표 버튼) + 클릭 시 우측 슬라이드 패널(백드롭 블러, 소개·주요 경력).
+     히어로: 사용자 첨부 자산(파스텔 메시 + 그라데이션 타이포) 유지. 규칙: border-radius 0 전면. 문구는 자체 콘텐츠(MIDAS·AX DAY). -->
 <style>
 :root{
   --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1;
@@ -21,18 +20,21 @@ html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;overflow-x:clip}
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
-.wrap{width:min(1140px,92vw);margin:0 auto}
-.center{text-align:center}
+button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
+.wrap{width:min(1200px,92vw);margin:0 auto}
 
-/* ── 리빌 ── */
-.rv{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+/* ── 단어 리빌 — toss 실측: translateY(24px)+blur(16px) ── */
+.wd{display:inline-block;opacity:0;transform:translateY(24px);filter:blur(16px);
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1),filter .7s cubic-bezier(.2,.7,.2,1)}
+.won .wd{opacity:1;transform:none;filter:blur(0)}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .rv.on{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
 
 /* ── GNB ── */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;height:64px;display:flex;align-items:center;transition:background .3s,box-shadow .3s}
 .gnb.solid{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
-.gnb .in{width:min(1140px,92vw);margin:0 auto;display:flex;align-items:center;gap:34px}
+.gnb .in{width:min(1200px,92vw);margin:0 auto;display:flex;align-items:center;gap:34px}
 .gnb .logo{font-size:21px;font-weight:800;letter-spacing:-.02em}
 .gnb nav{display:flex;gap:26px;font-size:14.5px;font-weight:600;color:var(--g2)}
 .gnb nav a:hover{color:var(--ink)}
@@ -57,110 +59,135 @@ a{color:inherit;text-decoration:none}
 @keyframes drift3{50%{transform:translate(4vw,-5vh) scale(1.1)}}
 .hero .in{position:relative;text-align:center;padding:0 24px}
 .hero h1{font-size:clamp(52px,7.6vw,104px);line-height:1.14;font-weight:700;letter-spacing:-.025em}
-.hero h1 .ln{display:block;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
-  opacity:0;transform:translateY(34px);animation:hup 1s cubic-bezier(.2,.7,.2,1) forwards}
-.hero h1 .ln:nth-child(2){animation-delay:.14s}
-@keyframes hup{to{opacity:1;transform:none}}
-.hero .sub{margin-top:26px;font-size:clamp(16px,1.6vw,20px);font-weight:500;color:var(--g2);opacity:0;animation:hup .9s cubic-bezier(.2,.7,.2,1) .5s forwards}
-.hero .scr{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--g3);opacity:0;animation:hup .9s ease 1.1s forwards}
+.hero h1 .hl{display:block}
+.hero h1 .wd{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{margin-top:26px;font-size:clamp(16px,1.6vw,20px);font-weight:500;color:var(--g2)}
+.hero .scr{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--g3);opacity:0;animation:fin .9s ease 1.3s forwards}
+@keyframes fin{to{opacity:1}}
 .hero .scr:after{content:"";display:block;width:1px;height:34px;background:var(--g3);margin:10px auto 0;animation:scrline 1.8s ease-in-out infinite}
 @keyframes scrline{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* ── 섹션 공통 ── */
-.sec{padding:140px 0}
-.eb{font-size:15px;font-weight:800;color:var(--blue);letter-spacing:-.01em}
-h2.tt{font-size:clamp(30px,3.4vw,44px);line-height:1.32;font-weight:700;letter-spacing:-.02em;margin-top:14px;word-break:keep-all}
-.sub2{margin-top:18px;font-size:17.5px;line-height:1.75;color:var(--g2);word-break:keep-all}
+/* ── 섹션 문법 — toss company 실측: 상단 1px 보더 + 좌 도트 라벨 / 우 콘텐츠 ── */
+.sec{padding:120px 0 140px}
+.sec .tt{font-size:clamp(32px,3.6vw,48px);line-height:1.3;font-weight:700;letter-spacing:-.025em;word-break:keep-all;margin-bottom:44px}
+.frame{border-top:1px solid var(--line);padding-top:28px;display:grid;grid-template-columns:240px 1fr;gap:40px;align-items:start}
+.lbl{position:sticky;top:92px;display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--g2)}
+.lbl:before{content:"";width:10px;height:10px;background:var(--g2);border-radius:50%!important}
+.big{font-size:clamp(24px,2.5vw,33px);line-height:1.55;font-weight:600;letter-spacing:-.02em;color:var(--g1);word-break:keep-all}
+.big b{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-/* ── Vision — 센터 선언 + 풀블리드 이미지 ── */
-.vision p.big{font-size:clamp(24px,2.6vw,34px);line-height:1.55;font-weight:600;letter-spacing:-.02em;color:var(--g1);word-break:keep-all}
-.vision p.big b{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.vgal{margin-top:72px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
-.vgal .ph{height:340px;background:var(--bg2);position:relative;overflow:hidden}
+/* Vision */
+.vgal{margin-top:64px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
+.vgal .ph{height:320px;background:var(--bg2);overflow:hidden}
 .vgal .ph img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
 .vgal .ph.on img{transform:scale(1)}
 
-/* ── 연혁 — 질문 타임라인(탭) ── */
-.hist{background:var(--bg1)}
-.tabs{display:flex;gap:8px;margin-top:40px;flex-wrap:wrap}
-.tab{padding:11px 20px;font-size:14.5px;font-weight:700;color:var(--g3);background:#fff;border:1px solid var(--line);cursor:pointer;transition:all .2s}
-.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.hrows{margin-top:44px}
-.hrow{display:grid;grid-template-columns:130px 1fr;gap:28px;padding:26px 0;border-top:1px solid var(--line)}
+/* History */
+.tabs{display:flex;gap:8px;margin-top:26px;flex-wrap:wrap}
+.tab{padding:10px 18px;font-size:14px;font-weight:700;color:var(--g3);background:var(--bg1);transition:all .2s}
+.tab.on{background:var(--ink);color:#fff}
+.hlist .hrow{padding:30px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:110px 1fr;gap:24px}
+.hlist .hrow:first-child{padding-top:6px}
 .hrow .yr{font-size:15px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums}
-.hrow b{font-size:19px;font-weight:700;letter-spacing:-.01em;display:block}
-.hrow p{margin-top:6px;font-size:15px;line-height:1.65;color:var(--g3);word-break:keep-all}
-.hq{margin-top:56px;font-size:clamp(20px,2vw,26px);font-weight:700;letter-spacing:-.02em;color:var(--g1)}
+.hrow b{font-size:20px;font-weight:700;letter-spacing:-.015em;display:block;word-break:keep-all}
+.hrow p{margin-top:8px;font-size:15px;line-height:1.65;color:var(--g3);word-break:keep-all}
+.hq{margin-top:48px;font-size:clamp(20px,2vw,26px);font-weight:700;letter-spacing:-.02em;color:var(--g1)}
 .hq i{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-/* ── 제품 카드 그리드 ── */
-.pgrid{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.pcard{background:var(--bg1);padding:34px 30px 38px;transition:background .25s;position:relative;overflow:hidden}
+/* Products */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pcard{background:var(--bg1);padding:34px 30px 38px;transition:background .25s}
 .pcard:hover{background:var(--bg2)}
-.pcard .nm{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.pcard .nm{font-size:20px;font-weight:800}
 .pcard .nm small{font-size:12px;font-weight:700;color:var(--g4);margin-left:8px;letter-spacing:.06em}
 .pcard p{margin-top:10px;font-size:14.5px;line-height:1.65;color:var(--g3);word-break:keep-all}
 .pcard .go{margin-top:22px;display:inline-block;font-size:13.5px;font-weight:700;color:var(--blue)}
 .pcard .go .arr{display:inline-block;transition:transform .25s}
 .pcard:hover .go .arr{transform:translateX(4px)}
 
-/* ── 컬처 8카드 ── */
-.cul{background:var(--ink);color:#fff}
-.cul .eb{color:var(--lime2)}
-.cul h2.tt{color:#fff}
-.cul .sub2{color:rgba(255,255,255,.64)}
-.cgrid{margin-top:64px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.ccard{background:rgba(255,255,255,.05);padding:28px 24px 32px;min-height:190px;display:flex;flex-direction:column;transition:background .25s}
-.ccard:hover{background:rgba(255,255,255,.1)}
-.ccard .no{font-size:13px;font-weight:800;color:var(--lime2);font-variant-numeric:tabular-nums}
-.ccard b{margin-top:12px;font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.4}
-.ccard p{margin-top:auto;padding-top:14px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.55);word-break:keep-all}
+/* Culture — 아코디언 리스트 (toss company 문법) */
+.clist .crow{border-bottom:1px solid var(--line)}
+.clist .chd{width:100%;display:grid;grid-template-columns:52px 1fr 30px;gap:16px;align-items:baseline;text-align:left;padding:26px 0}
+.clist .no{font-size:14px;font-weight:800;color:var(--g4);font-variant-numeric:tabular-nums}
+.clist .chd b{font-size:21px;font-weight:700;letter-spacing:-.015em}
+.clist .chd b small{display:block;font-size:15px;font-weight:500;color:var(--g3);margin-top:6px;letter-spacing:0}
+.clist .x{justify-self:end;font-size:22px;color:var(--g4);transition:transform .3s;line-height:1}
+.crow.open .x{transform:rotate(45deg)}
+.clist .cbd{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.2,.7,.2,1)}
+.clist .cbd p{padding:0 0 28px 68px;font-size:15.5px;line-height:1.75;color:var(--g2);max-width:720px;word-break:keep-all}
+.crow:hover .chd b{color:var(--blue)}
 
-/* ── 리더 그리드 ── */
-.lgrid{margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.lcard .ph{aspect-ratio:1/1.08;background:linear-gradient(160deg,var(--bg2),var(--bg1));display:grid;place-items:center;font-size:34px;font-weight:800;color:var(--g4)}
-.lcard b{display:block;margin-top:16px;font-size:17px;font-weight:800}
-.lcard span{display:block;margin-top:3px;font-size:13.5px;color:var(--g4);font-weight:600}
-.lcard p{margin-top:10px;font-size:14px;line-height:1.6;color:var(--g3);word-break:keep-all}
+/* People — 좌 sticky 라벨 / 우 3열 인물 카드 (toss 실측) */
+.lgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 14px}
+.lcard{cursor:pointer}
+.lcard .ph{aspect-ratio:1/1.18;background:linear-gradient(165deg,#EDF0F3,#DFE4E9);position:relative;display:grid;place-items:center;font-size:38px;font-weight:800;color:var(--g4);overflow:hidden}
+.lcard .ph .arr{position:absolute;right:14px;bottom:14px;width:42px;height:42px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:17px;transition:transform .25s}
+.lcard:hover .ph .arr{transform:translateX(4px)}
+.lcard b{display:block;margin-top:16px;font-size:17.5px;font-weight:800}
+.lcard b i{font-style:normal;font-weight:600;color:var(--g3)}
+.lcard p{margin-top:8px;font-size:14.5px;line-height:1.6;color:var(--g3);word-break:keep-all}
 
-/* ── Closing CTA — 메시 그라데이션 재등장 ── */
+/* People 모달 — 우측 슬라이드 패널 (toss 실측: 백드롭 블러 + 우측 화이트 패널) */
+.pmask{position:fixed;inset:0;z-index:90;background:rgba(255,255,255,.55);backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity .35s}
+.pmask.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;bottom:0;z-index:91;width:min(720px,94vw);background:#fff;box-shadow:-24px 0 60px rgba(3,7,18,.12);
+  transform:translateX(28px);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.2,.7,.2,1),opacity .35s;overflow-y:auto}
+.panel.on{transform:none;opacity:1;pointer-events:auto}
+.panel .inn{padding:56px 60px 70px}
+.panel .close{position:absolute;top:22px;right:24px;width:40px;height:40px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:16px}
+.panel .pph{width:200px;height:230px;background:linear-gradient(165deg,#EDF0F3,#DFE4E9);display:grid;place-items:center;font-size:44px;font-weight:800;color:var(--g4)}
+.panel h3{margin-top:30px;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.panel h3 i{font-style:normal;font-weight:600;color:var(--g3)}
+.panel .quote{margin-top:12px;font-size:17px;font-weight:600;line-height:1.6;color:var(--g1);word-break:keep-all}
+.panel h4{margin-top:44px;font-size:15px;font-weight:800;color:var(--g2)}
+.panel .bio{margin-top:14px;font-size:15.5px;line-height:1.8;color:var(--g2);word-break:keep-all}
+.panel .cr{margin-top:14px}
+.panel .cr div{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:7px 0;font-size:15px}
+.panel .cr .y{color:var(--g4);font-weight:700;font-variant-numeric:tabular-nums}
+.panel .cr .v{color:var(--g1);font-weight:500}
+
+/* Closing CTA */
 .cta{position:relative;padding:180px 0;overflow:hidden;text-align:center;
   background:
     radial-gradient(56% 60% at 20% 20%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
     radial-gradient(60% 64% at 84% 30%, #DDEBFB 0%, rgba(221,235,251,0) 72%),
     linear-gradient(180deg,#FAFDF3 0%,#D5E2F7 60%,#CDEC9F 100%)}
-.cta h2{font-size:clamp(34px,4.2vw,56px);line-height:1.3;font-weight:700;letter-spacing:-.025em;
-  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cta h2{font-size:clamp(34px,4.2vw,56px);line-height:1.3;font-weight:700;letter-spacing:-.025em}
+.cta h2 .wd{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cta .sub{margin-top:20px;font-size:18px;color:var(--g2);font-weight:500}
 .cta .act{margin-top:40px;display:flex;gap:12px;justify-content:center}
-.cta .btn{padding:17px 36px;font-size:16px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s}
+.cta .btn{padding:17px 36px;font-size:16px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s;display:inline-block}
 .cta .btn:hover{transform:translateY(-2px)}
 .cta .btn.w{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
 
-/* ── Footer ── */
+/* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:64px 0 46px;font-size:13.5px;color:var(--g4)}
-footer .in{width:min(1140px,92vw);margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+footer .in{width:min(1200px,92vw);margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
 footer .slog{font-size:18px;font-weight:800;color:var(--ink);line-height:1.5}
 footer .col i{font-style:normal;display:block;font-weight:800;color:var(--g2);margin-bottom:12px}
 footer .col a{display:block;margin-top:8px}
 footer .col a:hover{color:var(--ink)}
-footer .copy{width:min(1140px,92vw);margin:44px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+footer .copy{width:min(1200px,92vw);margin:44px auto 0;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
 
 @media (max-width:900px){
   .gnb nav{display:none}
+  .frame{grid-template-columns:1fr;gap:22px}
+  .lbl{position:static}
   .vgal{grid-template-columns:1fr}
   .vgal .ph{height:240px}
-  .pgrid,.lgrid{grid-template-columns:1fr 1fr}
-  .cgrid{grid-template-columns:1fr 1fr}
-  .hrow{grid-template-columns:1fr;gap:8px}
-  .sec{padding:96px 0}
+  .pgrid{grid-template-columns:1fr}
+  .lgrid{grid-template-columns:1fr 1fr}
+  .sec{padding:84px 0 96px}
+  .panel .inn{padding:44px 26px 60px}
   footer .in{grid-template-columns:1fr;gap:26px}
+  .clist .cbd p{padding-left:0}
 }
 @media (prefers-reduced-motion:reduce){
-  .rv{opacity:1;transform:none;transition:none}
-  .hero .ln,.hero .sub,.hero .scr{opacity:1!important;animation:none}
+  .wd,.rv{opacity:1!important;transform:none!important;filter:none!important;transition:none}
   .hero .blob{animation:none}
+  .hero .scr{opacity:1;animation:none}
   .vgal .ph img{transform:none;transition:none}
+  .panel,.pmask{transition:none}
 }
 </style>
 </head>
@@ -180,87 +207,105 @@ footer .copy{width:min(1140px,92vw);margin:44px auto 0;padding-top:22px;border-t
   </div>
 </header>
 
-<!-- Hero — 첨부 자산 그대로: 파스텔 메시 + 그라데이션 타이포 -->
+<!-- Hero — 첨부 자산 그대로 + toss 단어 리빌 -->
 <section class="hero">
   <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
   <div class="in">
-    <h1><span class="ln">Question Every</span><span class="ln">Assumption</span></h1>
-    <p class="sub">엔지니어링의 당연함에 질문을 던져, 설계의 기준을 다시 씁니다.</p>
+    <h1 id="heroH"><span class="hl">Question Every</span><span class="hl">Assumption</span></h1>
+    <p class="sub" id="heroS">엔지니어링의 당연함에 질문을 던져, 설계의 기준을 다시 씁니다.</p>
   </div>
   <div class="scr">SCROLL</div>
 </section>
 
 <!-- Vision -->
-<section class="sec vision center" id="vision">
+<section class="sec" id="vision">
   <div class="wrap">
-    <div class="eb rv">Vision</div>
-    <p class="big rv d1" style="margin-top:26px">건물을 세우는 모든 순간에는 수천 번의 계산이 있습니다.<br>
-    MIDAS는 그 계산의 무게를 <b>소프트웨어의 속도</b>로 바꿔,<br>
-    엔지니어가 더 중요한 판단에 집중하게 만듭니다.</p>
-    <div class="vgal">
-      <div class="ph rv"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
-      <div class="ph rv d1"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
-      <div class="ph rv d2"><img src="../../app/bg/mbmtoss-experience.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-experience.jpg'}"></div>
+    <h2 class="tt wsplit">계산의 무게를 줄이면, 판단의 깊이가 달라집니다</h2>
+    <div class="frame">
+      <span class="lbl">Vision</span>
+      <div>
+        <p class="big rv">건물을 세우는 모든 순간에는 수천 번의 계산이 있습니다.<br>
+        MIDAS는 그 계산의 무게를 <b>소프트웨어의 속도</b>로 바꿔,<br>
+        엔지니어가 더 중요한 판단에 집중하게 만듭니다.</p>
+        <div class="vgal">
+          <div class="ph rv"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
+          <div class="ph rv d1"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
+          <div class="ph rv d2"><img src="../../app/bg/mbmtoss-experience.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-experience.jpg'}"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 연혁 — 질문 타임라인 -->
-<section class="sec hist" id="history">
+<!-- History -->
+<section class="sec" id="history" style="padding-top:0">
   <div class="wrap">
-    <div class="eb rv">History</div>
-    <h2 class="tt rv d1">기준을 바꿔 온<br>MIDAS의 질문들</h2>
-    <div class="tabs rv d2" id="htabs">
-      <span class="tab on" data-t="0">2026 — 2024</span>
-      <span class="tab" data-t="1">2023 — 2020</span>
-      <span class="tab" data-t="2">그 이전</span>
-    </div>
-    <div class="hrows" id="hrows"></div>
-    <p class="hq rv">“다음 30년의 설계는, <i>AI와 함께</i> 어디까지 갈 수 있을까?”</p>
-  </div>
-</section>
-
-<!-- 제품 -->
-<section class="sec" id="products">
-  <div class="wrap">
-    <div class="eb rv">Products</div>
-    <h2 class="tt rv d1">구조 해석부터 현장 안전까지,<br>하나의 흐름으로</h2>
-    <div class="pgrid">
-      <div class="pcard rv"><div class="nm">GEN NX <small>STRUCTURE</small></div><p>건축 구조 설계의 차세대 표준. 모델링부터 해석·설계·도면까지 한 번에.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
-      <div class="pcard rv d1"><div class="nm">CIVIL NX <small>BRIDGE</small></div><p>교량·토목 구조물의 해석과 설계. 세계 120개국 엔지니어의 선택.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
-      <div class="pcard rv d2"><div class="nm">ONSITE <small>SAFETY</small></div><p>실시간 계측 데이터로 가시설 현장의 위험을 예측하는 안전 솔루션.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+    <h2 class="tt wsplit">기준을 바꿔 온 MIDAS의 질문들</h2>
+    <div class="frame">
+      <div>
+        <span class="lbl">History</span>
+        <div class="tabs" id="htabs">
+          <button class="tab on" data-t="0">2026 — 2024</button>
+          <button class="tab" data-t="1">2023 — 2020</button>
+          <button class="tab" data-t="2">그 이전</button>
+        </div>
+      </div>
+      <div>
+        <div class="hlist" id="hrows"></div>
+        <p class="hq rv">“다음 30년의 설계는, <i>AI와 함께</i> 어디까지 갈 수 있을까?”</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 일하는 방식 — 8카드 -->
-<section class="sec cul" id="culture">
+<!-- Products -->
+<section class="sec" id="products" style="padding-top:0">
   <div class="wrap">
-    <div class="eb rv">Culture</div>
-    <h2 class="tt rv d1">일하는 방식이<br>곧 제품의 수준</h2>
-    <p class="sub2 rv d2">여덟 가지 원칙이 모든 결정의 기준입니다.</p>
-    <div class="cgrid" id="cgrid"></div>
-  </div>
-</section>
-
-<!-- 사람들 -->
-<section class="sec" id="people">
-  <div class="wrap">
-    <div class="eb rv">People</div>
-    <h2 class="tt rv d1">기준을 만드는 사람들</h2>
-    <div class="lgrid">
-      <div class="lcard rv"><div class="ph">KM</div><b>김민준</b><span>CTO · 해석 엔진</span><p>“수치 해석의 정확도는 타협의 대상이 아닙니다.”</p></div>
-      <div class="lcard rv d1"><div class="ph">LS</div><b>이서연</b><span>CPO · 제품</span><p>“엔지니어의 하루에서 반복을 지우는 것이 제 일입니다.”</p></div>
-      <div class="lcard rv d2"><div class="ph">PJ</div><b>박지호</b><span>AX Lead · AI 전환</span><p>“AI는 도구가 아니라 새로운 설계 언어입니다.”</p></div>
-      <div class="lcard rv d3"><div class="ph">CH</div><b>최하은</b><span>CX · 고객 성공</span><p>“현장의 질문이 다음 버전의 로드맵이 됩니다.”</p></div>
+    <h2 class="tt wsplit">구조 해석부터 현장 안전까지, 하나의 흐름으로</h2>
+    <div class="frame">
+      <span class="lbl">Products</span>
+      <div class="pgrid">
+        <div class="pcard rv"><div class="nm">GEN NX <small>STRUCTURE</small></div><p>건축 구조 설계의 차세대 표준. 모델링부터 해석·설계·도면까지 한 번에.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+        <div class="pcard rv d1"><div class="nm">CIVIL NX <small>BRIDGE</small></div><p>교량·토목 구조물의 해석과 설계. 세계 120개국 엔지니어의 선택.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+        <div class="pcard rv d2"><div class="nm">ONSITE <small>SAFETY</small></div><p>실시간 계측 데이터로 가시설 현장의 위험을 예측하는 안전 솔루션.</p><span class="go">자세히 보기 <span class="arr">→</span></span></div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- Culture — 아코디언 -->
+<section class="sec" id="culture" style="padding-top:0">
+  <div class="wrap">
+    <h2 class="tt wsplit">일하는 방식이 곧 제품의 수준</h2>
+    <div class="frame">
+      <span class="lbl">Culture</span>
+      <div class="clist" id="clist"></div>
+    </div>
+  </div>
+</section>
+
+<!-- People -->
+<section class="sec" id="people" style="padding-top:0">
+  <div class="wrap">
+    <h2 class="tt wsplit">기준을 만드는 사람들</h2>
+    <div class="frame">
+      <span class="lbl">Leaders</span>
+      <div class="lgrid" id="lgrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 인물 모달 — 우측 슬라이드 패널 -->
+<div class="pmask" id="pmask"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <button class="close" id="pclose" aria-label="닫기">✕</button>
+  <div class="inn" id="pinn"></div>
+</aside>
 
 <!-- Closing CTA -->
 <section class="cta" id="join">
   <div class="wrap">
-    <h2 class="rv">설계부터 현장까지,<br>마침내 하나의 답으로.</h2>
+    <h2 class="wsplit">설계부터 현장까지, 마침내 하나의 답으로.</h2>
     <p class="sub rv d1">GEN NX Seminar 2026 · AX DAY에서 그 답을 확인하세요.</p>
     <div class="act rv d2">
       <a class="btn" href="#">AX DAY 신청하기</a>
@@ -283,22 +328,47 @@ footer .copy{width:min(1140px,92vw);margin:44px auto 0;padding-top:22px;border-t
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 리빌
-  if ('IntersectionObserver' in window && !reduce) {
-    var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
-    }, { threshold: 0.16 });
-    document.querySelectorAll('.rv,.vgal .ph').forEach(function(el){ io.observe(el); });
-  } else {
-    document.querySelectorAll('.rv,.vgal .ph').forEach(function(el){ el.classList.add('on'); });
+  /* ── 단어 스플릿 — toss 실측 문법: 헤딩을 단어 단위 span으로 쪼개 스태거 블러 리빌 ── */
+  function splitWords(el){
+    var words = el.textContent.trim().split(/\s+/);
+    el.innerHTML = words.map(function(w){ return '<span class="wd">' + w + '</span>'; }).join(' ');
+  }
+  document.querySelectorAll('.wsplit').forEach(splitWords);
+  document.querySelectorAll('#heroH .hl').forEach(splitWords);
+  splitWords(document.getElementById('heroS'));
+
+  function stagger(el){
+    el.classList.add('won');
+    el.querySelectorAll('.wd').forEach(function(w,i){ w.style.transitionDelay = (i * 70) + 'ms'; });
+  }
+  /* 히어로: 로드 직후 h1 → sub 순차 */
+  setTimeout(function(){ stagger(document.getElementById('heroH')); }, 120);
+  setTimeout(function(){ stagger(document.getElementById('heroS')); }, 620);
+
+  /* 스크롤 리빌 — 동적 콘텐츠(clist·lgrid) 주입 후 스크립트 끝에서 initReveal() 호출 */
+  function initReveal(){
+    if ('IntersectionObserver' in window && !reduce) {
+      var io = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if (!e.isIntersecting) return;
+          if (e.target.classList.contains('wsplit')) stagger(e.target);
+          else e.target.classList.add('on');
+          io.unobserve(e.target);
+        });
+      }, { threshold: 0.14 });
+      document.querySelectorAll('.wsplit, .rv, .vgal .ph').forEach(function(el){ io.observe(el); });
+    } else {
+      document.querySelectorAll('.wsplit').forEach(function(el){ el.classList.add('won'); });
+      document.querySelectorAll('.rv, .vgal .ph').forEach(function(el){ el.classList.add('on'); });
+    }
   }
 
-  // GNB — 히어로 지나면 솔리드
+  /* GNB */
   var gnb = document.getElementById('gnb');
   function gtick(){ gnb.classList.toggle('solid', scrollY > innerHeight * 0.72); }
   addEventListener('scroll', gtick, { passive: true }); gtick();
 
-  // 연혁 탭
+  /* History 탭 */
   var HIST = [
     [ ['2026','“세미나가 아니라 전환점이 될 수는 없을까?”','GEN NX Seminar · AX DAY — AI 전환을 실무로 옮기는 연례 행사 시작.'],
       ['2025','“해석 대기 시간은 왜 당연할까?”','차세대 해석 엔진 탑재, GEN NX 출시.'],
@@ -322,28 +392,73 @@ footer .copy{width:min(1140px,92vw);margin:44px auto 0;padding-top:22px;border-t
     t.classList.add('on'); renderHist(+t.dataset.t);
   });
 
-  // 컬처 8카드
+  /* Culture 아코디언 */
   var CUL = [
-    ['01','Question Every Assumption','당연했던 방식부터 의심한다.'],
-    ['02','Engineer First','모든 결정의 기준은 엔지니어의 하루.'],
-    ['03','Accuracy over Speed','정확도는 타협하지 않는다. 속도는 그 다음.'],
-    ['04','Ship, then Sharpen','완벽한 계획보다 빠른 실행과 개선.'],
-    ['05','One Flow','해석·설계·도면·현장을 하나의 흐름으로.'],
-    ['06','Open Standards','기준은 감추지 않고 공유한다.'],
-    ['07','Learn from Site','현장의 질문이 로드맵이 된다.'],
-    ['08','AI as a Colleague','AI를 도구가 아닌 동료로 쓴다.']
+    ['01','Question Every Assumption','당연했던 방식부터 의심한다','우리가 30년 동안 쌓아 온 방식도 예외가 아닙니다. 더 나은 답이 있다면, 기존의 정답부터 다시 검증합니다.'],
+    ['02','Engineer First','모든 결정의 기준은 엔지니어의 하루','기능의 개수가 아니라, 엔지니어의 하루에서 사라지는 반복의 양으로 제품을 평가합니다.'],
+    ['03','Accuracy over Speed','정확도는 타협하지 않는다','해석 결과의 신뢰는 모든 것의 전제입니다. 속도는 정확도 위에서만 의미를 가집니다.'],
+    ['04','Ship, then Sharpen','완벽한 계획보다 빠른 실행과 개선','작게 내보내고, 현장의 반응으로 날카롭게 다듬습니다.'],
+    ['05','One Flow','해석·설계·도면·현장을 하나의 흐름으로','도구 사이의 이음새에서 낭비가 생깁니다. 흐름이 끊기지 않는 것이 곧 생산성입니다.'],
+    ['06','Open Standards','기준은 감추지 않고 공유한다','설계 기준과 검증 과정을 투명하게 공개해 업계 전체의 수준을 함께 올립니다.'],
+    ['07','Learn from Site','현장의 질문이 로드맵이 된다','다음 버전의 우선순위는 회의실이 아니라 현장에서 나옵니다.'],
+    ['08','AI as a Colleague','AI를 도구가 아닌 동료로 쓴다','반복 계산은 AI에게, 판단과 책임은 엔지니어에게. 역할이 분명할 때 AI는 가장 강력합니다.']
   ];
-  document.getElementById('cgrid').innerHTML = CUL.map(function(c,i){
-    return '<div class="ccard rv' + (i%4 ? ' d' + (i%4) : '') + '"><span class="no">' + c[0] + '</span><b>' + c[1] + '</b><p>' + c[2] + '</p></div>';
+  document.getElementById('clist').innerHTML = CUL.map(function(c,i){
+    return '<div class="crow rv' + (i%3 ? ' d' + (i%3) : '') + '"><button class="chd" data-i="' + i + '"><span class="no">' + c[0] + '</span><b>' + c[1] + '<small>' + c[2] + '</small></b><span class="x">+</span></button>' +
+      '<div class="cbd"><p>' + c[3] + '</p></div></div>';
   }).join('');
-  if ('IntersectionObserver' in window && !reduce) {
-    var io2 = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('on'); io2.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('#cgrid .rv').forEach(function(el){ io2.observe(el); });
-  } else {
-    document.querySelectorAll('#cgrid .rv').forEach(function(el){ el.classList.add('on'); });
+  document.getElementById('clist').addEventListener('click', function(e){
+    var hd = e.target.closest('.chd'); if (!hd) return;
+    var row = hd.parentElement, bd = row.querySelector('.cbd'), open = row.classList.contains('open');
+    document.querySelectorAll('.crow.open').forEach(function(r){ r.classList.remove('open'); r.querySelector('.cbd').style.maxHeight = '0'; });
+    if (!open) { row.classList.add('open'); bd.style.maxHeight = bd.scrollHeight + 'px'; }
+  });
+
+  /* People — 카드 + 우측 슬라이드 패널 */
+  var PPL = [
+    ['KM','김민준','CTO','“수치 해석의 정확도는 타협의 대상이 아닙니다.”',
+      '김민준 CTO는 20년간 유한요소 해석 엔진을 설계해 왔습니다. GEN NX의 차세대 해석 코어를 이끌며, 대규모 모델에서도 결과를 기다리지 않는 해석 환경을 만들고 있습니다. 정확도 검증 체계를 공개 표준으로 만드는 일에도 힘을 쏟습니다.',
+      [['2025','MIDAS CTO'],['2021','해석 엔진 리드'],['2014','구조 해석 연구소 합류']]],
+    ['LS','이서연','CPO','“엔지니어의 하루에서 반복을 지우는 것이 제 일입니다.”',
+      '이서연 CPO는 설계 실무 출신입니다. 도면과 해석 사이에서 반복되던 밤샘의 경험이 지금의 제품 철학이 되었습니다. 기능을 더하는 것보다, 흐름의 이음새를 지우는 데 집중합니다.',
+      [['2024','MIDAS CPO'],['2020','GEN NX 프로덕트 리드'],['2016','구조 설계 엔지니어']]],
+    ['PJ','박지호','AX Lead','“AI는 도구가 아니라 새로운 설계 언어입니다.”',
+      '박지호 리드는 MIDAS의 AI 전환(AX)을 총괄합니다. 반복 계산을 AI에게 맡기고 엔지니어가 판단에 집중하는 워크플로를 설계하며, AX DAY를 통해 그 방법을 업계와 공유합니다.',
+      [['2026','AX DAY 총괄'],['2024','MIDAS AX Lead'],['2019','머신러닝 리서처']]],
+    ['CH','최하은','CX Lead','“현장의 질문이 다음 버전의 로드맵이 됩니다.”',
+      '최하은 리드는 고객의 질문을 제품의 언어로 번역합니다. 전 세계 120개국 엔지니어의 문의를 데이터로 축적해, 로드맵의 우선순위를 현장 기준으로 다시 세웁니다.',
+      [['2025','MIDAS CX Lead'],['2022','글로벌 기술지원 리드'],['2018','기술지원 엔지니어']]]
+  ];
+  document.getElementById('lgrid').innerHTML = PPL.map(function(p,i){
+    return '<div class="lcard rv' + (i%3 ? ' d' + (i%3) : '') + '" data-i="' + i + '">' +
+      '<div class="ph">' + p[0] + '<span class="arr">→</span></div>' +
+      '<b>' + p[1] + ' <i>| ' + p[2] + '</i></b><p>' + p[3] + '</p></div>';
+  }).join('');
+
+  var mask = document.getElementById('pmask'), panel = document.getElementById('panel'), inn = document.getElementById('pinn');
+  function openP(i){
+    var p = PPL[i];
+    inn.innerHTML = '<div class="pph">' + p[0] + '</div>' +
+      '<h3>' + p[1] + ' <i>| ' + p[2] + '</i></h3>' +
+      '<p class="quote">' + p[3] + '</p>' +
+      '<h4>소개</h4><p class="bio">' + p[4] + '</p>' +
+      '<h4>주요 경력</h4><div class="cr">' + p[5].map(function(c){ return '<div><span class="y">' + c[0] + '</span><span class="v">' + c[1] + '</span></div>'; }).join('') + '</div>';
+    mask.classList.add('on'); panel.classList.add('on'); panel.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
   }
+  function closeP(){
+    mask.classList.remove('on'); panel.classList.remove('on'); panel.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lgrid').addEventListener('click', function(e){
+    var c = e.target.closest('.lcard'); if (c) openP(+c.dataset.i);
+  });
+  document.getElementById('pclose').addEventListener('click', closeP);
+  mask.addEventListener('click', closeP);
+  addEventListener('keydown', function(e){ if (e.key === 'Escape') closeP(); });
+
+  /* 동적 콘텐츠까지 전부 주입된 뒤 리빌 관찰 시작 */
+  initReveal();
 })();
 </script>
 </body>
