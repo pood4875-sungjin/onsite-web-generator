@@ -218,9 +218,15 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
 @media (prefers-reduced-motion:reduce){
   .wd,.rv{opacity:1!important;transform:none!important;filter:none!important;transition:none}
   .hero .blob{animation:none}
-  .hero .scr{opacity:1;animation:none}
+  .hero .scr,.hero .meta{opacity:1;animation:none}
   .vgal .ph img{transform:none;transition:none}
   .panel,.pmask{transition:none}
+}
+/* 캡처 하네스 — 통짜 스크린샷용 초장신 뷰포트에서 100vh 섹션 고정 */
+@media (min-height:2000px){
+  .hero{min-height:900px}
+  .hero .meta{bottom:64px}
+  .hero .scr{display:none}
 }
 </style>
 </head>
