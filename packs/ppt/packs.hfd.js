@@ -1158,16 +1158,17 @@
       '.hf-t3grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1.5px solid var(--rule);border-radius:16px;overflow:hidden;margin:16px 0;position:relative;z-index:2}' +
       '.hf-t3col{display:flex;flex-direction:column;min-width:0}' +
       '.hf-t3col + .hf-t3col{border-left:1.5px solid var(--rule)}' +
-      '.hf-t3head{flex:none;text-align:center;font-size:17px;font-weight:800;padding:15px;background:var(--tn)}' +
+      /* 타이포 확대 + 전체 센터 정렬(피드백 반영) */
+      '.hf-t3head{flex:none;text-align:center;font-size:20px;font-weight:800;padding:17px;background:var(--tn)}' +
       '.hf-t3col.on .hf-t3head{background:var(--t);color:#fff}' +
       '.hf-t3col.on .hf-t3body{background:color-mix(in srgb,var(--tn) 55%,#fff)}' +
-      '.hf-t3body{flex:1;min-height:0;padding:24px 26px;display:flex;flex-direction:column;gap:14px;justify-content:center}' +
-      '.hf-t3lead{font-size:15.5px;line-height:1.6;font-weight:600;text-align:center}' +
+      '.hf-t3body{flex:1;min-height:0;padding:26px 26px;display:flex;flex-direction:column;gap:20px;justify-content:center;text-align:center}' +
+      '.hf-t3lead{font-size:19px;line-height:1.6;font-weight:700}' +
       '.hf-t3lead b{color:var(--t)}' +
-      '.hf-t3body ul{list-style:none;display:flex;flex-direction:column;gap:9px}' +
-      '.hf-t3body li{font-size:13.5px;line-height:1.55;color:var(--body);padding-left:12px;position:relative}' +
-      '.hf-t3body li::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--t)}' +
-      '.hf-t3foot{font-size:13.5px;font-weight:700;text-align:center;color:var(--t)}' +
+      '.hf-t3body ul{list-style:none;display:flex;flex-direction:column;gap:11px}' +
+      '.hf-t3body li{font-size:15.5px;line-height:1.55;color:var(--body)}' +
+      '.hf-t3body li::before{content:"·  ";color:var(--t);font-weight:800}' +
+      '.hf-t3foot{font-size:15px;font-weight:700;color:var(--t)}' +
       /* 4분할 (quad) */
       '.hf-qdwrap{flex:1;min-height:0;position:relative;display:flex;z-index:2}' +
       '.hf-qdring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:330px;height:330px;border-radius:50%;background:var(--tn);-webkit-mask:radial-gradient(circle,transparent 108px,#000 109px);mask:radial-gradient(circle,transparent 108px,#000 109px)}' +
