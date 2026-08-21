@@ -13,12 +13,13 @@
   function de(path) { return ' data-edit="' + path + '"'; }
   function noNum(t) { t = String(t == null ? '' : t); var m = t.trim(); return /^\d{1,2}\s*[.)·:]?$/.test(m) ? '' : t.replace(/^\s*\d{1,2}\s*[.)·:]\s+/, ''); }
 
-  /* ---- 테마 4종 — Figma 표지 픽셀 실측 ---- */
+  /* ---- 테마 4종 — Figma 공식 컬러 스타일(사용자 제공 패널) 우선, 미공개 값만 표지 픽셀 실측 ----
+     공식: FFFFFF · 16848A · 1D2A85 · 30A7BF · 3A6BE1 · 216254 · 309479 · 67C68E */
   var THEMES = {
-    green:  { t: '#3D8A6B', b: '#216254', a: '#1B985E', tn: '#EAF4EF', dp: '#123D31', name: 'Green' },
-    teal:   { t: '#16848A', b: '#2699AA', a: '#2CCFDD', tn: '#E8F5F6', dp: '#0B4A4E', name: 'Teal' },
-    cyan:   { t: '#0097FF', b: '#1F5BD0', a: '#0321CB', tn: '#E6F3FE', dp: '#0A2C6B', name: 'Blue' },
-    indigo: { t: '#3A6BE1', b: '#2843A9', a: '#090E8B', tn: '#EAEFFC', dp: '#131A56', name: 'Indigo' }
+    green:  { t: '#309479', b: '#216254', a: '#1B985E', tn: '#E7F3EC', dp: '#123D31', name: 'Green' },   /* a=우하원 실측(공식 67C68E는 라이트 그린 — 칩·보조) */
+    teal:   { t: '#16848A', b: '#30A7BF', a: '#2CCFDD', tn: '#E7F4F6', dp: '#0B4A4E', name: 'Teal' },
+    cyan:   { t: '#0097FF', b: '#1F5BD0', a: '#1D2A85', tn: '#E6F3FE', dp: '#1D2A85', name: 'Blue' },
+    indigo: { t: '#3A6BE1', b: '#2843A9', a: '#1D2A85', tn: '#EAEFFC', dp: '#1D2A85', name: 'Indigo' }
   };
   function themeOf(data) { return THEMES[data && data.theme] ? data.theme : 'green'; }
 
