@@ -20,6 +20,7 @@ packs/
 | rams | PPT | Modern | **활성·시연 잠금**(GEN NX 10장) | [packs.rams.md](../../packs/ppt/packs.rams.md) |
 | machine | PPT | Premium Dark | **활성·시연 잠금**(GEN NX 10장·주황) | [packs.machine.md](../../packs/ppt/packs.machine.md) |
 | pastel | PPT | Pastel Gradient | 활성(피커 숨김 — 시연 중 machine으로 교체) | 팩 옆 .md |
+| hfd | PPT | Happy Family Day | 활성 — 사내 행사 안내 13타입, 컬러 4종 칩 전환(Figma 502-402 실측) | [packs.hfd.md](../../packs/ppt/packs.hfd.md) |
 | sfmi | PPT | SFMI Report | 활성(피커 밖) | 팩 옆 .md |
 | pitch | PPT | Creatable Pitch | 활성(피커 밖) | 팩 옆 .md |
 | honors | PPT | MIDAS Honors | 활성(피커 밖) | 팩 옆 .md |

@@ -196,7 +196,9 @@
   // machine 팩(AX Machine) — 독자 타입 체계 (packs.machine.js CATALOG와 동일 목록)
   var MACHINE_ALLOWED = { cover: 1, statement: 1, toc: 1, twocol: 1, quote: 1, refcards: 1, linecards: 1, bignum: 1, agenda: 1, process: 1, darkhero: 1, spec: 1, beforeafter: 1, demo: 1, progress: 1, roadmap: 1, closing: 1, milestone: 1, chart: 1, shot: 1 };
   // rams 팩 — naver와 동일 타입 어휘(스타일만 다름)
-  function allowedFor(pack) { return pack === 'machine' ? MACHINE_ALLOWED : pack === 'sfmi' ? NAVER_ALLOWED : pack === 'pastel' ? NAVER_ALLOWED : pack === 'rams' ? NAVER_ALLOWED : pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
+  // hfd 팩(Happy Family Day) — 독자 13타입 (packs.hfd.js CATALOG와 동일 목록)
+  var HFD_ALLOWED = { cover: 1, greeting: 1, toc: 1, divider: 1, section: 1, cards: 1, timeline: 1, table: 1, checklist: 1, media: 1, photos: 1, quote: 1, closing: 1 };
+  function allowedFor(pack) { return pack === 'hfd' ? HFD_ALLOWED : pack === 'machine' ? MACHINE_ALLOWED : pack === 'sfmi' ? NAVER_ALLOWED : pack === 'pastel' ? NAVER_ALLOWED : pack === 'rams' ? NAVER_ALLOWED : pack === 'naver' ? NAVER_ALLOWED : pack === 'honors' ? HONORS_ALLOWED : pack === 'pitch' ? PITCH_ALLOWED : ALLOWED; }
   function parseDeck(txt, pack) {
     var s = String(txt || '').trim();
     s = s.replace(/^```(?:json)?/i, '').replace(/```$/,'').trim();  // 코드펜스 제거
@@ -212,7 +214,7 @@
     if (!slides.length) throw new Error('NO_VALID_SLIDES');
     // 새 덱에 AI가 지어낸 편집 상태키(_pos 등)가 붙어오면 요소가 밖으로 밀려 "타이틀 잘림"이 된다 — 전부 제거
     slides.forEach(function (sl) { Object.keys(sl).forEach(function (k) { if (k.charAt(0) === '_') delete sl[k]; }); });
-    return { slides: slides, style: obj.style, accent: obj.accent };
+    return { slides: slides, style: obj.style, accent: obj.accent, theme: obj.theme };
   }
 
   /* 프록시 에러 → 사용자용 한국어 메시지. LIMIT는 서버가 message를 주고,
@@ -322,6 +324,19 @@
         '작법: 한 장에 한 메시지·제목만 이어 읽어도 논리 성립·첫 3장 내 왜-지금·마지막에 다음 행동·연속 3장 같은 골격 금지·수치엔 출처, 추정은 표기.';
       var ftxt = await messages({ system: fsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var fd2 = parseDeck(ftxt, 'sfmi'); fd2.style = 'sfmi'; return fd2;
+    }
+    // BYOK 직접 호출 — hfd 팩(Happy Family Day): 사내 행사 안내 덱
+    if (brief.pack === 'hfd' && window.HFD_SCHEMA_DOC) {
+      var hsys =
+        '너는 사내 행사 안내 자료를 만드는 커뮤니케이션 담당자다. 브리프로 한국어 행사 안내 슬라이드 덱을 설계한다.\n' +
+        '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지. 형식: {"slides":[...],"theme":"green|teal|cyan|indigo"}\n' +
+        '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + window.HFD_SCHEMA_DOC + '\n' +
+        '각 타입의 필드: ' + window.HFD_FIELD_DOC + '\n' +
+        '규칙: 1장 cover. 초반에 greeting 또는 toc. 파트마다 divider. 일정은 timeline, 정보는 table, 유의사항은 checklist. 마지막 closing. ' +
+        '일시·장소·대상·프로그램은 브리프에 있는 것만 쓰고 지어내지 않는다. 따뜻하고 간결한 안내 톤. ' +
+        '총 장수: short=5~8, std=9~13, 없으면 8~12. 이모지 금지.';
+      var htxt = await messages({ system: hsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }) });
+      var hd3 = parseDeck(htxt, 'hfd'); hd3.style = 'hfd'; if (!hd3.theme) hd3.theme = 'green'; return hd3;
     }
     // BYOK 직접 호출 — pastel 팩(Pastel Gradient): 챕터 그라데이션·키밴드
     if (brief.pack === 'pastel' && window.PASTEL_SCHEMA_DOC) {
@@ -437,7 +452,7 @@
     var sys =
       '너는 프레젠테이션 편집자다. 현재 덱과 사용자 지시를 받아 덱을 수정한다.\n' +
       '반드시 유효한 JSON 하나만 출력: {"slides":[...수정 후 전체 배열...],"message":"<한 줄 요약>"}\n' +
-      '슬라이드 스키마: ' + (pack === 'machine' && window.MACHINE_FIELD_DOC ? window.MACHINE_FIELD_DOC : pack === 'sfmi' && window.SFMI_FIELD_DOC ? window.SFMI_FIELD_DOC : pack === 'pastel' && window.PASTEL_FIELD_DOC ? window.PASTEL_FIELD_DOC : pack === 'rams' && window.RAMS_FIELD_DOC ? window.RAMS_FIELD_DOC : pack === 'naver' && window.NAVER_FIELD_DOC ? window.NAVER_FIELD_DOC : pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
+      '슬라이드 스키마: ' + (pack === 'hfd' && window.HFD_FIELD_DOC ? window.HFD_FIELD_DOC : pack === 'machine' && window.MACHINE_FIELD_DOC ? window.MACHINE_FIELD_DOC : pack === 'sfmi' && window.SFMI_FIELD_DOC ? window.SFMI_FIELD_DOC : pack === 'pastel' && window.PASTEL_FIELD_DOC ? window.PASTEL_FIELD_DOC : pack === 'rams' && window.RAMS_FIELD_DOC ? window.RAMS_FIELD_DOC : pack === 'naver' && window.NAVER_FIELD_DOC ? window.NAVER_FIELD_DOC : pack === 'honors' && window.HONORS_FIELD_DOC ? window.HONORS_FIELD_DOC : pack === 'pitch' && window.PITCH_FIELD_DOC ? window.PITCH_FIELD_DOC : SCHEMA_DOC) + '\n' +
       '문구·수치·톤 수정, 추가·분할·삭제·순서 변경 전부 가능. 무관한 슬라이드는 원본 그대로 복사. ' +
       '일부 장만 바뀌는 요청(장 추가·삭제·한두 장 수정)은 전체 배열 대신 {"ops":[{"op":"insert","at":인덱스,"slide":{...}}|{"op":"replace","at":인덱스,"slide":{...}}|{"op":"remove","at":인덱스}],"message":"..."}로 바뀐 부분만 출력(at은 0부터, 두 번째 장 앞 삽입=at 1). ' +
       '새 슬라이드는 실제 내용으로(플레이스홀더 금지), 덱 1~24장. ' +

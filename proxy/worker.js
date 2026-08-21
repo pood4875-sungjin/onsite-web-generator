@@ -151,6 +151,22 @@ const RAMS_SYSTEM =   // 자유 구성(2026-08-11 시연 잠금 해제)
 
 /* pastel 팩(Pastel Gradient) — naver와 동일 타입 어휘, 화이트·챕터 그라데이션·키밴드. packs.pastel.js와 동기 */
 const PASTEL_USE_DOC = "cover(표지): 첫 장 — 그라데이션 대형 번호·Archivo 타이틀·5색 바\nstatement(대형 선언): 표지 다음 선언 — 대형 영문+그라데이션 키워드+비교 카드 2\ntoc(목차): 챕터 목차 — 챕터별 그라데이션 컬럼(번호·영문 라벨·메시지)\ndivider(간지): 챕터 시작 — 풀블리드 챕터 그라데이션+대형 타이틀\nsection(본문 표준): 핵심 논점 3~4개 — 대형 번호+보더탑 소제목+설명\ncards(N열 카드): 동급 항목 2~4개 — 그라데이션 톤 사다리 셀\nsplit(좌우 대비): 흐린 리스트 vs 강조 리스트(활용 vs 설계 대비)\nstats(수치): 대형 그라데이션 %+진행바 — 진척도·달성률\nmedia(스펙 rows): 구조·사양 행(라벨+내용, 핵심 행 그라데이션 강조)+이미지 슬롯\nroadmap(로드맵): 단계 계획 — Now/Next/Then 3열+월별 타임라인 밴드\nbigstat(대형 수치): 수치 하나로 임팩트 — 그라데이션 클립 숫자\nkpi(KPI 셀): 지표 2~4개 — 값+라벨 그라데이션 셀\ntable(표): 열이 정해진 데이터 — 보더바텀 rows\ntimeline(타임라인): 시간순 이벤트 — when+제목+설명 행\nmilestone(마일스톤): 기간 계획 간트 — 단계 카드+월축 계단 바. 일정·완료 기준 중심일 때\nprocess(프로세스): 단계 흐름 3~4개 — 중앙(또는 지정) 그라데이션 강조\ncompare(비교): Before/After — 보더 vs 그라데이션 카드\nquote(질문/인용): 핵심 질문·인용 — 풀블리드 그라데이션 Q 패널\nposition(포지셔닝): 흐름 3단계 중 우리 위치 — 중앙 그라데이션 카드\nchecklist(체크리스트): 확인·항목 목록 — 대시바+보더바텀 rows. 5개 초과 시 2열\nlineup(라인업): 제품·계획 라인업 4개 — 진행=그라데이션·후보=보더\nbranch(갈래): 조직·영역 3갈래+공통 리드 박스\nhighlight(하이라이트): 데모·발표 안내 — 풀블리드 그라데이션+대형 타이틀+단계 행\nboard(현황 보드): 진행 현황 — 2톤 대형 타이틀+카드 2+사이드 리스트\nclosing(엔딩): 마지막 장 — dim+강조 대형 타이틀+다음 행동+5색 바";
+/* hfd 팩(Happy Family Day) — 사내 행사 안내 13타입, 2밴드+원 기하·컬러 4종. packs.hfd.js와 동기 */
+const HFD_USE_DOC = "cover(표지): 첫 장 — 2밴드+원 기하, 행사명·서브·날짜\ngreeting(인사말): 대표·주최 인사 문장 한 단락\ntoc(목차): 안내 순서 — 컬러 밴드 컬럼 2~4\ndivider(간지): 파트 시작 — 표지 기하+번호+타이틀\nsection(본문 표준): 핵심 안내 2~4개 — 번호+보더탑 소제목\ncards(N열 카드): 프로그램·혜택 카드 2~4 — 틴트/딥 셀\ntimeline(일정): 당일 시간표 — 시간+제목+설명 행\ntable(표): 장소·대상·문의 등 정보 표\nchecklist(체크리스트): 준비물·유의사항 — 도트 리스트, 5개 초과 시 2열\nmedia(안내 rows): 오시는 길·운영 정보(라벨+내용, 핵심 행 강조)+이미지 슬롯\nphotos(포토): 행사 사진·포스터 이미지 2~3\nquote(슬로건): 행사 슬로건·메시지 — 풀블리드 딥 밴드\nclosing(엔딩): 마지막 장 — 표지 기하+마무리 인사·문의처";
+const HFD_FIELD_DOC = "cover:{title(행사명, \\n 2줄),sub?(국문 부제),date?(일시)} | greeting:{label?,text(인사 문장, **강조**, \\n 줄바꿈),by?(주최명)} | toc:{title?,items:[{no?,label(파트명),desc?(한 줄),pages?}](2~4개)} | divider:{no?:\"01\",title(파트 제목),lead?(한 문장)} | section:{title(\\n 2줄 가능),points:[{no?,head,text}](2~4개),sub?,note?(하단 밴드 문장)} | cards:{title,cards:[{tag?,head,text?,tone?:\"dark\"(딥 셀)}](2~4개),sub?,note?} | timeline:{title,items:[{when:\"13:00\",head,text?,on?:true(틴트 강조)}](3~6개),sub?,note?} | table:{title,columns:[str],rows:[{cells:[str]}],sub?,note?} | checklist:{title,items:[str],cols?:1~2,sub?,note?} | media:{title,specs:[{label(짧은 영문),text,on?:true(딥 강조 행)}](3~5개),image?:{label},caption?,sub?,note?} | photos:{title,items:[{label(이미지 라벨),caption?}](2~3개),sub?,note?} | quote:{text(슬로건, **강조**, \\n 줄바꿈),by?} | closing:{title(마무리 인사, \\n 2줄),sub?,contact?(문의처)}\n규칙: 행사 안내 톤 — 따뜻하고 간결하게. 일시·장소·대상·프로그램은 브리프에 있는 것만 쓰고 창작 금지. title은 의미 단위 \\n 줄바꿈. 이모지 금지. 덱 루트에 theme(green|teal|cyan|indigo) 1개.";
+const HFD_SYSTEM =
+  '너는 사내 행사 안내 자료를 만드는 커뮤니케이션 담당자다. 브리프로 한국어 행사 안내 슬라이드 덱을 설계한다.\n' +
+  '반드시 유효한 JSON 하나만 출력한다. 코드펜스·주석·설명 문장 금지.\n' +
+  '형식: {"slides":[ ... ],"theme":"green|teal|cyan|indigo"}\n' +
+  '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + HFD_USE_DOC + '\n' +
+  '각 타입의 필드: ' + HFD_FIELD_DOC + '\n' +
+  '규칙: 1장 cover(title 필수·빈 값 금지). 초반에 greeting 또는 toc. 파트마다 divider 후 그 파트 본문 장들. ' +
+  '일정은 timeline(시간은 브리프의 실제 값), 장소·대상 정보는 table, 준비물·유의사항은 checklist, 오시는 길은 media. ' +
+  '중간에 quote(슬로건)로 호흡을 만든다. 마지막은 closing(마무리 인사·문의처). ' +
+  '일시·장소·대상·프로그램·경품은 브리프/plan에 있는 것만 쓰고 지어내지 않는다. ' +
+  '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=9~13장, 없으면 8~12장. ' +
+  '작법: 한 장에 한 메시지. 따뜻하고 간결한 안내 톤 — 과장·수사 금지. 이모지 금지.';
+
 /* [시연 고정] rams(Structure style) = MIDAS GEN NX 제품소개 10장 고정.
    공식 제품 정보(GENNX_FACTS)가 1차 소스 — 첨부는 행사 일시·장소·청중 톤에만. 해제=RAMS_SYSTEM_FREE. */
 const RAMS_SYSTEM_LOCKED =   // [보존] 시연 잠금본 — 재잠금 시 이름을 RAMS_SYSTEM으로
@@ -574,7 +590,7 @@ export default {
       if (!safe.title && !safe.message && !safe.plan && !safe.outline.length) return json({ error: 'EMPTY_BRIEF' }, 400);
       var _pk = clip(body.pack, 10);
       if (!_pk && /gen[\s_-]*nx/i.test(String(body.title || '') + ' ' + String(body.plan || '').slice(0, 400))) _pk = 'machine';   // [시연] 팩 유실 방어 — GEN NX 브리프는 제품소개 잠금으로
-      system = _pk === 'machine' ? MACHINE_SYSTEM : _pk === 'sfmi' ? SFMI_SYSTEM : _pk === 'pastel' ? PASTEL_SYSTEM : _pk === 'rams' ? RAMS_SYSTEM : _pk === 'naver' ? NAVER_SYSTEM : _pk === 'honors' ? HONORS_SYSTEM : _pk === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
+      system = _pk === 'hfd' ? HFD_SYSTEM : _pk === 'machine' ? MACHINE_SYSTEM : _pk === 'sfmi' ? SFMI_SYSTEM : _pk === 'pastel' ? PASTEL_SYSTEM : _pk === 'rams' ? RAMS_SYSTEM : _pk === 'naver' ? NAVER_SYSTEM : _pk === 'honors' ? HONORS_SYSTEM : _pk === 'pitch' ? PITCH_SYSTEM : SYSTEM;   // 팩별 스키마 — pitch/honors/naver는 카탈로그 기반 타입 선택
       // 덱 콘텐츠 언어 — UI 언어를 따른다(영어 시연 등). ko면 기존 시스템의 한국어 지시 그대로.
       const deckLang = clip(body.lang, 5) || 'ko';
       if (deckLang !== 'ko') system += '\n[출력 언어 — 최우선 규칙] 위 지시의 "한국어"와 무관하게, 모든 슬라이드 텍스트(제목·본문·리스트·캡션·note·인용)를 ' + uiLangName(deckLang) + '로 작성한다. 브랜드·고유명사는 원문 유지. 영문 챕터 라벨(label·tag 대문자류)은 그대로 영문.';
@@ -638,7 +654,7 @@ export default {
       const slides = Array.isArray(body.slides) ? body.slides.slice(0, 24) : [];
       const instruction = clip(body.instruction, 800);
       if (!slides.length || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
-      system = (clip(body.pack, 10) === 'machine' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, MACHINE_FIELD_DOC) : clip(body.pack, 10) === 'sfmi' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, SFMI_FIELD_DOC) : clip(body.pack, 10) === 'pastel' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, PASTEL_FIELD_DOC) : clip(body.pack, 10) === 'rams' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, RAMS_FIELD_DOC) : clip(body.pack, 10) === 'naver' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, NAVER_FIELD_DOC) : clip(body.pack, 10) === 'honors' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HONORS_FIELD_DOC) : clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
+      system = (clip(body.pack, 10) === 'hfd' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HFD_FIELD_DOC) : clip(body.pack, 10) === 'machine' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, MACHINE_FIELD_DOC) : clip(body.pack, 10) === 'sfmi' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, SFMI_FIELD_DOC) : clip(body.pack, 10) === 'pastel' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, PASTEL_FIELD_DOC) : clip(body.pack, 10) === 'rams' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, RAMS_FIELD_DOC) : clip(body.pack, 10) === 'naver' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, NAVER_FIELD_DOC) : clip(body.pack, 10) === 'honors' ? PITCH_EDIT_SYSTEM.replace(PITCH_FIELD_DOC, HONORS_FIELD_DOC) : clip(body.pack, 10) === 'pitch' ? PITCH_EDIT_SYSTEM : EDIT_SYSTEM).replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 덱:\n' + clip(JSON.stringify(slides), 24000) + '\n\n사용자 지시:\n' + instruction;
     }
 

@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/web/packs.mbm.js','../packs/web/packs.skmbm.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','llm.js','../packs/edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/web/packs.mbm.js','../packs/web/packs.skmbm.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','../packs/ppt/packs.hfd.js','llm.js','../packs/edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -766,7 +766,7 @@
         if(cv.slug==='r381') sz.style.gridTemplateColumns='1fr';
         const withRatio=(d)=>Object.assign({}, d, {_ratio:cv.ratio});
         // 노출 팩 화이트리스트(2026-07-31 사용자 지시) — 구 팩·pitch·honors는 잠시 가림. 되살리려면 여기에 추가
-        const PPT_VISIBLE=['naver','rams','machine','pastel','sfmi'];   // 시연 잠금 해제(2026-08-11) — 활성 팩 전체 노출
+        const PPT_VISIBLE=['naver','rams','machine','pastel','sfmi','hfd'];   // 시연 잠금 해제(2026-08-11) — 활성 팩 전체 노출
         (PPT_VISIBLE.includes('ppt')?(window.PPT_STYLES||[]):[]).forEach(s=>{
           if(skip(s.id)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${s.swatch}"></div></div><div class="cap">${s.name}</div>`);
@@ -781,7 +781,8 @@
          ['rams', window.RAMS_STYLE, window.renderRamsDeck, window.RAMS_DEFAULT_DECK, window.ramsTemplateDeck],
          ['pastel', window.PASTEL_STYLE, window.renderPastelDeck, window.PASTEL_DEFAULT_DECK, window.pastelTemplateDeck],
          ['sfmi', window.SFMI_STYLE, window.renderSfmiDeck, window.SFMI_DEFAULT_DECK, window.sfmiTemplateDeck],
-         ['machine', window.MACHINE_STYLE, window.renderMachineDeck, window.MACHINE_DEFAULT_DECK, window.machineTemplateDeck]].forEach(([pid, ps, rfn, dd, tfn])=>{
+         ['machine', window.MACHINE_STYLE, window.renderMachineDeck, window.MACHINE_DEFAULT_DECK, window.machineTemplateDeck],
+         ['hfd', window.HFD_STYLE, window.renderHfdDeck, window.HFD_DEFAULT_DECK, window.hfdTemplateDeck]].forEach(([pid, ps, rfn, dd, tfn])=>{
           if(!PPT_VISIBLE.includes(pid)) return;
           if(!ps || skip(pid)) return;
           const c=el('div','sc',`<div class="sw"><div class="fallback" style="background:${ps.swatch}"></div></div><div class="cap">${_L(ps.name)}</div>`);
@@ -995,7 +996,7 @@
     if(S.kind==='ppt'){
       const outlineFromPlan = plan.split('\n').map(s=>s.replace(/^[\s•\-*·]*\d*[.)]?\s*/,'').trim()).filter(s=>s && s.length<=40).slice(0,8);
       // pitch·honors = 별도 팩(레이아웃 체계가 다름). packKind가 있으면 그 팩의 compose/template 경로
-      const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : S.pptStyle==='pastel' ? 'pastel' : S.pptStyle==='sfmi' ? 'sfmi' : S.pptStyle==='machine' ? 'machine' : '';
+      const packKind = S.pptStyle==='pitch' ? 'pitch' : S.pptStyle==='honors' ? 'honors' : S.pptStyle==='naver' ? 'naver' : S.pptStyle==='rams' ? 'rams' : S.pptStyle==='pastel' ? 'pastel' : S.pptStyle==='sfmi' ? 'sfmi' : S.pptStyle==='machine' ? 'machine' : S.pptStyle==='hfd' ? 'hfd' : '';
       const isPitch = !!packKind;
       const brief={ title:S.name||prod||'', audience:'', purpose:'', plan:plan, length:S.len, message:'', outline:outlineFromPlan, style:S.pptStyle, pack:packKind, lang:S.lang, ratio:S.ratio };
       const hasBrief=!!plan;
@@ -1018,6 +1019,7 @@
         if(packKind==='pastel') deck = (hasBrief && window.pastelComposeDeck) ? pastelComposeDeck(brief) : pastelTemplateDeck();
         if(packKind==='sfmi') deck = (hasBrief && window.sfmiComposeDeck) ? sfmiComposeDeck(brief) : sfmiTemplateDeck();
         if(packKind==='machine') deck = (hasBrief && window.machineComposeDeck) ? machineComposeDeck(brief) : machineTemplateDeck();
+        if(packKind==='hfd') deck = (hasBrief && window.hfdComposeDeck) ? hfdComposeDeck(brief) : hfdTemplateDeck();
         else if(packKind==='naver') deck = (hasBrief && window.naverComposeDeck) ? naverComposeDeck(brief)
                  : (window.naverTemplateDeck ? naverTemplateDeck() : JSON.parse(JSON.stringify(window.NAVER_DEFAULT_DECK||{slides:[]})));
         else if(packKind==='honors') deck = (hasBrief && window.honorsComposeDeck) ? honorsComposeDeck(brief)

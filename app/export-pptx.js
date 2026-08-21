@@ -44,6 +44,10 @@
     '.pg-dvtitle', '.pg-dvlead', '.pg-numno', '.pg-numhead', '.pg-numtx', '.pg-list li span', '.pg-cellhead', '.pg-celltx', '.pg-badge', '.pg-kpval',
     '.pg-bignum', '.pg-bigcap', '.pg-brow .l', '.pg-brow .v', '.pg-brow .tx', '.pg-srow .k', '.pg-srow .t', '.pg-trow > span', '.pg-tbrow > span',
     '.pg-rmhead', '.pg-rmlist li', '.pg-bsval', '.pg-bscap', '.pg-stephead', '.pg-steptx', '.pg-cmp ul li', '.pg-qmark', '.pg-qtx',
+    /* hfd 팩(Happy Family Day) */ '.hf-runl', '.hf-runr', '.hf-hl', '.hf-sub', '.hf-lab', '.hf-cap', '.hf-body', '.hf-klab', '.hf-ktx',
+    '.hf-cvtitle', '.hf-cvsub', '.hf-cvdate', '.hf-logo', '.hf-dvno', '.hf-dvtitle', '.hf-dvlead', '.hf-grtx', '.hf-grby',
+    '.hf-tocno', '.hf-toclab', '.hf-tocdesc', '.hf-tocpg', '.hf-numno', '.hf-numhead', '.hf-numtx', '.hf-cellhead', '.hf-celltx',
+    '.hf-trow > span', '.hf-tbrow > span', '.hf-srow .k', '.hf-srow .t', '.hf-list li span', '.hf-qtx', '.hf-qby', '.hf-imgph span',
     '.pg-hlrow .no', '.pg-hlrow .h', '.pg-hlrow .t', '.pg-hlfn', '.pg-hltitle', '.pg-bdtitle', '.pg-side li', '.pg-side .pl span', '.pg-leadbox .tx',
     '.pg-cltitle', '.pg-clsub', '.pg-clfoot .big', '.pg-clfoot .ct i', '.pg-key.tb .mi b', '.pg-key.tb .mi i', '.pg-imgph span',
     /* sfmi 팩(SFMI Report) */ '.sf-runl i', '.sf-runr', '.sf-hl', '.sf-sub', '.sf-body', '.sf-lab', '.sf-ftx', '.sf-cap', '.sf-hfoot',
@@ -78,6 +82,7 @@
     /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
     /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
+    /* hfd 팩 — 밴드·원 기하·셀·강조 행 */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-cell, .hf-toccol, .hf-key, .hf-srow, .hf-trow.on, .hf-imgph, .hf-dot, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
