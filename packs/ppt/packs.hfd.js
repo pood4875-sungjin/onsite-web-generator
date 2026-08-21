@@ -259,7 +259,8 @@
         var IP = P + '.bars.' + i;
         var st = Math.max(1, Math.min(N, +b.start || i + 1)), sp = Math.max(1, Math.min(N - st + 1, +b.span || 2));
         var n = barsArr.length, pct = n > 1 ? Math.round(90 - 62 * i / (n - 1)) : 90;
-        return '<div class="ms-bar" style="margin-left:' + ((st - 1) / N * 100).toFixed(2) + '%;width:' + (sp / N * 100).toFixed(2) + '%;background:color-mix(in srgb, var(--t) ' + pct + '%, #fff)">' +
+        /* 옅은 바(틴트 55% 미만)는 화이트 텍스트 대비가 무너짐 — 잉크 텍스트로 전환 */
+        return '<div class="ms-bar' + (pct < 55 ? ' lt' : '') + '" style="margin-left:' + ((st - 1) / N * 100).toFixed(2) + '%;width:' + (sp / N * 100).toFixed(2) + '%;background:color-mix(in srgb, var(--t) ' + pct + '%, #fff)">' +
           '<b' + de(IP + '.label') + '>' + esc(b.label || '') + '</b>' +
           (b.sub ? '<span' + de(IP + '.sub') + '>' + esc(b.sub) + '</span>' : '') + '</div>';
       }).join('');
@@ -461,9 +462,10 @@
       bars.forEach(function (b) { if (+b.v > max) max = +b.v; });
       var bs = bars.slice(0, 8).map(function (b, i) {
         var IP = P + '.bars.' + i, h = max ? Math.max(6, Math.round((+b.v || 0) / max * 100)) : 0;
-        return '<div class="hf-cnbar' + (b.on ? ' on' : '') + '">' +
-          '<span class="v"' + de(IP + '.label') + '>' + esc(b.label != null ? b.label : String(b.v)) + '</span>' +
+        /* 값 라벨은 바 위에 absolute — 라벨이 트랙 높이를 깎아 바 비율이 왜곡되는 것 방지 */
+        return '<div class="hf-cnbar' + (b.on ? ' on' : '') + '"><span class="tr">' +
           '<i style="height:' + h + '%"></i>' +
+          '<span class="v" style="bottom:calc(' + h + '% + 7px)"' + de(IP + '.label') + '>' + esc(b.label != null ? b.label : String(b.v)) + '</span></span>' +
           '<span class="x"' + de(IP + '.x') + '>' + esc(b.x || '') + '</span></div>';
       }).join('');
       var notes = (s.notes || []).slice(0, 4).map(function (nt, i) {
@@ -868,6 +870,7 @@
       '.ms-bar{position:relative;z-index:1;padding:10px 18px;display:flex;flex-direction:column;gap:2px;color:#fff;border-radius:999px}' +
       '.ms-bar b{font-size:15px;font-weight:800;letter-spacing:-.01em}' +
       '.ms-bar span{font-size:12.5px;opacity:.9}' +
+      '.ms-bar.lt{color:var(--ink)}.ms-bar.lt span{opacity:.75}' +
       '.ms-axis{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;flex:none;border-top:1px solid var(--rule);padding-top:8px}' +
       '.ms-axis span{font-size:13px;color:var(--muted);text-align:center}' +
       /* 좌우 대비 */
@@ -887,7 +890,8 @@
       '.hf-duo.on{background:var(--b);color:#fff}.hf-duo.on .hf-duoval{color:#fff}' +
       '.hf-duo.on .hf-duotx{color:#fff;opacity:.92}.hf-duo.on .hf-duochip{background:rgba(255,255,255,.16);color:#fff}' +
       /* 전환 구조도 (flow) */
-      '.hf-flowgrid{flex:1;min-height:0;display:flex;align-items:stretch;gap:0;padding:16px 0 8px;position:relative;z-index:2}' +
+      /* 콘텐츠 허그+세로 중앙 — 행 적을 때 패널 절반이 빈 틴트로 남는 것 방지 */
+      '.hf-flowgrid{flex:0 1 auto;min-height:0;margin:auto 0;display:flex;align-items:stretch;gap:0;padding:16px 0 8px;position:relative;z-index:2}' +
       '.hf-flowcol{flex:1;min-width:0;background:var(--tn);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:7px}' +
       '.hf-flowcol.from{background:#EFF1F0}' +
       '.hf-flowcol + .hf-flowcol{margin-left:12px}' +
@@ -948,12 +952,13 @@
       '.hf-cngrid{flex:1;min-height:0;display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:stretch;padding:14px 0;position:relative;z-index:2}' +
       '.hf-cnchart{background:var(--tn);border-radius:16px;padding:24px 26px 18px;display:flex;flex-direction:column;min-height:0}' +
       '.hf-cnbadge{align-self:flex-start;background:#fff;border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:800;color:var(--t)}' +
-      '.hf-cnbars{flex:1;min-height:0;display:flex;align-items:stretch;gap:14px;padding-top:16px}' +
-      '.hf-cnbar{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px}' +
-      '.hf-cnbar .v{font-size:12.5px;font-weight:800;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums}' +
+      '.hf-cnbars{flex:1;min-height:0;display:flex;align-items:stretch;gap:14px;padding-top:34px}' +
+      '.hf-cnbar{flex:1;min-width:0;display:flex;flex-direction:column}' +
+      '.hf-cnbar .tr{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:flex-end}' +
+      '.hf-cnbar .v{position:absolute;left:0;right:0;font-size:12.5px;font-weight:800;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}' +
       '.hf-cnbar i{display:block;background:color-mix(in srgb,var(--t) 42%,#fff);border-radius:8px 8px 0 0}' +
       '.hf-cnbar.on i{background:var(--t)}' +
-      '.hf-cnbar .x{font-size:11.5px;text-align:center;color:var(--muted);padding-top:7px;border-top:1px solid var(--rule)}' +
+      '.hf-cnbar .x{flex:none;font-size:11.5px;text-align:center;color:var(--muted);padding-top:7px;border-top:1px solid var(--rule)}' +
       '.hf-cnunit{font-size:11.5px;color:var(--muted);margin-top:8px}' +
       '.hf-cnnotes{display:flex;flex-direction:column;justify-content:center}' +
       '.hf-cnnote{padding:16px 2px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:5px}' +
@@ -1011,7 +1016,8 @@
       /* 이미지 히어로 — 풀블리드 배경+중앙 텍스트 */
       '.slide.hf.hr{padding:0;position:relative;display:flex;align-items:center;justify-content:center;color:#fff}' +
       '.hf-herobg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:0;min-height:0}' +
-      '.hf-herobg.ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,var(--t),var(--b) 72%);color:rgba(255,255,255,.55);font-size:14px}' +
+      /* 플레이스홀더 라벨은 좌하단 구석 — 중앙 텍스트와 겹침 방지 */
+      '.hf-herobg.ph{display:flex;align-items:flex-end;justify-content:flex-start;padding:24px 30px;background:linear-gradient(155deg,var(--t),var(--b) 72%);color:rgba(255,255,255,.55);font-size:14px}' +
       '.hf-heroov{position:absolute;inset:0;background:rgba(8,22,16,.34);pointer-events:none}' +
       '.hf-heromid{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}' +
       '.hf-herotitle{font-size:62px;font-weight:800;line-height:1.25;letter-spacing:-.02em;white-space:pre-wrap}' +
