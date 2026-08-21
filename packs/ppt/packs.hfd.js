@@ -1171,16 +1171,20 @@
       '.hf-t3foot{font-size:15px;font-weight:700;color:var(--t)}' +
       /* 4분할 (quad) */
       '.hf-qdwrap{flex:1;min-height:0;position:relative;display:flex;z-index:2}' +
-      '.hf-qdring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:330px;height:330px;border-radius:50%;background:var(--tn);-webkit-mask:radial-gradient(circle,transparent 108px,#000 109px);mask:radial-gradient(circle,transparent 108px,#000 109px)}' +
-      '.hf-qdx{position:absolute;left:0;right:0;top:50%;height:10px;transform:translateY(-50%);background:#fff}' +
-      '.hf-qdy{position:absolute;top:0;bottom:0;left:50%;width:10px;transform:translateX(-50%);background:#fff}' +
-      '.hf-qdgrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;column-gap:410px;row-gap:26px;padding:6px 10px}' +
+      /* 글로우 헤일로 + 그라데이션 도넛 링 — 콘텐츠는 원을 중심으로 모임(피드백 반영) */
+      '.hf-qdwrap::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--t) 16%,#fff) 0%,rgba(255,255,255,0) 68%)}' +
+      '.hf-qdring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:360px;height:360px;border-radius:50%;background:linear-gradient(145deg,color-mix(in srgb,var(--t) 44%,#fff),var(--tn) 55%,color-mix(in srgb,var(--t) 26%,#fff));-webkit-mask:radial-gradient(circle,transparent 116px,#000 117px);mask:radial-gradient(circle,transparent 116px,#000 117px)}' +
+      '.hf-qdx{position:absolute;left:50%;top:50%;width:400px;height:12px;transform:translate(-50%,-50%);background:#fff}' +
+      '.hf-qdy{position:absolute;left:50%;top:50%;width:12px;height:400px;transform:translate(-50%,-50%);background:#fff}' +
+      '.hf-qdgrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;column-gap:450px;row-gap:26px;padding:6px 10px}' +
       '.hf-qdcell{display:flex;flex-direction:column;gap:10px;min-width:0;justify-content:center}' +
       '.hf-qdcell .h{font-size:21px;font-weight:800}' +
       '.hf-qdcell ul{list-style:none;display:flex;flex-direction:column;gap:7px}' +
-      '.hf-qdcell li{font-size:13.5px;line-height:1.55;color:var(--body);padding-left:12px;position:relative}' +
-      '.hf-qdcell li::before{content:"";position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--t)}' +
-      '.hf-qdcell.q1,.hf-qdcell.q3{align-items:flex-start}' +
+      '.hf-qdcell li{font-size:14px;line-height:1.55;color:var(--body)}' +
+      '.hf-qdcell li::before{content:"·  ";color:var(--t);font-weight:800}' +
+      /* 좌 열은 원 쪽(우측·우정렬), 우 열은 원 바로 옆(좌측) — 내용이 원을 향해 모인다 */
+      '.hf-qdcell.q0,.hf-qdcell.q2{align-items:flex-end;text-align:right}' +
+      '.hf-qdcell.q1,.hf-qdcell.q3{align-items:flex-start;text-align:left}' +
       '.hf-qdcore{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:206px;height:206px;background:#fff;border-radius:36%;box-shadow:0 12px 34px rgba(10,30,20,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:20px}' +
       '.hf-qdcore .l{font-size:15px;font-weight:700;line-height:1.4;white-space:pre-wrap}' +
       '.hf-qdcore .h{font-size:23px;font-weight:800;color:var(--t)}' +
