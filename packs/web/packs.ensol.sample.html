@@ -15,7 +15,11 @@
   --ink:#191F28; --g1:#333D4B; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1; --g5:#B0B8C1;
   --bg1:#F9FAFB; --bg2:#F2F4F6; --line:#E5E8EB;
   --blue:#3667E9; --blue2:#2F5BD6; --lime:#77A93C; --lime2:#A8D95C;
-  --grad:linear-gradient(100deg,#4A79E8 5%,#77A93C 38%,#3667E9 72%,#2F5BD6 100%);
+  /* 메시 팔레트 — 우하단 컬러칩으로 스왑 (기본: 소프트 블루) */
+  --grad:linear-gradient(100deg,#4FA0F4 0%,#3667E9 48%,#2748BD 100%);
+  --mA:#F7FBFF; --mB:#DCEBFC; --mC:#CFE3FB; --mD:#C4D8F8; --mE:#D8E9FC;
+  --l1:#FBFDFF; --l2:#D3E3F9; --l3:#E4EFFC;
+  --bA:#E3F0FE; --bB:#BAD4F9; --bC:#CFE2FB;
 }
 *{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
 html{scroll-behavior:smooth}
@@ -46,16 +50,16 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 /* ── Hero — 사용자 첨부 자산 고정: 파스텔 메시 + 그라데이션 타이포 ── */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
   background:
-    radial-gradient(52% 44% at 50% -6%, #FEFFF4 0%, rgba(254,255,244,0) 70%),
-    radial-gradient(60% 52% at 12% 16%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
-    radial-gradient(64% 56% at 88% 18%, #DDEBFB 0%, rgba(221,235,251,0) 72%),
-    radial-gradient(70% 60% at 22% 92%, #C8EE92 0%, rgba(200,238,146,0) 74%),
-    radial-gradient(72% 62% at 82% 88%, #BFE29B 0%, rgba(191,226,155,0) 72%),
-    linear-gradient(180deg,#F3F8EC 0%,#C9DAF6 46%,#CDEC9F 100%)}
+    radial-gradient(52% 44% at 50% -6%, var(--mA) 0%, transparent 70%),
+    radial-gradient(60% 52% at 12% 16%, var(--mB) 0%, transparent 70%),
+    radial-gradient(64% 56% at 88% 18%, var(--mC) 0%, transparent 72%),
+    radial-gradient(70% 60% at 22% 92%, var(--mD) 0%, transparent 74%),
+    radial-gradient(72% 62% at 82% 88%, var(--mE) 0%, transparent 72%),
+    linear-gradient(180deg,var(--l1) 0%,var(--l2) 46%,var(--l3) 100%)}
 .hero .blob{position:absolute;width:56vw;height:56vw;filter:blur(90px);opacity:.55;pointer-events:none}
-.hero .b1{left:-12vw;top:-8vw;background:radial-gradient(circle,#EDF9C9 0%,rgba(237,249,201,0) 62%);animation:drift1 22s ease-in-out infinite}
-.hero .b2{right:-14vw;top:16vh;background:radial-gradient(circle,#B9D2F9 0%,rgba(185,210,249,0) 60%);animation:drift2 26s ease-in-out infinite}
-.hero .b3{left:14vw;bottom:-18vh;background:radial-gradient(circle,#BEEA82 0%,rgba(190,234,130,0) 60%);animation:drift3 24s ease-in-out infinite}
+.hero .b1{left:-12vw;top:-8vw;background:radial-gradient(circle,var(--bA) 0%,transparent 62%);animation:drift1 22s ease-in-out infinite}
+.hero .b2{right:-14vw;top:16vh;background:radial-gradient(circle,var(--bB) 0%,transparent 60%);animation:drift2 26s ease-in-out infinite}
+.hero .b3{left:14vw;bottom:-18vh;background:radial-gradient(circle,var(--bC) 0%,transparent 60%);animation:drift3 24s ease-in-out infinite}
 @keyframes drift1{50%{transform:translate(6vw,4vh) scale(1.08)}}
 @keyframes drift2{50%{transform:translate(-5vw,6vh) scale(.94)}}
 @keyframes drift3{50%{transform:translate(4vw,-5vh) scale(1.1)}}
@@ -125,9 +129,9 @@ h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-s
 .cgrid{margin-top:34px;display:grid;grid-template-columns:380px 1fr;gap:64px;align-items:start}
 .cart{position:sticky;top:120px;height:460px;display:grid;place-items:center;overflow:hidden;
   background:
-    radial-gradient(70% 60% at 20% 15%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
-    radial-gradient(70% 66% at 85% 30%, #C9DAF6 0%, rgba(201,218,246,0) 72%),
-    linear-gradient(180deg,#F3F8EC 0%,#CBDDF5 55%,#CDEC9F 100%)}
+    radial-gradient(70% 60% at 20% 15%, var(--mB) 0%, transparent 70%),
+    radial-gradient(70% 66% at 85% 30%, var(--mC) 0%, transparent 72%),
+    linear-gradient(180deg,var(--l1) 0%,var(--l2) 55%,var(--l3) 100%)}
 .cart span{font-size:30px;font-weight:700;letter-spacing:-.02em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;padding:0 30px;word-break:keep-all}
 .clist .crow{display:grid;grid-template-columns:56px 1fr 1.1fr;gap:28px;padding:34px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity .3s}
 .clist .crow:first-child{padding-top:6px}
@@ -172,9 +176,9 @@ h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-s
 /* Closing CTA */
 .cta{position:relative;padding:180px 0;overflow:hidden;text-align:center;
   background:
-    radial-gradient(56% 60% at 20% 20%, #E8F6C4 0%, rgba(232,246,196,0) 70%),
-    radial-gradient(60% 64% at 84% 30%, #DDEBFB 0%, rgba(221,235,251,0) 72%),
-    linear-gradient(180deg,#FAFDF3 0%,#D5E2F7 60%,#CDEC9F 100%)}
+    radial-gradient(56% 60% at 20% 20%, var(--mB) 0%, transparent 70%),
+    radial-gradient(60% 64% at 84% 30%, var(--mC) 0%, transparent 72%),
+    linear-gradient(180deg,var(--l1) 0%,var(--l2) 60%,var(--l3) 100%)}
 .cta h2{font-size:clamp(34px,4.2vw,56px);line-height:1.3;font-weight:700;letter-spacing:-.025em}
 .cta h2 .wd{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cta .sub{margin-top:20px;font-size:18px;color:var(--g2);font-weight:500}
@@ -182,6 +186,12 @@ h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-s
 .cta .btn{padding:17px 36px;font-size:16px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s;display:inline-block}
 .cta .btn:hover{transform:translateY(-2px)}
 .cta .btn.w{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* 우하단 컬러칩 */
+.thchips{position:fixed;right:18px;bottom:18px;z-index:80;display:flex;gap:8px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);padding:9px 11px;box-shadow:0 6px 22px rgba(3,7,18,.14)}
+.thchips span{width:22px;height:22px;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(3,7,18,.1);transition:transform .15s}
+.thchips span:hover{transform:scale(1.12)}
+.thchips span.on{box-shadow:inset 0 0 0 2px var(--ink)}
 
 /* Footer */
 footer{background:#fff;border-top:1px solid var(--line);padding:64px 0 46px;font-size:13.5px;color:var(--g4)}
@@ -364,6 +374,9 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
   <div class="copy"><span>ⓒ 2026 MIDAS IT.</span><span>Ensol MBM · Brand Landing</span></div>
 </footer>
 
+<!-- 우하단 컬러 테마 칩 -->
+<div class="thchips" id="thchips"></div>
+
 <script>
 (function(){
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -508,6 +521,30 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
   document.getElementById('pclose').addEventListener('click', closeP);
   mask.addEventListener('click', closeP);
   addEventListener('keydown', function(e){ if (e.key === 'Escape') closeP(); });
+
+  /* 컬러 팔레트 — 우하단 칩으로 메시·그라데이션 세트 스왑 */
+  var PAL = {
+    blue:   { grad:'linear-gradient(100deg,#4FA0F4 0%,#3667E9 48%,#2748BD 100%)',
+      mA:'#F7FBFF', mB:'#DCEBFC', mC:'#CFE3FB', mD:'#C4D8F8', mE:'#D8E9FC', l1:'#FBFDFF', l2:'#D3E3F9', l3:'#E4EFFC', bA:'#E3F0FE', bB:'#BAD4F9', bC:'#CFE2FB' },
+    mint:   { grad:'linear-gradient(100deg,#05D16E 0%,#0FA97C 42%,#3182F6 100%)',
+      mA:'#F5FEF9', mB:'#D4F6E6', mC:'#CDEFF7', mD:'#BFEDD9', mE:'#D2F1FA', l1:'#FAFFFC', l2:'#CEEFE2', l3:'#DDF3FB', bA:'#DFF9EC', bB:'#B9E8F7', bC:'#C4F1DE' },
+    purple: { grad:'linear-gradient(100deg,#8A5CF6 0%,#6735E6 46%,#3182F6 100%)',
+      mA:'#FBF9FF', mB:'#E9E0FC', mC:'#DCE4FB', mD:'#D9CDF9', mE:'#E2E9FC', l1:'#FDFCFF', l2:'#DFD7FA', l3:'#E7EDFC', bA:'#EFE7FE', bB:'#C9BCF6', bC:'#D4DFFA' },
+    orange: { grad:'linear-gradient(100deg,#FF7A2F 0%,#FF5500 46%,#00A3FE 100%)',
+      mA:'#FFFAF5', mB:'#FFE4CE', mC:'#D8ECFD', mD:'#FFD9BC', mE:'#DCEFFE', l1:'#FFFDFA', l2:'#FFDFC5', l3:'#E2F1FE', bA:'#FFECDC', bB:'#FFCBA3', bC:'#C9E6FD' }
+  };
+  var chipsEl = document.getElementById('thchips');
+  chipsEl.innerHTML = Object.keys(PAL).map(function(k){
+    return '<span data-p="' + k + '"' + (k === 'blue' ? ' class="on"' : '') + ' style="background:' + PAL[k].grad + '" title="' + k + '"></span>';
+  }).join('');
+  chipsEl.addEventListener('click', function(e){
+    var s = e.target.closest('span[data-p]'); if (!s) return;
+    var p = PAL[s.dataset.p], rs = document.documentElement.style;
+    rs.setProperty('--grad', p.grad);
+    ['mA','mB','mC','mD','mE','l1','l2','l3','bA','bB','bC'].forEach(function(k){ rs.setProperty('--' + k, p[k]); });
+    chipsEl.querySelectorAll('span').forEach(function(x){ x.classList.remove('on'); });
+    s.classList.add('on');
+  });
 
   /* 캡처 하네스: ?modal=N 로 열면 해당 인물 패널 자동 오픈 */
   var mm = location.search.match(/modal=(\d)/);
