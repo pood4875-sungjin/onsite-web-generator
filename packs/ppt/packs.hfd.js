@@ -435,7 +435,7 @@
     hsteps: function (s, P, ctx) {
       var steps = (s.steps || []).slice(0, 6).map(function (st, i) {
         var IP = P + '.steps.' + i;
-        return '<div class="hf-hstep">' +
+        return '<div class="hf-hstep"><span class="hf-hsln"></span><span class="hf-hsdot"></span>' +
           '<span class="hf-hswhen"' + de(IP + '.when') + '>' + esc(st.when || '') + '</span>' +
           '<span class="hf-hshead"' + de(IP + '.head') + '>' + mb(st.head || '') + '</span>' +
           (st.text ? '<p class="hf-hstx"' + de(IP + '.text') + '>' + mb(st.text) + '</p>' : '') + '</div>';
@@ -521,7 +521,7 @@
         }
         if (s.vs) {
           var gy = wp(vv) + Math.round((wp(tv) - wp(vv)) / 2);
-          wcols += '<div class="hf-wfcol vs"><span class="tr"><i style="height:' + wp(vv) + '%;bottom:0"></i>' +
+          wcols += '<div class="hf-wfcol vs"><span class="tr"><span class="vsbg"></span><i style="height:' + wp(vv) + '%;bottom:0"></i>' +
             '<span class="v" style="bottom:calc(' + wp(vv) + '% + 6px)"' + de(P + '.vs.label') + '>' + esc(s.vs.label != null ? s.vs.label : String(vv)) + '</span>' +
             (s.vs.gap ? '<span class="gap" style="bottom:' + gy + '%"' + de(P + '.vs.gap') + '>' + mb(s.vs.gap) + '</span>' : '') + '</span>' +
             '<span class="x"' + de(P + '.vs.x') + '>' + esc(s.vs.x || '') + '</span></div>';
@@ -696,7 +696,7 @@
       return '<section class="slide hf og" data-kind="' + kind(s, 'Org') + '">' + runhead(s, P, ctx) +
         (s.title ? headline(s, P) : '') +
         '<div class="hf-ogwrap">' + box(s.top, P + '.top', true) +
-        '<span class="hf-ogline"></span>' + box(s.bottom, P + '.bottom', false) + '</div></section>';
+        '<span class="hf-ogline"><span class="hf-ogdot"></span></span>' + box(s.bottom, P + '.bottom', false) + '</div></section>';
     },
     /* 순환 다이어그램 — 상하 아크+중앙 허브+상하 설명 (이중 중대성 다이어그램 번안) */
     cycle: function (s, P, ctx) {
@@ -1133,9 +1133,10 @@
       '.hf-hsrow{flex:0 1 auto;margin:auto 0;display:flex;gap:22px;padding:24px 0;position:relative;z-index:2;align-items:flex-start}' +
       /* 노드 콘텐츠 센터 정렬 — 도트 중앙, 라인은 도트 중심끼리 연결(피드백 반영) */
       '.hf-hstep{flex:1;min-width:0;position:relative;padding-top:30px;text-align:center}' +
-      '.hf-hstep::before{content:"";position:absolute;left:calc(50% + 14px);right:calc(-50% - 8px);top:5px;height:2px;background:var(--tn)}' +
-      '.hf-hstep:last-child::before{display:none}' +
-      '.hf-hstep::after{content:"";position:absolute;left:50%;transform:translateX(-50%);top:0;width:12px;height:12px;border-radius:50%;background:var(--t)}' +
+      /* 라인·도트는 실제 span(hf-hsln/hf-hsdot) — 의사요소는 PPTX DOM 워커가 못 집어 추출에서 사라진다 */
+      '.hf-hsln{position:absolute;left:calc(50% + 14px);right:calc(-50% - 8px);top:5px;height:2px;background:var(--tn)}' +
+      '.hf-hstep:last-child .hf-hsln{display:none}' +
+      '.hf-hsdot{position:absolute;left:50%;transform:translateX(-50%);top:0;width:12px;height:12px;border-radius:50%;background:var(--t)}' +
       '.hf-hswhen{font-size:15px;font-weight:800;color:var(--t);font-variant-numeric:tabular-nums}' +
       '.hf-hshead{display:block;font-size:17.5px;font-weight:700;margin-top:5px;line-height:1.35;white-space:pre-wrap}' +
       '.hf-hstx{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:5px}' +
@@ -1221,7 +1222,7 @@
       '.hf-wfcol .x{flex:none;font-size:11px;text-align:center;color:var(--muted);padding-top:7px;border-top:1px solid var(--rule);min-height:34px;line-height:1.35}' +
       '.hf-wfcol.tt .tr i{background:var(--dp);border-radius:8px 8px 0 0}' +
       '.hf-wfcol.tt .v.in{color:#fff;font-size:16px}' +
-      '.hf-wfcol.vs .tr::before{content:"";position:absolute;inset:-30px -5px 0;background:var(--tn);border-radius:12px}' +
+      '.hf-wfcol.vs .vsbg{position:absolute;inset:-30px -5px 0;background:var(--tn);border-radius:12px}' +
       '.hf-wfcol.vs .tr i{position:relative;background:var(--t);border-radius:8px 8px 0 0}' +
       '.hf-wfcol.vs .v{z-index:1}' +
       '.hf-wfcol.vs .gap{position:absolute;left:50%;transform:translate(-50%,50%);z-index:2;background:#fff;border-radius:999px;padding:9px 14px;font-size:12.5px;font-weight:800;color:var(--t);box-shadow:0 6px 18px rgba(10,30,20,.12);white-space:nowrap}' +
@@ -1345,7 +1346,7 @@
       '.hf-ogchip{flex:1;min-width:0;text-align:center;background:var(--tn);border-radius:10px;padding:13px 8px;font-size:14px;font-weight:700}' +
       '.hf-ogbox:not(.top) .hf-ogchip{background:#fff;border:1px solid var(--rule)}' +
       '.hf-ogline{align-self:center;width:2px;height:34px;background:var(--b);position:relative}' +
-      '.hf-ogline::after{content:"";position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:var(--b)}' +
+      '.hf-ogdot{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:var(--b)}' +
       /* 순환 다이어그램 (cycle) */
       '.hf-cywrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}' +
       '.hf-cyring{position:relative;width:520px;height:520px;background:var(--tn);border-radius:50%;flex:0 0 auto}' +
