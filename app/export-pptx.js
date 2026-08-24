@@ -137,6 +137,8 @@
     '.hf-num, .hf-cnbadge, .hf-cylab, .hf-duochip, .hf-kbno, .hf-lnbadge, .hf-oghead, .hf-pfbadge, ' +
     /* border-bottom/top/left 행 규칙선류 — background:만 훑어 놓친 것(2026-08-24, 테이블·스펙 행 라인 실사고) */
     '.hf-tbrow, .hf-trow, .hf-srow, .hf-hlrow, .hf-tcprow, .hf-cnnote, .hf-abcap, .hf-abyear, .hf-sdtx, .hf-bdpt, .hf-pffoot, .hf-t3grid, ' +
+    /* checklist 도트 리스트 구분선(.hf-list li) — sf-list/pg-list는 있는데 정작 hfd 자기 것만 빠져 있었음(2026-08-24 재신고) */ '.hf-list li, ' +
+    /* 3차 재검사: 자식이 아닌 본체 자신에 border(-top/-left)가 붙어 TEXT_SEL엔 있어도 SHAPE_SEL엔 없던 것(matrix 그룹 구분선·dash 통계 구분선·chart/waterfall 축 라벨 상단선) */ '.hf-mxgroup, .hf-dstat, .hf-cnbar .x, .hf-wfcol .x, ' +
     /* 화이트 패널 계열 — 이게 빠지면 기하 위에 텍스트만 떠서 "추출이 안 된" 덱이 된다 */
     '.hf-frpanel, .hf-abpanel, .hf-sdcap, .hf-sdpanel, .hf-abframe, .hf-abband, ' +
     '.hf-duo, .hf-flowcol, .hf-flowhead, .hf-flowrow, .hf-hstep, .hf-hsln, .hf-hsdot, .hf-pfcard, .hf-pfhead, .hf-pffocus, .hf-bdband, .hf-bdcard, .hf-hipanel, .hf-hiimg .ph, .hf-cnchart, .hf-cnbar i, ' +
