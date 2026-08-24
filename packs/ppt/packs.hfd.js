@@ -25,9 +25,8 @@
 
   /* ---- 공통 조각 ---- */
   function runhead(s, P, ctx, white) {
-    var pg = (ctx && ctx.no < 10 ? '0' : '') + (ctx ? ctx.no : '');
-    return '<div class="hf-run' + (white ? ' wh' : '') + '"><span class="hf-runl"' + de(P + '.kicker') + '>' + esc(s.kicker != null ? s.kicker : 'MIDAS Happy Family Day') + '</span>' +
-      '<span class="hf-runr">' + pg + '</span></div>';
+    /* 페이지 넘버 제거(사용자 지시) — 러닝헤드는 킥커만 */
+    return '<div class="hf-run' + (white ? ' wh' : '') + '"><span class="hf-runl"' + de(P + '.kicker') + '>' + esc(s.kicker != null ? s.kicker : 'MIDAS Happy Family Day') + '</span></div>';
   }
   function headline(s, P) {
     return '<h2 class="hf-hl"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>';
@@ -893,8 +892,7 @@
       '@media print{.hf-chips{display:none}}' +
       /* 러닝헤드 */
       '.hf-run{display:flex;justify-content:space-between;align-items:baseline;flex:none;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t)}' +
-      '.hf-runr{color:var(--muted);font-variant-numeric:tabular-nums}' +
-      '.hf-run.wh{position:relative;z-index:3;color:#fff}.hf-run.wh .hf-runr{color:rgba(255,255,255,.75)}' +
+      '.hf-run.wh{position:relative;z-index:3;color:#fff}' +
       /* 헤드라인 */
       '.hf-hl{margin-top:26px;font-size:38px;font-weight:700;line-height:1.28;letter-spacing:-.02em;white-space:pre-wrap;flex:none;max-width:88%}' +
       '.hf-sub{margin-top:10px;font-size:16px;color:var(--muted);flex:none}' +

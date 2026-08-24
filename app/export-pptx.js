@@ -56,7 +56,7 @@
     '.pg-dvtitle', '.pg-dvlead', '.pg-numno', '.pg-numhead', '.pg-numtx', '.pg-list li span', '.pg-cellhead', '.pg-celltx', '.pg-badge', '.pg-kpval',
     '.pg-bignum', '.pg-bigcap', '.pg-brow .l', '.pg-brow .v', '.pg-brow .tx', '.pg-srow .k', '.pg-srow .t', '.pg-trow > span', '.pg-tbrow > span',
     '.pg-rmhead', '.pg-rmlist li', '.pg-bsval', '.pg-bscap', '.pg-stephead', '.pg-steptx', '.pg-cmp ul li', '.pg-qmark', '.pg-qtx',
-    /* hfd 팩(Happy Family Day) */ '.hf-runl', '.hf-runr', '.hf-hl', '.hf-sub', '.hf-lab', '.hf-cap', '.hf-body', '.hf-klab', '.hf-ktx',
+    /* hfd 팩(Happy Family Day) */ '.hf-runl', '.hf-hl', '.hf-sub', '.hf-lab', '.hf-cap', '.hf-body', '.hf-klab', '.hf-ktx',
     '.hf-cvtitle', '.hf-cvsub', '.hf-cvdate', '.hf-logo', '.hf-dvno', '.hf-dvtitle', '.hf-dvlead', '.hf-grtx', '.hf-grby',
     '.hf-tocno', '.hf-toclab', '.hf-tocdesc', '.hf-tocpg', '.hf-tocarr', '.hf-numno', '.hf-numhead', '.hf-numtx', '.hf-cellhead', '.hf-celltx',
     '.hf-trow > span', '.hf-tbrow > span', '.hf-srow .k', '.hf-srow .t', '.hf-list li span', '.hf-qtx', '.hf-qby', '.hf-imgph span',
