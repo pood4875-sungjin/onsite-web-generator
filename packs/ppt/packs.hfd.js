@@ -58,8 +58,11 @@
   /* 2026 필 기하 공통 조각 — 워드마크 2줄 텍스트 로고(우상/센터), 커버 배경 레이어(스샷 원호 실측 재현) */
   function hpWm(pos) { return '<div class="hp-wm' + (pos ? ' ' + pos : '') + '"><b>MIDAS</b><span>Happy Family Day</span></div>'; }
   function hpCoverBg() {
-    /* 원호는 타원 코너 사각으로 재현(원 클립 금지 — PPTX 추출 시 클립이 무시돼 원이 통째로 삐져나온다) */
-    return '<span class="hp-cvb2"></span><span class="hp-cvband"></span><span class="hp-cvsg"></span><span class="hp-cvdt"></span><span class="hp-cva"></span>';
+    /* 상/하 존 = 인라인 SVG 2장 — 원 파라미터는 Figma 렌더 경계 3점 원피팅 실측(세이지 c(18,343) R716 ·
+       딥틸 c(-16,332) R753 · 브라이트 c(1354,854) R447, 수평 경계 y360). SVG 뷰포트가 클립을 담당하므로
+       화면·PPTX(전 SVG 래스터) 모두 삐짐 없이 정확하다. fill=CSS 변수 → 테마 칩 대응. */
+    return '<svg class="hp-cvz t" viewBox="0 0 1280 360"><rect width="1280" height="360"/><circle cx="18" cy="343" r="716"/></svg>' +
+      '<svg class="hp-cvz b" viewBox="0 0 1280 360"><rect width="1280" height="360"/><circle class="cdt" cx="-16" cy="-28" r="753"/><circle class="ca" cx="1354" cy="494" r="447"/></svg>';
   }
 
   /* ---- 타입 렌더러 ---- */
@@ -1569,27 +1572,27 @@
       '.hp-wm.ct{right:auto;left:50%;transform:translateX(-50%);top:38px;text-align:center}' +
       /* 커버 배경 레이어 — 원호는 스샷 3점 실측으로 푼 원(중심·반경) */
       '.hp-cv,.hp-ag{background:var(--t)}' +
-      '.hp-cvb2{position:absolute;left:1192px;top:-184px;width:1056px;height:1056px;border-radius:50%;background:var(--b);z-index:1}' +
-      '.hp-cvband{position:absolute;left:0;right:0;top:364px;bottom:0;background:var(--b);z-index:2}' +
-      /* 세이지·딥틸 존 — 우변이 살짝 좁아지는 원호(타원 코너): 실측 (736,0)→(692,364) / (705,364)→(632,720) */
-      '.hp-cvsg{position:absolute;left:0;top:0;width:736px;height:364px;background:var(--sg);border-radius:0 0 44px 0/0 0 364px 0;z-index:3}' +
-      '.hp-cvdt{position:absolute;left:0;top:364px;width:705px;height:356px;background:var(--dt);border-radius:0 0 73px 0/0 0 356px 0;z-index:3}' +
-      '.hp-cva{position:absolute;left:976px;top:456px;width:688px;height:688px;border-radius:50%;background:var(--a);z-index:3}' +
-      '.hp-cvkick{position:absolute;left:59px;top:52px;z-index:5;color:#fff;font-size:19px;font-weight:600}' +
-      '.hp-cvtitle{position:absolute;left:59px;top:267px;z-index:5;color:#fff;font-size:75px;font-weight:800;line-height:1.24;letter-spacing:-.02em;white-space:pre-wrap;max-width:900px}' +
+      '.hp-cvz{position:absolute;left:0;width:1280px;height:360px;z-index:1}' +
+      '.hp-cvz.t{top:0}.hp-cvz.b{top:360px}' +
+      '.hp-cvz.t rect{fill:var(--t)}.hp-cvz.t circle{fill:var(--sg)}' +
+      '.hp-cvz.b rect{fill:var(--b)}.hp-cvz.b .cdt{fill:var(--dt)}.hp-cvz.b .ca{fill:var(--a)}' +
+      '.hp-cvkick{position:absolute;left:59px;top:52px;z-index:5;color:#fff;font-size:24px;font-weight:600;letter-spacing:-.01em}' +
+      '.hp-cvtitle{position:absolute;left:59px;top:267px;z-index:5;color:#fff;font-size:80px;font-weight:800;line-height:1.16;letter-spacing:-.015em;white-space:pre-wrap;max-width:920px}' +
       '.hp-cv.up .hp-cvtitle{top:48px;font-size:55px}' +
       '.hp-cv .hf-logo,.hp-dv .hf-logo{left:59px;bottom:59px}' +
       /* 간지 pill — 딥 지면+상하 2필 / pill2=3필 스택+타원 오버레이 */
       '.hp-dv{background:var(--dt)}' +
-      '.hp-dvp1{position:absolute;left:462px;right:0;top:0;height:348px;background:var(--p1);border-radius:0 0 0 288px}' +
-      '.hp-dvp2{position:absolute;left:512px;right:0;bottom:0;height:348px;background:var(--p2);border-radius:288px 0 0 0}' +
-      '.hp-dv2a{position:absolute;left:588px;top:0;width:524px;height:210px;background:var(--sg);border-radius:0 0 120px 120px}' +
-      '.hp-dv2b{position:absolute;left:700px;right:0;top:210px;height:314px;background:var(--p1);border-radius:157px 0 0 157px}' +
-      '.hp-dv2c{position:absolute;left:588px;top:524px;width:524px;height:196px;background:var(--sg);border-radius:120px 120px 0 0}' +
+      /* 캡슐(스타디움) 실측 — 상단 c(777,34) R316·하단 c(769,665) R314, y350에서 맞닿음(갭 없음).
+         위/아래·우측은 슬라이드 밖으로 흘려 PPTX roundRect(4코너 균일)에서도 보이는 면이 원본과 같다 */
+      '.hp-dvp1{position:absolute;left:461px;right:-320px;top:-282px;height:632px;background:var(--p1);border-radius:316px}' +
+      '.hp-dvp2{position:absolute;left:455px;right:-320px;top:351px;height:628px;background:var(--p2);border-radius:314px}' +
+      '.hp-dv2a{position:absolute;left:588px;top:-120px;width:524px;height:330px;background:var(--sg);border-radius:120px}' +
+      '.hp-dv2b{position:absolute;left:700px;right:-160px;top:210px;height:314px;background:var(--p1);border-radius:157px}' +
+      '.hp-dv2c{position:absolute;left:588px;top:524px;width:524px;height:330px;background:var(--sg);border-radius:120px}' +
       '.hp-dv2o{position:absolute;left:1032px;top:-40px;width:560px;height:800px;border-radius:50%;background:rgba(255,255,255,.14)}' +
       '.hp-dvtitle{position:absolute;left:59px;top:48px;z-index:5;color:#fff;font-size:48px;font-weight:800;line-height:1.25;letter-spacing:-.02em;white-space:pre-wrap;max-width:340px}' +
       /* 아젠다 — 미니 커버 기하(하단 밴드 md)+잉크 패널 */
-      '.hp-ag .hp-cvband{background:var(--md)}' +
+      '.hp-ag .hp-cvz.b rect{fill:var(--md)}' +
       '.hp-agpanel{position:absolute;left:173px;top:185px;width:933px;height:449px;z-index:5;background:linear-gradient(135deg,color-mix(in srgb,var(--ik2) 82%,var(--t)),var(--ik2));border-radius:4px;padding:36px 100px 30px 100px;display:flex;flex-direction:column}' +
       '.hp-aglab{text-align:center;color:#fff;font-size:19px;font-weight:800;letter-spacing:.08em;flex:0 0 auto}' +
       '.hp-agrows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;margin-top:8px}' +
