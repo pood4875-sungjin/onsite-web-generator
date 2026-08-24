@@ -125,9 +125,12 @@
     '.nl-cap, .nv-hlbar, .sc-bleed, .cd-band, .ln-rule, .br-rule, .ln-bx, .bd-rule2, .bd-hr, .ps-rule, .ck-li, .ck-icon, .hl-row, .ps-hr, ' +
     /* naver — 행 규칙선(사이드별 보더로 추출) */ '.dv-item, .as-row, .nl-row, .st-col, .bd-foot, ' +
     /* naver — 텍스트만 TEXT_SEL에 있고 배경 도형이 빠져 있던 것 + 의사요소→span 전환(tl-line, 2026-08-24) */ '.rm-lbl, .dv-gfx, .sp-li, .stt-hole, .tl-line, ' +
+    /* naver — border-only 2차 재검사(2026-08-24): 커버 풋라인·간지 리스트·목차 리스트 상단 규칙선 */ '.cv-foot, .hl-list, .tc-list, ' +
     /* machine 팩 — 사진·셰이드·라인·바·밴드·게이지 */ '.nx-photo, .nx-shrow, .nx-shade, .nx-dash, .nx-run, .nx-2col li, .nx-qbar, .nx-ref .ln, .nx-lc .ln, .nx-band, .nx-bn .ln, .nx-ag .ln, .nx-pc.on, .nx-prlab .ln, .nx-dhl .ln, .nx-sprow, .nx-ba .ln, .nx-dmcol .ln, .nx-track, .nx-fill, .nx-prow.on, .nx-rm .ln, .nx-tl, .nx-foot, .nx-toclist, .nx-tocrow, .nx-clfoot, .ms-head, .nx-stcol .ln, ' +
+    /* machine — border-only 2차 재검사(2026-08-24): 밀스톤 표 헤더/행·체크리스트 구분선·커버 풋라인·미니그리드 규칙선 */ '.ms-chart, .ms-lab, .ms-m, .ms-row, .nx-chk, .nx-cvfoot, .nx-dhminis, .nx-spgrid, ' +
     /* rams 팩 — 라운드 카드·행·칩·게이지·원형 */ '.rs-card, .rs-trow, .rs-row, .rs-srow, .rs-spec, .rs-chip, .rs-gauge, .rs-gauge i, .rs-mbar, .rs-hlrow, .rs-play, .rs-ckic, .rs-badge, .rs-hole, .rs-imgph, .rs-qbar, .rs-logo i, .rs-tbrow, .rs-half, ' +
     /* sfmi 팩 — 원·벤·대시·chevron·풋라인 */ '.sf-dash, .sf-numc, .sf-crc, .sf-kpc, .sf-pcc, .sf-cmpc, .sf-lnc, .sf-venn, .sf-bocrc, .sf-bscrc, .sf-chev, .sf-srow, .sf-trow, .sf-tbrow, .sf-list li, .sf-numhead, .sf-tochead, .sf-foot, .sf-bar, .sf-fdash, .sf-needbox, .sf-hlrow, .sf-hlrow .no, .sf-imgph, .sf-qbox, .sf-boside, .sf-lnbadge, ' +
+    /* sfmi — border-only 2차 재검사(2026-08-24): 통계 2열 그리드 상단 규칙선 */ '.sf-stcols, ' +
     /* pastel 팩 — 그라데이션 셀·키밴드·바·규칙선 */ '.pg-cell, .pg-stcard, .pg-toccol, .pg-key, .pg-srow, .pg-trow, .pg-tbrow, .pg-brow .tr, .pg-brow .tr i, .pg-rmcol, .pg-step, .pg-cmp, .pg-cvbars span, .pg-dash, .pg-imgph, .pg-leadbox, .pg-hlrow, .pg-list li, .pg-numhead, .pg-lab.bd, .pg-lab.bd0, .pg-clfoot, .pg-side, ' +
     /* hfd 팩 — 밴드·원 기하·셀·카드류(srow·trow는 플레인 행이라 제외) */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-abarc, .hf-cell, .hf-toccol, .hf-key, .hf-imgph, .hf-dot, .hf-pstep, .hf-cmp, .hf-rmcol, .hf-half, .hf-brow .tr, .hf-brow .tr i, .hf-tocrow, .hf-herobg, .hf-heroov, ' +
     /* section 카드(.hf-num)·틴트/화이트 필 뱃지류 — 텍스트만 TEXT_SEL에 있고 배경 도형이 빠져 있던 것(2026-08-24 실사고) */
