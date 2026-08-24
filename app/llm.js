@@ -488,37 +488,62 @@
   /* 발표 대본 생성 — 덱 전체 → 장별 스크립트 {opening,items:[{i,title,secs,script}],closing}
      onProgress({n,total,opening}) — 스트림에서 완성된 장 수를 세어 진행 표시(항목마다 "script" 키 1개) */
   async function genScript(slides, lang, onProgress) {
-    if (!usingProxy()) throw new Error('발표 대본은 팀 프록시 연결이 필요해요.');
     var total = (slides || []).length;
-    var lastErr = null;
-    for (var att = 0; att < 2; att++) {   // 1차=스트림(진행 표시), 2차=비스트림(순단·모델 JSON 오타 재생성)
-      var useStream = att === 0;
-      var t = '';
-      try {
-        var r = await fetch(proxyUrl() + '/script', {
-          method: 'POST', headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ slides: _noHeavy(slides), lang: lang || uiLang(), stream: useStream }),
-        });
-        if (!r.ok) { var j0 = null; try { j0 = await r.json(); } catch (e0) {} lastErr = new Error(_proxyErrMsg(j0, r.status)); continue; }
-        var ct = (r.headers.get('content-type') || '');
-        if (useStream && ct.indexOf('event-stream') >= 0 && r.body) {
-          t = await _readSse(r.body, function (full) {
-            if (!onProgress) return;
-            var done = (full.match(/"script""?\s*:/g) || []).length;   // 오타("script"":)도 진행으로 집계
-            onProgress({ n: Math.min(done, total), total: total, opening: /"opening""?\s*:/.test(full) });
+    var sl = lang || uiLang();
+    if (usingProxy()) {
+      var lastErr = null;
+      for (var att = 0; att < 2; att++) {   // 1차=스트림(진행 표시), 2차=비스트림(순단·모델 JSON 오타 재생성)
+        var useStream = att === 0;
+        var t = '';
+        try {
+          var r = await fetch(proxyUrl() + '/script', {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ slides: _noHeavy(slides), lang: sl, stream: useStream }),
           });
-        } else {
-          var j = null; try { j = await r.json(); } catch (e1) {}
-          t = j && j.text;
-        }
-      } catch (e) { lastErr = e; continue; }   // 스트림 순단 → 비스트림 재시도
-      t = String(t || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
-        .replace(/""\s*:/g, '":');   // 모델 오타 청소 — "key"": 를 "key": 로
-      var out = _repairParse(t);
-      if (out && Array.isArray(out.items) && out.items.length) return out;
-      lastErr = new Error('대본을 만들지 못했어요. 다시 시도해주세요.');
+          if (!r.ok) { var j0 = null; try { j0 = await r.json(); } catch (e0) {} lastErr = new Error(_proxyErrMsg(j0, r.status)); continue; }
+          var ct = (r.headers.get('content-type') || '');
+          if (useStream && ct.indexOf('event-stream') >= 0 && r.body) {
+            t = await _readSse(r.body, function (full) {
+              if (!onProgress) return;
+              var done = (full.match(/"script""?\s*:/g) || []).length;   // 오타("script"":)도 진행으로 집계
+              onProgress({ n: Math.min(done, total), total: total, opening: /"opening""?\s*:/.test(full) });
+            });
+          } else {
+            var j = null; try { j = await r.json(); } catch (e1) {}
+            t = j && j.text;
+          }
+        } catch (e) { lastErr = e; continue; }   // 스트림 순단 → 비스트림 재시도
+        t = String(t || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim()
+          .replace(/""\s*:/g, '":');   // 모델 오타 청소 — "key"": 를 "key": 로
+        var out = _repairParse(t);
+        if (out && Array.isArray(out.items) && out.items.length) return out;
+        lastErr = new Error('대본을 만들지 못했어요. 다시 시도해주세요.');
+      }
+      throw lastErr;
     }
-    throw lastErr;
+    // BYOK 직접 호출 — 팀 프록시 없이도 자기 Anthropic 키로 발표 대본 생성(워커 /script 라우트와 동일 시스템 프롬프트)
+    if (!hasKey()) throw new Error('발표 대본 생성엔 API 키가 필요해요. 설정에서 Anthropic 키를 등록해주세요.');
+    var langName = ({ ko: '한국어', en: '영어(English)', ja: '일본어(日本語)', zh: '중국어 간체(简体中文)' })[sl] || '한국어';
+    var ssys = '너는 시니어 발표 코치다. 슬라이드 덱(JSON)을 읽고 발표자가 그대로 읽을 수 있는 발표 대본을 쓴다.\n' +
+      '반드시 유효한 JSON 하나만 출력한다. 코드펜스·설명 문장 금지. 형식: {"opening":"발표 시작 인사·후킹 한두 문장","items":[{"i":1,"title":"장 제목 요약","secs":45,"script":"..."}],"closing":"마무리·다음 행동 제안 한두 문장"}\n' +
+      '규칙:\n' +
+      '- 모든 텍스트를 ' + langName + '로 쓴다(브랜드·고유명사는 원문 유지).\n' +
+      '- items는 슬라이드 수와 정확히 같게, i는 1부터.\n' +
+      '- 각 script는 구어체(발표체) 3~6문장: 첫 문장=앞 장에서 넘어오는 전환, 마지막 문장=다음 장 예고(마지막 장 제외).\n' +
+      '- 슬라이드에 있는 수치·사례·고유명사만 인용, 없는 사실 창작 금지.\n' +
+      '- secs=그 장의 예상 발표 시간(초, 20~90).\n' +
+      '- 이모지·마크다운 금지.';
+    var stxt = await messages({
+      system: ssys, user: '덱:\n' + JSON.stringify(_noHeavy(slides)), maxTokens: 16000,
+      onText: onProgress ? function (full) {
+        var done = (full.match(/"script""?\s*:/g) || []).length;
+        onProgress({ n: Math.min(done, total), total: total, opening: /"opening""?\s*:/.test(full) });
+      } : undefined,
+    });
+    stxt = String(stxt || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim().replace(/""\s*:/g, '":');
+    var sout = _repairParse(stxt);
+    if (sout && Array.isArray(sout.items) && sout.items.length) return sout;
+    throw new Error('대본을 만들지 못했어요. 다시 시도해주세요.');
   }
 
   /* AI 이미지 생성(나노바나나) — 팀 프록시 또는 개인 구글 키(설정에서 등록). 성공 시 dataURI 반환 */
