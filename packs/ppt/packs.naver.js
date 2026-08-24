@@ -499,7 +499,7 @@
       }).join('');
       return '<section class="slide tl" data-kind="' + kind(s, 'Timeline') + '"' + chVars(s) + '>' +
         navStrip(ctx.chapters, s.ch, ctx.no) + headline(s, P) +
-        '<div class="tl-body"><div class="tl-grid" style="--tln:' + Math.max(items.length, 2) + '">' + cells + '</div></div>' + summary(s, P) + '</section>';
+        '<div class="tl-body"><div class="tl-grid" style="--tln:' + Math.max(items.length, 2) + '"><span class="tl-line"></span>' + cells + '</div></div>' + summary(s, P) + '</section>';
     },
     /* 프로세스 — 단계 → 화살표 흐름 */
     process: function (s, P, ctx) {
@@ -933,10 +933,11 @@
       '.tb-row span:first-child{font-weight:500;color:var(--ink)}' +
       '.tb-row.hd{border-top:2px solid var(--ink)}.tb-row.hd span,.tb-row.hd .nv-label{font-weight:700;color:var(--label)}' +
       '.tb-row:last-child{border-bottom:1px solid var(--rule)}' +
-      /* 타임라인 — 축선을 그리드 좌표계 안에(::before) 두고 마커 중심을 축선 위에 정확히 얹는다 */
+      /* 타임라인 — 축선을 그리드 좌표계 안에 두고 마커 중심을 축선 위에 정확히 얹는다.
+         축선은 실제 span(.tl-line) — 의사요소(::before)는 PPTX DOM 워커가 못 집어 추출에서 사라진다(2026-08-24) */
       '.tl-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 0}' +
       '.tl-grid{position:relative;display:grid;grid-template-columns:repeat(var(--tln),1fr);gap:28px;padding-top:30px}' +
-      '.tl-grid::before{content:"";position:absolute;left:2px;right:2px;top:8px;height:1px;background:var(--rule)}' +
+      '.tl-line{position:absolute;left:2px;right:2px;top:8px;height:1px;background:var(--rule)}' +
       '.tl-cell{display:flex;flex-direction:column;gap:8px;position:relative}' +
       '.tl-mark{position:absolute;top:-27px;left:2px;width:11px;height:11px;background:#fff;border:2px solid var(--muted);transform:rotate(45deg)}' +
       '.tl-cell.on .tl-mark{background:var(--ch);border-color:var(--ch)}' +
