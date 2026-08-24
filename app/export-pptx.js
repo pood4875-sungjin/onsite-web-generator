@@ -30,6 +30,14 @@
   function blend(fg, bg) { var a = fg.a; return { r: Math.round(fg.r * a + bg.r * (1 - a)), g: Math.round(fg.g * a + bg.g * (1 - a)), b: Math.round(fg.b * a + bg.b * (1 - a)), a: 1 }; }
   function hex(c) { function h(n) { return ('0' + Math.max(0, Math.min(255, n)).toString(16)).slice(-2).toUpperCase(); } return h(c.r) + h(c.g) + h(c.b); }
   function fontFamily(cs) { var f = (cs.fontFamily || '').split(',')[0].replace(/["']/g, '').trim(); return f || 'Pretendard'; }
+  /* 폰트 이식성 — Pretendard는 수신 환경에 Bold 페이스가 없는 경우가 흔해(사용자 실측:
+     SemiBold·Regular만 안전) 합성 bold 대신 "실존 페이스명"으로 굵기를 싣는다.
+     bold:true를 함께 보내면 SemiBold 위에 또 가짜 볼드가 얹히므로 Pretendard 계열은 항상 bold:false. */
+  function faceOf(cs) {
+    var fam = fontFamily(cs), w = parseInt(cs.fontWeight, 10) || 400;
+    if (/pretendard/i.test(fam)) return { face: w >= 600 ? 'Pretendard SemiBold' : 'Pretendard', bold: false };
+    return { face: fam, bold: w >= 600 };
+  }
 
   var TEXT_SEL = ['.meta-k', '.meta-v', '.eyebrow', '.cover-title', '.cover-sub', '.s-title', '.s-index', '.row-num', '.row-label', '.row-desc', '.block-sub', '.block-p', '.bignum', '.agenda-title', '.agenda-label', '.agenda-badge', '.contact-k', '.contact-v', '.contact-email', '.contact-title',
     /* pitch 팩 */ '.p-eyebrow', '.p-title', '.p-lead', '.p-body', '.p-note', '.st-title', '.st-sub', '.qt-text', '.qt-by', '.qt-num', '.qt-lab', '.qt-stars', '.g-head', '.g-role', '.g-text', '.s-num', '.s-lab', '.sp-num', '.sp-lab', '.bs-num', '.bs-cap', '.l-num', '.l-body', '.st-badge', '.g-arrow', '.pr-name', '.pr-price', '.pr-per', '.tl-when', '.p-c-head', '.p-c-text', '.mx-lab', '.mx-axl', '.cl-k', '.cl-v', '.t-row > span', '.p-media.ph span', '.ps-who', '.ps-head', '.ps-text', '.ps-tag', '.ps-arrow',
@@ -64,6 +72,11 @@
     '.hf-stnum', '.hf-stcap', '.hf-brow .l', '.hf-brow .v', '.hf-brow .tx', '.hf-kpval', '.hf-phead', '.hf-ptx', '.hf-parr',
     '.hf-cmp ul li', '.hf-rmhead', '.hf-rmlist li', '.hf-half ul li span', '.hf-bsval', '.hf-bscap',
     '.hf-word', '.hf-wdcap', '.hf-sttitle', '.hf-stsub', '.hf-herotitle', '.hf-herosub',
+    /* hfd 2026 필 기하(hp-) */ '.hp-wm b', '.hp-wm span', '.hp-cvkick', '.hp-cvtitle', '.hp-dvtitle',
+    '.hp-aglab', '.hp-agbdg b', '.hp-aghead', '.hp-agwho', '.hp-sbtitle', '.hp-sbno', '.hp-sblead', '.hp-sbtx',
+    '.hp-pqcap span', '.hp-sttitle', '.hp-stsub', '.hp-sttx', '.hp-pill', '.hp-scrtitle', '.hp-scrlist li',
+    '.hp-nttitle', '.hp-nthead', '.hp-nttx', '.hp-cctitle', '.hp-ccsub', '.hp-cc .tg', '.hp-cc .vl', '.hp-cc .lb',
+    '.hp-f3title', '.hp-f3cap p',
     '.hf-duoval', '.hf-duotx', '.hf-duochip', '.hf-flowhead', '.hf-flowrow b', '.hf-flowrow span', '.hf-flowft', '.hf-flowarr', '.hf-flowfoot',
     '.hf-hswhen', '.hf-hshead', '.hf-hstx', '.hf-pfbadge', '.hf-pfkick', '.hf-pfname', '.hf-pfbody li span', '.hf-pffocus .fl', '.hf-pffocus li', '.hf-pffoot',
     '.hf-bdtitle', '.hf-bdpt .h', '.hf-bdpt .t', '.hf-bdcard .h', '.hf-bdcard .t',
@@ -122,6 +135,10 @@
     '.hf-cyring, .hf-cycore, .hf-dcard, .hf-dstrip, .hf-dmini.br i, .hf-dmini.dn i, .hf-dmini.ar i, ' +
     '.hf-tcblob, .hf-kbcard, .hf-wfcol .tr i, .hf-wfcol .vsbg, .hf-wfcol .gap, .hf-mxpanel, .hf-t3col, .hf-t3head, .hf-qdring, .hf-qdcore, .hf-qdx, .hf-qdy, .hf-ogbox, .hf-ogband, .hf-ogchip, .hf-ogline, .hf-ogdot, ' +
     '.hf-lnrow, .hf-bnlead, .hf-bnstem, .hf-bnbar, .hf-bncard, .hf-bocard, .hf-boside, .hf-lsrow, .hf-lsno, .hf-dmini.gg i, ' +
+    /* hfd 2026 필 기하(hp-) — 커버·간지 필/존, 아젠다 패널·뱃지, 사이드바, 노트, 원형, 프레임 */
+    '.hp-cvb2, .hp-cvband, .hp-cvsg, .hp-cvdt, .hp-cva, .hp-dvp1, .hp-dvp2, .hp-dv2a, .hp-dv2b, .hp-dv2c, .hp-dv2o, ' +
+    '.hp-agpanel, .hp-agbdg b, .hp-agrow, .hp-sbbar, .hp-pqv, .hp-pqh, .hp-pqcap i, .hp-strule, ' +
+    '.hp-scrbg1, .hp-scrbg2, .hp-scrrule, .hp-scrpanel, .hp-ntedge, .hp-ntrule, .hp-cc, .hp-f3sg, .hp-f3fr, .hp-f3rule, .hp-pill, .hp-stframe, ' +
     /* 마일스톤(전 팩 공통) */ '.ms-phase, .ms-ptag, .ms-bar, .ms-glines i, .ms-axis, .ms-note';
 
   function rel(el, origin) { var r = el.getBoundingClientRect(); return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height }; }
@@ -134,7 +151,8 @@
     function push(t, cs) {
       if (!t) return;
       runs.push({ text: t.replace(/ /g, ' '), options: {
-        bold: (parseInt(cs.fontWeight, 10) || 400) >= 600,
+        bold: faceOf(cs).bold,
+        fontFace: faceOf(cs).face,
         italic: cs.fontStyle === 'italic',
         color: hex(blend(parseColor(cs.color), slideBg)),
       } });
@@ -151,7 +169,7 @@
     for (var c = el.firstChild; c; c = c.nextSibling) walk(c, base);
     while (runs.length && !runs[runs.length - 1].text.trim()) runs.pop();
     var f = runs[0]; if (!f || runs.length < 2) return null;
-    var same = runs.every(function (r) { return r.options.bold === f.options.bold && r.options.color === f.options.color && r.options.italic === f.options.italic; });
+    var same = runs.every(function (r) { return r.options.bold === f.options.bold && r.options.fontFace === f.options.fontFace && r.options.color === f.options.color && r.options.italic === f.options.italic; });
     return same ? null : runs;
   }
 
@@ -203,7 +221,8 @@
     var boxW = baseW + slackW, boxX = r.x;
     if (align === 'right') boxX = r.x - slackW;
     else if (align === 'center') boxX = r.x - slackW / 2;
-    var opts = { x: boxX * IN, y: r.y * IN, w: boxW * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: (parseInt(cs.fontWeight, 10) || 400) >= 600, italic: cs.fontStyle === 'italic', fontFace: fontFamily(cs), align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacing: lhExact ? lhExact * PT : undefined, wrap: !oneLine };
+    var fc = faceOf(cs);
+    var opts = { x: boxX * IN, y: r.y * IN, w: boxW * IN, h: Math.max(r.h, 8) * IN, fontSize: fs * PT, color: hex(col), bold: fc.bold, italic: cs.fontStyle === 'italic', fontFace: fc.face, align: align, valign: 'top', margin: 0, charSpacing: ls || undefined, lineSpacing: lhExact ? lhExact * PT : undefined, wrap: !oneLine };
     if (vertical) { var cx = r.x + r.w / 2, cy = r.y + r.h / 2; opts.w = Math.max(r.h, 6) * IN; opts.h = Math.max(r.w, 8) * IN; opts.x = cx * IN - opts.w / 2; opts.y = cy * IN - opts.h / 2; opts.rotate = 270; opts.align = 'center'; opts.valign = 'middle'; }
     var runs = parseColor(cs.color).a > 0.01 && !vertical ? runsOf(win, el, slideBg) : null;
     if (runs) s.addText(runs, opts); else s.addText(txt, opts);

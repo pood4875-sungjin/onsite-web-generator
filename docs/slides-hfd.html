@@ -22,6 +22,14 @@
   d.slides.push({ type: 'kpi', variant: 'badge', title: '올해 목표\n네 가지', items: [
     { value: '120가족', label: '초청 규모' }, { value: '12개', label: '체험 부스' }, { value: '95%', label: '만족도 목표' }, { value: '100%', label: '안전 운영' }
   ] });
+  // 2026 필 기하 변형(Figma 538:2)
+  d.slides.push({ type: 'cover', variant: 'pill', kicker: '2026 해피 패밀리데이', title: 'MIDAS\nHappy Family Day' });
+  d.slides.push({ type: 'cover', variant: 'pill2', title: 'MIDAS\nHappy Family Day' });
+  d.slides.push({ type: 'divider', variant: 'pill', title: '행사 개요를\n소개합니다' });
+  d.slides.push({ type: 'divider', variant: 'pill2', title: '프로그램\n안내' });
+  d.slides.push({ type: 'photos', variant: 'quad', title: '순간의\n기록', items: [{ caption: '포토존' }, { caption: '플레이존' }, { caption: '만들기 부스' }, { caption: '경품 추첨' }] });
+  d.slides.push({ type: 'photos', variant: 'frame3', year: '2026년', title: '함께한\n순간들', caption: '가족과 함께한 하루.\n체험 부스의 기록.', items: [{}, {}, {}] });
+  d.slides.push({ type: 'statement', variant: 'frame', title: '가족과 함께하는 단 하루', sub: '해피 패밀리 데이', text: '일 년에 단 하루,\n회사가 가족의 놀이터가 됩니다.' });
   d.slides.push({ type: 'chart', variant: 'waterfall', title: '부서별 신청 현황', unit: '단위 : 가족', bars: [
     { x: '개발', v: 38 }, { x: '사업', v: 27 }, { x: '스태프', v: 21 }, { x: '계열', v: 20 }
   ], total: { x: '누적 신청', v: 106 }, vs: { x: '목표', v: 120, gap: '14가족 남음' } });

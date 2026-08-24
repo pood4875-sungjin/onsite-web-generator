@@ -21,6 +21,16 @@
     cyan:   { t: '#0097FF', b: '#1F5BD0', a: '#1D2A85', tn: '#E6F3FE', dp: '#1D2A85', name: 'Blue' },
     indigo: { t: '#3A6BE1', b: '#2843A9', a: '#1D2A85', tn: '#EAEFFC', dp: '#1D2A85', name: 'Indigo' }
   };
+  /* 2026 필(pill) 기하 확장톤 — Figma 538:2 실측(green·teal), cyan·indigo는 같은 HLS 오프셋 유도
+     (md=b L+.13 / dt=b L+.07 / ik2=b L.11 — green 실측 재현 검증됨: #32947F≈#309479 등).
+     sg=상단 세이지, p1=라이트 필, p2=브라이트 필, md=사이드바·밴드, cg=원형 수치, dt=간지 딥, ik2=아젠다 패널 잉크 */
+  var THEMES2 = {
+    green:  { sg: '#5BB694', p1: '#78CCA9', p2: '#23B67A', md: '#309479', cg: '#67C68E', dt: '#2B7F6D', ik2: '#063225' },
+    teal:   { sg: '#1CA8A8', p1: '#54D7E1', p2: '#27C7C9', md: '#30A7BF', cg: '#37BCC8', dt: '#2A97AC', ik2: '#04333D' },
+    cyan:   { sg: '#4DB6FF', p1: '#80CBFF', p2: '#3A98D9', md: '#4D80E4', cg: '#66DDFF', dt: '#326DE0', ik2: '#001338' },
+    indigo: { sg: '#7C9DEB', p1: '#A6BDF5', p2: '#517BDE', md: '#4160D2', cg: '#8EBEF3', dt: '#2F4EC6', ik2: '#030D35' }
+  };
+  var BDG_BLUE = '#1652C5';   // 아젠다 파트 뱃지 텍스트(실측, 전 컬러웨이 공통 액센트)
   function themeOf(data) { return THEMES[data && data.theme] ? data.theme : 'green'; }
 
   /* ---- 공통 조각 ---- */
@@ -45,11 +55,26 @@
   var LOGO_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAd4AAACNCAYAAAAZ8xsuAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAGypJREFUeAHtne151MbXxm8/1/97SAURFcRUEFFBoAKUCjAVWK4gpgKWCjAVICqIqcCTCgIV6JljjbC8llbSrjTnSLp/1zWsrRWwL9Lcc17nDISQxVGW5W+NX5+FUZPsnb7/fNs5+8fanu/7N6fgexhduAF/Z/931/Pzj7Ozs0P/JyGTcgZCyGx4gRRx+iX8muw99h3rE1QyPW7v8XvHaJ5H4SajoPAS0kNDPOUxwYMY1j8fGmQ71IK8L9CPHr1I/wuyaSi8ZHM0hDTBY/FMwikJ2i1Ra7S5Zd2Ic2sSdLO/gOCCYhr2RdntHftGK3q9UHjJamgI6jkehDTBY0s1gR1c49HtHfu35Zx7/ITsYITwmddC3PXzb3vHms8le4/kMbeohHj/kcK8YCi8ZDGEhKJkb8gEXgutFUvM4fEkKb//QENgLYmnJfx3nOCpQNfCneCxUG/d+m5ay7eNnynKxqHwEjPsWawJHgS1/t0KDg/CKj//Gx4dBTU+Qaxl1CLd9HYI9XW0Jerrs75G7xeB/vr8BqIOhZdEJ1iutZjWw5q41tZEU1zvf6Y1sUz2BPp3PPaW1MfXTpsg00KODIWXzEawYGWCO2+MBPYmOOdHgWoSuhdYWq7bI1yvSRh1WKPpdVkztRAXoBjPDoWXTEKYtP5ANVmlsGfB1tw2xlfQgiUD8dd4LcKymEzwsJhcq6X8SIz9ffIVZBIovGQ0e5ZsCrsi69BYwaOaPCiyZFLC/VDfA00PzxoFuUB1P90/sib5OCi8pJeGNZviQWgt4vy4QSWyBd3FRJOGIDct5BTrovYeyX1HIR4IhZc8oWHRvsJyhPaG1ixZAsFlnaBazK7NOm4K8Vfek+1QeMk9IdP4VRhWJ4I6I1Nu6s+0aMlaCGIsi90UD2K8BgpU92vBUqYHKLwbxt/ssuKuxTaBTURsd358BmO0ZCM03NR1iGcNVrFDEGJ/H3/GhqHwboyG2GaweyP/FFt/gxYghNRWcS3EL/DQ0Wup3ODBGt5UbJjCuwHC6vktKrFNYBOKLSEjaLin61yMJVvEBar7fxMiTOFdMcG6zWE7k7Lw44piS8hp+Ps9xePqg6Vybwn7OeEjVgqFd2U0rNu/YNcVJdbttR/vGbMlZHrCPJD68acfL7FMt7RDsITX1ryDwrsSGoJ7AbsupwK0bgmJTrCGRYTlcYkZ0w6V925z8WBiEBFcPy79+K+0y5eyuvEJIcr4ezHx4224L5fIh7IKoxESn7K6eSi4hJCjKCsRflMuU4T/8eMNCImBv9j+KG3fKF9KCi4hi6J8sIRduSzuymrxsPTyKmKRsnIr/13a5a4cKLhldaNcghBiDn9vnpeVS3dJInznx3VJASZT4S+m30vbN8FlWSV4DXkfX8Lf+QBCiGnKZbqiP5QUYHIKZeX+scqdH78PeA91ElgTCi8hC6GsXNHicVuSFZyXBgX4rFxndti3NdSHlpUFKfWuVhMI3vuR933WZSXM0pt1/waQ+ry/QAhZFGWV1JRhGY06nB/Xfq55DyuU6+VLueCAe1mtLm9Lu7wd+D4OWeu0eAlZMGU1T30ol8FdaSULutwGH8oFCXBZXcxW3TlSvpQOeA/iWv7S829ReAlZAeWDAC/BDf2pVNaD/8M2yPwQ6zGHcfxrTFB1eLK4UHB+nPd1nior17Lsm5uCELJ6ZG/sEDZKUc23lrtLyaYSTlMPtiK8gsRLL8vK3WDS+l2A6KZ97drKypVTYPlblhFCRhIE+KMfCewLcK0H0fOctiS8NQkq6/dPGGIloit1uTssf8NuQsiJLESAEz8KP3f9jYhsUXgFEYYbK67nsspeLrBs0d2hamJOCCE/Cdv7pajmB6sCfBHTG7pV4a25NCK+kmS0SNEtQxIV7JY8EUKUCS7oK1QCvINNEkSK/W5deAVV8Q3u2Vewh8MA0UVlqacghJAeGklYz1FteG8R0YQP5YBOfMdC4a1QEd+QiJTDHtIQo090E1SZy71dqwghpEkQ4NewG//N/PhnLtczhfcBEd9BTSGmIAjXFWySDRDdAsxcJoScQIj/nsOmAZJgpkRcCu9jriOmloubxaJwXfmb4XPXkxRdQsiUSMvZEP8V97M163eWRFwK71Nu5s5sC3Fdiy5a6Z2cdz0ZYh5WFwyEkAUT3M8JbFq/k4YjKbxPuU8YmiuwHizGHPZwfrzrOecTGNMlhMyIYet3MvGl8LaT+DHXJu2fYI86mapzl6FQYJ6CEEJmRqxfVLHfa9hiEvGl8HZzMXVQPWQxn8MeeU8ylSxCLkAIIZEIsV/xwmWojAMrnCy+FN7D7KZyORvOYt4d2qcyZHrnIIQQBULm8wvYcj2fJL4U3sOI6E61dZ1Yu9aSkhwOiKrheDQhZAWEzne/9VWTNFzPO9jhaPE9k80JQfqQ+OdXHEkQsDvYIwurySdEKhvahS42gygVdhHxfDsU+64JmfAJlokLjz+GvNe1E7a11Nzow/X1Rl8iwXso9/B5YySNUxyGb8aSww6d82gXFN5hOD9eHDspldWG7xlscVD0ZLNozN/KcqzwalyrL/v2HxaMfsfH4sKQ6/02DBGDb1g5RhbJV4fK+pZEWCynjdGHQyVkX3v+XQmBWUm8kvvkfMxiicI7nKNuBqPW7sELJeKKksK7PIp6nOIFsoqR71GSin7FQgmWrQhjhuO9QL3zbUh+3cHGNqQOI4wzxniH8/bIxhpzlSWdQn5AdBMwrku6SVFdH0XYRu2DUghgLl5Cn2dL/Exl7ghlh2Jo5Dgt9NIbPw0d9lLYyHhOMCIfiMI7HFlV5WP+QhCxDLZwXVnMjd2GCBlCgur6rkV40VtDBgvKSgLkYsr3QoJULbjyuqeyQC/Lng3qQ/gjhQ3xfVUO7PdP4R1HNnIlatHaPdSdSl4v20GSY0hQld8tWYAz2CEtZ9yWbiqC0NSCOwcXwf3fiTHxzYd4Rim848mHnBRuGgtuqyYSU71peyIsKNgkg5xKgkqAP5Uz9zyfkuCdmjuZcAwyf5hdwAQr9wuqBKe5FwjZgsRXPotd30kU3vGkA61eS26rmvzAc6PS4QnpQUTMlQr7XB+JxZiqpYXAT0K5lWS6p4hHNiDmK+KbQZ+0z+VM4T2OfMA51rpU7XqymOliJnNwuRDr16K3Jw0iZ4bwegrozBdDE64sfJf5oVABhfc40kMTSbCIF2HtMouZREAst8Kq+PrXVTdzsMhrGKEhupqx58uyp4d+SB7VrvGVz6hzAUDhPZ5DSUoZbLE7UNxtMQGMrI8Elfha3FZyUCaqEiZeW6OTnYWEr13fIi5srlBAl84SVArv8bxpcyUYLSHK2w6G7NMMhMQhgU3xtZYE2US9pteY6ApD90yX5jyarTc7S1AtC28B20j23C8tx60laRyydi3ulkTWTT1pmhBfY7W7XWjHLC3mgCTo8daFjRW0M8OztgWCZeHNYZuu7k/WkjTytoPB2mVCFdFAJqIbIzHfDPZRq+k17hW76KsZD21NteO9TzTBrPCGD6yATRxaXltwyVhK0qC1S6yS+HEDRQzW7nahUtMbxN76PHE9YAEn70HT5fx2f+FkPcabwyZFh6BZS9LI2w7S2iVGOO9rCTgzFmt3u9BYIMh8Zn2e6G1YETYu0HQ5P1k4mRZew1Zv3nHcTOo/aO2SZXChmDy0pE5tUWt6g4U2eOewmXBo7IYVhjTu2O9OlQ4oMdLWkkcLpyVkNeewRau1G2oBLa0Ouza4p7VLrLGLHcM0XrvbRcyFvUbSmQiqxGMly/xXP88+9+Pl3ngRtkx8gbBBR/i7Q66hHHo86nhoXngNWr27juOW3MzuwB6ytHaJNRLEtz4t1+52EfM1x/4+ClR7hL+TuatvX1v//K0fH0WM/a/PUeUL9GU5a2vJz7K1pdTx5rBD0XHcUi1g3nZwIaUTZJscu9/1sViu3e0iSk2vQpLoTbBmj0qAkrIhP8Qt7gZcQzn0+BnnXYTwGrJ6u9zMllpEykrxc8dzS4ppkW3R2WxgahYebolxD/+JeDhMFEsOrSLPes7R1JKkXhgsqXNVDn12HcctlSTctLlpwio2BSF2ySJZvUsoIeoiRk1vinjkfW7lMYSmGb3/J/S4v/YWI7xGrN6i47ilbOauYvElxrTIYSRzvRdUMTBJRhH3qlhMco0UsMk7zMiCane7iFHTmyASEqdFfGT7wMnEfiSp/LG0Xs076HHb4WZOYMdt5cKelG2odL4h+oQY2G1IWnkfEljuM0dRLRpVG1ns8WZmi25JtbtdzL1wiBXfvYUCwcLWuuZT+WNpwiuxS62VyteO45Zu5ByEDEQmID8kNCHiK1bxDvrMbdGtIat/tpreYEjEQtMY+AodJEHut0UJb1ipXEOHrhWSJbdVAUKOoJEZKgKs2V5PmOWeMlhrfwpzhbdifj6JVg9q6M6V6f+wPCRzLUd8utwiKWxQHJuOT0iNCHAQqC/QazAhFt1vM1zPa8pzkPeSY/lI7e2scf02wnX+HDp8X5zwitXrP7ACcQWv6MgUlonJSux0B0ImINxjEgPWFF+xvnNMyxJrd7u4r+kNSadLRlqG3mokWQ3MgJ6FpcV4a3LEpSthyVJ89zMImYiw0BR3plZOxaT31kpbpc5R06vhNZN2jzk2xCKFN6zyYk4IXzqOp7DBzZS1cIQIwSKI0bChjanrVWPlYsS8D1PFGOnUXPr3cufHpZF9mmdlqRavEDPJqsud8wI2sFQOQlZEcAEW0GGSzN3ItbsF4onv5BngYbGltYhPUHkzJf76JYjwGsq/nrBk4X2PONweiO9aWZnRzUzmRKuSYKrM3ZiTt8xLBeIxx4LCQZ8UlQgXZYUI8d/Sb34NFvFihTeIYYH5cR3Ho+2N2UNBNzOZmdihnZqp7rFYtbv1rmAxF8LpDFZhAXukqMIe4t1zwS39yY+3MfcpnoolW7xCDBdr0XE8hQ12IGRGFDv9nJxRHXkDkyI8ymcVc6Eydbb2N9gnQWXtizfm1n/P/wWr+O0S3NNLF16JP819gXddhFZKEwoQMj8aZSvPJnArZojHfUlMWKjcIh5T1yfHXjhMgcS7U4Q+5EGIxSJ+Y9E1vWjhjeRufnIDGerPfMumGSQSqr1tTyDWArl2M9fE/Lwm3adXYeEwByLEYhHv8OCa/mDFGl66xSvMmfhx2xE/tRJTWHrxPFkI4T5wiE+CI4lcu1vs/R67IUSOacmxLhJU3o/aGhYRjrnv8CPWILxzbvHkOo6nsAHLiEhMCsQnwfFkiMcjoY2Y/FlzPmVNr5FtWOdCPqfMjxstS3jxwjtz4kfRcTyFPt/3XFuEzI1DfI5KsArhoBRx6LoXo7qbMf2uTjnWT4IHS/gueElmZw0Wr7DDPDxJrAqrypOzLSegACFx0cgnONaKi2nBdAlsbHfzpDW9werdklctQdW+UgQ4nzMpay3CO5e7+a7lmJX4Lt3MJDZ3iE+C44i5727rvajgbp6jplc2q9haAmeCatekYq4e0qsQ3pku8O8dGcMWrF1h6VmHZHmoTMBjY5eRa3dlnjjUMKNAXCbN4g5zq1oSkjIJHnpIT+qCXovFK0zdLcby/rtSurCEIndCpuAXjCNDPPo8T7HdzZPvORzmmgzbJUHlgv4wlft5TcI7teu1S9gS6ENrl0RHcf/SsXHemM1tDs474TNziMezGdzN9WYZObZNhsr9fHK4cTXCO4O7uSueZcHVzPgu2RK/Dj0xcu0uetzMNTvEJccM+PcqcfMLbJsEVYvKkzwLa7J4hSkFqS2jmfFdsnUcbJMhHkPnmwJxmbSmt4kXX9l9SebBrXfMuz4l8WptwjtlnPe/lmMW2kR+Z3yXkKdErt0VBglvKMuZq8lPG3PU9P4kzD8pWNJ4eaz4rkp4p4yndIgb63cJsUvs7NsxC/0d4jJpTe8+Mtf6IbF0cT1v2fq9PCbjeW0WrzCFu7nLlUvhJcQu7xCPm5H7YMfOy5ijpvcJwfWcYtvbk16PzXZeo/AWOB3XcTyBPnQzE7JH5NpdYZSQKribhSjZ3cH6lUYbz7FNARbX/qjrYY3CO8WOPZYtXiZWEfKUDHE5Jp9kh7hMXtN7iI0L8PmY3Y5WJ7wTlRW5/QNGMppvR7q3CJmaBDaZNaa5R3HkfRjb3fysVNh/dk+AM2wnBnw99MQ1WrxCgdNou1DGds+ZA1q7hOwRkltmKZ/pYIfjmHML0y5yKBEE+KMfCSq39w7rFuFkaKIVhbedNoGjm5kQHfo2Z8gQlwJHMPMWpl3MVtM7Btk2UazgDYhwNuSktQrvSSvLDjdSAn2YWEXUCHWyplCo3S06Nk8ZyhQ5KGOYtab3GFpEOMd6qjUGZZOvUniDcB5rHTKxipB2VBrI9Ahd7NrdHU5DLN7Y7uaY8e9RBBG+CjXB0hr0NapYaYHl8rrvhLVavEKB4+i6KbTdNUysIluk75qPWbsrFDiBE42CY0k1kqzGIp+NH1If/a4hxHWTDo0Fy7H0ehgovE/pcudqW7wOhOiicQ+4ricUandPdTPXxI7zCjF3bJqEIMTymb/347UfIsQvUAlxAbs869vBaM3Ce2w89Ekih5HYFt3MRJsE8Tlk5WSIyw7TEHuPXiFqTe9cePG9DUJcW8QZbO7Wlh56crXCe4JLx7Ucs7A5QuykDEL2MWXxIn7sssAEzLCF6RCeLcHdPIZgEUu5ksRUrdUMPz/05JotXqHAeH60HHsOff4DIbqYEV6F2t2p3Mw1GlZajpWyVzOcQV+ADxpraxfeY9zNbVaytsXLrQCJKqFzm0aCYZfXKkNcdpgWDXeziZreuREBRuXq1XRBH1yk/g/rpsBIOjKHtROrGN8l2mi5Kd3+AYXaXaHAhMg8499Hgbjvo67pfY8TCQL+S/g3ZSSN/6NvnE/sPXhC2CL2tX+dHxB/kdbLqoVXPnz/wTsMTwrpEjjtVeJS0ujJesmgQIenJ3ZDiGImoSgQfwEhcfFHwhu2tEvDr8neY5ewnoIYMlFcwdKoI3hrYhtPyaEn127xCiKmycBzuwQugS60eIkaShOXUHQc/wtxmctlKS7RHHG5r+kN2xTW5Ii7sEoQlwsYKz9ae4xXKEac6zqOJ9CFwks00SpFeWLtKtTuCrMIb3CHatzb+zW9DnGJmo0eFhkFDLEF4R1zYbv9A0ZqeB0IUSBc/xl0+NJyLENcbmeOR2okAO0vpGJnAGskecX+nN2hJ7cgvGOygdtczeo1vMxoJooU0ONR7XqYrKNaS5h/Q/cC8dmv6Y1tdcv3+DviEvs9ukNPrl54Q5ayG3h6m8BpJ1Y5EKKAn5z/ht7Cs22zedkQYVWWUnCDOsQnb/zsEJ8LrJuDCbFbsHiFAseTQBcHQiLjRfcSupPjruVYhrjM7Wau0XA3p7W7d6RxMhWvIrubYy/YDlrYWxHeoW6GtvMS6OJASCRkMvTjE3S7HDk/PjcPKNXuxmrTqiG8whvl13CJeKSIC4UXA4W3o3lGAl0cCJmZILgyEcomIbHjqPu0uZk1NnP/gAgEd/N3xKf5PWvkkVxE7B/du0fuxFB4Meyich3H2TyDrA5pmuDHn3689UOyh6UXeA79613IW47Frt11kZMad4hPc59eLat7Fxp4zIZc44ibq9AbothCA426PZvDYevVdRxPoIsDIe2koSXeEJLG4xTdh+Zitz9pKdXufkZcRPg0YupiCX5VamEpJH7c+P/71Rzx9BCiyBGX3hDFJoQ30NfBymrXqh8gpJ0EBvvQnkjecixDfKK4mRuIdS1zUOwFkbjwa8EX8U8Rn3M/Ci+S6ZTiG0S3QPzP9O++E7biahZcz/NPhNdI84w7ELINrlqsXY3a3dhu5jq/RMPd26zplRaWWqGtxI/b4BY+mfCe/kF8T8mgvt5bEt6+G8m1HLPQPCN2VxlCNHB+XLcc16jdje1mrtlBh1z+COJ/DT3ke772onkn+y0fU24kghtyFgrohFN2Q07amqv5EG0rPSZWERKHvKOqIEN8tBKNtNzN9zW94fPX2LhhnwRBwELcWYbM3w5P58QkDHFXv4JuaNCFvYB72ZLwuiOeT6CLAyHrZ9c2YSnV7srkWUCBkOAkApMiPvf79IatVHewkzuQQufzOIZ86ImbcTUP6M7SlsREi5eQeXHonrA0dkUqoMsgi2kGmnH0K3DuGctga1fYUoxXOORubktiSqCLAyHrRSb3Q5mssZseCFrCV6Pl5v5Z0xu2K9SM9S6RdMzJWxNed+C5Nos3gS4sJSJr5qJLdJVqd9XczDXBM1dAh+ZC5z3ibxe4VK7GJsFuTXg7M5s7Eju0Xc3/gZB1ctXjmssQnwI2UO/dHOZDjTadS+Ob/6xyjISu5grXcTyBLg6ErI+rQ5NVKCPJEB9tN3ON1ut4tE9v6CF9AdKFQ1XuNhq6miu6EgmYXEXItFwNsBCOmsxORN3NXKPsbs6bv/jXIi7nHcg+ffkJB9mU8B7IbLbatYoxXrIW5B7LBrrlMsSngC00k6z2DY53GL616hY4SXSFrVm8QpsV6VqOqXetAmO8ZB04VBNVrwtVqXZXsOJmrtHqniU8iu0Gg0USr5hs9SC6J7UU3aLwtq3cLNbwCrzQydIRy+3FiIlKo3bXjJu5JpT0FNDh1f6B8HpSbHtOcn6cT9HHm8Jb0WZZJlCmI9OakCUg165s9fZ65HWsUbtbwCYFdEjbNqgP4iutGbXc4JoUqBaQkyw8tii8bdZt28SQQBeKLlkict3mfjz3k9Qod6lS7a5gVUgK6NG6AJJFlCymoN/PORZyPUu9+cspDSFavBUUXkJOoym4V0dOUhni833sAiEWoZzHQYeDNbzyHfuH51h30lWByrX8HhOzReF1Lcfa3AfaMV4HQmxTl738hdMEt06qyhAf625Trdf3rM3d3ERcz368QPW9rSn2W/jxMli5s7yvzQnvgM0SahIQQprUQnvtx0tUYiuT024CN9wf0IHC200+5CTJVvcjQeWeXnL8t8CD4BaYkS1tC9hkf5LgBgmEPKZeoN6Gce/2nDHhL0N8zLqZa8Td7C1PjT16heY+vb3480R0b4L3QhZSGexv6VegWix8PIuYzCrC67A9ZCI573qypYBcA4dpGWrpx2Tshb5DfIa+xgLL5HsY/+LhGnFn8TPqHeJ/v0uJT+aoSnwc4vM7qkXXYEL2s4yPYS5NUQmxPJ5DF7muRWjlu/94plQ5cgZCCCEkEl6MU1QWvIhx0hhTGjxNj408Su3tbVgUqEPhJYQQYoLgpk7Cr8/wWIz3S82aiU+158ahCiGoWLJD+X9hBHtqaPh1WwAAAABJRU5ErkJggg==';
   function logo() { return '<img class="hf-logo" src="' + LOGO_URI + '" alt="MIDAS">'; }
   function kind(s, d) { return esc(s.kindLabel || d); }
+  /* 2026 필 기하 공통 조각 — 워드마크 2줄 텍스트 로고(우상/센터), 커버 배경 레이어(스샷 원호 실측 재현) */
+  function hpWm(pos) { return '<div class="hp-wm' + (pos ? ' ' + pos : '') + '"><b>MIDAS</b><span>Happy Family Day</span></div>'; }
+  function hpCoverBg() {
+    /* 원호는 타원 코너 사각으로 재현(원 클립 금지 — PPTX 추출 시 클립이 무시돼 원이 통째로 삐져나온다) */
+    return '<span class="hp-cvb2"></span><span class="hp-cvband"></span><span class="hp-cvsg"></span><span class="hp-cvdt"></span><span class="hp-cva"></span>';
+  }
 
   /* ---- 타입 렌더러 ---- */
   var R = {
     /* 표지 — 실측: 2밴드 + 좌측 화이트 오버레이 원 + 우하단 액센트 원 + 좌상 타이포 + 좌하 로고 */
     cover: function (s, P, ctx) {
+      /* pill 변형 — 2026 필 기하 표지(Figma 538:2 G-01/G-02 실측): pill=타이틀 좌중, pill2=타이틀 좌상 */
+      if (s.variant === 'pill' || s.variant === 'pill2') {
+        var up = s.variant === 'pill2';
+        return '<section class="slide hf hp-cv' + (up ? ' up' : '') + '" data-kind="' + kind(s, 'Cover') + '">' + hpCoverBg() +
+          (up ? '' : '<span class="hp-cvkick"' + de(P + '.kicker') + '>' + esc(s.kicker != null ? s.kicker : (s.sub || '')) + '</span>') +
+          hpWm() +
+          '<h1 class="hp-cvtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
+          logo() + '</section>';
+      }
       return '<section class="slide hf cv" data-kind="' + kind(s, 'Cover') + '">' +
         '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>' +
         '<div class="hf-cvin">' +
@@ -99,6 +124,15 @@
     },
     /* 간지 — 표지 기하 재사용 + 챕터 번호/타이틀 */
     divider: function (s, P, ctx) {
+      /* pill 변형 — 2026 필 기하 간지(538:2 G-간지1/2 실측): pill=상하 2필, pill2=3필 스택+타원 오버레이 */
+      if (s.variant === 'pill' || s.variant === 'pill2') {
+        var pills = s.variant === 'pill2'
+          ? '<span class="hp-dv2a"></span><span class="hp-dv2b"></span><span class="hp-dv2c"></span><span class="hp-dv2o"></span>'
+          : '<span class="hp-dvp1"></span><span class="hp-dvp2"></span>';
+        return '<section class="slide hf hp-dv" data-kind="' + kind(s, 'Divider') + '">' + pills +
+          '<h1 class="hp-dvtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
+          logo() + '</section>';
+      }
       var idx = ctx && ctx.dividerIndex ? ctx.dividerIndex(ctx.no) : 0;
       return '<section class="slide hf dv" data-kind="' + kind(s, 'Divider') + '">' +
         '<span class="hf-bandT"></span><span class="hf-bandB"></span><span class="hf-circ"></span><span class="hf-arc"></span>' +
@@ -343,13 +377,35 @@
     /* 포토 앨범 — 2024 템플릿 실측(290-3346/3384/3658 계열) 3변형
        wide(기본)=풀폭 사진+하단 캡션 밴드 · grid=사진 3열+캡션 밴드 · frame=표지 기하 위 센터 화이트 프레임 */
     photos: function (s, P, ctx) {
-      var v = s.variant === 'grid' || s.variant === 'frame' || s.variant === 'side' ? s.variant : 'wide';
+      var v = s.variant === 'grid' || s.variant === 'frame' || s.variant === 'side' || s.variant === 'quad' || s.variant === 'frame3' ? s.variant : 'wide';
       var si = P.split('.')[1];
       /* 이미지 슬롯 — 슬라이드별 키(photos-슬라이드-i)로 업로드 이미지 실렌더(키 충돌 방지) */
       function slot(i, it) {
         var ik = 'photos-' + si + '-' + i, src = ctx.images && ctx.images[ik];
         if (src) return '<img class="hf-abimg s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">';
         return '<div class="hf-imgph s-imgwrap" data-img="' + ik + '"><span' + de(P + '.items.' + i + '.label') + '>' + esc((it || {}).label || '사진') + '</span></div>';
+      }
+      if (v === 'quad') {
+        /* 2026 필 — 좌 그린 사이드바 + 우 2×2 사진(도트 캡션+십자 구분선) (538:2 G-06 실측) */
+        var qs = (s.items || []).slice(0, 4); while (qs.length < 4) qs.push({});
+        return '<section class="slide hf hp-pq" data-kind="' + kind(s, 'Photos') + '">' +
+          '<div class="hp-sbbar"><span class="hp-sbtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span></div>' +
+          '<div class="hp-pqgrid"><span class="hp-pqv"></span><span class="hp-pqh"></span>' +
+          qs.map(function (it, i) {
+            return '<div class="hp-pqcell"><div class="hp-pqcap"><i></i><span' + de(P + '.items.' + i + '.caption') + '>' + esc(it.caption || '') + '</span></div>' + slot(i, it) + '</div>';
+          }).join('') + '</div></section>';
+      }
+      if (v === 'frame3') {
+        /* 2026 필 — 딥 그린 지면 + 화이트 프레임 사진 3 + 하단 좌 뱃지·타이틀/중앙 리스트 (538:2 G-09 실측) */
+        var f3 = (s.items || []).slice(0, 3); while (f3.length < 3) f3.push({});
+        return '<section class="slide hf hp-f3" data-kind="' + kind(s, 'Photos') + '">' +
+          '<span class="hp-f3sg"></span>' +
+          '<div class="hp-f3row">' + f3.map(function (it, i) { return '<div class="hp-f3fr">' + slot(i, it) + '</div>'; }).join('') + '</div>' +
+          '<div class="hp-f3foot">' +
+          '<div class="hp-f3l">' + (s.year ? '<span class="hp-pill"' + de(P + '.year') + '>' + esc(s.year) + '</span>' : '') +
+          '<span class="hp-f3title"' + de(P + '.title') + '>' + mb(s.title || '') + '</span><span class="hp-f3rule"></span></div>' +
+          (s.caption ? '<div class="hp-f3cap"><span class="hp-f3rule top"></span><p' + de(P + '.caption') + '>' + mb(s.caption) + '</p></div>' : '') +
+          '</div></section>';
       }
       if (v === 'side') {
         /* 2024 덱(TFt0 39-55) 사이드 캡션 레이아웃 — 좌 캡션 컬럼 + 우 대형 화이트 사진 패널 */
@@ -766,6 +822,17 @@
     },
     /* 스테이트먼트 — 타이틀+서브 중앙 대형 */
     statement: function (s, P, ctx) {
+      /* frame 변형 — 2026 필: 그린 프레임 보더 + 센터 타이틀·헤어라인·센터 문단 (538:2 G-07 실측) */
+      if (s.variant === 'frame') {
+        return '<section class="slide hf hp-st" data-kind="' + kind(s, 'Statement') + '">' +
+          '<span class="hp-stframe"></span>' +
+          '<div class="hp-stin">' +
+          '<h2 class="hp-sttitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
+          (s.sub ? '<p class="hp-stsub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') +
+          '<span class="hp-strule"></span>' +
+          (s.text ? '<p class="hp-sttx"' + de(P + '.text') + '>' + mb(s.text) + '</p>' : '') +
+          '</div></section>';
+      }
       return '<section class="slide hf st2" data-kind="' + kind(s, 'Statement') + '">' + runhead(s, P, ctx) +
         '<div class="hf-stmid"><h2 class="hf-sttitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
         (s.sub ? '<p class="hf-stsub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div></section>';
@@ -778,6 +845,75 @@
       return '<section class="slide hf hr" data-kind="' + kind(s, 'Hero') + '">' + bg + '<span class="hf-heroov"></span>' +
         '<div class="hf-heromid"><h2 class="hf-herotitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
         (s.sub ? '<p class="hf-herosub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div></section>';
+    },
+    /* 2026 필 — 발표 아젠다: 미니 커버 기하+센터 워드마크+잉크 패널(뱃지|제목|발표자 행) (538:2 G-03 실측) */
+    agenda: function (s, P, ctx) {
+      var rows = (s.rows || []).slice(0, 4).map(function (r, i) {
+        var IP = P + '.rows.' + i;
+        return '<div class="hp-agrow">' +
+          '<span class="hp-agbdg">' + (r.part ? '<b' + de(IP + '.part') + '>' + esc(r.part) + '</b>' : '') + '</span>' +
+          '<span class="hp-aghead"' + de(IP + '.head') + '>' + mb(r.head || '') + '</span>' +
+          (r.who ? '<span class="hp-agwho"' + de(IP + '.who') + '>' + mb(r.who) + '</span>' : '<span class="hp-agwho"></span>') +
+          '</div>';
+      }).join('');
+      return '<section class="slide hf hp-ag" data-kind="' + kind(s, 'Agenda') + '">' + hpCoverBg() + hpWm('ct') +
+        '<div class="hp-agpanel">' +
+        '<span class="hp-aglab"' + de(P + '.title') + '>' + esc(s.title || 'AGENDA') + '</span>' +
+        '<div class="hp-agrows">' + rows + '</div></div></section>';
+    },
+    /* 2026 필 — 좌 컬러 사이드바+우 본문(리드+문단), num 변형=사이드바 절반+대형 숫자 (538:2 G-04/G-05 실측) */
+    sidebar: function (s, P, ctx) {
+      var num = s.variant === 'num';
+      return '<section class="slide hf hp-sb' + (num ? ' nm' : '') + '" data-kind="' + kind(s, 'Section') + '">' +
+        '<div class="hp-sbbar"><span class="hp-sbtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span>' +
+        (num ? '<span class="hp-sbno"' + de(P + '.no') + '>' + esc(s.no || '1') + '</span>' : '') + '</div>' +
+        '<div class="hp-sbbody">' +
+        (s.lead ? '<p class="hp-sblead"' + de(P + '.lead') + '>' + mb(s.lead) + '</p>' : '') +
+        (s.text ? '<p class="hp-sbtx"' + de(P + '.text') + '>' + mb(s.text) + '</p>' : '') +
+        '</div></section>';
+    },
+    /* 2026 필 — 딥 지면+좌 뱃지·타이틀·리스트+우 대형 스크린 패널(이미지 슬롯) (538:2 G-08 실측) */
+    screen: function (s, P, ctx) {
+      var si = P.split('.')[1], ik = 'screen-' + si, src = ctx.images && ctx.images[ik];
+      var img = src ? '<img class="hf-abimg s-imgwrap" data-img="' + ik + '" src="' + esc(src) + '">' :
+        '<div class="hf-imgph iv s-imgwrap" data-img="' + ik + '"><span>스크린 이미지</span></div>';
+      var lis = (s.points || []).slice(0, 5).map(function (p, i) {
+        return '<li' + de(P + '.points.' + i) + '>' + mb(p) + '</li>';
+      }).join('');
+      return '<section class="slide hf hp-scr" data-kind="' + kind(s, 'Screen') + '">' +
+        '<span class="hp-scrbg1"></span><span class="hp-scrbg2"></span>' +
+        '<div class="hp-scrl">' +
+        (s.year ? '<span class="hp-pill iv"' + de(P + '.year') + '>' + esc(s.year) + '</span>' : '') +
+        '<span class="hp-scrtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</span>' +
+        '<span class="hp-scrrule"></span>' +
+        (lis ? '<ul class="hp-scrlist">' + lis + '</ul>' : '') + '</div>' +
+        '<div class="hp-scrpanel">' + img + '</div></section>';
+    },
+    /* 2026 필 — 노트: 타이틀+풀폭 헤어라인+좌 소제목/우 문단, band 변형=상단 밴드 (538:2 G-10/G-12 실측) */
+    note: function (s, P, ctx) {
+      return '<section class="slide hf hp-nt' + (s.variant === 'band' ? ' bd' : '') + '" data-kind="' + kind(s, 'Note') + '">' +
+        '<span class="hp-ntedge"></span>' +
+        '<h2 class="hp-nttitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
+        '<span class="hp-ntrule"></span>' +
+        '<div class="hp-ntgrid">' +
+        '<span class="hp-nthead"' + de(P + '.head') + '>' + mb(s.head || '') + '</span>' +
+        '<p class="hp-nttx"' + de(P + '.text') + '>' + mb(s.text || '') + '</p>' +
+        '</div></section>';
+    },
+    /* 2026 필 — 원형 수치 2~3: 상단 밴드+센터 타이틀+겹침 원(태그·값·라벨) (538:2 G-11 실측) */
+    circles: function (s, P, ctx) {
+      var cs2 = (s.items || []).slice(0, 3).map(function (it, i) {
+        var IP = P + '.items.' + i;
+        return '<div class="hp-cc">' +
+          (it.tag ? '<span class="tg"' + de(IP + '.tag') + '>' + esc(it.tag) + '</span>' : '') +
+          '<span class="vl"' + de(IP + '.value') + '>' + esc(it.value || '') + '</span>' +
+          (it.label ? '<span class="lb"' + de(IP + '.label') + '>' + esc(it.label) + '</span>' : '') + '</div>';
+      }).join('');
+      return '<section class="slide hf hp-ccs" data-kind="' + kind(s, 'Circles') + '">' +
+        '<span class="hp-ntedge bdtop"></span>' +
+        '<div class="hp-cchead"><h2 class="hp-cctitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h2>' +
+        (s.sub ? '<p class="hp-ccsub"' + de(P + '.sub') + '>' + mb(s.sub) + '</p>' : '') + '</div>' +
+        '<div class="hp-ccrow">' + cs2 + '</div></section>';
     },
     /* 엔딩 — 표지 기하 + 마무리 문장 */
     closing: function (s, P, ctx) {
@@ -811,7 +947,7 @@
       try { html = fn(s, 'slides.' + i, { dividerIndex: dividerIndex, no: i + 1, total: total, images: images || {} }); }
       catch (e) { html = '<section class="slide hf sc" data-kind="Error"><h2 class="hf-hl">' + esc(s.type) + ' 렌더 오류</h2></section>'; }
       /* toc panel 변형은 자체 풀블리드 — 프레임 미적용 */
-      if (FRAMED[s.type] && s.frame !== false && !(s.type === 'toc' && s.variant === 'panel')) html = frameWrap(html);
+      if (FRAMED[s.type] && s.frame !== false && !(s.type === 'toc' && s.variant === 'panel') && !(s.type === 'statement' && s.variant === 'frame')) html = frameWrap(html);
       return html;
     }).join('\n');
   }
@@ -870,8 +1006,9 @@
   /* ---- CSS ---- */
   function css() {
     var thRules = Object.keys(THEMES).map(function (k) {
-      var th = THEMES[k];
-      return 'body[data-th="' + k + '"]{--t:' + th.t + ';--b:' + th.b + ';--a:' + th.a + ';--tn:' + th.tn + ';--dp:' + th.dp + '}';
+      var th = THEMES[k], t2 = THEMES2[k];
+      return 'body[data-th="' + k + '"]{--t:' + th.t + ';--b:' + th.b + ';--a:' + th.a + ';--tn:' + th.tn + ';--dp:' + th.dp +
+        ';--sg:' + t2.sg + ';--p1:' + t2.p1 + ';--p2:' + t2.p2 + ';--md:' + t2.md + ';--cg:' + t2.cg + ';--dt:' + t2.dt + ';--ik2:' + t2.ik2 + ';--bdg:' + BDG_BLUE + '}';
     }).join('');
     return '@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");' +
       ':root{--ink:#17211C;--body:#4E5B55;--muted:#8B968F;--rule:#E5EAE7;--slide-w:1280px;--slide-h:720px}' +
@@ -1424,6 +1561,117 @@
       'background:linear-gradient(96deg,var(--t) 0%,var(--b) 100%)}' +
       '.hf-klab{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.9;flex:0 0 auto}' +
       '.hf-ktx{font-size:20px;font-weight:400;line-height:1.4}.hf-ktx b{font-weight:700}' +
+      /* ---- 2026 필(pill) 기하 신규 스타일 (Figma 538:2 실측, 1920×1080→2/3 환산) ---- */
+      /* 워드마크 2줄 텍스트 로고 */
+      '.hp-wm{position:absolute;right:54px;top:52px;z-index:5;color:#fff;line-height:1.16;text-align:left}' +
+      '.hp-wm b{display:block;font-size:27px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-wm span{display:block;font-size:29px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-wm.ct{right:auto;left:50%;transform:translateX(-50%);top:38px;text-align:center}' +
+      /* 커버 배경 레이어 — 원호는 스샷 3점 실측으로 푼 원(중심·반경) */
+      '.hp-cv,.hp-ag{background:var(--t)}' +
+      '.hp-cvb2{position:absolute;left:1192px;top:-184px;width:1056px;height:1056px;border-radius:50%;background:var(--b);z-index:1}' +
+      '.hp-cvband{position:absolute;left:0;right:0;top:364px;bottom:0;background:var(--b);z-index:2}' +
+      /* 세이지·딥틸 존 — 우변이 살짝 좁아지는 원호(타원 코너): 실측 (736,0)→(692,364) / (705,364)→(632,720) */
+      '.hp-cvsg{position:absolute;left:0;top:0;width:736px;height:364px;background:var(--sg);border-radius:0 0 44px 0/0 0 364px 0;z-index:3}' +
+      '.hp-cvdt{position:absolute;left:0;top:364px;width:705px;height:356px;background:var(--dt);border-radius:0 0 73px 0/0 0 356px 0;z-index:3}' +
+      '.hp-cva{position:absolute;left:976px;top:456px;width:688px;height:688px;border-radius:50%;background:var(--a);z-index:3}' +
+      '.hp-cvkick{position:absolute;left:59px;top:52px;z-index:5;color:#fff;font-size:19px;font-weight:600}' +
+      '.hp-cvtitle{position:absolute;left:59px;top:267px;z-index:5;color:#fff;font-size:75px;font-weight:800;line-height:1.24;letter-spacing:-.02em;white-space:pre-wrap;max-width:900px}' +
+      '.hp-cv.up .hp-cvtitle{top:48px;font-size:55px}' +
+      '.hp-cv .hf-logo,.hp-dv .hf-logo{left:59px;bottom:59px}' +
+      /* 간지 pill — 딥 지면+상하 2필 / pill2=3필 스택+타원 오버레이 */
+      '.hp-dv{background:var(--dt)}' +
+      '.hp-dvp1{position:absolute;left:462px;right:0;top:0;height:348px;background:var(--p1);border-radius:0 0 0 288px}' +
+      '.hp-dvp2{position:absolute;left:512px;right:0;bottom:0;height:348px;background:var(--p2);border-radius:288px 0 0 0}' +
+      '.hp-dv2a{position:absolute;left:588px;top:0;width:524px;height:210px;background:var(--sg);border-radius:0 0 120px 120px}' +
+      '.hp-dv2b{position:absolute;left:700px;right:0;top:210px;height:314px;background:var(--p1);border-radius:157px 0 0 157px}' +
+      '.hp-dv2c{position:absolute;left:588px;top:524px;width:524px;height:196px;background:var(--sg);border-radius:120px 120px 0 0}' +
+      '.hp-dv2o{position:absolute;left:1032px;top:-40px;width:560px;height:800px;border-radius:50%;background:rgba(255,255,255,.14)}' +
+      '.hp-dvtitle{position:absolute;left:59px;top:48px;z-index:5;color:#fff;font-size:48px;font-weight:800;line-height:1.25;letter-spacing:-.02em;white-space:pre-wrap;max-width:340px}' +
+      /* 아젠다 — 미니 커버 기하(하단 밴드 md)+잉크 패널 */
+      '.hp-ag .hp-cvband{background:var(--md)}' +
+      '.hp-agpanel{position:absolute;left:173px;top:185px;width:933px;height:449px;z-index:5;background:linear-gradient(135deg,color-mix(in srgb,var(--ik2) 82%,var(--t)),var(--ik2));border-radius:4px;padding:36px 100px 30px 100px;display:flex;flex-direction:column}' +
+      '.hp-aglab{text-align:center;color:#fff;font-size:19px;font-weight:800;letter-spacing:.08em;flex:0 0 auto}' +
+      '.hp-agrows{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;margin-top:8px}' +
+      '.hp-agrow{display:flex;align-items:flex-start;gap:26px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.28)}' +
+      '.hp-agrow:last-child{border-bottom:none}' +
+      '.hp-agbdg{flex:0 0 56px}' +
+      '.hp-agbdg b{display:inline-block;background:#fff;color:var(--bdg);font-size:14px;font-weight:800;border-radius:6px;padding:4px 11px}' +
+      '.hp-aghead{flex:1;min-width:0;color:#fff;font-size:18px;font-weight:700;line-height:1.5}' +
+      '.hp-agwho{flex:0 0 auto;max-width:330px;color:#fff;font-size:17px;font-weight:500;line-height:1.75;text-align:left;white-space:pre-wrap}' +
+      /* 사이드바 — 좌 md 바+우 본문, num 변형=절반 바+대형 숫자 */
+      '.hp-sb,.hp-nt,.hp-ccs,.hp-st,.hp-pq{background:#fff}' +
+      '.hp-sbbar{position:absolute;left:0;top:0;bottom:0;width:233px;background:var(--md);z-index:2;padding:52px 40px}' +
+      '.hp-sb.nm .hp-sbbar{width:614px;padding:49px 49px}' +
+      '.hp-sbtitle{display:block;color:#fff;font-size:30px;font-weight:800;line-height:1.34;letter-spacing:-.01em;white-space:pre-wrap}' +
+      '.hp-sb.nm .hp-sbtitle{font-size:38px}' +
+      '.hp-sbno{position:absolute;left:33px;bottom:-36px;color:#fff;font-size:186px;font-weight:200;line-height:1}' +
+      '.hp-sbbody{position:absolute;left:392px;right:64px;top:0;bottom:0;z-index:2;padding-top:108px}' +
+      '.hp-sb.nm .hp-sbbody{left:717px}' +
+      '.hp-sblead{font-size:21px;font-weight:800;line-height:1.5;color:var(--ink);white-space:pre-wrap}' +
+      '.hp-sbtx{margin-top:44px;font-size:16px;line-height:1.85;color:var(--body);white-space:pre-wrap}' +
+      /* 포토 쿼드 — 사이드바+2×2 도트 캡션+십자 구분선 */
+      '.hp-pqgrid{position:absolute;left:233px;right:0;top:0;bottom:0;z-index:2;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:34px 40px}' +
+      '.hp-pqv{position:absolute;left:50%;top:54px;bottom:54px;width:1px;background:var(--rule)}' +
+      '.hp-pqh{position:absolute;top:50%;left:40px;right:40px;height:1px;background:var(--rule)}' +
+      '.hp-pqcell{min-width:0;min-height:0;display:flex;flex-direction:column;gap:12px;padding:14px 24px}' +
+      '.hp-pqcap{display:flex;align-items:center;gap:10px}' +
+      '.hp-pqcap i{width:16px;height:16px;border-radius:50%;background:var(--bdg);flex:0 0 auto}' +
+      '.hp-pqcap span{font-size:14px;font-weight:600;color:var(--ink)}' +
+      '.hp-pqcell .hf-imgph,.hp-pqcell .hf-abimg{flex:1;min-height:0;width:100%;object-fit:cover;border-radius:0}' +
+      /* 스테이트먼트 frame — md 보더 프레임+센터 구성 */
+      /* 프레임 보더는 별도 스팬 — 섹션 자체 border는 PPTX DOM 워커가 도형으로 못 집는다 */
+      '.hp-stframe{position:absolute;inset:0;border:44px solid var(--md)}' +
+      '.hp-stin{position:absolute;inset:44px;display:flex;flex-direction:column;align-items:center;padding:120px 64px 0}' +
+      '.hp-sttitle{font-size:25px;font-weight:800;letter-spacing:-.01em;text-align:center;white-space:pre-wrap}' +
+      '.hp-stsub{margin-top:14px;font-size:13px;color:var(--muted);text-align:center}' +
+      '.hp-strule{display:block;width:100%;height:1px;background:var(--rule);margin-top:66px}' +
+      '.hp-sttx{margin-top:78px;font-size:16px;line-height:2.28;color:var(--body);text-align:center;white-space:pre-wrap}' +
+      /* 스크린 — 딥 지면+우 대형 패널 */
+      '.hp-scr{background:var(--dt)}' +
+      '.hp-scrbg1{position:absolute;left:588px;right:0;top:0;height:210px;background:rgba(255,255,255,.10);border-radius:0 0 0 120px}' +
+      '.hp-scrbg2{position:absolute;left:1032px;top:200px;width:560px;height:700px;border-radius:50%;background:rgba(255,255,255,.08)}' +
+      '.hp-pill{display:inline-block;border:2px solid var(--ink);border-radius:999px;font-size:18px;font-weight:700;padding:7px 18px;color:var(--ink)}' +
+      '.hp-pill.iv{border-color:#fff;color:#fff}' +
+      '.hp-scrl{position:absolute;left:53px;top:37px;bottom:37px;width:250px;z-index:3;display:flex;flex-direction:column;align-items:flex-start}' +
+      '.hp-scrtitle{margin-top:56px;color:#fff;font-size:30px;font-weight:800;line-height:1.4;letter-spacing:-.01em;white-space:pre-wrap}' +
+      '.hp-scrrule{display:block;width:126px;height:2px;background:rgba(255,255,255,.55);margin-top:36px}' +
+      '.hp-scrlist{margin-top:28px;list-style:none;color:#fff;font-size:15px;line-height:2.2;font-weight:500}' +
+      '.hp-scrpanel{position:absolute;left:362px;right:50px;top:56px;bottom:60px;z-index:3;background:var(--tn);overflow:hidden}' +
+      '.hp-scrpanel .hf-abimg{width:100%;height:100%;object-fit:cover}' +
+      '.hp-scrpanel .hf-imgph{width:100%;height:100%;border-radius:0}' +
+      /* 노트 — 좌 엣지바/상단 밴드+타이틀+헤어라인+좌 소제목·우 문단 */
+      '.hp-ntedge{position:absolute;left:0;top:0;bottom:0;width:17px;background:var(--md)}' +
+      '.hp-nt.bd .hp-ntedge,.hp-ntedge.bdtop{left:0;right:0;top:0;bottom:auto;width:auto;height:25px}' +
+      '.hp-nttitle{position:absolute;left:80px;top:80px;font-size:23px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-ntrule{position:absolute;left:80px;right:80px;top:158px;height:1px;background:#9AA5A0}' +
+      '.hp-ntgrid{position:absolute;left:80px;right:80px;top:200px;display:flex;gap:60px}' +
+      '.hp-nthead{flex:0 0 255px;font-size:16px;font-weight:700;color:var(--ink);white-space:pre-wrap}' +
+      '.hp-nttx{flex:1;min-width:0;font-size:16px;line-height:1.85;color:var(--body);white-space:pre-wrap}' +
+      /* 원형 수치 — 겹침 원 2~3 */
+      '.hp-cchead{position:absolute;left:0;right:0;top:68px;text-align:center}' +
+      '.hp-cctitle{font-size:23px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-ccsub{margin-top:12px;font-size:13px;color:var(--muted)}' +
+      '.hp-ccrow{position:absolute;left:0;right:0;top:241px;display:flex;justify-content:center}' +
+      '.hp-cc{width:347px;height:347px;border-radius:50%;background:var(--cg);flex:0 0 auto;margin:0 -14px;mix-blend-mode:multiply;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:#fff}' +
+      '.hp-cc .tg{font-size:16px;font-weight:700}' +
+      '.hp-cc .vl{font-size:52px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-cc .lb{font-size:16px;font-weight:500}' +
+      /* 포토 frame3 */
+      '.hp-f3{background:var(--t)}' +
+      '.hp-f3sg{position:absolute;right:-540px;top:-480px;width:1400px;height:1400px;border-radius:50%;background:var(--sg)}' +
+      '.hp-f3row{position:absolute;left:44px;right:44px;top:46px;height:304px;z-index:2;display:flex;gap:32px}' +
+      '.hp-f3fr{flex:1;min-width:0;background:#fff;padding:0}' +
+      '.hp-f3fr .hf-abimg{width:100%;height:100%;object-fit:cover}' +
+      '.hp-f3fr .hf-imgph{width:100%;height:100%;border-radius:0}' +
+      '.hp-f3foot{position:absolute;left:44px;right:44px;top:432px;bottom:44px;z-index:2;display:flex;gap:60px}' +
+      '.hp-f3l{flex:0 0 320px;display:flex;flex-direction:column;align-items:flex-start;gap:26px;position:relative}' +
+      '.hp-f3l .hp-pill{border-color:#fff;color:#fff}' +
+      '.hp-f3title{color:#fff;font-size:30px;font-weight:800;line-height:1.35;white-space:pre-wrap}' +
+      '.hp-f3rule{position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(255,255,255,.7)}' +
+      '.hp-f3rule.top{bottom:auto;top:0}' +
+      '.hp-f3cap{flex:1;min-width:0;position:relative;padding-top:26px}' +
+      '.hp-f3cap p{color:#fff;font-size:15px;line-height:2;white-space:pre-wrap}' +
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
 
@@ -1538,6 +1786,11 @@
     { type: 'statement', label: '스테이트먼트', use: '타이틀+서브 문장 중앙 대형 — 메시지 전달 장', needs: ['title'], opt: ['sub'] },
     { type: 'hero', label: '이미지 히어로', use: '풀블리드 배경 이미지+중앙 텍스트(이미지는 업로드)', needs: ['title'], opt: ['sub'] },
     { type: 'quote', label: '슬로건', use: '행사 슬로건·메시지 — 풀블리드 딥 밴드', needs: ['text'], opt: ['by'] },
+    { type: 'agenda', label: '아젠다', use: '발표 순서 — 잉크 패널에 파트 뱃지|제목|발표자 행 2~4(2026 필 기하)', needs: ['rows'], opt: ['title'], cap: { rows: '2~4개' } },
+    { type: 'sidebar', label: '사이드바 본문', use: '좌 컬러 사이드바 제목+우 리드·문단 — 서술형 본문(num 변형=절반 바+대형 숫자)', needs: ['title', 'text'], opt: ['lead', 'variant', 'no'] },
+    { type: 'screen', label: '스크린 패널', use: '딥 지면+좌 연도 뱃지·타이틀·리스트+우 대형 이미지 패널(업로드)', needs: ['title'], opt: ['year', 'points'] },
+    { type: 'note', label: '노트', use: '타이틀+풀폭 헤어라인+좌 소제목·우 문단 — 담백한 텍스트 장(band 변형=상단 밴드)', needs: ['title', 'text'], opt: ['head', 'variant'] },
+    { type: 'circles', label: '원형 수치', use: '겹침 원 2~3에 태그·대형 수치·라벨 — 목표·성과 강조(수치는 실측만)', needs: ['title', 'items'], opt: ['sub'], cap: { items: '2~3개' } },
     { type: 'closing', label: '엔딩', use: '마지막 장 — 표지 기하+마무리 인사·문의처', needs: ['title'], opt: ['sub', 'contact'] }
   ];
 
@@ -1661,22 +1914,27 @@
     statement: { type: 'statement', title: '하루의 즐거움이\n일 년의 힘이 됩니다', sub: '가족과 함께하는 해피 패밀리 데이' },
     hero: { type: 'hero', title: 'HAPPY\nFAMILY DAY', sub: '2026. 05. 22 FRI · 판교 사옥' },
     quote: { type: 'quote', text: '일하는 자리가\n**가족의 자랑**이 되도록.', by: 'Happy Family Day' },
+    agenda: { type: 'agenda', title: 'AGENDA', rows: [{ part: '1부', head: '환영 인사와 행사 안내', who: '피플팀' }, { part: '2부', head: '가족과 함께하는 체험 프로그램', who: '운영 스태프' }, { part: '3부', head: '경품 추첨과 마무리', who: '피플팀' }] },
+    sidebar: { type: 'sidebar', title: '함께하는\n하루의 의미', lead: '가족이 일터를 만나면,\n회사는 더 가까운 곳이 됩니다.', text: '해피 패밀리 데이는 임직원 가족을 회사로 초대하는 날입니다.\n아이들에게는 부모의 일터를 보여주고,\n가족에게는 회사의 감사를 전합니다.' },
+    screen: { type: 'screen', year: '2026년', title: '행사장\n미리 보기', points: ['1층 로비 — 등록·웰컴 키트', '대강당 — 환영 인사·경품 추첨', '체험존 — 만들기·놀이 부스'] },
+    note: { type: 'note', title: '운영 안내', head: '참여 전에\n확인해 주세요', text: '행사 당일 로비 등록 데스크에서 가족 확인 후 입장합니다.\n어린이는 보호자와 동반해 주세요.\n주차권은 등록 시 함께 배부됩니다.' },
+    circles: { type: 'circles', title: '작년, 이만큼 함께했어요', sub: '2025 해피 패밀리 데이 결과', items: [{ tag: 'A. 참여 가족', value: '106', label: '가족' }, { tag: 'B. 만족도', value: '4.8', label: '5점 만점' }, { tag: 'C. 재참여 의사', value: '92%', label: '설문 기준' }] },
     closing: { type: 'closing', title: '5월 22일,\n가족과 함께 만나요', sub: '마이다스 해피패밀리데이', contact: '문의 · 피플팀' }
   };
 
   var SCHEMA_DOC = CATALOG.map(function (c) { return c.type + '(' + c.label + '): ' + c.use; }).join('\n');
   var FIELD_DOC =
-    'cover:{title(행사명, \\n 2줄),sub?(국문 부제),date?(일시)} | ' +
+    'cover:{title(행사명, \\n 2줄),sub?(국문 부제),date?(일시),variant?:"pill"(2026 필 기하 — kicker?=좌상 라벨, 타이틀 좌중 대형)|"pill2"(타이틀 좌상)} | ' +
     'greeting:{label?,text(인사 문장, **강조**, \\n 줄바꿈),by?(주최명)} | ' +
     'toc:{title?,items:[{no?,label(파트명),desc?(한 줄),pages?}](2~4개),variant?:"panel"(좌 컬러면+우 라운드 패널 목차 — 최대 6개, foot?=좌하 문서명 \\n)} | ' +
-    'divider:{no?:"01",title(파트 제목),lead?(한 문장)} | ' +
+    'divider:{no?:"01",title(파트 제목),lead?(한 문장),variant?:"pill"(2026 필 기하 — 딥 지면+상하 2필, 타이틀 \\n 3~4줄)|"pill2"(3필 스택)} | ' +
     'section:{title(\\n 2줄 가능),points:[{no?,head,text}](2~4개),sub?} | ' +
     'cards:{title,cards:[{tag?,head,text?,tone?:"dark"(딥 셀)}](2~4개),sub?} | ' +
     'timeline:{title,items:[{when:"13:00",head,text?,on?:true(틴트 강조)}](3~6개),sub?} | ' +
     'table:{title,columns:[str],rows:[{cells:[str]}],sub?} | ' +
     'checklist:{title,items:[str],cols?:1~2,sub?} | ' +
     'media:{title,specs:[{label(짧은 영문),text,on?:true(딥 강조 행)}](3~5개),image?:{label},caption?,sub?} | ' +
-    'photos:{variant?:"wide|grid|frame|side"(기본 wide),year?(연도 칩 "2026년"),title(캡션 밴드 타이틀 \\n 2줄),caption?(우측 캡션 \\n 2~3줄),foot?(우하단 소라벨),items:[{label}](wide·frame 1개, grid 3개)} | ' +
+    'photos:{variant?:"wide|grid|frame|side|quad|frame3"(기본 wide — quad=좌 사이드바+2×2 도트 캡션, frame3=딥 지면+화이트 프레임 3),year?(연도 칩 "2026년"),title(캡션 밴드 타이틀 \\n 2줄),caption?(우측 캡션 \\n 2~3줄),foot?(우하단 소라벨),items:[{label,caption?(quad 셀 캡션)}](wide·frame 1개, grid·frame3 3개, quad 4개)} | ' +
     'stats:{title,donut?:{pct:0~100,label?,caption?},bars?:[{label,pct:0~100,value?,on?:true(틴트 강조 행),text?}](2~4개),sub?} | ' +
     'kpi:{title,items:[{value,label,desc?,tone?:"on"(딥 카드)}](2~4개),variant?:"badge"(넘버 뱃지+대형 수치 센터 카드),sub?} | ' +
     'process:{title,steps:[{tag:"STEP 1"류,head,text?}](3~4개),accent?:강조 인덱스(기본 중앙),sub?} | ' +
@@ -1704,7 +1962,12 @@
     'list:{title,rows:[{label,sub?}](2~5개),accent?:강조 행 인덱스(기본 0),sub?} | ' +
     'dash:{title,cards:[{label,value(수치),unit?,chart?:{kind:"bars"|"donut"|"area"|"gauge",v?:[숫자],pct?:숫자},text?}](3~4개, 수치는 브리프에 있는 것만),strip?:[{label,value}](1~3개),sub?} | ' +
     'word:{text(2~6자 대형 단어),caption?(한 줄)} | ' +
-    'statement:{title(중앙 대형 문장, \\n 2줄),sub?(한 줄)} | ' +
+    'statement:{title(중앙 대형 문장, \\n 2줄),sub?(한 줄),variant?:"frame"(그린 프레임 보더 — text?=센터 문단 \\n 여러 줄)} | ' +
+    'agenda:{title?(기본 AGENDA),rows:[{part?("1부"류 뱃지),head(발표 제목),who?(발표자 | 소속, \\n 여러 명)}](2~4개)} | ' +
+    'sidebar:{title(사이드바 제목 \\n 2줄),lead?(볼드 리드 \\n 2줄),text(문단 \\n 줄바꿈),variant?:"num"(절반 사이드바+대형 숫자),no?("1")} | ' +
+    'screen:{title(좌 타이틀 \\n 2줄),year?(뱃지 "2025년"),points?:[str](리스트 2~5개)}(우측 대형 패널 이미지는 사용자 업로드 — 창작 금지) | ' +
+    'note:{title(한 줄 제목),head?(좌 소제목 \\n),text(우 문단 \\n 줄바꿈),variant?:"band"(상단 밴드형)} | ' +
+    'circles:{title,sub?,items:[{tag?("A. 목표"류),value(대형 수치 — 브리프에 있는 것만·창작 금지),label?}](2~3개)} | ' +
     'hero:{title(중앙 대형, \\n 2줄),sub?(한 줄)}(배경 이미지는 사용자 업로드 — 창작 금지) | ' +
     'quote:{text(슬로건, **강조**, \\n 줄바꿈),by?} | ' +
     'closing:{title(마무리 인사, \\n 2줄),sub?,contact?(문의처)}' +
