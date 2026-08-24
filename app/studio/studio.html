@@ -749,13 +749,13 @@
   function curMode(){ return packMode(project ? project.stylePack : (pack && pack.id)); }
   // 슬라이드 팩별 타입목록·팩토리·이동단위 — PPT 계열 팩이 늘 때 여기만 추가
   // 슬라이드 덱 렌더 — 팩에 따라 렌더러가 갈린다(썸네일 레일·내보내기 공용)
-  function renderDeckFor(slides){
+  function renderDeckFor(slides, imagesOv){
     const sp = project ? project.stylePack : (pack && pack.id);
     // _clang·_ratio 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로,
     // 화면 비율이 기본 16:9로 떨어져 본문과 썸네일이 어긋난다(_clang이 실제로 겪은 사고 — 같은 실수 반복 금지)
     // _ratio는 정규화해서 넣는다 — 옛 프로젝트(필드 없음)도 팩이 undefined를 받지 않게(본문·썸네일 동일값 보장)
     // theme·images는 덱 루트 필드 — 빼먹으면 썸네일·라이브·HTML 내보내기가 기본 테마/빈 이미지로 그려진다(hfd 컬러칩 실사고)
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'||sp==='hfd'?sp:'ax'), accent: data.accent || '', theme: data.theme, images: data.images, _clang: data._clang, _ratio: canvasOf().ratio, _userTouched: data._userTouched };
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'||sp==='hfd'?sp:'ax'), accent: data.accent || '', theme: data.theme, images: imagesOv || data.images, _clang: data._clang, _ratio: canvasOf().ratio, _userTouched: data._userTouched };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
     if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='rams' && typeof renderRamsDeck==='function') return renderRamsDeck(payload);
@@ -806,6 +806,7 @@
     // 이미 <img>면 src만 교체(깜빡임 없음). placeholder 등 그 외엔 팩별 마크업으로 전체 리렌더.
     if(slot && slot.tagName==='IMG'){ slot.src=src; if(isRawPack()){ persistRawEdits(doc); persist(); } }
     else if(!isRawPack()){ render(); }
+    if(curMode().slides) refreshPptPanel();   // 좌측 레일 썸네일에도 즉시 반영 — 없으면 본문만 바뀌어 "첨부 안 됨"으로 보인다
   }
   function uploadImage(key){
     const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
@@ -1528,9 +1529,21 @@
     if((data.style||'')==='naver' && !s.ch && s.type!=='cover'){
       for(let k=i-1;k>=0;k--){ const p=arr[k]; if(p && p.type==='divider' && p.ch){ s.ch=p.ch; break; } } }
     return s; }
+  /* 덱 루트 이미지 키 리매핑 — hfd처럼 키에 슬라이드 인덱스가 박힌 이미지(card-2-0·photos-3-1·hero-8 등)는
+     부분 렌더(썸네일 한 장·선택 내보내기)에서 슬라이드 위치가 바뀌면 키가 어긋나 업로드 이미지가 사라진다.
+     idxs=렌더에 실을 원본 인덱스 배열. 인덱스형 키만 새 위치로 옮기고(빠진 장 키는 제거), media 등 전역·경로형 키는 그대로. */
+  function remapImagesFor(idxs){
+    const src=data.images||{}; const out={}; const pos={}; (idxs||[]).forEach((oi,ni)=>{ pos[oi]=ni; });
+    Object.keys(src).forEach(k=>{
+      const m=k.match(/^([a-z]+)-(\d+)(-\d+)?$/);
+      if(!m){ out[k]=src[k]; return; }
+      if(pos[+m[2]]!=null) out[m[1]+'-'+pos[+m[2]]+(m[3]||'')]=src[k];
+    });
+    return out;
+  }
   // 한 장만 가볍게 다시 그림 — 텍스트 blur·툴바 조작 후 좌측 썸네일 즉시 반영(사용자 지시)
   function refreshThumbAt(i){ const t=document.querySelectorAll('#thumbRail .thumb')[i]; if(!t||typeof renderDeckFor!=='function'||!(data.slides&&data.slides[i])) return;
-    const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]); }
+    const f=t.querySelector('iframe'); if(f) f.srcdoc=renderDeckFor([soloSlide(data.slides,i)], remapImagesFor([i])); }
   /* 썸네일 레일에 현재 캔버스 스펙을 CSS 변수로 심는다 — .thumb(aspect-ratio)·.thumb iframe(폭/높이)이 상속받는다.
      레일 하나에만 세팅하면 자식 전체에 적용(커스텀 프로퍼티 상속). 반환값으로 스케일 계산도 같이 쓴다. */
   function applyRailCanvas(rail){
@@ -1551,7 +1564,7 @@
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span><button class="tdup" title="'+tL('복제')+'">⧉</button><button class="tdel" title="'+tL('삭제')+'">✕</button>');
       t.style.width=W+'px';   // 높이는 aspect-ratio(--thumb-ar)가 결정(비율 정확)
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
-      f.srcdoc=renderDeckFor([soloSlide(data.slides,i)]);
+      f.srcdoc=renderDeckFor([soloSlide(data.slides,i)], remapImagesFor([i]));
       f.style.transform='scale('+sc+')';
       t.append(f);
       t.onclick=(e)=>{ if(e.target.closest('.tdel')||e.target.closest('.tdup')) return; setCurThumb(i); scrollToSlide(i); };
@@ -1609,7 +1622,7 @@
     done.forEach((s,i)=>{
       const t=el('div','thumb','<span class="tnum">'+(i+1)+'</span>'); t.style.width=W+'px';
       const f=document.createElement('iframe'); f.setAttribute('scrolling','no');
-      f.srcdoc=renderDeckFor([soloSlide(done,i)]); f.style.transform='scale('+sc+')';
+      f.srcdoc=renderDeckFor([soloSlide(done,i)], remapImagesFor([i])); f.style.transform='scale('+sc+')';
       t.append(f); rail.append(t);
     });
     // 라이브 중엔 "지금 그리는 장" 1칸을 스켈레톤으로 — 레일이 비어 보이지 않게
@@ -1881,6 +1894,10 @@
       _liveComposing=false;
       mountWidget('done'); render(); rebuildThumbRail(); scroll();
       initPptChat();
+      // 성공 경로(위)와 동일하게 편집모드 자동 진입 — 빠지면 폴백 덱에서 이미지 슬롯·텍스트 클릭이 전부 무반응
+      // (부팅 시 자동 진입(2890대)은 _liveComposing 중이라 건너뛰었고, PPT는 편집 버튼이 숨겨져 있어 복구 불가였음)
+      const hb2=document.getElementById('histBtn'); if(hb2) hb2.onclick=undoAll; syncUndoUI();
+      setTimeout(()=>{ const b=document.getElementById('editBtn'); if(b && !editMode) b.click(); }, 250);
     }
   }
 
@@ -2127,13 +2144,18 @@
       doc.addEventListener('click',e=>{ if(editMode) return; const pm=e.target.closest&&e.target.closest('.p-media[data-img]');
         if(!pm || Math.hypot(e.clientX-_px,e.clientY-_py)>6) return; setMediaImg(pm, e.clientX, e.clientY); }); }
     // 드래그&드롭 첨부 — 파일창 없이 이미지 파일을 회색 자리에 바로 놓기 (파일창 문제 우회로 겸용)
+    // p-media(경로형 data-img → slide 필드) 외에, hfd류 루트 키 슬롯([data-img] 점 없는 키 → data.images)도 수용
     if(!doc.__pmDrop){ doc.__pmDrop=1;
-      doc.addEventListener('dragover',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm){ e.preventDefault(); pm.style.outline='3px dashed #6c2bff'; } });
-      doc.addEventListener('dragleave',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(pm) pm.style.outline=''; });
-      doc.addEventListener('drop',e=>{ const pm=e.target.closest&&e.target.closest('.p-media[data-img]'); if(!pm) return; e.preventDefault(); pm.style.outline='';
+      const dropSlot=e=>{ const t=e.target; if(!t||!t.closest) return null;
+        const pm=t.closest('.p-media[data-img]'); if(pm) return pm;
+        const ks=t.closest('[data-img]'); return (ks && String(ks.getAttribute('data-img')).indexOf('.')<0) ? ks : null; };
+      doc.addEventListener('dragover',e=>{ const pm=dropSlot(e); if(pm){ e.preventDefault(); pm.style.outline='3px dashed #6c2bff'; } });
+      doc.addEventListener('dragleave',e=>{ const pm=dropSlot(e); if(pm) pm.style.outline=''; });
+      doc.addEventListener('drop',e=>{ const pm=dropSlot(e); if(!pm) return; e.preventDefault(); pm.style.outline='';
         const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
         if(!f||!/^image\//.test(f.type)){ imgTrace(tL('이미지 파일을 놓아주세요.')); return; }
         const path=pm.getAttribute('data-img');
+        if(!pm.classList.contains('p-media')){ readImgFile(f, src=>{ applyImage(path, src); }, null); return; }   // 루트 키 계약
         readImgFile(f, src=>{ pptMutate(()=>{ setField(path+'.src', src); }); }, null); }); }
     if(!editMode) return;
     pptEditor(doc);
@@ -2214,7 +2236,13 @@
           const curW=(data.slides[_selSi]._tw||{})[rel]||Math.round(only.getBoundingClientRect().width/(k0||1));
           const wm=tbBtn('⇥·⇤',false,'font-size:10px',()=>setTw(only,Math.max(160,curW-80))); wm.title=tL('폭 좁게'); utb.append(wm);
           const wp=tbBtn('⇤·⇥',false,'font-size:10px',()=>setTw(only,Math.min(1160,curW+80))); wp.title=tL('폭 넓게'); utb.append(wp); } }
-      if(only && only.classList.contains('s-imgwrap')) utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
+      if(only && only.classList.contains('s-imgwrap')){
+        // hfd류 루트 images 키 슬롯(data-img가 점 없는 키 — media·card-2-0 등)은 slide.imgs 계약(replaceImg)이 아니라
+        // data.images 교체 — replaceImg로 가면 hfd가 안 읽는 slide.imgs에 저장돼 "첨부가 안 되는" 사고
+        const rk=only.getAttribute('data-img');
+        if(rk && rk.indexOf('.')<0 && !only.classList.contains('p-media')) utb.append(tbBtn(tL('교체'),false,'',()=>pickImage(rk)));
+        else utb.append(tbBtn(tL('교체'),false,'',()=>replaceImg(only)));
+      }
       // z-순서(앞/뒤) — 맨앞/맨뒤 아이콘(겹친 사각형)
       const Z_FWD='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M16 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h3"/></svg>';
       const Z_BACK='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="13" height="13" rx="2" fill="currentColor" stroke="none"/><path d="M8 8V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-3"/></svg>';
@@ -2933,7 +2961,7 @@
     }
     function pickSlides(idxs){ return idxs? idxs.map(i=>data.slides[i]).filter(Boolean) : (data.slides||[]); }
     function doPdf(idxs){
-      let html=renderDeckFor(pickSlides(idxs));
+      let html=renderDeckFor(pickSlides(idxs), idxs?remapImagesFor(idxs):null);
       // @page 용지 = 슬라이드 캔버스(px/96 = 인치). 비율이 바뀌면 용지도 같이 바뀌어야 여백·잘림이 안 생긴다
       const cv=canvasOf();
       html=html.replace('</head>','<style>@page{size:'+cv.inW.toFixed(3)+'in '+cv.inH.toFixed(3)+'in;margin:0}html,body{background:#fff}.ppt-stack{display:block;padding:0;gap:0}.ppt-stack>.slide{margin:0;box-shadow:none;page-break-after:always;break-inside:avoid}</style></head>');
@@ -2941,7 +2969,7 @@
       f.srcdoc=html; document.body.append(f);
       f.onload=()=>{ setTimeout(()=>{ try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} setTimeout(()=>f.remove(),60000); },400); };
     }
-    function doHtml(idxs){ const html=renderDeckFor(pickSlides(idxs));
+    function doHtml(idxs){ const html=renderDeckFor(pickSlides(idxs), idxs?remapImagesFor(idxs):null);
       const b=new Blob([html],{type:'text/html'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=(project&&project.name||'deck')+'.html'; a.click(); URL.revokeObjectURL(a.href); }
     goBtn.onclick=async()=>{
       const idxs=parseRange();
