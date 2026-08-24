@@ -953,6 +953,21 @@
       catch (e) { html = '<section class="slide hf sc" data-kind="Error"><h2 class="hf-hl">' + esc(s.type) + ' 렌더 오류</h2></section>'; }
       /* toc panel 변형은 자체 풀블리드 — 프레임 미적용 */
       if (FRAMED[s.type] && s.frame !== false && !(s.type === 'toc' && s.variant === 'panel') && !(s.type === 'statement' && s.variant === 'frame')) html = frameWrap(html);
+      /* 슬라이드 자유 첨부 이미지(s.imgs[], 구버전 s.img 수용) — 스튜디오 우상단 '이미지' 버튼 계약(pitch 동일).
+         렌더러가 안 그리면 첨부해도 화면에 안 나오는 사고("이미지 첨부 안 보임" 2026-08-24). */
+      var fimgs = (s.imgs && s.imgs.length) ? s.imgs : ((s.img && s.img.src) ? [s.img] : []);
+      if (fimgs.length) {
+        var ih = fimgs.map(function (im, k) {
+          if (!im || !im.src) return '';
+          var ist = '';
+          if (im.w) ist += 'width:' + (+im.w) + 'px;max-width:none;';
+          if (im.h) ist += 'height:' + (+im.h) + 'px;max-height:none;';
+          var pos = 'top:' + (im.t != null ? +im.t : (150 + k * 34)) + 'px;' +
+            (im.l != null ? 'left:' + (+im.l) + 'px;right:auto' : 'right:' + (60 + k * 34) + 'px');
+          return '<div class="s-imgwrap free" data-imgi="' + k + '" style="' + pos + '"><img class="s-img" src="' + esc(im.src) + '"' + (ist ? ' style="' + ist + '"' : '') + ' alt=""></div>';
+        }).join('');
+        html = html.replace(/<\/section>\s*$/, ih + '</section>');
+      }
       return html;
     }).join('\n');
   }
@@ -1689,6 +1704,9 @@
       '.hp-f3rule.top{bottom:auto;top:0}' +
       '.hp-f3cap{flex:1;min-width:0;position:relative;padding-top:26px}' +
       '.hp-f3cap p{color:#fff;font-size:15px;line-height:2;white-space:pre-wrap}' +
+      /* 자유 첨부 이미지(우상단 '이미지' 버튼, s.imgs 계약) — 슬롯(.hf-imgph.s-imgwrap)과 달리 free만 절대배치 */
+      '.s-imgwrap.free{position:absolute;z-index:6}' +
+      '.s-imgwrap.free .s-img{display:block;max-width:420px;max-height:340px;border-radius:10px;object-fit:cover;-webkit-user-drag:none;user-select:none;pointer-events:none}' +
       '@keyframes vfu{from{opacity:0}to{opacity:1}}';
   }
 
