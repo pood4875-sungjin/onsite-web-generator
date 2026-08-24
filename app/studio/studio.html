@@ -754,7 +754,8 @@
     // _clang·_ratio 동봉 필수 — 썸네일·라이브 경로가 이걸 빼먹으면 팩 잠금 문구가 기본 언어(ko)로,
     // 화면 비율이 기본 16:9로 떨어져 본문과 썸네일이 어긋난다(_clang이 실제로 겪은 사고 — 같은 실수 반복 금지)
     // _ratio는 정규화해서 넣는다 — 옛 프로젝트(필드 없음)도 팩이 undefined를 받지 않게(본문·썸네일 동일값 보장)
-    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'||sp==='hfd'?sp:'ax'), accent: data.accent || '', _clang: data._clang, _ratio: canvasOf().ratio, _userTouched: data._userTouched };
+    // theme·images는 덱 루트 필드 — 빼먹으면 썸네일·라이브·HTML 내보내기가 기본 테마/빈 이미지로 그려진다(hfd 컬러칩 실사고)
+    const payload = { slides: slides, style: data.style || (sp==='pitch'||sp==='honors'||sp==='naver'||sp==='rams'||sp==='pastel'||sp==='sfmi'||sp==='machine'||sp==='hfd'?sp:'ax'), accent: data.accent || '', theme: data.theme, images: data.images, _clang: data._clang, _ratio: canvasOf().ratio, _userTouched: data._userTouched };
     if(sp==='honors' && typeof renderHonorsDeck==='function') return renderHonorsDeck(payload);
     if(sp==='naver' && typeof renderNaverDeck==='function') return renderNaverDeck(payload);
     if(sp==='rams' && typeof renderRamsDeck==='function') return renderRamsDeck(payload);
