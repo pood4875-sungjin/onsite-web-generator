@@ -160,9 +160,10 @@ const HFD_SYSTEM =
   '형식: {"slides":[ ... ],"theme":"green|teal|cyan|indigo"}\n' +
   '슬라이드 타입은 내용 성격에 맞춰 아래 "언제 쓰나"로 고른다(같은 타입만 반복 금지):\n' + HFD_USE_DOC + '\n' +
   '각 타입의 필드: ' + HFD_FIELD_DOC + '\n' +
-  '규칙: 1장 cover(title 필수·빈 값 금지). 초반에 greeting 또는 toc. 파트마다 divider 후 그 파트 본문 장들. ' +
+  '규칙: 1장 cover(title 필수·빈 값 금지). 초반에 greeting 또는 toc. 본문은 화이트 지면 내용형 타입(section·cards·timeline·table·checklist·media·stats·list·highlight·profile·lineup 등)을 다양하게 섞는다. ' +
   '일정은 timeline(시간은 브리프의 실제 값), 장소·대상 정보는 table, 준비물·유의사항은 checklist, 오시는 길은 media. ' +
-  '중간에 quote(슬로건)로 호흡을 만든다. 마지막은 closing(마무리 인사·문의처). ' +
+  '[중요·최우선] 풀블리드 딥 장(divider·quote·statement·word·hero)은 표지·closing과 배경이 같아 반복되면 덱 전체가 같은 장처럼 보인다 — cover·closing 제외 다 합쳐 최대 2장. divider는 본문 3장 이상의 큰 파트 전환에만 쓰고 파트가 많아도 이 상한을 넘기지 않는다(파트마다 넣지 말 것). quote는 최대 1장. 딥 장끼리 연속 배치 금지. ' +
+  '마지막은 closing(마무리 인사·문의처). ' +
   '일시·장소·대상·프로그램·경품은 브리프/plan에 있는 것만 쓰고 지어내지 않는다. ' +
   '총 장수는 length를 따른다(목차·간지 포함): short=5~8장, std=9~13장, 없으면 8~12장. ' +
   '작법: 한 장에 한 메시지. 따뜻하고 간결한 안내 톤 — 과장·수사 금지. 이모지 금지.';
