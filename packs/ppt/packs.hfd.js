@@ -130,7 +130,9 @@
       /* pill 변형 — 2026 필 기하 간지(538:2 G-간지1/2 실측): pill=상하 2필, pill2=3필 스택+타원 오버레이 */
       if (s.variant === 'pill' || s.variant === 'pill2') {
         var pills = s.variant === 'pill2'
-          ? '<span class="hp-dv2a"></span><span class="hp-dv2b"></span><span class="hp-dv2c"></span><span class="hp-dv2o"></span>'
+          ? '<span class="hp-dv2a"></span><span class="hp-dv2b"></span><span class="hp-dv2c"></span>' +
+            /* 우측 대형 원 "바깥"만 어둡게 — evenodd 구멍 SVG(마스크 금지: PPTX는 SVG 통째 래스터라 안전) */
+            '<svg class="hp-dv2o" viewBox="0 0 1280 720"><path fill-rule="evenodd" d="M0 0h1280v720H0zM-283 362a714 714 0 1 0 1428 0a714 714 0 1 0 -1428 0z"/></svg>'
           : '<span class="hp-dvp1"></span><span class="hp-dvp2"></span>';
         return '<section class="slide hf hp-dv" data-kind="' + kind(s, 'Divider') + '">' + pills +
           '<h1 class="hp-dvtitle"' + de(P + '.title') + '>' + mb(s.title || '') + '</h1>' +
@@ -1586,10 +1588,12 @@
          위/아래·우측은 슬라이드 밖으로 흘려 PPTX roundRect(4코너 균일)에서도 보이는 면이 원본과 같다 */
       '.hp-dvp1{position:absolute;left:461px;right:-320px;top:-282px;height:632px;background:var(--p1);border-radius:316px}' +
       '.hp-dvp2{position:absolute;left:455px;right:-320px;top:351px;height:628px;background:var(--p2);border-radius:314px}' +
-      '.hp-dv2a{position:absolute;left:588px;top:-120px;width:524px;height:330px;background:var(--sg);border-radius:120px}' +
-      '.hp-dv2b{position:absolute;left:700px;right:-160px;top:210px;height:314px;background:var(--p1);border-radius:157px}' +
-      '.hp-dv2c{position:absolute;left:588px;top:524px;width:524px;height:330px;background:var(--sg);border-radius:120px}' +
-      '.hp-dv2o{position:absolute;left:1032px;top:-40px;width:560px;height:800px;border-radius:50%;background:rgba(255,255,255,.14)}' +
+      /* pill2 실측 — 캡슐 3개(좌 라운드 원 c(742,55)·c(853,365)·c(744,675), R≈156) + 우측 대형 원(c(431,362) R714) 밖 어둡게 */
+      '.hp-dv2a{position:absolute;left:586px;right:-160px;top:-101px;height:312px;background:var(--sg);border-radius:156px}' +
+      '.hp-dv2b{position:absolute;left:697px;right:-160px;top:209px;height:312px;background:var(--p1);border-radius:156px}' +
+      '.hp-dv2c{position:absolute;left:587px;right:-160px;top:518px;height:314px;background:var(--sg);border-radius:157px}' +
+      '.hp-dv2o{position:absolute;inset:0;width:1280px;height:720px}' +
+      '.hp-dv2o path{fill:rgba(4,36,26,.16)}' +
       '.hp-dvtitle{position:absolute;left:59px;top:48px;z-index:5;color:#fff;font-size:48px;font-weight:800;line-height:1.25;letter-spacing:-.02em;white-space:pre-wrap;max-width:340px}' +
       /* 아젠다 — 미니 커버 기하(하단 밴드 md)+잉크 패널 */
       '.hp-ag .hp-cvz.b rect{fill:var(--md)}' +
