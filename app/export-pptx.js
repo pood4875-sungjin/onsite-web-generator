@@ -132,6 +132,8 @@
     /* hfd 팩 — 밴드·원 기하·셀·카드류(srow·trow는 플레인 행이라 제외) */ '.hf-bandT, .hf-bandB, .hf-circ, .hf-arc, .hf-deco, .hf-abarc, .hf-cell, .hf-toccol, .hf-key, .hf-imgph, .hf-dot, .hf-pstep, .hf-cmp, .hf-rmcol, .hf-half, .hf-brow .tr, .hf-brow .tr i, .hf-tocrow, .hf-herobg, .hf-heroov, ' +
     /* section 카드(.hf-num)·틴트/화이트 필 뱃지류 — 텍스트만 TEXT_SEL에 있고 배경 도형이 빠져 있던 것(2026-08-24 실사고) */
     '.hf-num, .hf-cnbadge, .hf-cylab, .hf-duochip, .hf-kbno, .hf-lnbadge, .hf-oghead, .hf-pfbadge, ' +
+    /* border-bottom/top/left 행 규칙선류 — background:만 훑어 놓친 것(2026-08-24, 테이블·스펙 행 라인 실사고) */
+    '.hf-tbrow, .hf-trow, .hf-srow, .hf-hlrow, .hf-tcprow, .hf-cnnote, .hf-abcap, .hf-abyear, .hf-sdtx, .hf-bdpt, .hf-pffoot, .hf-t3grid, ' +
     /* 화이트 패널 계열 — 이게 빠지면 기하 위에 텍스트만 떠서 "추출이 안 된" 덱이 된다 */
     '.hf-frpanel, .hf-abpanel, .hf-sdcap, .hf-sdpanel, .hf-abframe, .hf-abband, ' +
     '.hf-duo, .hf-flowcol, .hf-flowhead, .hf-flowrow, .hf-hstep, .hf-hsln, .hf-hsdot, .hf-pfcard, .hf-pfhead, .hf-pffocus, .hf-bdband, .hf-bdcard, .hf-hipanel, .hf-hiimg .ph, .hf-cnchart, .hf-cnbar i, ' +
