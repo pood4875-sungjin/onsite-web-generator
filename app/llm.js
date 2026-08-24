@@ -335,7 +335,7 @@
         '규칙: 1장 cover. 초반에 greeting 또는 toc. 파트마다 divider. 일정은 timeline, 정보는 table, 유의사항은 checklist. 마지막 closing. ' +
         '일시·장소·대상·프로그램은 브리프에 있는 것만 쓰고 지어내지 않는다. 따뜻하고 간결한 안내 톤. ' +
         '총 장수: short=5~8, std=9~13, 없으면 8~12. 이모지 금지.';
-      var htxt = await messages({ system: hsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }) });
+      var htxt = await messages({ system: hsys + _LR, user: '브리프:\n' + JSON.stringify({ title: brief.title || '', message: brief.message || '', audience: brief.audience || '', plan: brief.plan || '', length: brief.length || '', outline: brief.outline || [] }, null, 2), maxTokens: 8000, onText: onText });
       var hd3 = parseDeck(htxt, 'hfd'); hd3.style = 'hfd'; if (!hd3.theme) hd3.theme = 'green'; return hd3;
     }
     // BYOK 직접 호출 — pastel 팩(Pastel Gradient): 챕터 그라데이션·키밴드
