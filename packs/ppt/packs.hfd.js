@@ -404,7 +404,7 @@
         /* 2026 필 — 딥 그린 지면 + 화이트 프레임 사진 3 + 하단 좌 뱃지·타이틀/중앙 리스트 (538:2 G-09 실측) */
         var f3 = (s.items || []).slice(0, 3); while (f3.length < 3) f3.push({});
         return '<section class="slide hf hp-f3" data-kind="' + kind(s, 'Photos') + '">' +
-          '<span class="hp-f3sg"></span>' +
+          '<span class="hp-f3sg"></span><span class="hp-f3sg c"></span><span class="hp-f3sg r"></span>' +
           '<div class="hp-f3row">' + f3.map(function (it, i) { return '<div class="hp-f3fr">' + slot(i, it) + '</div>'; }).join('') + '</div>' +
           '<div class="hp-f3foot">' +
           '<div class="hp-f3l">' + (s.year ? '<span class="hp-pill"' + de(P + '.year') + '>' + esc(s.year) + '</span>' : '') +
@@ -905,7 +905,7 @@
         '<p class="hp-nttx"' + de(P + '.text') + '>' + mb(s.text || '') + '</p>' +
         '</div></section>';
     },
-    /* 2026 필 — 원형 수치 2~3: 상단 밴드+센터 타이틀+겹침 원(태그·값·라벨) (538:2 G-11 실측) */
+    /* 2026 필 — 원형 수치 2~3: 상단 밴드+센터 타이틀+겹침 원(태그·값·라벨) (519:1923 M-11 실측) */
     circles: function (s, P, ctx) {
       var cs2 = (s.items || []).slice(0, 3).map(function (it, i) {
         var IP = P + '.items.' + i;
@@ -1033,7 +1033,7 @@
       '.hf-chips span.on{box-shadow:0 0 0 2px #17211C}' +
       '@media print{.hf-chips{display:none}}' +
       /* 러닝헤드 */
-      '.hf-run{display:flex;justify-content:space-between;align-items:baseline;flex:none;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t)}' +
+      '.hf-run{display:flex;justify-content:space-between;align-items:baseline;flex:none;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--t)}' +
       '.hf-run.wh{position:relative;z-index:3;color:#fff}' +
       /* 헤드라인 */
       '.hf-hl{margin-top:26px;font-size:38px;font-weight:700;line-height:1.28;letter-spacing:-.02em;white-space:pre-wrap;flex:none;max-width:88%}' +
@@ -1613,10 +1613,11 @@
       '.hp-sbtitle{display:block;color:#fff;font-size:30px;font-weight:800;line-height:1.34;letter-spacing:-.01em;white-space:pre-wrap}' +
       '.hp-sb.nm .hp-sbtitle{font-size:38px}' +
       '.hp-sbno{position:absolute;left:33px;bottom:-36px;color:#fff;font-size:186px;font-weight:200;line-height:1}' +
-      '.hp-sbbody{position:absolute;left:392px;right:64px;top:0;bottom:0;z-index:2;padding-top:108px}' +
+      /* 본문 세로 중앙 + 타이포 확대 — 짧은 콘텐츠에서 하단이 휑하던 피드백 반영 */
+      '.hp-sbbody{position:absolute;left:392px;right:64px;top:0;bottom:0;z-index:2;display:flex;flex-direction:column;justify-content:center}' +
       '.hp-sb.nm .hp-sbbody{left:717px}' +
-      '.hp-sblead{font-size:21px;font-weight:800;line-height:1.5;color:var(--ink);white-space:pre-wrap}' +
-      '.hp-sbtx{margin-top:44px;font-size:16px;line-height:1.85;color:var(--body);white-space:pre-wrap}' +
+      '.hp-sblead{font-size:25px;font-weight:800;line-height:1.5;color:var(--ink);white-space:pre-wrap}' +
+      '.hp-sbtx{margin-top:40px;font-size:17.5px;line-height:1.95;color:var(--body);white-space:pre-wrap}' +
       /* 포토 쿼드 — 사이드바+2×2 도트 캡션+십자 구분선 */
       '.hp-pqgrid{position:absolute;left:233px;right:0;top:0;bottom:0;z-index:2;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:34px 40px}' +
       '.hp-pqv{position:absolute;left:50%;top:54px;bottom:54px;width:1px;background:var(--rule)}' +
@@ -1650,24 +1651,33 @@
       /* 노트 — 좌 엣지바/상단 밴드+타이틀+헤어라인+좌 소제목·우 문단 */
       '.hp-ntedge{position:absolute;left:0;top:0;bottom:0;width:17px;background:var(--md)}' +
       '.hp-nt.bd .hp-ntedge,.hp-ntedge.bdtop{left:0;right:0;top:0;bottom:auto;width:auto;height:25px}' +
-      '.hp-nttitle{position:absolute;left:80px;top:80px;font-size:23px;font-weight:800;letter-spacing:-.01em}' +
-      '.hp-ntrule{position:absolute;left:80px;right:80px;top:158px;height:1px;background:#9AA5A0}' +
-      '.hp-ntgrid{position:absolute;left:80px;right:80px;top:200px;display:flex;gap:60px}' +
-      '.hp-nthead{flex:0 0 255px;font-size:16px;font-weight:700;color:var(--ink);white-space:pre-wrap}' +
-      '.hp-nttx{flex:1;min-width:0;font-size:16px;line-height:1.85;color:var(--body);white-space:pre-wrap}' +
-      /* 원형 수치 — 겹침 원 2~3 */
-      '.hp-cchead{position:absolute;left:0;right:0;top:68px;text-align:center}' +
-      '.hp-cctitle{font-size:23px;font-weight:800;letter-spacing:-.01em}' +
-      '.hp-ccsub{margin-top:12px;font-size:13px;color:var(--muted)}' +
+      /* 타이포·좌표 = Figma 519:1915 실측(타이틀 EB 50px→33, 본문·소제목 25px→16.7 lh2.0, 헤어라인 y276→184) */
+      '.hp-nttitle{position:absolute;left:80px;top:99px;font-size:33px;font-weight:800;letter-spacing:-.01em}' +
+      '.hp-nt.bd .hp-nttitle{top:84px}' +
+      '.hp-ntrule{position:absolute;left:64px;right:64px;top:199px;height:1px;background:#9AA5A0}' +
+      '.hp-nt.bd .hp-ntrule{top:184px}' +
+      '.hp-ntgrid{position:absolute;left:64px;right:64px;top:234px;display:flex;gap:46px}' +
+      '.hp-nt.bd .hp-ntgrid{top:219px}' +
+      '.hp-nthead{flex:0 0 280px;font-size:16.5px;font-weight:500;color:var(--ink);white-space:pre-wrap}' +
+      '.hp-nttx{flex:1;min-width:0;font-size:16.5px;line-height:2;color:var(--body);white-space:pre-wrap}' +
+      /* 원형 수치 — 겹침 원 2~3. 타이포·좌표 = Figma 519:1923 M-11 실측 ×⅔ */
+      /* (타이틀 EB 50→33.3 capTop y153→102, 서브 M 25→16.7 y223.6→149, 원 y361→241 ⌀520→347 겹침41→27.6, 태그·라벨 34→22.7, 값 EB 110→73.3) */
+      '.hp-cchead{position:absolute;left:0;right:0;top:92.7px;text-align:center}' +
+      '.hp-cctitle{font-size:33.3px;font-weight:800;line-height:1.25;letter-spacing:-.01em}' +
+      '.hp-ccsub{margin-top:8.9px;font-size:16.7px;font-weight:500;line-height:1.4;letter-spacing:-.01em;color:var(--ink)}' +
       '.hp-ccrow{position:absolute;left:0;right:0;top:241px;display:flex;justify-content:center}' +
-      '.hp-cc{width:347px;height:347px;border-radius:50%;background:var(--cg);flex:0 0 auto;margin:0 -14px;mix-blend-mode:multiply;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:#fff}' +
-      '.hp-cc .tg{font-size:16px;font-weight:700}' +
-      '.hp-cc .vl{font-size:52px;font-weight:800;letter-spacing:-.01em}' +
-      '.hp-cc .lb{font-size:16px;font-weight:500}' +
-      /* 포토 frame3 */
-      '.hp-f3{background:var(--t)}' +
-      '.hp-f3sg{position:absolute;right:-540px;top:-480px;width:1400px;height:1400px;border-radius:50%;background:var(--sg)}' +
-      '.hp-f3row{position:absolute;left:44px;right:44px;top:46px;height:304px;z-index:2;display:flex;gap:32px}' +
+      '.hp-cc{width:347px;height:347px;border-radius:50%;background:var(--cg);flex:0 0 auto;margin:0 -13.8px;mix-blend-mode:multiply;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:13.2px;text-align:center;color:#fff}' +
+      '.hp-cc .tg{font-size:22.7px;font-weight:800;line-height:1}' +
+      '.hp-cc .vl{font-size:73.3px;font-weight:800;line-height:1;margin:24.4px 0 12.3px}' +
+      '.hp-cc .lb{font-size:22.7px;font-weight:500;line-height:1}' +
+      /* 포토 frame3 — Figma 520:392(M-09)/G-09 실측: 지면 딥(#2B7F6D=dt) + 상단 세이지 밴드(좌엣지 x496·하단 y351 플랫, 가로 미묘 그라데이션 #4AA885→#43A180)
+         + 하단우 브라이트 존(#28926F≈dt64%+p2) = 밴드 하단에 정확히 접하는 원(중심 808,665.3 r314.5 — 외접원 최대잔차 1.4px)+우측 사각 연장.
+         스팬 3개 전부 hp-f3sg 클래스 공유(export-pptx GEOM 셀렉터 그대로 태움) */
+      '.hp-f3{background:var(--dt)}' +
+      '.hp-f3sg{position:absolute;left:496px;right:0;top:0;height:351px;background:linear-gradient(90deg,color-mix(in srgb,var(--sg) 60%,var(--t)),color-mix(in srgb,var(--sg) 44%,var(--t)))}' +
+      '.hp-f3sg.c{left:493.5px;right:auto;top:350.8px;width:629px;height:629px;border-radius:50%;background:color-mix(in srgb,var(--dt) 64%,var(--p2))}' +
+      '.hp-f3sg.r{left:808px;right:0;top:350.8px;height:auto;bottom:0;background:color-mix(in srgb,var(--dt) 64%,var(--p2))}' +
+      '.hp-f3row{position:absolute;left:44px;right:44px;top:56px;height:365px;z-index:2;display:flex;gap:48px}' +
       '.hp-f3fr{flex:1;min-width:0;background:#fff;padding:0}' +
       '.hp-f3fr .hf-abimg{width:100%;height:100%;object-fit:cover}' +
       '.hp-f3fr .hf-imgph{width:100%;height:100%;border-radius:0}' +
