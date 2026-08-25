@@ -44,8 +44,8 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .gnb .logo{font-size:21px;font-weight:800;letter-spacing:-.02em;justify-self:start}
 .gnb nav{display:flex;gap:30px;font-size:14.5px;font-weight:600;color:var(--g1)}
 .gnb nav a:hover{color:var(--blue)}
-.gnb .cta{justify-self:end;background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px}
-.gnb .cta:hover{background:#333}
+.gnb .cta{justify-self:end;background:var(--grad);color:#fff;font-size:13.5px;font-weight:700;padding:10px 18px;transition:filter .2s}
+.gnb .cta:hover{filter:brightness(1.08)}
 
 /* ── Hero — 사용자 첨부 자산 고정: 파스텔 메시 + 그라데이션 타이포 ── */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
@@ -183,9 +183,14 @@ h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-s
 .cta h2 .wd{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cta .sub{margin-top:20px;font-size:18px;color:var(--g2);font-weight:500}
 .cta .act{margin-top:40px;display:flex;gap:12px;justify-content:center}
-.cta .btn{padding:17px 36px;font-size:16px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s;display:inline-block}
-.cta .btn:hover{transform:translateY(-2px)}
-.cta .btn.w{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+/* 주 버튼 — 글래스 화이트+그라데이션 화살표 (네이버 AI탭 CTA 실측: 반투명 화이트 필+블러, 잉크 텍스트, 그라데이션 아이콘) */
+.cta .btn{display:inline-flex;align-items:center;gap:10px;padding:17px 36px;font-size:16px;font-weight:700;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:var(--ink);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.9),0 10px 30px rgba(3,7,18,.10);transition:transform .2s,box-shadow .2s}
+.cta .btn:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.95),0 14px 36px rgba(3,7,18,.14)}
+.cta .btn .ga{font-style:normal;font-weight:800;font-size:18px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cta .btn.w{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--g1);box-shadow:inset 0 0 0 1px var(--g5)}
+.cta .btn.w:hover{box-shadow:inset 0 0 0 1px var(--g3),0 10px 26px rgba(3,7,18,.08)}
 
 /* 우하단 컬러칩 */
 .thchips{position:fixed;right:18px;bottom:18px;z-index:80;display:flex;gap:8px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);padding:9px 11px;box-shadow:0 6px 22px rgba(3,7,18,.14)}
@@ -358,7 +363,7 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
     <h2 class="wsplit">설계부터 현장까지, 마침내 하나의 답으로.</h2>
     <p class="sub rv d1">GEN NX Seminar 2026 · AX DAY에서 그 답을 확인하세요.</p>
     <div class="act rv d2">
-      <a class="btn" href="#">AX DAY 신청하기</a>
+      <a class="btn" href="#">AX DAY 신청하기 <i class="ga">›</i></a>
       <a class="btn w" href="#">제품 소개서 받기</a>
     </div>
   </div>
