@@ -626,8 +626,13 @@
     catch(e){
       await new Promise(r=>setTimeout(r,350));
       try{ return await f.arrayBuffer(); }
-      catch(e2){ throw new Error(_L('파일에 접근할 수 없어요. 클라우드(iCloud·드라이브) 파일이면 기기에 다운로드한 뒤, 또는 다운로드 폴더에 복사해서 다시 첨부해주세요.')); }
+      catch(e2){ throw new Error(_L('파일에 접근할 수 없어요. ① 클라우드(iCloud·드라이브) 파일이면 기기에 다운로드하거나 다운로드 폴더에 복사 후 재첨부 ② 사내 문서보안(DRM)이 걸린 파일이면 보안 해제 후 첨부해주세요.')); }
     }
+  }
+  /* 바이트는 읽혔는데 파서가 파일 구조를 못 여는 경우 — 사내 문서보안(DRM) 암호화 파일의 전형적 증상.
+     (DRM 파일은 오피스/한글에선 열려도 브라우저가 읽으면 암호화된 값이라 PDF/zip 서명이 깨져 있음) */
+  function _parseFail(e){
+    return new Error(_L('파일 내용을 해석할 수 없어요. 사내 문서보안(DRM)이 걸린 파일이면 보안 해제 후 첨부하거나, 내용을 새 문서에 복사해 저장한 파일로 첨부해주세요.')+(e&&e.message?' ('+e.message+')':''));
   }
   async function readFileText(f){
     const ext=(f.name.split('.').pop()||'').toLowerCase();
@@ -636,7 +641,7 @@
     if(ext==='pdf'){
       await loadParser('pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
       window.pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('vendor/pdf.worker.min.js', location.href).href;
-      const doc=await pdfjsLib.getDocument({data:buf}).promise;
+      const doc=await pdfjsLib.getDocument({data:buf}).promise.catch(e=>{ throw _parseFail(e); });
       let t=''; const N=Math.min(doc.numPages,30);
       for(let i=1;i<=N;i++){ const pg=await doc.getPage(i); const tc=await pg.getTextContent(); t+=tc.items.map(x=>x.str).join(' ')+'\n'; }
       // 이미지형(스캔·도판) PDF는 글자가 안 뽑힌다 — 조용히 빈 브리프로 가면 "3장 덱" 같은 이상 결과가 됨
@@ -645,13 +650,13 @@
     }
     if(ext==='docx'){
       await loadParser('mammoth.browser.min.js','https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
-      const r=await window.mammoth.extractRawText({arrayBuffer:buf});
+      const r=await window.mammoth.extractRawText({arrayBuffer:buf}).catch(e=>{ throw _parseFail(e); });
       return r.value;
     }
     if(ext==='pptx'){
       // pptx = zip + slide XML. JSZip으로 열어 ppt/slides/slideN.xml의 <a:t> 텍스트를 장 순서대로 추출
       await loadParser('jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
-      const zip=await window.JSZip.loadAsync(buf);
+      const zip=await window.JSZip.loadAsync(buf).catch(e=>{ throw _parseFail(e); });
       const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))
         .sort((a,b)=>parseInt(a.match(/\d+/)[0],10)-parseInt(b.match(/\d+/)[0],10));
       let t='';
