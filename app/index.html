@@ -618,13 +618,25 @@
     try{ await loadScript(new URL('vendor/'+localFile, location.href).href); }
     catch(e){ await loadScript(cdnSrc); }
   }
+  /* 파일 바이트를 선택 즉시 확보 — 파서 로드를 기다리는 사이 File 참조가 상해서
+     NotReadableError("could not be read... permission problems")가 나던 실사고.
+     클라우드 자리표시자(iCloud 최적화·드라이브 스트리밍) 파일은 재시도 1회 후 안내. */
+  async function readFileBytes(f){
+    try{ return await f.arrayBuffer(); }
+    catch(e){
+      await new Promise(r=>setTimeout(r,350));
+      try{ return await f.arrayBuffer(); }
+      catch(e2){ throw new Error(_L('파일에 접근할 수 없어요. 클라우드(iCloud·드라이브) 파일이면 기기에 다운로드한 뒤, 또는 다운로드 폴더에 복사해서 다시 첨부해주세요.')); }
+    }
+  }
   async function readFileText(f){
     const ext=(f.name.split('.').pop()||'').toLowerCase();
-    if(['txt','md','markdown','csv','json','html','htm'].includes(ext)) return await f.text();
+    const buf=await readFileBytes(f);   // 파서 로드보다 먼저 — 참조가 살아있을 때 바이트부터
+    if(['txt','md','markdown','csv','json','html','htm'].includes(ext)) return new TextDecoder().decode(buf);
     if(ext==='pdf'){
       await loadParser('pdf.min.js','https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js');
       window.pdfjsLib.GlobalWorkerOptions.workerSrc=new URL('vendor/pdf.worker.min.js', location.href).href;
-      const doc=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+      const doc=await pdfjsLib.getDocument({data:buf}).promise;
       let t=''; const N=Math.min(doc.numPages,30);
       for(let i=1;i<=N;i++){ const pg=await doc.getPage(i); const tc=await pg.getTextContent(); t+=tc.items.map(x=>x.str).join(' ')+'\n'; }
       // 이미지형(스캔·도판) PDF는 글자가 안 뽑힌다 — 조용히 빈 브리프로 가면 "3장 덱" 같은 이상 결과가 됨
@@ -633,13 +645,13 @@
     }
     if(ext==='docx'){
       await loadParser('mammoth.browser.min.js','https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js');
-      const r=await window.mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});
+      const r=await window.mammoth.extractRawText({arrayBuffer:buf});
       return r.value;
     }
     if(ext==='pptx'){
       // pptx = zip + slide XML. JSZip으로 열어 ppt/slides/slideN.xml의 <a:t> 텍스트를 장 순서대로 추출
       await loadParser('jszip.min.js','https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
-      const zip=await window.JSZip.loadAsync(await f.arrayBuffer());
+      const zip=await window.JSZip.loadAsync(buf);
       const names=Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))
         .sort((a,b)=>parseInt(a.match(/\d+/)[0],10)-parseInt(b.match(/\d+/)[0],10));
       let t='';
