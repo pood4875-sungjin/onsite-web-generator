@@ -1195,7 +1195,7 @@
   let _heroTypeTimer=null;
   function heroGreeting(){
     let name=''; try{ name=(localStorage.getItem('midas-username')||'').trim(); }catch(e){}
-    if(!name) name='MDAS';   // 기본 인사 이름 고정(사용자 지정 2026-08-05) — 타이틀 클릭으로 바꾸면 그 이름이 우선
+    if(!name) name='MIDAS';   // 기본 인사 이름 고정(오탈자 MDAS→MIDAS 2026-08-25) — 타이틀 클릭으로 바꾸면 그 이름이 우선
     const lang=(window.I18N?I18N.getLang():'ko');
     if(name){
       if(lang==='en') return 'Hi '+name+',\nwhat would you like to create today?';
