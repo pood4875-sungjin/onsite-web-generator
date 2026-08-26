@@ -35,7 +35,7 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .won .wd{opacity:1;transform:none;filter:blur(0)}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
 .rv.on{opacity:1;transform:none}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
 
 /* ── GNB — toss: 로고 좌 / 메뉴 센터 / 우 CTA ── */
 .gnb{position:fixed;inset:0 0 auto;z-index:50;height:64px;display:flex;align-items:center;transition:background .3s,box-shadow .3s}
@@ -80,6 +80,64 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 /* ── 섹션 공통 ── */
 .sec{padding:130px 0}
 .rule{border-top:1px solid var(--line)}
+
+/* ── Pain — 센터 헤드라인+회색 카드 4열 (온사이트 소개 실측: 사진+제목+설명) ── */
+.pain{text-align:center}
+.pain .grid{margin-top:64px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:left}
+.pcard{background:var(--bg2);overflow:hidden}
+.pcard .ph{aspect-ratio:4/3;overflow:hidden}
+.pcard .ph img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.pcard .tx{padding:22px 22px 26px}
+.pcard b{display:block;font-size:17px;font-weight:800;letter-spacing:-.015em}
+.pcard p{margin-top:8px;font-size:14px;line-height:1.65;color:var(--g3);word-break:keep-all}
+
+/* ── As-is / To-Be — 다크 vs 그라데이션 패널+말풍선, ×/✓ 리스트 (온사이트 소개 실측) ── */
+.ab{text-align:center}
+.ab .duo{margin-top:64px;display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:left}
+.abp{position:relative;height:360px;padding:24px;overflow:hidden}
+.abp.as{background:#20242B}
+.abp.to{background:var(--grad)}
+.abp .tag{display:inline-block;padding:8px 16px;font-size:14px;font-weight:800}
+.abp.as .tag{background:#0F1115;color:#fff}
+.abp.to .tag{background:rgba(255,255,255,.9);color:var(--ink)}
+.abp .bub{position:absolute;max-width:62%;padding:16px 20px;font-size:14.5px;font-weight:600;line-height:1.6;word-break:keep-all;
+  box-shadow:0 10px 26px rgba(3,7,18,.18)}
+.abp .b1{left:24px;top:88px;background:#fff;color:var(--ink)}
+.abp .b2{right:24px;bottom:40px}
+.abp.as .b2{background:#31363F;color:#E7EAEE}
+.abp.to .b2{background:var(--blue);color:#fff}
+.abrow{margin-top:34px;display:flex;align-items:center;gap:10px;font-size:clamp(19px,1.9vw,24px);font-weight:800;letter-spacing:-.02em}
+.abrow .ic{width:26px;height:26px;border-radius:50%!important;display:grid;place-items:center;font-size:13px;font-weight:800;flex:0 0 auto}
+.abrow.no .ic{background:var(--g1);color:#fff}
+.abrow.ok .ic{background:var(--blue);color:#fff}
+.ablist{margin-top:14px}
+.ablist div{display:flex;gap:12px;padding:15px 2px;border-bottom:1px dashed var(--line);font-size:15.5px;color:var(--g2);word-break:keep-all}
+.ablist div i{font-style:normal;font-weight:800;flex:0 0 auto}
+.ablist.no i{color:var(--g4)}
+.ablist.ok i{color:var(--blue)}
+.ab .act{margin-top:56px}
+.ab .abbtn{display:inline-flex;align-items:center;gap:10px;padding:16px 32px;font-size:15.5px;font-weight:700;background:var(--ink);color:#fff;transition:transform .2s}
+.ab .abbtn:hover{transform:translateY(-2px)}
+
+/* ── Stats — 다크 신뢰 수치 3 (온사이트 소개 실측: 대형 카운트업+단위) ── */
+.dstats{background:var(--ink);color:#fff;text-align:center;padding:150px 0}
+.dstats h2{font-size:clamp(28px,3.2vw,44px);line-height:1.4;font-weight:700;letter-spacing:-.02em;word-break:keep-all}
+.dstats h2 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dstats .nums{margin-top:72px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.dstats .num b{font-size:clamp(44px,5.6vw,76px);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.dstats .num b i{font-style:normal}
+.dstats .num b em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dstats .num p{margin-top:12px;font-size:15px;font-weight:600;color:var(--g4)}
+
+/* ── FAQ — 보더 아코디언 (온사이트 소개 실측) ── */
+.faq .list{margin-top:56px;border-top:1px solid var(--ink)}
+.frow{border-bottom:1px solid var(--line)}
+.frow button{width:100%;display:flex;align-items:center;gap:16px;padding:24px 4px;font-size:clamp(16px,1.6vw,19px);font-weight:700;text-align:left}
+.frow button .q{color:var(--blue);font-weight:800;flex:0 0 auto}
+.frow button .ar{margin-left:auto;font-size:18px;color:var(--g4);transition:transform .3s}
+.frow.on button .ar{transform:rotate(180deg)}
+.frow .a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.2,.7,.2,1)}
+.frow .a p{padding:0 4px 24px 40px;font-size:15px;line-height:1.75;color:var(--g2);word-break:keep-all}
 .lbl{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:var(--g1)}
 .lbl:before{content:"";width:10px;height:10px;background:var(--g1);border-radius:50%!important}
 h2.tt{font-size:clamp(34px,3.8vw,52px);line-height:1.28;font-weight:700;letter-spacing:-.025em;word-break:keep-all}
@@ -226,6 +284,11 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
   .pframe{grid-template-columns:1fr;gap:22px}
   .pframe .lbl{position:static}
   .lgrid{grid-template-columns:1fr 1fr}
+  .pain .grid{grid-template-columns:1fr 1fr;gap:14px}
+  .ab .duo{grid-template-columns:1fr;gap:40px}
+  .abp{height:300px}
+  .abp .bub{max-width:74%}
+  .dstats .nums{grid-template-columns:1fr;gap:44px}
   .sec{padding:88px 0}
   .panel .inn{padding:44px 26px 60px}
   footer .in{grid-template-columns:1fr;gap:26px}
@@ -271,6 +334,61 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
   </div>
   <div class="meta"><i>MIDAS IT</i><i>10. 15 (Thu) 13:30 – 16:00 · 섬유센터 Tex Fa Hall</i><i>FOR ENGINEERS</i></div>
   <div class="scr">SCROLL</div>
+</section>
+
+<!-- Pain — 문제 제기 4카드 (온사이트 소개 "현장의 리스크는 예고 없이 찾아옵니다" 문법) -->
+<section class="sec pain" id="pain">
+  <div class="wrap">
+    <h2 class="tt wsplit">익숙한 설계 방식에는, 익숙한 한계가 있습니다</h2>
+    <div class="grid">
+      <div class="pcard rv"><div class="ph"><img src="../../app/bg/mbmtoss-session.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-session.jpg'}"></div>
+        <div class="tx"><b>기다리는 해석</b><p>모델이 무거워질수록 해석 대기가 길어지고, 검토는 밤으로 밀립니다.</p></div></div>
+      <div class="pcard rv d1"><div class="ph"><img src="../../app/bg/mbmtoss-mic.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-mic.jpg'}"></div>
+        <div class="tx"><b>반복되는 수정</b><p>기준 변경 한 번에 해석–설계–도면을 처음부터 다시 돌립니다.</p></div></div>
+      <div class="pcard rv d2"><div class="ph"><img src="../../app/bg/mbmtoss-insight.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-insight.jpg'}"></div>
+        <div class="tx"><b>경험 의존 판단</b><p>위험 검토가 담당자 경험에 의존해 프로젝트마다 기준이 흔들립니다.</p></div></div>
+      <div class="pcard rv d3"><div class="ph"><img src="../../app/bg/mbmtoss-company.jpg" alt="" loading="lazy" onerror="if(!this._f){this._f=1;this.src='https://midas-drs.pages.dev/app/bg/mbmtoss-company.jpg'}"></div>
+        <div class="tx"><b>끊기는 협업</b><p>설계실과 현장의 데이터가 따로 놀아 같은 화면을 보지 못합니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- As-is / To-Be — 다크 vs 그라데이션 대비 (온사이트 소개 시그니처 블록) -->
+<section class="sec ab" id="asis" style="padding-top:20px">
+  <div class="wrap">
+    <h2 class="tt wsplit">경험으로 버티는 설계를,<br>데이터로 앞서는 설계로</h2>
+    <div class="duo">
+      <div class="rv">
+        <div class="abp as">
+          <span class="tag">As-is</span>
+          <div class="bub b1">보고서를 확인해 보니, 이번에도 재해석이 필요합니다.</div>
+          <div class="bub b2">지난 프로젝트와 비슷해 보입니다. 경험대로 다시 정리해 보겠습니다.</div>
+        </div>
+        <div class="abrow no"><span class="ic">✕</span>끝난 뒤 확인하고, 경험으로 대응</div>
+        <div class="ablist no">
+          <div><i>✕</i>해석이 끝나야 시작되는 검토</div>
+          <div><i>✕</i>기준 초과를 보고서로 뒤늦게 인지</div>
+          <div><i>✕</i>담당자 경험에 의존한 수동 판단</div>
+          <div><i>✕</i>수정 지연에 따른 비용 증가</div>
+        </div>
+      </div>
+      <div class="rv d1">
+        <div class="abp to">
+          <span class="tag">To-Be</span>
+          <div class="bub b1">다음 단계에서 주의 상태가 예측됩니다. 설계에서도 확인되시나요?</div>
+          <div class="bub b2">네, 같은 화면에서 확인했습니다. 해당 구간을 우선 보강하겠습니다.</div>
+        </div>
+        <div class="abrow ok"><span class="ic">✓</span>끝나기 전에 예측하고, 데이터로 대응</div>
+        <div class="ablist ok">
+          <div><i>✓</i>해석과 동시에 진행되는 실시간 검토</div>
+          <div><i>✓</i>기준 도달 전 위험 구간 사전 예측</div>
+          <div><i>✓</i>AI 검토 가이드와 보고서 자동 생성</div>
+          <div><i>✓</i>설계실–현장이 같은 화면으로 협업</div>
+        </div>
+      </div>
+    </div>
+    <div class="act rv"><a class="abbtn" href="#join">AX DAY에서 직접 확인하기 →</a></div>
+  </div>
 </section>
 
 <!-- Vision — 좌 라벨 / 우 헤딩+본문, 하단 풀폭 사진 -->
@@ -358,6 +476,37 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
 </aside>
 
 <!-- Closing CTA -->
+<!-- Stats — 다크 신뢰 수치 (온사이트 소개 "현장 운영 데이터와 학계 검증" 문법) -->
+<section class="dstats" id="stats">
+  <div class="wrap">
+    <h2 class="rv">설계 현장의 데이터와 검증된 결과로,<br><span class="hl">MIDAS는 신뢰를 쌓아가고 있습니다</span></h2>
+    <div class="nums">
+      <div class="num rv"><b><i class="cnt" data-n="120">0</i><em>개국+</em></b><p>MIDAS와 함께하는 나라</p></div>
+      <div class="num rv d1"><b><i class="cnt" data-n="30000">0</i><em>명+</em></b><p>국내외 사용 엔지니어</p></div>
+      <div class="num rv d2"><b><i class="cnt" data-n="98">0</i><em>%</em></b><p>지난 세미나 만족도</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ — 보더 아코디언 -->
+<section class="sec faq" id="faq">
+  <div class="wrap" style="max-width:880px">
+    <h2 class="tt wsplit" style="text-align:center">참여 전, 이런 점이 궁금하신가요?</h2>
+    <div class="list">
+      <div class="frow"><button type="button"><span class="q">Q.</span>누가 참여하면 좋은가요?<span class="ar">⌄</span></button>
+        <div class="a"><p>구조 해석·설계 실무 엔지니어와 설계 조직 리더 모두에게 맞춰져 있습니다. 세션이 실무 데모 중심이라 도구 전환을 검토 중인 팀에 특히 유용합니다.</p></div></div>
+      <div class="frow"><button type="button"><span class="q">Q.</span>참가 비용이 있나요?<span class="ar">⌄</span></button>
+        <div class="a"><p>사전 신청 시 무료입니다. 좌석이 한정되어 있어 신청 후 확정 안내를 드립니다.</p></div></div>
+      <div class="frow"><button type="button"><span class="q">Q.</span>기존 프로젝트 데이터로 데모를 볼 수 있나요?<span class="ar">⌄</span></button>
+        <div class="a"><p>네. 현장 부스에서 보유하신 모델 파일로 GEN NX 해석 흐름을 직접 확인하실 수 있습니다. 데이터는 시연 후 즉시 삭제됩니다.</p></div></div>
+      <div class="frow"><button type="button"><span class="q">Q.</span>주차와 오시는 길 안내가 있나요?<span class="ar">⌄</span></button>
+        <div class="a"><p>행사장(섬유센터 Tex Fa Hall) 지하 주차장을 이용하실 수 있으며, 등록 데스크에서 주차권을 배부합니다.</p></div></div>
+      <div class="frow"><button type="button"><span class="q">Q.</span>발표 자료는 공유되나요?<span class="ar">⌄</span></button>
+        <div class="a"><p>행사 후 신청자 전원에게 발표 자료와 세션 다시보기를 이메일로 보내드립니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
 <section class="cta" id="join">
   <div class="wrap">
     <h2 class="wsplit">설계부터 현장까지, 마침내 하나의 답으로.</h2>
@@ -417,6 +566,36 @@ footer .copy{width:min(1280px,92vw);margin:44px auto 0;padding-top:22px;border-t
       document.querySelectorAll('.wsplit').forEach(function(el){ el.classList.add('won'); });
       document.querySelectorAll('.rv, .vgal .ph').forEach(function(el){ el.classList.add('on'); });
     }
+  }
+
+  /* FAQ 아코디언 */
+  document.querySelectorAll('.frow button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var row = btn.parentElement, a = row.querySelector('.a'), on = row.classList.contains('on');
+      document.querySelectorAll('.frow.on').forEach(function(r){ r.classList.remove('on'); r.querySelector('.a').style.maxHeight = '0'; });
+      if (!on) { row.classList.add('on'); a.style.maxHeight = a.scrollHeight + 'px'; }
+    });
+  });
+
+  /* 다크 수치 카운트업 — 온사이트 소개 문법(스크롤 진입 시 0→목표) */
+  function countUp(el){
+    var target = +el.dataset.n, dur = 1400, t0 = null;
+    if (reduce) { el.textContent = target.toLocaleString(); return; }
+    function tick(t){
+      if (!t0) t0 = t;
+      var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * e).toLocaleString();
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  if ('IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('.cnt').forEach(function(el){ cio.observe(el); });
+  } else {
+    document.querySelectorAll('.cnt').forEach(function(el){ el.textContent = (+el.dataset.n).toLocaleString(); });
   }
 
   /* GNB */
