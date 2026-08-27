@@ -177,12 +177,13 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda .alist.rv.on li:nth-child(5){transition-delay:.32s}
 .agenda .alist li:first-child{border-top:1px solid rgba(255,255,255,.12)}
 .agenda .alist li:hover{background:rgba(255,255,255,.06);padding-left:26px}
-.agenda .at{flex:none;width:128px;color:var(--lime);font-size:17px;font-weight:600;white-space:nowrap}
+.agenda .at{flex:none;width:128px;color:rgba(255,255,255,.75);font-size:17px;font-weight:600;white-space:nowrap}
 .agenda .am{flex:1}
-.agenda .am b{display:block;color:#fff;font-size:19px;font-weight:600;line-height:1.4}
+.agenda .am b{display:block;color:#fff;font-size:19px;font-weight:600;line-height:1.4;transition:color .25s}
 .agenda .am span{display:block;margin-top:4px;color:rgba(255,255,255,.5);font-size:14px}
 .agenda .chev{color:rgba(255,255,255,.45);font-size:18px;font-weight:700;transition:transform .25s,color .25s}
-.agenda .alist li:hover .chev{transform:translateX(4px);color:var(--lime)}
+.agenda .alist li:hover .am b{color:var(--sub)}
+.agenda .alist li:hover .chev{transform:translateX(4px);color:var(--sub)}
 /* 드로어 */
 .adim{position:fixed;inset:0;z-index:190;background:rgba(4,3,8,.55);opacity:0;pointer-events:none;transition:opacity .35s}
 .adim.on{opacity:1;pointer-events:auto}
@@ -251,8 +252,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .free canvas{position:absolute;inset:0;display:block;opacity:.55}
 .free .wrap{position:relative;z-index:1}
 .free h2{color:#fff}
-.free p{margin:14px 0 56px;color:rgba(255,255,255,.6);font-size:18px;line-height:1.65}
-.free p b{color:var(--lime);font-weight:500}
+.free p{margin:22px 0 56px;color:rgba(255,255,255,.72);font-size:26px;line-height:1.55}
 .free .gbtn{justify-content:center}
 
 /* ── 푸터 ── */
@@ -551,7 +551,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   <canvas id="wave" aria-hidden="true"></canvas>
   <div class="wrap">
     <h2 class="tt df rv">The Best Time to<br>Move Forward</h2>
-    <p class="rv">Adopt CIVIL NX 2026 today to access outstanding performance and <b>up to 6x faster analysis speeds</b>.<br>Book a quick expert chat and experience the massive difference right away.</p>
+    <p class="rv">The next generation of structural analysis is here.<br>Experience up to 6× faster performance today.</p>
     <div class="gbtn rv">
       <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
     </div>
