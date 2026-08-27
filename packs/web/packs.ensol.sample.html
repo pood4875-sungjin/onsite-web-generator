@@ -65,7 +65,8 @@ h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4
 h2.wt.active .w{opacity:1;transform:none;filter:none}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
-.snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px}
+.snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transition:opacity .4s}
+.snav.vis{opacity:1;pointer-events:auto}
 .snav a{display:block;width:14px;height:2px;background:rgba(4,3,8,.25);transition:width .3s,background .3s}
 .snav a.on{width:26px;background:var(--ink)}
 .snav.ondark a{background:rgba(255,255,255,.4)}
@@ -86,7 +87,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .gnb.solid nav a:hover{color:var(--lime2)}
 
 /* ── 1. 히어로 KV — 풀블리드 영상 스크럽(원본 invite + 씨드 KV) ── */
-.kv{position:relative;height:260vh}
+.kv{position:relative;height:320vh}
 .kv .stick{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--dark)}
 .kv .ph{position:absolute;inset:0}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
@@ -109,7 +110,6 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .gbtn{justify-content:center}
 .kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
 .kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}
-.kv .kvmeta .chv{position:absolute;left:50%;transform:translateX(-50%);bottom:-38px;color:rgba(255,255,255,.55)}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
 
 /* ── 1.5 KV 후반 — 어두워지며 미션 멘트 툭(toss insurance 미션 스테이지 참고) ── */
@@ -118,7 +118,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
-.answer{position:relative;z-index:2;margin-top:-50vh;padding:160px 0;background:#fff}
+.answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);font-size:56px;font-weight:600;line-height:1.24;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
 .answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
@@ -348,7 +348,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       <span>MIDAS CIVIL NX</span>
       <span class="mid">3.18 (Wed) — 9:00 - 10:00 (GMT)</span>
       <span>LIVE WEBINAR &amp; ON-DEMAND</span>
-      <i class="chv"><svg width="44" height="20" viewBox="0 0 34 16" fill="none"><path d="M3 3l14 10L31 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
     </div>
     <div class="sub2" id="kvSub">
       <div class="tx">
@@ -620,6 +619,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     for (var j = 0; j < snavLinks.length; j++) snavLinks[j].classList.toggle('on', j === cur);
     var DARK = { top: 1, agenda: 1, register: 1, free: 1 };
     snav.classList.toggle('ondark', !!DARK[SNAV_IDS[cur]]);
+    snav.classList.toggle('vis', cur > 0); /* 히어로에선 숨김 */
   }
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
@@ -650,7 +650,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
   function kvScrub(){
     var p = clamp01(scrollY / (kv.offsetHeight - vh));
-    var t = clamp01((p - 0.3) / 0.18);
+    var t = clamp01((p - 0.22) / 0.16);
     kvIn.style.opacity = String(1 - t);
     kvIn.style.transform = 'translateY(' + (-50 - 70 * t) + 'px)';
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
@@ -658,11 +658,11 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       kvMeta.style.transition = 'none';
       kvMeta.style.opacity = String(Math.max(0, 1 - t * 1.6));
     }
-    var q = clamp01((p - 0.36) / 0.3);
+    var q = clamp01((p - 0.28) / 0.24);
     var e = 1 - Math.pow(1 - q, 3);
     kvOv.style.opacity = String(0.66 + 0.26 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
-    var s = clamp01((p - 0.5) / 0.18), se = 1 - Math.pow(1 - s, 3);
+    var s = clamp01((p - 0.4) / 0.14), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
   }
