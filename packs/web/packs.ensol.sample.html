@@ -27,6 +27,7 @@
 <style>
 :root{
   --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF; --onsub:#fff;
+  --btng:linear-gradient(100deg,#4E62DD 0%,#4487F5 45%,#6FA8FF 70%,#4E62DD 100%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
@@ -49,12 +50,12 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .gbtn a{border-radius:4px;display:flex;align-items:center;justify-content:center;gap:8px;width:auto;height:56px;padding:0 34px;font-size:18px;font-weight:600;letter-spacing:-.36px;transition:.3s;cursor:pointer}
 .gbtn a .arr{font-weight:700;transition:transform .3s}
 .gbtn a:hover .arr{transform:translateX(4px)}
-.gbtn .lime{background:var(--lime);color:var(--onp)}
-.gbtn .lime:hover{filter:brightness(1.05)}
+.gbtn .lime{background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;transition:background-position .6s ease}
+.gbtn .lime:hover{background-position:100% 50%}
 .gbtn .ghost{border:1px solid var(--ink);color:var(--ink)}
 .gbtn .ghost:hover{background:var(--ink);color:#fff}
 .gbtn .white{background:#fff;color:var(--ink)}
-.gbtn .white:hover{background:var(--lime);color:var(--onp)}
+.gbtn .white:hover{background:var(--btng);background-size:220% 100%;color:#fff}
 .gbtn .wghost{border:1px solid #fff;color:#fff}
 .gbtn .wghost:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.7)}
 /* 리빌 */
@@ -79,8 +80,8 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .gnb nav{display:flex;gap:6px;margin-left:auto}
 .gnb nav a{padding:9px 14px;font-size:16px;font-weight:600;color:rgba(255,255,255,.85);transition:background .2s,color .2s}
 .gnb nav a:hover{color:var(--lime)}
-.gnb .cta{border-radius:4px;background:var(--lime);color:var(--onp);font-size:16px;font-weight:700;padding:16px 22px;transition:filter .2s}
-.gnb .cta:hover{filter:brightness(1.06)}
+.gnb .cta{border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:16px;font-weight:700;padding:16px 22px;transition:background-position .6s ease}
+.gnb .cta:hover{background-position:100% 50%}
 .gnb.solid{background:#fff;box-shadow:0 1px 0 var(--line)}
 .gnb.solid .logo{color:var(--ink)}
 .gnb.solid nav a{color:var(--g)}
@@ -221,8 +222,8 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .fld label{position:absolute;left:19px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.45);font-size:16px;pointer-events:none;transition:top .18s ease,transform .18s ease,font-size .18s ease,color .18s ease;white-space:nowrap;max-width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis}
 .register input:focus + label,.register input:not(:placeholder-shown) + label{top:10px;transform:none;font-size:12px;color:var(--lime)}
 .register input:not(:placeholder-shown):not(:focus) + label{color:rgba(255,255,255,.55)}
-.register button{grid-column:1/-1;height:58px;border:0;border-radius:4px;background:var(--lime);color:var(--onp);font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
-.register button:hover{filter:brightness(1.05)}
+.register button{grid-column:1/-1;height:58px;border:0;border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:background-position .6s ease}
+.register button:hover{background-position:100% 50%}
 .register .done{display:none;max-width:760px;margin:0 auto;text-align:center}
 .register .done h4{font-size:34px;font-weight:600;margin-bottom:18px;color:#fff}
 .register .done p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65}
@@ -267,7 +268,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
-.dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--lime);color:var(--onp);font-size:15px;font-weight:700;padding:13px 24px}
+.dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}
+.dock .go:hover{background-position:100% 50%}
 
 /* 프라이머리 컬러 피커 — 우하단 칩 5종 */
 .pchips{position:fixed;right:24px;bottom:24px;z-index:70;display:flex;gap:8px;padding:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(4,3,8,.08);box-shadow:0 8px 24px rgba(4,3,8,.14)}
