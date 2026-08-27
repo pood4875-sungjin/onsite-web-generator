@@ -18,6 +18,8 @@
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
   · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 배경 = vod_invite.mp4 원격 직결(88MB, 25MiB 제한 초과라 동봉 불가 — 실패 시 로컬 ensol-hero.mp4 폴백).
     process_accel.gif(37MB)는 제한 초과로 미사용 → 벤토 톨 칸은 ensol-case.mp4로 대체
+  · 키비주얼 4종(ensol-kv1~4.avif, 사용자 제공): 마젠타·바이올렛·블루·오렌지 그라데이션 —
+    앤서 카드 배경(텍스트 인카드)·레지스터 글로우 팔레트·웨이브 그라데이션·드로어 미디어에 적용
   · 원본에서 주석처리된 All-Access Pass+폼은 세미나 씨드 취지로 복원(카피 실측)
   · FAQ: 원본 display:none이지만 질문 6개 실측 그대로 포함(답변은 원본 placeholder 문구)
 -->
@@ -120,18 +122,20 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .answer{padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);font-size:56px;font-weight:600;line-height:1.24;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
-.answer .card{flex:1;cursor:pointer;opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .answer .cards.active .card{opacity:1;transform:none}
 .answer .cards.active .card:nth-child(2){transition-delay:.15s}
 .answer .cards.active .card:nth-child(3){transition-delay:.3s}
-.answer .ph{position:relative;height:560px;overflow:hidden;background:var(--dark)}
-.answer .ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.6,.2,1)}
-.answer .card:hover .ph img{transform:scale(1.06);animation:thumbPan 6s ease-in-out .8s infinite alternate}
-@keyframes thumbPan{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.09) translate(-1.5%,-1.2%)}}
-.answer .go{position:absolute;right:24px;bottom:24px;width:46px;height:46px;display:grid;place-items:center;background:rgba(255,255,255,.16);color:#fff;font-size:19px;font-weight:700;transition:background .25s,transform .25s}
-.answer .card:hover .go{background:rgba(255,255,255,.3);transform:translateX(3px)}
-.answer .card b{display:block;margin:26px 8px 12px;font-size:22px;font-weight:600;line-height:1.35;color:var(--ink)}
-.answer .card p{margin:0 8px;color:var(--g2);font-size:16px;line-height:1.6}
+.answer .card > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .5s;animation:kvIdle 14s ease-in-out infinite alternate;will-change:transform}
+.answer .card:nth-child(2) > img{animation-duration:18s;animation-delay:-6s}
+.answer .card:nth-child(3) > img{animation-duration:22s;animation-delay:-11s}
+.answer .card:hover > img{filter:brightness(1.15)}
+@keyframes kvIdle{from{transform:scale(1.06) translate(1.2%,1%)}to{transform:scale(1.13) translate(-1.5%,-1.5%)}}
+.answer .go{position:absolute;right:26px;bottom:26px;width:46px;height:46px;display:grid;place-items:center;background:rgba(255,255,255,.16);color:#fff;font-size:19px;font-weight:700;transition:background .25s,transform .25s;z-index:2}
+.answer .card:hover .go{background:rgba(255,255,255,.32);transform:translateX(3px)}
+.answer .ctx{position:absolute;left:40px;right:96px;bottom:40px;z-index:1;text-align:left}
+.answer .ctx b{display:block;margin-bottom:14px;color:#fff;font-size:32px;font-weight:600;line-height:1.3}
+.answer .ctx p{color:rgba(255,255,255,.72);font-size:15px;line-height:1.6}
 
 /* ── 6. 스킬 탭 5종(원본 이식: 좌 텍스트 500px 소프트 + 우 이미지) ── */
 .skill{padding:160px 0;background:#fff}
@@ -201,12 +205,12 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 키비주얼 글로우 — bg-answer 컬러감(우측 시안→블루 광선) 재현, 은은한 드리프트 */
 .register .glow{position:absolute;inset:0;pointer-events:none}
 .register .glow i{position:absolute;border-radius:50%}
-.register .glow .g1{width:720px;height:1100px;right:-320px;top:-10%;background:radial-gradient(closest-side,#2CADD5 0%,rgba(44,173,213,.45) 45%,transparent 75%);filter:blur(110px);opacity:.85;animation:regG1 16s ease-in-out infinite alternate}
-.register .glow .g2{width:960px;height:960px;right:-380px;bottom:-30%;background:radial-gradient(closest-side,#00479E 0%,rgba(0,71,158,.5) 50%,transparent 78%);filter:blur(130px);opacity:.95;animation:regG2 21s ease-in-out infinite alternate}
-.register .glow .g3{width:380px;height:640px;right:4%;top:30%;background:radial-gradient(closest-side,#9BE8FF 0%,rgba(155,232,255,.35) 50%,transparent 75%);filter:blur(95px);opacity:.5;animation:regG3 12s ease-in-out infinite alternate}
-@keyframes regG1{from{transform:translate(0,0) rotate(0deg)}to{transform:translate(-70px,60px) rotate(10deg)}}
-@keyframes regG2{from{transform:translate(0,0) scale(1)}to{transform:translate(-90px,-70px) scale(1.12)}}
-@keyframes regG3{from{transform:translate(0,0)}to{transform:translate(-50px,90px)}}
+.register .glow .g1{width:720px;height:1100px;right:-320px;top:-10%;background:radial-gradient(closest-side,#E85BF0 0%,rgba(232,91,240,.4) 45%,transparent 75%);filter:blur(110px);opacity:.85;animation:regG1 11s ease-in-out infinite alternate}
+.register .glow .g2{width:960px;height:960px;right:-380px;bottom:-30%;background:radial-gradient(closest-side,#4B2FD6 0%,rgba(75,47,214,.5) 50%,transparent 78%);filter:blur(130px);opacity:.95;animation:regG2 14s ease-in-out infinite alternate}
+.register .glow .g3{width:380px;height:640px;right:4%;top:30%;background:radial-gradient(closest-side,#FFD9A0 0%,rgba(255,217,160,.3) 50%,transparent 75%);filter:blur(95px);opacity:.5;animation:regG3 8s ease-in-out infinite alternate}
+@keyframes regG1{from{transform:translate(0,0) rotate(0deg) scale(1)}to{transform:translate(-180px,140px) rotate(16deg) scale(1.12)}}
+@keyframes regG2{from{transform:translate(0,0) scale(1)}to{transform:translate(-220px,-160px) scale(1.28)}}
+@keyframes regG3{from{transform:translate(0,0) scale(1)}to{transform:translate(-160px,200px) scale(1.2)}}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
@@ -239,10 +243,9 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .faq .item.open .q .ar{transform:rotate(180deg)}
 .faq .a{height:0;overflow:hidden;color:var(--g2);font-size:16px;line-height:26px;text-align:left;transition:height .3s ease,padding .3s ease}
 
-/* ── 10. 프리 CTA — 다크 포토 밴드(배경 슬로우 드리프트) ── */
-.free{position:relative;padding:160px 0;background:var(--dark);text-align:center;overflow:hidden}
-.free .bgm{position:absolute;inset:0;background:url('../../app/bg/ensol-bg-free.jpg') no-repeat center/cover;animation:freeDrift 22s ease-in-out infinite alternate;will-change:transform}
-@keyframes freeDrift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1.5%)}}
+/* ── 10. 프리 CTA — 데이터 지형 웨이브 캔버스(점 그리드 시뮬레이션·마우스 반응) ── */
+.free{position:relative;padding:200px 0 220px;background:var(--dark);text-align:center;overflow:hidden}
+.free canvas{position:absolute;inset:0;display:block;opacity:.55}
 .free .wrap{position:relative;z-index:1}
 .free h2{color:#fff}
 .free p{margin:14px 0 56px;color:rgba(255,255,255,.6);font-size:18px;line-height:1.65}
@@ -250,10 +253,10 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .free .gbtn{justify-content:center}
 
 /* ── 푸터 ── */
-footer{background:var(--dark);color:#fff;padding:34px 0;border-top:1px solid rgba(255,255,255,.1)}
-footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+footer{position:relative;z-index:2;margin-top:-86px;padding:0 0 34px;background:transparent;color:#fff}
+footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px;opacity:.62}
 footer .row b{font-size:19px;font-weight:700}
-footer .row span{color:rgba(255,255,255,.45);font-size:13px}
+footer .row span{color:rgba(255,255,255,.6);font-size:13px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
 .dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:min(720px,calc(100vw - 48px));padding:14px 14px 14px 26px;background:#fff;box-shadow:0 18px 50px rgba(4,3,8,.25),0 2px 8px rgba(4,3,8,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
@@ -275,7 +278,9 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .kv .bubbles li{width:34vw !important}
   .answer h2{font-size:34px}
   .answer .cards{flex-direction:column;gap:28px}
-  .answer .ph{height:80vw}
+  .answer .card{height:110vw}
+  .answer .ctx{left:24px;right:80px;bottom:26px}
+  .answer .ctx b{font-size:24px}
   .skill .tabs{flex-wrap:wrap;gap:10px}
   .skill .tabs button{flex:none;width:calc(50% - 5px)}
   .skill .pane{height:auto;flex-direction:column}
@@ -292,9 +297,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .dock{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .free .bgm{animation:none}
   .register .glow i{animation:none}
-  .answer .card:hover .ph img{animation:none;transform:none}
+  .answer .card > img{animation:none;transform:none}
   .rv,.kv .ent,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
 }
 </style>
@@ -353,19 +357,28 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     <h2 class="df rv">CIVIL NX 2026</h2>
     <ul class="cards" id="acards">
       <li class="card">
-        <div class="ph"><img src="../../app/bg/ensol-card1.jpg" alt="Incomparable Speed"><span class="go">→</span></div>
-        <b class="df">Incomparable<br>Speed</b>
-        <p>With analysis speeds up to 6× faster than conventional solutions, project turnaround times are dramatically reduced, boosting overall productivity by more than twofold.</p>
+        <img src="../../app/bg/ensol-kv4.avif" alt="">
+        <div class="ctx">
+          <b class="df">Incomparable<br>Speed</b>
+          <p>With analysis speeds up to 6× faster than conventional solutions, project turnaround times are dramatically reduced, boosting overall productivity by more than twofold.</p>
+        </div>
+        <span class="go">→</span>
       </li>
       <li class="card">
-        <div class="ph"><img src="../../app/bg/ensol-card3.jpg" alt="User-driven Workflow"><span class="go">→</span></div>
-        <b class="df">User-driven<br>Workflow</b>
-        <p>Selective analysis and independent control by load case enable engineers to work exactly the way they want, delivering a truly flexible and engineer-centric workflow.</p>
+        <img src="../../app/bg/ensol-kv3.avif" alt="">
+        <div class="ctx">
+          <b class="df">User-driven<br>Workflow</b>
+          <p>Selective analysis and independent control by load case enable engineers to work exactly the way they want, delivering a truly flexible and engineer-centric workflow.</p>
+        </div>
+        <span class="go">→</span>
       </li>
       <li class="card">
-        <div class="ph"><img src="../../app/bg/ensol-card2.jpg" alt="Unrivaled Analysis"><span class="go">→</span></div>
-        <b class="df">Unrivaled<br>Analysis</b>
-        <p>Advanced features such as buffeting analysis and simultaneous analysis systems, unavailable in other software, establish a new benchmark for construction FEM.</p>
+        <img src="../../app/bg/ensol-kv2.avif" alt="">
+        <div class="ctx">
+          <b class="df">Unrivaled<br>Analysis</b>
+          <p>Advanced features such as buffeting analysis and simultaneous analysis systems, unavailable in other software, establish a new benchmark for construction FEM.</p>
+        </div>
+        <span class="go">→</span>
       </li>
     </ul>
   </div>
@@ -521,7 +534,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
 <!-- 10. 프리 CTA -->
 <section class="free" id="free">
-  <div class="bgm" aria-hidden="true"></div>
+  <canvas id="wave" aria-hidden="true"></canvas>
   <div class="wrap">
     <h2 class="tt df rv">The Best Time to<br>Move Forward</h2>
     <p class="rv">Adopt CIVIL NX 2026 today to access outstanding performance and <b>up to 6x faster analysis speeds</b>.<br>Book a quick expert chat and experience the massive difference right away.</p>
@@ -664,7 +677,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
   // 7.5 어젠다 — 리스트 렌더 + 클릭 시 우측 드로어(내용은 실측 카피 재구성)
   var AGENDA = [
-    { t: '9:00 ~ 9:10', title: 'Opening — CIVIL NX 2026 with HYPER-S', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-bg-answer.jpg',
+    { t: '9:00 ~ 9:10', title: 'Opening — CIVIL NX 2026 with HYPER-S', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-kv1.avif',
       txt: 'The next generation of structural analysis: what changes with the CIVIL NX 2026 release and the HYPER-S analysis engine.',
       pts: ['Release overview & webinar guide', 'HYPER-S engine at a glance', 'All-Access Pass benefits'] },
     { t: '9:10 ~ 9:25', title: 'Incomparable Speed — up to 6× Faster', spk: 'HYPER-S Engine Team', vid: '../../app/bg/ensol-graph.mp4',
@@ -673,10 +686,10 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     { t: '9:25 ~ 9:45', title: 'Boundless Capabilities Deep-Dive', spk: 'Structural Solution Engineer', img: '../../app/bg/ensol-skill1.jpg',
       txt: 'Four advanced features that establish a new benchmark for construction FEM, demonstrated on real project models.',
       pts: ['Virtual Beam Design', 'Curved Rail Structure Interaction', 'Buckling Analysis with Construction Stage', 'Pushover Analysis Using Fiber Hinge Type'] },
-    { t: '9:45 ~ 9:55', title: 'Roadmap — Advanced Analysis +', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-skill5.jpg',
+    { t: '9:45 ~ 9:55', title: 'Roadmap — Advanced Analysis +', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-kv2.avif',
       txt: 'Coming this September: high-end features setting a new standard in engineering. Be part of the evolution toward a more powerful CIVIL NX.',
       pts: ['Multi P-delta analysis', 'Buffeting analysis', 'Global localization design standards', 'AI Assistant'] },
-    { t: '9:55 ~ 10:00', title: 'Q&A & Closing', spk: 'All Speakers', img: '../../app/bg/ensol-bg-free.jpg',
+    { t: '9:55 ~ 10:00', title: 'Q&A & Closing', spk: 'All Speakers', img: '../../app/bg/ensol-kv3.avif',
       txt: 'Live questions from attendees, plus how to get the Release Note and Technical White Paper with your attendance.',
       pts: ['Live Q&A', 'Release Note · Technical White Paper guide'] }
   ];
@@ -756,6 +769,95 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     e.preventDefault();
     document.getElementById('register').classList.add('submitted');
   });
+
+  // 10. 프리 CTA — 데이터 지형 웨이브(퍼스펙티브 점 그리드 + 마우스 융기 + 핀 마커)
+  var wcv = document.getElementById('wave');
+  var freeSec = document.getElementById('free');
+  (function(){
+    if (!wcv) return;
+    var ctx2 = wcv.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0, running = false;
+    function wResize(){
+      W = freeSec.clientWidth; H = freeSec.clientHeight;
+      wcv.width = W * dpr; wcv.height = H * dpr;
+      wcv.style.width = W + 'px'; wcv.style.height = H + 'px';
+      ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    wResize(); addEventListener('resize', wResize);
+    var mx = -1e4, my = -1e4, smx = -1e4, smy = -1e4;
+    freeSec.addEventListener('mousemove', function(e){
+      var r = wcv.getBoundingClientRect();
+      mx = e.clientX - r.left; my = e.clientY - r.top;
+    });
+    freeSec.addEventListener('mouseleave', function(){ mx = -1e4; my = -1e4; });
+    var ROWS = 44, COLS = 130;
+    var acc = [];
+    for (var i = 0; i < ROWS * COLS; i++){
+      var rr = Math.random();
+      acc.push(rr < 0.013 ? 1 : rr < 0.033 ? 2 : 0);
+    }
+    function fld(u, d, t){
+      var x = u * 6.283;
+      return Math.sin(x * 1.7 + t * .55 + d * 5.2) * .45
+           + Math.sin(x * 3.9 - t * .38 + d * 9.5) * .25
+           + Math.sin(x * 8.3 + t * .22 + Math.sin(d * 7 + t * .3) * 2) * .14
+           + Math.sin((x + d * 12) * 2.6 - t * .3) * .16;
+    }
+    function rowY(d){ return H * .16 + Math.pow(d, 1.35) * (H - H * .16 - 30); }
+    function rowAmp(d){ return 18 + 150 * Math.pow(d, 1.6); }
+    function colX(u, d){ return W / 2 + (u - .5) * W * (0.72 + (.25 + Math.pow(d, 1.55) * .75) * 0.6); }
+    var t0 = performance.now();
+    function wDraw(now){
+      if (!running) return;
+      var t = (now - t0) / 1000;
+      smx += (mx - smx) * .08; smy += (my - smy) * .08;
+      ctx2.clearRect(0, 0, W, H);
+      for (var ri = 0; ri < ROWS; ri++){
+        var d = ri / (ROWS - 1);
+        var y0 = rowY(d), amp = rowAmp(d);
+        var alpha = .15 + d * .5;
+        var size = .8 + d * 1.7;
+        for (var ci = 0; ci < COLS; ci++){
+          var u = ci / (COLS - 1);
+          var px = colX(u, d);
+          if (px < -8 || px > W + 8) continue;
+          var h = fld(u, d, t) * amp;
+          var dx = px - smx, dy = y0 - smy;
+          var dist2 = dx * dx + dy * dy;
+          if (dist2 < 170000) h -= Math.exp(-dist2 / 36000) * 90 * (0.4 + d);
+          var a = acc[ri * COLS + ci];
+          ctx2.fillStyle = 'rgba(255,255,255,' + (a ? Math.min(1, alpha + .3) : alpha) + ')';
+          ctx2.fillRect(px, y0 - h, size, size);
+        }
+      }
+      /* 무빙 그라데이션 착색 — 점 픽셀에만(source-in) */
+      var gx = Math.cos(t * .18) * W * .4, gy = Math.sin(t * .14) * H * .3;
+      var grad = ctx2.createLinearGradient(W * .5 - gx, H * .5 - gy, W * .5 + gx + W * .5, H * .5 + gy);
+      var sh = (t * .06) % 1;
+      grad.addColorStop(0, '#8FC6FF');
+      grad.addColorStop(Math.max(0, Math.min(1, (.25 + sh * .5))), '#E85BF0');
+      grad.addColorStop(Math.max(0, Math.min(1, (.55 + sh * .4))), '#F07818');
+      grad.addColorStop(1, '#4B2FD6');
+      ctx2.globalCompositeOperation = 'source-in';
+      ctx2.fillStyle = grad;
+      ctx2.fillRect(0, 0, W, H);
+      ctx2.globalCompositeOperation = 'source-over';
+      requestAnimationFrame(wDraw);
+    }
+    if (reduce) {
+      running = true;
+      requestAnimationFrame(function(n){ wDraw(n); running = false; });
+    } else {
+      new IntersectionObserver(function(es){
+        es.forEach(function(en){
+          var was = running;
+          running = en.isIntersecting;
+          if (running && !was) requestAnimationFrame(wDraw);
+        });
+      }, { threshold: .05 }).observe(freeSec);
+    }
+  })();
 
   // 9. FAQ 아코디언
   document.querySelectorAll('#faqList .item').forEach(function(item){
