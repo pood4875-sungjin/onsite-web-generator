@@ -84,7 +84,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .stick{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--dark)}
 .kv .ph{position:absolute;inset:0}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
-.kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.56)}
+.kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.66)}
 /* 라이트 스윕 — 프라이머리(라임·시안) 광선이 이따금 은은하게 지나감 */
 .kv .sheen{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
 .kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,rgba(154,252,74,.06) 35%,rgba(44,173,213,.09) 50%,rgba(154,252,74,.05) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
@@ -632,7 +632,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     }
     var q = clamp01((p - 0.45) / 0.35);
     var e = 1 - Math.pow(1 - q, 3);
-    kvOv.style.opacity = String(0.56 + 0.32 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
+    kvOv.style.opacity = String(0.66 + 0.26 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
     var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
