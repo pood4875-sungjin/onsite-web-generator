@@ -12,7 +12,7 @@
     - 원본 radius 거의 전부 0(각진 룩) — v6 방향과 일치, 전면 radius 0 유지
     - 폰트: 전부 Pretendard(CDN variable dynamic subset) — 원본 ITC Avant Garde는 상용이라 미사용
   · 모션(원본 구현 방식 이식):
-    - 페인포인트 카드 7개: KV 스크럽 후반(오버레이 다크닝)에 통합 — scale pop 스태거 + 마우스 패럴랙스(깊이별 lerp)
+    - KV 스크럽 후반: 어두워지며 미션 멘트 페이드(toss insurance RE:ANSWER 미션 스테이지 구성 번안)
     - answer 카드: 토스증권 카드 리스트 스타일 번안(흰 배경·그래픽 카드+하단 텍스트·hover 줌·화살표 칩)
     - feature 벤토 6칸: opacity+translateY(50px) 스태거 .1s*n, 그리드 실측(379/789/632)
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
@@ -98,28 +98,10 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .gbtn a{width:225px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
 
-/* ── 1.5 KV 후반 — 어두워지며 페인포인트 카드 팝(스크럽 연동) ── */
-.kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;height:100%}
-.kv .sub2 .tx span{color:var(--lime);font-size:22px;font-weight:500}
-.kv .sub2 .tx h2{color:#fff;font-size:56px;font-weight:600;line-height:1.16;text-shadow:0 1px 10px rgba(0,0,0,.15)}
-.kv .bubbles li{position:absolute;opacity:0;transition:opacity .5s;will-change:transform}
-.kv .bubbles li .pcard{background:rgba(23,23,29,.92);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.88);font-size:15px;line-height:1.55;padding:20px 24px;text-align:center;word-break:keep-all;box-shadow:0 20px 50px rgba(0,0,0,.35);transform:scale(0);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
-.kv .bubbles.active li{opacity:1}
-.kv .bubbles.active li .pcard{transform:scale(1)}
-.kv .bubbles li:nth-child(1){left:15.46%;top:22%;width:16.34vw}
-.kv .bubbles li:nth-child(2){left:8.69%;top:62%;width:15.31vw}
-.kv .bubbles li:nth-child(3){left:60.57%;top:68%;width:20.57vw}
-.kv .bubbles li:nth-child(4){left:63.12%;top:14%;width:15vw}
-.kv .bubbles li:nth-child(5){left:70.1%;top:33.61%;width:16.87vw}
-.kv .bubbles li:nth-child(6){left:39.37%;top:16%;width:15.2vw}
-.kv .bubbles li:nth-child(7){left:31.14%;top:72%;width:17.44vw}
-.kv .bubbles li:nth-child(1) .pcard{transition-delay:0s}
-.kv .bubbles li:nth-child(2) .pcard{transition-delay:.1s}
-.kv .bubbles li:nth-child(3) .pcard{transition-delay:.15s}
-.kv .bubbles li:nth-child(4) .pcard{transition-delay:.2s}
-.kv .bubbles li:nth-child(5) .pcard{transition-delay:.25s}
-.kv .bubbles li:nth-child(6) .pcard{transition-delay:.3s}
-.kv .bubbles li:nth-child(7) .pcard{transition-delay:.35s}
+/* ── 1.5 KV 후반 — 어두워지며 미션 멘트 툭(toss insurance 미션 스테이지 참고) ── */
+.kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;text-align:center;height:100%}
+.kv .sub2 .eb{color:rgba(255,255,255,.55);font-size:19px;font-weight:500}
+.kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
 .answer{padding:160px 0;background:#fff}
@@ -278,8 +260,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .kv h1{font-size:9vw}
   .kv .date{font-size:18px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
-  .kv .sub2 .tx h2{font-size:32px}
-  .kv .bubbles li{width:34vw !important}
+  .kv .sub2 p{font-size:20px}
   .answer h2{font-size:34px}
   .answer .cards{flex-direction:column;gap:28px}
   .answer .card{height:110vw}
@@ -303,7 +284,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 @media (prefers-reduced-motion:reduce){
   .register .glow i{animation:none}
   .answer .card > img{animation:none;transform:none}
-  .rv,.kv .ent,.kv .bubbles li,.answer .card,.feature .bento li,h2.wt .w{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
+  .rv,.kv .ent,.answer .card,.feature .bento li,h2.wt .w{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
 </style>
 </head>
@@ -339,18 +320,10 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     </div>
     <div class="sub2" id="kvSub">
       <div class="tx">
-        <span class="df">Needs</span>
-        <h2 class="df">Beyond Your<br>Engineering Struggles.</h2>
+        <span class="eb">Why CIVIL NX 2026</span>
+        <p>Engineers have always needed faster analysis,<br>a seamless workflow, and stable large-scale runs.</p>
+        <p>CIVIL NX 2026, powered by the HYPER-S engine,<br>goes beyond your engineering struggles.</p>
       </div>
-      <ul class="bubbles" id="bubbles">
-        <li><div class="pcard">A seamless workflow without jumping between multiple tools.</div></li>
-        <li><div class="pcard">Stable and crash-free overnight runs for large-scale analysis.</div></li>
-        <li><div class="pcard">Freedom to explore complex optimizations without cost concerns.</div></li>
-        <li><div class="pcard">Focused re-analysis on only what's changed to save my day.</div></li>
-        <li><div class="pcard">Faster analysis to deliver reports with confidence, not pressure.</div></li>
-        <li><div class="pcard">Instant feedback to fix errors without wasting compute time.</div></li>
-        <li><div class="pcard">Focus on engineering judgment instead of waiting for analysis process.</div></li>
-      </ul>
     </div>
   </div>
 </section>
@@ -616,9 +589,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
-    var bl = document.getElementById('bubbles');
-    if (p > 0.62) bl.classList.add('active');
-    else if (p < 0.5) bl.classList.remove('active');
   }
 
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
@@ -644,29 +614,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   }
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  // 1.5 페인포인트 카드 마우스 패럴랙스 — 깊이 계수별로 커서 반대 방향 드리프트(lerp)
-  var painSec = kv.querySelector('.stick');
-  var pcards = painSec.querySelectorAll('.bubbles li');
-  if (!reduce) {
-    var pd = [18, 26, 22, 20, 30, 16, 24];
-    var ptx = 0, pty = 0, pcx = 0, pcy = 0, pRaf = false;
-    function painStep(){
-      pcx += (ptx - pcx) * 0.08;
-      pcy += (pty - pcy) * 0.08;
-      for (var i = 0; i < pcards.length; i++){
-        pcards[i].style.transform = 'translate(' + (-pcx * pd[i]).toFixed(1) + 'px,' + (-pcy * pd[i]).toFixed(1) + 'px)';
-      }
-      if (Math.abs(ptx - pcx) > 0.001 || Math.abs(pty - pcy) > 0.001) requestAnimationFrame(painStep);
-      else pRaf = false;
-    }
-    painSec.addEventListener('mousemove', function(e){
-      var r = painSec.getBoundingClientRect();
-      ptx = (e.clientX - r.left) / r.width - 0.5;
-      pty = (e.clientY - r.top) / r.height - 0.5;
-      if (!pRaf){ pRaf = true; requestAnimationFrame(painStep); }
-    });
-  }
 
   // 섹션 타이틀 — 단어 단위 스태거 등장(toss.im 참고): rv 제거 → wt + 단어 span 분해
   document.querySelectorAll('h2.tt.rv, .answer h2.rv').forEach(function(h2){
