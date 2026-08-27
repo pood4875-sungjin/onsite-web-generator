@@ -26,9 +26,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
-  --lime:#9AFC4A; --lime2:#74E419; --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
+  --lime:#9AFC4A; --lime2:#74E419; --onp:#222;
+  --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
+/* 프라이머리 프리셋 — 초록(기본)·블루·주황·퍼플·진분홍 */
+:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff}
+:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff}
+:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff}
+:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
@@ -43,12 +49,12 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .gbtn a{display:flex;align-items:center;justify-content:center;gap:8px;width:auto;min-width:210px;height:56px;padding:0 34px;font-size:18px;font-weight:600;letter-spacing:-.36px;transition:.3s;cursor:pointer}
 .gbtn a .arr{font-weight:700;transition:transform .3s}
 .gbtn a:hover .arr{transform:translateX(4px)}
-.gbtn .lime{background:var(--lime);color:var(--ink)}
+.gbtn .lime{background:var(--lime);color:var(--onp)}
 .gbtn .lime:hover{filter:brightness(1.05)}
 .gbtn .ghost{border:1px solid var(--ink);color:var(--ink)}
 .gbtn .ghost:hover{background:var(--ink);color:#fff}
 .gbtn .white{background:#fff;color:var(--ink)}
-.gbtn .white:hover{background:var(--lime)}
+.gbtn .white:hover{background:var(--lime);color:var(--onp)}
 .gbtn .wghost{border:1px solid #fff;color:#fff}
 .gbtn .wghost:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.7)}
 /* 리빌 */
@@ -72,7 +78,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .gnb nav{display:flex;gap:6px;margin-left:auto}
 .gnb nav a{padding:9px 14px;font-size:16px;font-weight:600;color:rgba(255,255,255,.85);transition:background .2s,color .2s}
 .gnb nav a:hover{background:rgba(255,255,255,.14);color:#fff}
-.gnb .cta{background:var(--lime);color:var(--ink);font-size:16px;font-weight:700;padding:16px 22px;transition:filter .2s}
+.gnb .cta{background:var(--lime);color:var(--onp);font-size:16px;font-weight:700;padding:16px 22px;transition:filter .2s}
 .gnb .cta:hover{filter:brightness(1.06)}
 .gnb.solid{background:#fff;box-shadow:0 1px 0 var(--line)}
 .gnb.solid .logo{color:var(--ink)}
@@ -87,7 +93,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.66)}
 /* 라이트 스윕 — 프라이머리(라임·시안) 광선이 이따금 은은하게 지나감 */
 .kv .sheen{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
-.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,rgba(154,252,74,.06) 35%,rgba(44,173,213,.09) 50%,rgba(154,252,74,.05) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
+.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,var(--lime) 6%,transparent) 35%,color-mix(in srgb,var(--lime2) 10%,transparent) 50%,color-mix(in srgb,var(--lime) 5%,transparent) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
 .kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}
 @keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}
@@ -140,7 +146,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .skill .pane{display:none;height:400px}
 .skill .pane.onv{display:flex}
 .skill .tb{display:flex;flex-direction:column;justify-content:center;width:500px;flex:none;padding:0 48px 0 60px;background:var(--bgsoft)}
-.skill .tb .badge{width:max-content;margin-bottom:12px;padding:0 8px;background:var(--lime);color:var(--ink);font-size:14px;font-weight:600;height:25px;line-height:25px;letter-spacing:-.28px}
+.skill .tb .badge{width:max-content;margin-bottom:12px;padding:0 8px;background:var(--lime);color:var(--onp);font-size:14px;font-weight:600;height:25px;line-height:25px;letter-spacing:-.28px}
 .skill .tb strong{margin-bottom:26px;font-size:30px;font-weight:600;line-height:40px}
 .skill .tb p{color:var(--g);font-size:16px;line-height:26px;letter-spacing:-.32px}
 .skill .pane img{width:calc(100% - 500px);height:100%;object-fit:cover}
@@ -186,7 +192,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .adrawer.on{transform:none}
 .adrawer .dclose{position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:none;color:var(--g3);font-size:26px;line-height:1;cursor:pointer;transition:color .2s}
 .adrawer .dclose:hover{color:var(--ink)}
-.adrawer .dtime{display:inline-block;background:var(--lime);color:var(--ink);font-size:14px;font-weight:700;padding:5px 10px}
+.adrawer .dtime{display:inline-block;background:var(--lime);color:var(--onp);font-size:14px;font-weight:700;padding:5px 10px}
 .adrawer h4{margin:18px 0 6px;font-size:26px;font-weight:600;line-height:1.35;color:var(--ink)}
 .adrawer .dspk{display:block;color:var(--g3);font-size:14px;margin-bottom:22px}
 .adrawer .dmedia{height:220px;margin-bottom:24px;background:var(--bgsoft);overflow:hidden}
@@ -201,7 +207,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
-.register .pt{color:var(--ink);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
+.register .pt{color:var(--onp);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
 .register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
 .register form{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .register .fld{position:relative}
@@ -211,7 +217,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .fld label{position:absolute;left:19px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.45);font-size:16px;pointer-events:none;transition:top .18s ease,transform .18s ease,font-size .18s ease,color .18s ease;white-space:nowrap;max-width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis}
 .register input:focus + label,.register input:not(:placeholder-shown) + label{top:10px;transform:none;font-size:12px;color:var(--lime)}
 .register input:not(:placeholder-shown):not(:focus) + label{color:rgba(255,255,255,.55)}
-.register button{grid-column:1/-1;height:58px;border:0;background:var(--lime);color:var(--ink);font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
+.register button{grid-column:1/-1;height:58px;border:0;background:var(--lime);color:var(--onp);font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
 .register button:hover{filter:brightness(1.05)}
 .register .done{display:none;max-width:760px;margin:0 auto;text-align:center}
 .register .done h4{font-size:34px;font-weight:600;margin-bottom:18px;color:#fff}
@@ -258,7 +264,13 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
 .dock .tx i em{font-style:normal;color:var(--blue2);font-weight:700;margin-right:6px}
-.dock .go{margin-left:auto;flex:none;background:var(--lime);color:var(--ink);font-size:15px;font-weight:700;padding:13px 24px}
+.dock .go{margin-left:auto;flex:none;background:var(--lime);color:var(--onp);font-size:15px;font-weight:700;padding:13px 24px}
+
+/* 프라이머리 컬러 피커 — 우하단 칩 5종 */
+.pchips{position:fixed;right:24px;bottom:24px;z-index:70;display:flex;gap:8px;padding:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(4,3,8,.08);box-shadow:0 8px 24px rgba(4,3,8,.14)}
+.pchips button{width:22px;height:22px;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .2s,border-color .2s}
+.pchips button:hover{transform:scale(1.15)}
+.pchips button.on{border-color:var(--ink)}
 
 /* ── 모바일 ── */
 @media (max-width:900px){
@@ -290,6 +302,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .adrawer{padding:48px 26px}
   .register form{grid-template-columns:1fr}
   .dock{display:none}
+  .pchips{right:14px;bottom:14px}
 }
 @media (prefers-reduced-motion:reduce){
   .kv .sheen i{animation:none;opacity:0}
@@ -556,6 +569,14 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 </footer>
 
 <!-- 플로팅 독 -->
+<div class="pchips" id="pchips" aria-label="Primary color">
+  <button data-p="" style="background:#9AFC4A" aria-label="Green"></button>
+  <button data-p="blue" style="background:#3D8BFF" aria-label="Blue"></button>
+  <button data-p="orange" style="background:#F07818" aria-label="Orange"></button>
+  <button data-p="purple" style="background:#7A5CFF" aria-label="Purple"></button>
+  <button data-p="pink" style="background:#E8338A" aria-label="Pink"></button>
+</div>
+
 <div class="dock" id="dock">
   <div class="tx">
     <b>New Release: Master CIVIL NX 2026 Updates Live on March 18</b>
@@ -789,6 +810,23 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   } else {
     progs[0].style.width = '100%';
   }
+
+  // 프라이머리 컬러 피커 — data-p 전환 + 저장
+  var pchips = document.getElementById('pchips');
+  function setPrimary(key){
+    if (key) document.documentElement.setAttribute('data-p', key);
+    else document.documentElement.removeAttribute('data-p');
+    Array.prototype.forEach.call(pchips.children, function(b){
+      b.classList.toggle('on', b.getAttribute('data-p') === key);
+    });
+    try { localStorage.setItem('ensol-primary', key); } catch (e) {}
+  }
+  Array.prototype.forEach.call(pchips.children, function(b){
+    b.addEventListener('click', function(){ setPrimary(b.getAttribute('data-p')); });
+  });
+  var savedP = '';
+  try { savedP = localStorage.getItem('ensol-primary') || ''; } catch (e) {}
+  setPrimary(savedP);
 
   // 8. 폼 → 감사 메시지 (정적 시안: 전송 없음)
   document.getElementById('regForm').addEventListener('submit', function(e){
