@@ -208,7 +208,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 @keyframes dfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
-.register{position:relative;padding:160px 0;background:linear-gradient(180deg,#070A18 0%,#0C1434 55%,#070A18 100%);overflow:hidden}
+.register{position:relative;padding:160px 0;background:linear-gradient(180deg,#0C1434 0%,#0A0F26 55%,#070A18 100%);overflow:hidden}
 .register canvas{position:absolute;inset:0;display:block;opacity:.4}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
@@ -669,6 +669,18 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
   }
 
+  // 어젠다 → 레지스터 배경 전환: 어젠다 하단이 올라올수록 다크 → 딥네이비 보간
+  var agSec = document.getElementById('agenda');
+  function agBgTick(){
+    var r = agSec.getBoundingClientRect();
+    var tt = clamp01((vh * 1.35 - r.bottom) / (vh * 0.75));
+    var c1 = [4, 3, 8], c2 = [12, 20, 52];
+    agSec.style.backgroundColor = 'rgb(' +
+      Math.round(c1[0] + (c2[0] - c1[0]) * tt) + ',' +
+      Math.round(c1[1] + (c2[1] - c1[1]) * tt) + ',' +
+      Math.round(c1[2] + (c2[2] - c1[2]) * tt) + ')';
+  }
+
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
   var dock = document.getElementById('dock');
   var reg = document.getElementById('register');
@@ -686,6 +698,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       ticking = false;
       gnb.classList.toggle('solid', scrollY > vh * 0.9);
       snavTick();
+      agBgTick();
       if (!reduce) kvScrub();
       dockTick();
     });
