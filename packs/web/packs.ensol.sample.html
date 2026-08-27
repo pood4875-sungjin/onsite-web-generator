@@ -84,12 +84,12 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .stick{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--dark)}
 .kv .ph{position:absolute;inset:0}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
-.kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.45)}
+.kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.56)}
 /* 라이트 스윕 — 프라이머리(라임·시안) 광선이 이따금 은은하게 지나감 */
 .kv .sheen{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
-.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,rgba(154,252,74,.11) 35%,rgba(44,173,213,.16) 50%,rgba(154,252,74,.09) 65%,transparent 100%);filter:blur(26px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
+.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,rgba(154,252,74,.06) 35%,rgba(44,173,213,.09) 50%,rgba(154,252,74,.05) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
 .kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}
-@keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}24%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
+@keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}
 .kv h1{margin:0 0 34px;font-size:min(14.5vw,232px);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 .kv .klead{margin-bottom:56px;font-size:min(2.4vw,31px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}
@@ -631,7 +631,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     }
     var q = clamp01((p - 0.45) / 0.35);
     var e = 1 - Math.pow(1 - q, 3);
-    kvOv.style.opacity = String(0.45 + 0.4 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
+    kvOv.style.opacity = String(0.56 + 0.32 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
     var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
