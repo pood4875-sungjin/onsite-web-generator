@@ -91,9 +91,9 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv h1 .l{display:block}
 .kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
 .kv.ready .ent{opacity:1;transform:none}
-.kv.ready .d2{transition-delay:.12s}
-.kv.ready .d3{transition-delay:.26s}
-.kv.ready .d4{transition-delay:.44s}
+.kv.ready .d4{transition-delay:.75s}
+.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
+.kv.ready h1 .w{opacity:1;transform:none;filter:none}
 .kv .gbtn{justify-content:center}
 .kv .gbtn a{width:225px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
@@ -161,6 +161,12 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda .asub em{font-style:normal;color:var(--lime);font-weight:600;margin-right:10px}
 .agenda .alist{max-width:1060px;margin:0 auto}
 .agenda .alist li{display:flex;align-items:center;gap:28px;padding:26px 18px;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s,padding .25s}
+.agenda .alist.rv li{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1),background .25s,padding .25s}
+.agenda .alist.rv.on li{opacity:1;transform:none}
+.agenda .alist.rv.on li:nth-child(2){transition-delay:.08s}
+.agenda .alist.rv.on li:nth-child(3){transition-delay:.16s}
+.agenda .alist.rv.on li:nth-child(4){transition-delay:.24s}
+.agenda .alist.rv.on li:nth-child(5){transition-delay:.32s}
 .agenda .alist li:first-child{border-top:1px solid rgba(255,255,255,.12)}
 .agenda .alist li:hover{background:rgba(255,255,255,.06);padding-left:26px}
 .agenda .at{flex:none;width:128px;color:var(--lime);font-size:17px;font-weight:600;white-space:nowrap}
@@ -223,6 +229,13 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .faq .in{max-width:1060px;margin:0 auto;padding:0 28px}
 .faq h2{text-align:center;margin-bottom:26px}
 .faq .item{border-bottom:1px solid var(--line)}
+#faqList.rv .item{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1)}
+#faqList.rv.on .item{opacity:1;transform:none}
+#faqList.rv.on .item:nth-child(2){transition-delay:.06s}
+#faqList.rv.on .item:nth-child(3){transition-delay:.12s}
+#faqList.rv.on .item:nth-child(4){transition-delay:.18s}
+#faqList.rv.on .item:nth-child(5){transition-delay:.24s}
+#faqList.rv.on .item:nth-child(6){transition-delay:.3s}
 .faq .item:first-child{border-top:1px solid var(--line)}
 .faq .q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:88px;padding:0;border:0;background:none;color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;line-height:28px;text-align:left;cursor:pointer}
 .faq .q .ar{flex:none;display:grid;place-items:center;color:var(--g2);transition:transform .3s}
@@ -245,7 +258,7 @@ footer .row b{font-size:19px;font-weight:700}
 footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
-.dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:min(720px,calc(100vw - 48px));padding:14px 14px 14px 26px;background:#fff;box-shadow:0 18px 50px rgba(4,3,8,.25),0 2px 8px rgba(4,3,8,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
+.dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:min(720px,calc(100vw - 48px));padding:14px 14px 14px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 18px 50px rgba(4,3,8,.22),0 2px 8px rgba(4,3,8,.06);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:15px;font-weight:700}
 .dock .tx i{display:block;margin-top:3px;font-style:normal;color:var(--g2);font-size:13px}
@@ -284,7 +297,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 @media (prefers-reduced-motion:reduce){
   .register .glow i{animation:none}
   .answer .card > img{animation:none;transform:none}
-  .rv,.kv .ent,.answer .card,.feature .bento li,h2.wt .w{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
+  .rv,.kv .ent,.kv h1 .w,.answer .card,.feature .bento li,h2.wt .w,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
 </style>
 </head>
@@ -312,7 +325,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     <div class="ov" id="kvOv"></div>
     <div class="in" id="kvIn">
       <span class="date df ent d1">March 18, 2026</span>
-      <h1 class="df"><span class="l ent d2">Insanely Fast.</span><span class="l ent d3">Boundlessly Capable.</span></h1>
+      <h1 class="df" id="kvTitle"><span class="l">Insanely Fast.</span><span class="l">Boundlessly Capable.</span></h1>
       <div class="gbtn ent d4">
         <a class="white" href="#register">Watch Now <span class="arr">→</span></a>
         <a class="wghost" href="#register">1:1 Consultation <span class="arr">→</span></a>
@@ -572,6 +585,23 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
   var kv = document.querySelector('.kv');
+  // 히어로 타이틀 단어 분해 — 섹션 타이틀과 동일한 스태거 모션, .12s부터 .07s 간격
+  (function(){
+    var wi = 0;
+    kv.querySelectorAll('h1 .l').forEach(function(line){
+      var words = line.textContent.split(/\s+/).filter(Boolean);
+      line.textContent = '';
+      words.forEach(function(word, j){
+        var sp = document.createElement('span');
+        sp.className = 'w';
+        sp.textContent = word;
+        sp.style.transitionDelay = (0.12 + wi * 0.07).toFixed(2) + 's';
+        line.appendChild(sp);
+        if (j < words.length - 1) line.appendChild(document.createTextNode(' '));
+        wi++;
+      });
+    });
+  })();
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ kv.classList.add('ready'); }); });
   var kvIn = document.getElementById('kvIn');
   var kvSub = document.getElementById('kvSub');
