@@ -200,6 +200,13 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .adrawer .dtxt{color:var(--g);font-size:16px;line-height:1.65;margin-bottom:26px}
 .adrawer .dpoints li{position:relative;padding:12px 0 12px 22px;border-bottom:1px solid var(--line);color:var(--ink);font-size:15px;line-height:1.5}
 .adrawer .dpoints li:before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;background:var(--lime)}
+.adrawer .dnav{display:flex;align-items:center;justify-content:space-between;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
+.adrawer .dn{border:1px solid var(--line);border-radius:4px;background:none;padding:10px 18px;color:var(--ink);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:border-color .2s,color .2s}
+.adrawer .dn:hover:not(:disabled){border-color:var(--ink)}
+.adrawer .dn:disabled{opacity:.3;cursor:default}
+.adrawer #adidx{color:var(--g3);font-size:14px;font-variant-numeric:tabular-nums}
+.adrawer.swap .dtime,.adrawer.swap h4,.adrawer.swap .dspk,.adrawer.swap .dmedia,.adrawer.swap .dtxt,.adrawer.swap .dpoints{animation:dfade .35s ease}
+@keyframes dfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
 .register{position:relative;padding:160px 0;background:var(--dark);overflow:hidden}
@@ -488,6 +495,11 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   <div class="dmedia" id="admedia"></div>
   <p class="dtxt" id="adtxt"></p>
   <ul class="dpoints" id="adpoints"></ul>
+  <div class="dnav">
+    <button type="button" class="dn" id="adprev">← Prev</button>
+    <span id="adidx"></span>
+    <button type="button" class="dn" id="adnext">Next →</button>
+  </div>
 </aside>
 
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
@@ -758,9 +770,21 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       : '<img src="' + a.img + '" alt="">';
     document.getElementById('adtxt').textContent = a.txt;
     document.getElementById('adpoints').innerHTML = a.pts.map(function(p){ return '<li>' + p + '</li>'; }).join('');
+    adCur = i;
+    document.getElementById('adidx').textContent = (i + 1) + ' / ' + AGENDA.length;
+    document.getElementById('adprev').disabled = i === 0;
+    document.getElementById('adnext').disabled = i === AGENDA.length - 1;
+    if (adrawer.classList.contains('on')) { /* 열린 채 넘길 때 콘텐츠 페이드 */
+      adrawer.classList.remove('swap');
+      void adrawer.offsetWidth;
+      adrawer.classList.add('swap');
+    }
     adrawer.classList.add('on'); adim.classList.add('on');
     adrawer.setAttribute('aria-hidden', 'false');
   }
+  var adCur = 0;
+  document.getElementById('adprev').addEventListener('click', function(){ if (adCur > 0) openDrawer(adCur - 1); });
+  document.getElementById('adnext').addEventListener('click', function(){ if (adCur < AGENDA.length - 1) openDrawer(adCur + 1); });
   function closeDrawer(){
     adrawer.classList.remove('on'); adim.classList.remove('on');
     adrawer.setAttribute('aria-hidden', 'true');
