@@ -626,19 +626,19 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
   var kv = document.querySelector('.kv');
-  // 히어로 타이틀 단어 분해 — 섹션 타이틀과 동일한 스태거 모션, .12s부터 .07s 간격
+  // 히어로 타이틀 글자 분해 — 섹션 타이틀 스태거와 동일한 결(글자당 .05s)
   (function(){
     var wi = 0;
     kv.querySelectorAll('h1 .l').forEach(function(line){
-      var words = line.textContent.split(/\s+/).filter(Boolean);
+      var chars = line.textContent.split('');
       line.textContent = '';
-      words.forEach(function(word, j){
+      chars.forEach(function(ch){
+        if (ch === ' ') { line.appendChild(document.createTextNode(' ')); return; }
         var sp = document.createElement('span');
         sp.className = 'w';
-        sp.textContent = word;
-        sp.style.transitionDelay = (0.12 + wi * 0.07).toFixed(2) + 's';
+        sp.textContent = ch;
+        sp.style.transitionDelay = (0.12 + wi * 0.05).toFixed(2) + 's';
         line.appendChild(sp);
-        if (j < words.length - 1) line.appendChild(document.createTextNode(' '));
         wi++;
       });
     });
