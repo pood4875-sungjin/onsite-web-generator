@@ -274,12 +274,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}
 .dock .go:hover{background-position:100% 50%}
 
-/* 프라이머리 컬러 피커 — 우하단 칩 5종 */
-.pchips{position:fixed;right:24px;bottom:24px;z-index:70;display:flex;gap:8px;padding:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(4,3,8,.08);box-shadow:0 8px 24px rgba(4,3,8,.14)}
-.pchips button{width:22px;height:22px;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .2s,border-color .2s}
-.pchips button:hover{transform:scale(1.15)}
-.pchips button.on{border-color:var(--ink)}
-
 /* ── 모바일 ── */
 @media (max-width:900px){
   .gnb nav{display:none}
@@ -310,7 +304,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .adrawer{padding:48px 26px}
   .register form{grid-template-columns:1fr}
   .dock{display:none}
-  .pchips{right:14px;bottom:14px}
 }
 @media (prefers-reduced-motion:reduce){
   .kv .sheen i{animation:none;opacity:0}
@@ -580,14 +573,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 </footer>
 
 <!-- 플로팅 독 -->
-<div class="pchips" id="pchips" aria-label="Primary color">
-  <button data-p="" style="background:#9AFC4A" aria-label="Green"></button>
-  <button data-p="blue" style="background:#3D8BFF" aria-label="Blue"></button>
-  <button data-p="orange" style="background:#F07818" aria-label="Orange"></button>
-  <button data-p="purple" style="background:#7A5CFF" aria-label="Purple"></button>
-  <button data-p="pink" style="background:#E8338A" aria-label="Pink"></button>
-</div>
-
 <div class="dock" id="dock">
   <div class="tx">
     <b>New Release: Master CIVIL NX 2026 Updates Live on March 18</b>
@@ -835,31 +820,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     progs[0].style.width = '100%';
   }
 
-  // 프라이머리 컬러 피커 — data-p 전환 + 저장 (웨이브 팔레트도 갱신)
+  // 데이터 웨이브 팔레트(프라이머리 그린 + 서브 블루)
   var WAVE_COLS = ['#C4D8F0', '#9AFC4A', '#3D8BFF', '#74E419'];
-  function readWaveCols(){
-    var cs = getComputedStyle(document.documentElement);
-    var pr = (cs.getPropertyValue('--lime').trim() || '#9AFC4A');
-    WAVE_COLS = ['#C4D8F0', pr,
-      cs.getPropertyValue('--sub').trim() || '#3D8BFF',
-      cs.getPropertyValue('--lime2').trim() || '#74E419'];
-  }
-  var pchips = document.getElementById('pchips');
-  function setPrimary(key){
-    if (key) document.documentElement.setAttribute('data-p', key);
-    else document.documentElement.removeAttribute('data-p');
-    Array.prototype.forEach.call(pchips.children, function(b){
-      b.classList.toggle('on', b.getAttribute('data-p') === key);
-    });
-    try { localStorage.setItem('ensol-primary', key); } catch (e) {}
-    readWaveCols();
-  }
-  Array.prototype.forEach.call(pchips.children, function(b){
-    b.addEventListener('click', function(){ setPrimary(b.getAttribute('data-p')); });
-  });
-  var savedP = '';
-  try { savedP = localStorage.getItem('ensol-primary') || ''; } catch (e) {}
-  setPrimary(savedP);
 
   // 8. 폼 → 감사 메시지 (정적 시안: 전송 없음)
   document.getElementById('regForm').addEventListener('submit', function(e){
