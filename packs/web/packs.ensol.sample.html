@@ -168,7 +168,6 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda{padding:160px 0;background:var(--dark)}
 .agenda h2{color:#fff;text-align:center}
 .agenda .asub{margin:16px 0 56px;text-align:center;color:rgba(255,255,255,.55);font-size:17px}
-.agenda .asub em{font-style:normal;color:#F07818;font-weight:600;margin-right:10px}
 .agenda .alist{max-width:1060px;margin:0 auto}
 .agenda .alist li{display:flex;align-items:center;gap:28px;padding:26px 18px;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s,padding .25s}
 .agenda .alist.rv li{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1),background .25s,padding .25s}
@@ -209,7 +208,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 @keyframes dfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
-.register{position:relative;padding:160px 0;background:var(--dark);overflow:hidden}
+.register{position:relative;padding:160px 0;background:linear-gradient(180deg,#070A18 0%,#0C1434 55%,#070A18 100%);overflow:hidden}
 .register canvas{position:absolute;inset:0;display:block;opacity:.4}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
@@ -269,7 +268,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
-.dock .tx i em{font-style:normal;color:#F07818;font-weight:700;margin-right:6px}
 .dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--lime);color:var(--onp);font-size:15px;font-weight:700;padding:13px 24px}
 
 /* 프라이머리 컬러 피커 — 우하단 칩 5종 */
@@ -481,7 +479,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <section class="agenda" id="agenda">
   <div class="wrap">
     <h2 class="tt df rv">Webinar Agenda</h2>
-    <p class="asub rv"><em>Live</em>March 18, 2026 · 9:00 - 10:00 (GMT)</p>
+    <p class="asub rv">March 18, 2026 · 9:00 - 10:00 (GMT)</p>
     <ul class="alist rv" id="alist"></ul>
   </div>
 </section>
@@ -591,7 +589,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <div class="dock" id="dock">
   <div class="tx">
     <b>New Release: Master CIVIL NX 2026 Updates Live on March 18</b>
-    <i><em>Live</em>2026.03.18, 9:00 - 10:00 (GMT)</i>
+    <i>2026.03.18, 9:00 - 10:00 (GMT)</i>
   </div>
   <a class="go" href="#register">Register Now →</a>
 </div>
