@@ -7,15 +7,13 @@
 <!--
   EnSol 랜딩 씨드 v7 — CIVIL NX 2026 Release (HYPER-S) 실측 반영
   · 소스: resource.midasuser.com/en/event/260318-cnx2026-release (2026-08-27 실측)
-    - 섹션 CSS(template_main.min.css) 전수 실측: intro/invite/painpoints/answer/improvement/compare/skill/feature/faq/free
+    - 섹션 CSS(template_main.min.css) 전수 실측: intro/invite/painpoints/answer/skill/feature/faq/free (improvement·compare 섹션은 요청으로 삭제)
     - 팔레트: 라임 #9AFC4A(+그라데이션 #74E419) · 다크 #040308 · 블루 #2CADD5/#00479E · 네이비 #00054D · 소프트 #F6F9FE
     - 원본 radius 거의 전부 0(각진 룩) — v6 방향과 일치, 전면 radius 0 유지
     - 원본 디스플레이 폰트 ITC Avant Garde Gothic Pro(상용) → Poppins 대체
   · 모션(원본 구현 방식 이식):
-    - 말풍선 7개: scale(0)→1 pop, cubic-bezier(.175,.885,.32,1.275), 딜레이 .1~.35s 스태거, 좌표 실측(vw/%)
+    - 페인포인트 카드 7개(말풍선 PNG→텍스트 카드 교체): scale pop 스태거(좌표·딜레이 실측 유지) + 마우스 패럴랙스(깊이별 lerp 드리프트)
     - answer 카드: hover 시 card_reveal translateY(100%)→0 .6s + base brightness(.6)
-    - improvement: 200vh sticky, 진행도에 다크 #040308→화이트 전환(.on) + h3 span 그라데이션 텍스트 채움(bg-position 200%→0)
-    - compare: .hl 형광 하이라이트 :after width 0→102%
     - feature 벤토 6칸: opacity+translateY(50px) 스태거 .1s*n, 그리드 실측(379/789/632)
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
   · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 25.4MB mp4 — pages 25MiB 제한 내.
@@ -91,10 +89,10 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .pain .tx{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;z-index:2;pointer-events:none}
 .pain .tx span{color:var(--lime);font-size:22px;font-weight:500}
 .pain .tx h2{color:#fff;font-size:64px;font-weight:600;line-height:1.16;text-shadow:0 1px 10px rgba(0,0,0,.15)}
-.pain .bubbles li{position:absolute;opacity:0;transition:opacity .5s}
-.pain .bubbles li img{width:100%;transform:scale(0);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
+.pain .bubbles li{position:absolute;opacity:0;transition:opacity .5s;will-change:transform}
+.pain .bubbles li .pcard{background:#17171D;border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.88);font-size:15px;line-height:1.55;padding:20px 24px;text-align:center;word-break:keep-all;box-shadow:0 20px 50px rgba(0,0,0,.35);transform:scale(0);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
 .pain .bubbles.active li{opacity:1}
-.pain .bubbles.active li img{transform:scale(1)}
+.pain .bubbles.active li .pcard{transform:scale(1)}
 .pain .bubbles li:nth-child(1){left:15.46%;top:28.33%;width:16.34vw}
 .pain .bubbles li:nth-child(2){left:8.69%;top:59.9%;width:15.31vw}
 .pain .bubbles li:nth-child(3){left:60.57%;top:65.27%;width:20.57vw}
@@ -102,13 +100,13 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .pain .bubbles li:nth-child(5){left:70.1%;top:33.61%;width:16.87vw}
 .pain .bubbles li:nth-child(6){left:39.37%;top:22.4%;width:15.2vw}
 .pain .bubbles li:nth-child(7){left:31.14%;top:69.8%;width:17.44vw}
-.pain .bubbles li:nth-child(1) img{transition-delay:0s}
-.pain .bubbles li:nth-child(2) img{transition-delay:.1s}
-.pain .bubbles li:nth-child(3) img{transition-delay:.15s}
-.pain .bubbles li:nth-child(4) img{transition-delay:.2s}
-.pain .bubbles li:nth-child(5) img{transition-delay:.25s}
-.pain .bubbles li:nth-child(6) img{transition-delay:.3s}
-.pain .bubbles li:nth-child(7) img{transition-delay:.35s}
+.pain .bubbles li:nth-child(1) .pcard{transition-delay:0s}
+.pain .bubbles li:nth-child(2) .pcard{transition-delay:.1s}
+.pain .bubbles li:nth-child(3) .pcard{transition-delay:.15s}
+.pain .bubbles li:nth-child(4) .pcard{transition-delay:.2s}
+.pain .bubbles li:nth-child(5) .pcard{transition-delay:.25s}
+.pain .bubbles li:nth-child(6) .pcard{transition-delay:.3s}
+.pain .bubbles li:nth-child(7) .pcard{transition-delay:.35s}
 
 /* ── 3. 앤서 — 배경 포토 + hover reveal 카드 3(원본 이식) ── */
 .answer{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5.2vw;padding:120px 24px;background:url('../../app/bg/ensol-bg-answer.jpg') no-repeat center/cover;background-color:var(--navy)}
@@ -128,36 +126,6 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .answer .card:nth-child(1) .reveal{background:var(--blue1)}
 .answer .card:nth-child(2) .reveal{background:var(--blue2)}
 .answer .card:nth-child(3) .reveal{background:var(--navy)}
-
-/* ── 4. 임프루브먼트 — 200vh sticky, 다크→화이트 전환 + 그라데이션 텍스트 채움 ── */
-.improve{height:200vh;background:var(--dark);transition:background .3s}
-.improve .stick{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:5vw}
-.improve .tx{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
-.improve h3{color:#fff;font-size:56px;font-weight:600;line-height:1.3;transition:color .3s}
-.improve h3 .fill{display:inline-block;background-image:linear-gradient(90deg,var(--lime2) 50%,#fff 0);background-size:200% 100%;background-position:100% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;transition:background-position .8s ease .1s}
-.improve.on{background:#fff}
-.improve.on h3{color:var(--ink)}
-.improve.on h3 .fill{background-image:linear-gradient(90deg,var(--lime2) 50%,var(--ink) 0);background-position:0 100%}
-.improve p{max-width:560px;color:rgba(255,255,255,.6);font-size:17px;line-height:1.65;transition:color .3s}
-.improve p b{font-weight:600}
-.improve.on p{color:var(--g)}
-.improve.on p b{color:var(--ink)}
-.improve .hint{margin-top:14px;color:var(--g3);font-size:14px;font-weight:500;letter-spacing:-.3px;line-height:1.5}
-.improve .vid{height:400px;background:#0a0a12}
-.improve .vid video{width:100%;height:100%;object-fit:cover}
-
-/* ── 5. 컴페어 — 화이트 sticky + 형광 하이라이트 wipe ── */
-.compare{height:200vh;background:#fff}
-.compare .stick{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:4.8vw}
-.compare .tx{display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
-.compare h3{font-size:56px;font-weight:600;line-height:1.3}
-.compare .hl{position:relative;display:inline-block;z-index:1}
-.compare .hl:after{content:"";position:absolute;left:-1%;bottom:4px;height:36%;width:0;background:var(--lime);z-index:-1;transition:width .8s cubic-bezier(.2,.6,.2,1) .15s}
-.compare.on .hl:after{width:102%}
-.compare p{max-width:560px;color:var(--g);font-size:17px;line-height:1.65}
-.compare p b{color:var(--ink);font-weight:600}
-.compare .vid{height:400px;background:var(--bgsoft)}
-.compare .vid video{width:100%;height:100%;object-fit:cover}
 
 /* ── 6. 스킬 탭 5종(원본 이식: 좌 텍스트 500px 소프트 + 우 이미지) ── */
 .skill{padding:160px 0;background:#fff}
@@ -260,9 +228,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
   .answer h2{font-size:44px}
   .answer .cards{flex-direction:column}
   .answer .card{width:min(360px,84vw)}
-  .improve .tx,.compare .tx{flex-direction:column;align-items:flex-start;gap:22px}
-  .improve h3,.compare h3{font-size:34px}
-  .improve .vid,.compare .vid{height:52vw}
   .skill .tabs{flex-wrap:wrap;gap:10px}
   .skill .tabs button{flex:none;width:calc(50% - 5px)}
   .skill .pane{height:auto;flex-direction:column}
@@ -288,7 +253,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <a class="logo df" href="#top">MIDAS <b>CIVIL NX</b></a>
     <nav>
       <a href="#answer">CIVIL NX 2026</a>
-      <a href="#improve">Speed</a>
       <a href="#skill">Features</a>
       <a href="#register">Webinar</a>
     </nav>
@@ -322,13 +286,13 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <h2 class="df">Beyond Your<br>Engineering Struggles.</h2>
   </div>
   <ul class="bubbles" id="bubbles">
-    <li><img src="../../app/bg/ensol-bubble1.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble2.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble3.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble4.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble5.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble6.png" alt=""></li>
-    <li><img src="../../app/bg/ensol-bubble7.png" alt=""></li>
+    <li><div class="pcard">A seamless workflow without jumping between multiple tools.</div></li>
+    <li><div class="pcard">Stable and crash-free overnight runs for large-scale analysis.</div></li>
+    <li><div class="pcard">Freedom to explore complex optimizations without cost concerns.</div></li>
+    <li><div class="pcard">Focused re-analysis on only what's changed to save my day.</div></li>
+    <li><div class="pcard">Faster analysis to deliver reports with confidence, not pressure.</div></li>
+    <li><div class="pcard">Instant feedback to fix errors without wasting compute time.</div></li>
+    <li><div class="pcard">Focus on engineering judgment instead of waiting for analysis process.</div></li>
   </ul>
 </section>
 
@@ -358,35 +322,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
       </div>
     </li>
   </ul>
-</section>
-
-<!-- 4. 임프루브먼트 — 6× 스피드, 다크→화이트 전환 -->
-<section class="improve" id="improve">
-  <div class="stick">
-    <div class="wrap">
-      <div class="tx">
-        <h3 class="df">How much faster?<br><span class="fill">Incomparable!</span></h3>
-        <div>
-          <p>Experience up to <b>6× faster analysis speed</b>. By focusing on only the modified components, CIVIL NX powered by HYPER-S engine keeps your workflow moving and ensures faster results. Enjoy the freedom to explore more design alternatives and reach the optimal structural solution with confidence and ease.</p>
-          <div class="hint">*Time savings vary by analysis model.<br>*Steel Composite Bridge Nonlinear Time History Analysis Performance Criteria</div>
-        </div>
-      </div>
-    </div>
-    <div class="wrap"><div class="vid"><video src="../../app/bg/ensol-graph.mp4" muted loop playsinline></video></div></div>
-  </div>
-</section>
-
-<!-- 5. 컴페어 — 재분석 70%, 형광 하이라이트 -->
-<section class="compare" id="compare">
-  <div class="stick">
-    <div class="wrap">
-      <div class="tx">
-        <h3 class="df">Re-Analyze Only<br><span class="hl">What Changed</span></h3>
-        <p>Maximize design optimization with <b>selective re-analysis</b> and <b>simultaneous parallel processing</b>. By analyzing only specific load cases rather than the entire model, the usual 14-hour analysis time is <b>reduced by 70%</b>. Spend less time on repetitive reanalysis and more time innovating. Focus on what matters most to deliver the optimal structural solution.</p>
-      </div>
-    </div>
-    <div class="wrap"><div class="vid"><video src="../../app/bg/ensol-case.mp4" muted loop playsinline></video></div></div>
-  </div>
 </section>
 
 <!-- 6. 스킬 탭 5종 -->
@@ -592,20 +527,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
   }
 
-  // 4/5. sticky 진행도 → .on 토글 (improve: 다크→화이트+텍스트 채움 / compare: 형광 wipe)
-  var improve = document.getElementById('improve');
-  var compare = document.getElementById('compare');
-  var impVid = improve.querySelector('video');
-  var cmpVid = compare.querySelector('video');
-  function stickyProgress(sec){
-    var r = sec.getBoundingClientRect();
-    return clamp01(-r.top / (sec.offsetHeight - vh));
-  }
-  function scrubOn(){
-    improve.classList.toggle('on', stickyProgress(improve) > 0.35);
-    compare.classList.toggle('on', stickyProgress(compare) > 0.3);
-  }
-
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
   var dock = document.getElementById('dock');
   var reg = document.getElementById('register');
@@ -623,13 +544,34 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
       ticking = false;
       gnb.classList.toggle('solid', scrollY > vh * 0.9);
       if (!reduce) kvScrub();
-      scrubOn();
       dockTick();
     });
   }
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-  if (reduce) { improve.classList.add('on'); compare.classList.add('on'); }
+
+  // 2. 페인포인트 카드 마우스 패럴랙스 — 깊이 계수별로 커서 반대 방향 드리프트(lerp)
+  var painSec = document.getElementById('pain');
+  var pcards = painSec.querySelectorAll('.bubbles li');
+  if (!reduce) {
+    var pd = [18, 26, 22, 20, 30, 16, 24];
+    var ptx = 0, pty = 0, pcx = 0, pcy = 0, pRaf = false;
+    function painStep(){
+      pcx += (ptx - pcx) * 0.08;
+      pcy += (pty - pcy) * 0.08;
+      for (var i = 0; i < pcards.length; i++){
+        pcards[i].style.transform = 'translate(' + (-pcx * pd[i]).toFixed(1) + 'px,' + (-pcy * pd[i]).toFixed(1) + 'px)';
+      }
+      if (Math.abs(ptx - pcx) > 0.001 || Math.abs(pty - pcy) > 0.001) requestAnimationFrame(painStep);
+      else pRaf = false;
+    }
+    painSec.addEventListener('mousemove', function(e){
+      var r = painSec.getBoundingClientRect();
+      ptx = (e.clientX - r.left) / r.width - 0.5;
+      pty = (e.clientY - r.top) / r.height - 0.5;
+      if (!pRaf){ pRaf = true; requestAnimationFrame(painStep); }
+    });
+  }
 
   // 리빌 + 말풍선 + 벤토 IO
   var io = new IntersectionObserver(function(es){
@@ -642,16 +584,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
   io.observe(document.getElementById('bubbles'));
   io.observe(document.getElementById('bento'));
-
-  // 영상: 화면 진입 시에만 재생 (그래프·케이스)
-  var vio = new IntersectionObserver(function(es){
-    es.forEach(function(en){
-      if (en.isIntersecting) en.target.play().catch(function(){});
-      else en.target.pause();
-    });
-  }, { threshold: 0.2 });
-  vio.observe(impVid);
-  vio.observe(cmpVid);
 
   // 6. 스킬 탭
   var tabs = document.getElementById('skillTabs').children;
