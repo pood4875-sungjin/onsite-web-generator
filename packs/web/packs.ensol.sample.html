@@ -16,7 +16,7 @@
     - answer 카드: 토스증권 카드 리스트 스타일 번안(흰 배경·그래픽 카드+하단 텍스트·hover 줌·화살표 칩)
     - feature 벤토 6칸: opacity+translateY(50px) 스태거 .1s*n, 그리드 실측(379/789/632)
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
-  · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 25.4MB mp4 — pages 25MiB 제한 내.
+  · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 배경 = vod_invite.mp4 원격 직결(88MB, 25MiB 제한 초과라 동봉 불가 — 실패 시 로컬 ensol-hero.mp4 폴백).
     process_accel.gif(37MB)는 제한 초과로 미사용 → 벤토 톨 칸은 ensol-case.mp4로 대체
   · 원본에서 주석처리된 All-Access Pass+폼은 세미나 씨드 취지로 복원(카피 실측)
   · FAQ: 원본 display:none이지만 질문 6개 실측 그대로 포함(답변은 원본 placeholder 문구)
@@ -302,7 +302,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 1. 히어로 — 풀블리드 영상 + Insanely Fast + 스크럽 -->
 <section class="kv" id="top">
   <div class="stick">
-    <div class="ph" id="kvPhoto"><video src="../../app/bg/ensol-hero.mp4" autoplay muted loop playsinline></video></div>
+    <div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src='../../app/bg/ensol-hero.mp4'"></video></div>
     <div class="ov" id="kvOv"></div>
     <div class="in" id="kvIn">
       <span class="date df">March 18, 2026</span>
