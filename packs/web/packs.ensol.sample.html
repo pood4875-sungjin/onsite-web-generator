@@ -40,7 +40,7 @@ ul{list-style:none}
 h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
 .gbtn{display:flex;gap:20px}
-.gbtn a{display:flex;align-items:center;justify-content:center;gap:8px;width:286px;height:64px;font-size:20px;font-weight:600;letter-spacing:-.4px;transition:.3s;cursor:pointer}
+.gbtn a{display:flex;align-items:center;justify-content:center;gap:8px;width:auto;min-width:210px;height:56px;padding:0 34px;font-size:18px;font-weight:600;letter-spacing:-.36px;transition:.3s;cursor:pointer}
 .gbtn a .arr{font-weight:700;transition:transform .3s}
 .gbtn a:hover .arr{transform:translateX(4px)}
 .gbtn .lime{background:var(--lime);color:var(--ink)}
@@ -104,7 +104,6 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
 .kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}
 .kv .kvmeta .chv{position:absolute;left:50%;transform:translateX(-50%);bottom:-38px;color:rgba(255,255,255,.55)}
-.kv .gbtn a{width:auto;height:56px;padding:0 38px;font-size:18px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
 
 /* ── 1.5 KV 후반 — 어두워지며 미션 멘트 툭(toss insurance 미션 스테이지 참고) ── */
@@ -212,7 +211,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .fld label{position:absolute;left:19px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.45);font-size:16px;pointer-events:none;transition:top .18s ease,transform .18s ease,font-size .18s ease,color .18s ease;white-space:nowrap;max-width:calc(100% - 38px);overflow:hidden;text-overflow:ellipsis}
 .register input:focus + label,.register input:not(:placeholder-shown) + label{top:10px;transform:none;font-size:12px;color:var(--lime)}
 .register input:not(:placeholder-shown):not(:focus) + label{color:rgba(255,255,255,.55)}
-.register button{grid-column:1/-1;height:64px;border:0;background:var(--lime);color:var(--ink);font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
+.register button{grid-column:1/-1;height:58px;border:0;background:var(--lime);color:var(--ink);font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
 .register button:hover{filter:brightness(1.05)}
 .register .done{display:none;max-width:760px;margin:0 auto;text-align:center}
 .register .done h4{font-size:34px;font-weight:600;margin-bottom:18px;color:#fff}
