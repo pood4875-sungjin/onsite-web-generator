@@ -10,7 +10,7 @@
     - 섹션 CSS(template_main.min.css) 전수 실측: intro/invite/painpoints/answer/skill/feature/faq/free (improvement·compare 섹션은 요청으로 삭제)
     - 팔레트: 라임 #9AFC4A(+그라데이션 #74E419) · 다크 #040308 · 블루 #2CADD5/#00479E · 네이비 #00054D · 소프트 #F6F9FE
     - 원본 radius 거의 전부 0(각진 룩) — v6 방향과 일치, 전면 radius 0 유지
-    - 원본 디스플레이 폰트 ITC Avant Garde Gothic Pro(상용) → Poppins 대체
+    - 폰트: 전부 Pretendard(CDN variable dynamic subset) — 원본 ITC Avant Garde는 상용이라 미사용
   · 모션(원본 구현 방식 이식):
     - 페인포인트 카드 7개: KV 스크럽 후반(오버레이 다크닝)에 통합 — scale pop 스태거 + 마우스 패럴랙스(깊이별 lerp)
     - answer 카드: 토스증권 카드 리스트 스타일 번안(흰 배경·그래픽 카드+하단 텍스트·hover 줌·화살표 칩)
@@ -21,8 +21,7 @@
   · 원본에서 주석처리된 All-Access Pass+폼은 세미나 씨드 취지로 복원(카피 실측)
   · FAQ: 원본 display:none이지만 질문 6개 실측 그대로 포함(답변은 원본 placeholder 문구)
 -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
   --lime:#9AFC4A; --lime2:#74E419; --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
@@ -34,7 +33,7 @@ body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic
 img,video{display:block;max-width:100%}
 a{text-decoration:none;color:inherit}
 ul{list-style:none}
-.df{font-family:Poppins,"Pretendard Variable",Pretendard,sans-serif;letter-spacing:0}
+.df{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif}
 .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
 h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
@@ -131,7 +130,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .skill{padding:160px 0;background:#fff}
 .skill h3{text-align:center}
 .skill .tabs{display:flex;margin:4.5vw 0 30px;width:100%}
-.skill .tabs button{position:relative;flex:1;padding-bottom:14px;border:0;border-bottom:2px solid var(--line);background:none;color:#C6CCD4;font-family:Poppins,Pretendard,sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
+.skill .tabs button{position:relative;flex:1;padding-bottom:14px;border:0;border-bottom:2px solid var(--line);background:none;color:#C6CCD4;font-family:inherit;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
 .skill .tabs button.active{border-color:var(--line);color:var(--ink);font-weight:600}
 .skill .tabs button .prog{position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--ink)}
 .skill .pane{display:none;height:400px}
