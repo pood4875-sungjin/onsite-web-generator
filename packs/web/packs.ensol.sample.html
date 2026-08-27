@@ -85,6 +85,11 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .ph{position:absolute;inset:0}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
 .kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.45)}
+/* 라이트 스윕 — 프라이머리(라임·시안) 광선이 이따금 은은하게 지나감 */
+.kv .sheen{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
+.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,rgba(154,252,74,.11) 35%,rgba(44,173,213,.16) 50%,rgba(154,252,74,.09) 65%,transparent 100%);filter:blur(26px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
+.kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}
+@keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}24%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px}
 .kv h1{margin:0 0 34px;font-size:min(14.5vw,232px);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 .kv .klead{margin-bottom:56px;font-size:min(2.4vw,31px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}
@@ -287,6 +292,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .dock{display:none}
 }
 @media (prefers-reduced-motion:reduce){
+  .kv .sheen i{animation:none;opacity:0}
   .answer .card > img{animation:none;transform:none}
   .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
@@ -314,6 +320,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   <div class="stick">
     <div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src='../../app/bg/ensol-hero.mp4'"></video></div>
     <div class="ov" id="kvOv"></div>
+    <div class="sheen" aria-hidden="true"><i></i><i class="s2"></i></div>
     <div class="in" id="kvIn">
       <h1 class="df" id="kvTitle"><span class="l">HYPER-S</span></h1>
       <p class="klead ent d2">Insanely Fast. Boundlessly Capable.</p>
