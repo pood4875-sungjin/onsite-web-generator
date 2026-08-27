@@ -80,16 +80,12 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.45)}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px}
 .kv .date{color:var(--lime);font-size:26px;font-weight:600;text-shadow:0 0 2px rgba(0,0,0,.1)}
-.kv .lbl{margin-top:10px;font-size:22px;font-weight:400;line-height:1.6;color:rgba(255,255,255,.92)}
-.kv h1{margin:34px 0 56px;font-size:min(9vw,118px);font-weight:600;line-height:1.08;text-shadow:0 1px 10px rgba(0,0,0,.15)}
+.kv h1{margin:26px 0 48px;font-size:min(6vw,78px);font-weight:600;line-height:1.12;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 .kv .gbtn{justify-content:center}
 .kv .gbtn a{width:225px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
 .kv .sub2 p{font-size:min(3.4vw,44px);font-weight:600;line-height:1.5}
 .kv .sub2 p b{color:var(--lime)}
-.kv .scr{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);width:20px;height:30px;border:2px solid rgba(255,255,255,.8)}
-.kv .scr i{position:absolute;top:6px;left:50%;width:4px;height:4px;margin-left:-2px;background:#fff;animation:dotMove 1.53s cubic-bezier(.62,-.04,.32,1.06) infinite}
-@keyframes dotMove{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
 
 /* ── 2. 페인포인트 — 다크 + 말풍선 pop(좌표·딜레이 원본 실측) ── */
 .pain{position:relative;height:100vh;background:var(--dark);overflow:hidden}
@@ -257,9 +253,8 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 @media (max-width:900px){
   .gnb nav{display:none}
   h3.tt{font-size:32px}
-  .kv h1{font-size:11vw}
-  .kv .date{font-size:19px}
-  .kv .lbl{font-size:16px}
+  .kv h1{font-size:9vw}
+  .kv .date{font-size:18px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
   .pain .tx h2{font-size:36px}
   .pain .bubbles li{width:34vw !important}
@@ -284,7 +279,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 }
 @media (prefers-reduced-motion:reduce){
   .rv,.pain .bubbles li,.pain .bubbles li img,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
-  .kv .scr i{animation:none}
 }
 </style>
 </head>
@@ -310,7 +304,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <div class="ov" id="kvOv"></div>
     <div class="in" id="kvIn">
       <span class="date df">March 18, 2026</span>
-      <span class="lbl">CIVIL NX 2026 Release<br>Live Webinar &amp; On-Demand</span>
       <h1 class="df">Insanely Fast.<br>Boundlessly<br>Capable.</h1>
       <div class="gbtn">
         <a class="white" href="#register">Watch Now <span class="arr">→</span></a>
@@ -320,7 +313,6 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <div class="sub2" id="kvSub">
       <p class="df">Analysis speeds up to <b>6× faster</b>.<br>CIVIL NX powered by the HYPER-S engine.</p>
     </div>
-    <div class="scr"><i></i></div>
   </div>
 </section>
 
