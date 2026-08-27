@@ -27,7 +27,8 @@
 <style>
 :root{
   --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF; --onsub:#fff;
-  --btng:linear-gradient(100deg,#4E62DD 0%,#4487F5 45%,#6FA8FF 70%,#4E62DD 100%);
+  --btng:linear-gradient(89.58deg,#3186ff 0%,#346bf0 30%,#4ea0ff 55%,#346bf0 78%,#3186ff 100%);
+  --txtg:linear-gradient(89.58deg,#3186ff .28%,#346bf0 44.45%,#4ea0ff 99.55%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
@@ -64,6 +65,8 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
 h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 h2.wt.active .w{opacity:1;transform:none;filter:none}
+/* 라이트 섹션 타이틀 — 제미나이 그라데이션 텍스트 */
+.answer h2.wt .w,.skill h2.wt .w,.feature h2.wt .w,.faq h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
 .snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transition:opacity .4s}
