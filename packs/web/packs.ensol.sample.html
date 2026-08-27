@@ -14,7 +14,7 @@
   · 모션(원본 구현 방식 이식):
     - KV 스크럽 후반: 어두워지며 미션 멘트 페이드(toss insurance RE:ANSWER 미션 스테이지 구성 번안)
     - answer 카드: 토스증권 카드 리스트 스타일 번안(흰 배경·그래픽 카드+하단 텍스트·hover 줌·화살표 칩)
-    - feature 벤토 6칸: opacity+translateY(50px) 스태거 .1s*n, 그리드 실측(379/789/632)
+    - feature: toss insurance 패턴 — 좌 sticky 타이틀+버튼 / 우 카드 3개 스크롤 업페이드
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
   · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 배경 = vod_invite.mp4 원격 직결(88MB, 25MiB 제한 초과라 동봉 불가 — 실패 시 로컬 ensol-hero.mp4 폴백).
     process_accel.gif(37MB)는 제한 초과로 미사용 → 벤토 톨 칸은 ensol-case.mp4로 대체
@@ -86,16 +86,17 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
 .kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.45)}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px}
-.kv .date{color:var(--lime);font-size:26px;font-weight:600;text-shadow:0 0 2px rgba(0,0,0,.1)}
-.kv h1{margin:26px 0 48px;font-size:min(6vw,78px);font-weight:600;line-height:1.12;text-shadow:0 1px 10px rgba(0,0,0,.15)}
+.kv h1{margin:0 0 30px;font-size:min(13vw,196px);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}
+.kv .klead{margin-bottom:54px;font-size:min(2vw,26px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}
 .kv h1 .l{display:block}
 .kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
 .kv.ready .ent{opacity:1;transform:none}
-.kv.ready .d4{transition-delay:.75s}
+.kv.ready .d2{transition-delay:.35s}
+.kv.ready .d4{transition-delay:.6s}
 .kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 .kv.ready h1 .w{opacity:1;transform:none;filter:none}
 .kv .gbtn{justify-content:center}
-.kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:16px;font-weight:500;letter-spacing:.01em}
+.kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
 .kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}
 .kv .kvmeta .chv{position:absolute;left:50%;transform:translateX(-50%);bottom:-38px;color:rgba(255,255,255,.55)}
 .kv .gbtn a{width:225px}
@@ -140,22 +141,18 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .skill .tb p{color:var(--g);font-size:16px;line-height:26px;letter-spacing:-.32px}
 .skill .pane img{width:calc(100% - 500px);height:100%;object-fit:cover}
 
-/* ── 7. 피처 벤토 6칸(그리드 실측 379/789/632) + 스태거 리빌 ── */
-.feature{padding:180px 0 200px;background:#fff;text-align:center}
-.feature p.sub{margin:14px 0 56px;color:var(--g2);font-size:18px}
-.feature .gbtn{justify-content:center}
-.feature .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;padding-top:110px}
-.feature .bento li{overflow:hidden;opacity:0;transform:translateY(50px);transition:opacity .5s ease,transform .5s ease;height:300px}
-.feature .bento.active li{opacity:1;transform:none}
-.feature .bento.active li:nth-child(2){transition-delay:.1s}
-.feature .bento.active li:nth-child(3){transition-delay:.2s}
-.feature .bento.active li:nth-child(4){transition-delay:.3s}
-.feature .bento.active li:nth-child(5){transition-delay:.4s}
-.feature .bento.active li:nth-child(6){transition-delay:.5s}
-.feature .bento li:nth-child(2){grid-column:2/4}
-.feature .bento li:nth-child(5){grid-column:3/4;grid-row:2/4;height:632px}
-.feature .bento li:nth-child(6){grid-column:1/3}
-.feature .bento img,.feature .bento video{width:100%;height:100%;object-fit:cover}
+/* ── 7. 피처 — 좌 고정 타이틀 + 우 카드 3 스크롤(toss insurance 패턴) ── */
+.feature{padding:180px 0 200px;background:#fff}
+.feature .fgrid{display:flex;gap:110px;align-items:flex-start}
+.feature .fleft{width:430px;flex:none;position:sticky;top:130px}
+.feature .fleft p.sub{margin:22px 0 44px;color:var(--g2);font-size:18px;line-height:1.6}
+.feature .fleft .gbtn{flex-direction:column;gap:12px;align-items:flex-start}
+.feature .fright{flex:1;display:flex;flex-direction:column;gap:96px;min-width:0}
+.feature .fitem{border-top:1px solid var(--line);padding-top:30px}
+.feature .fitem b{display:block;font-size:25px;font-weight:600;line-height:1.4}
+.feature .fitem > p{margin:12px 0 38px;color:var(--g2);font-size:17px;line-height:1.65}
+.feature .fcard{overflow:hidden;background:var(--bgsoft)}
+.feature .fcard img{width:100%;height:auto;display:block}
 
 /* ── 7.5 어젠다 — 다크 리스트 + 클릭 시 우측 상세 드로어 ── */
 .agenda{padding:160px 0;background:var(--dark)}
@@ -264,8 +261,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .gnb nav{display:none}
   .snav{display:none}
   h2.tt{font-size:34px}
-  .kv h1{font-size:9vw}
-  .kv .date{font-size:18px}
+  .kv h1{font-size:16vw}
+  .kv .klead{font-size:15px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
   .kv .kvmeta{font-size:11px;padding:0 20px}
   .kv .sub2 p{font-size:20px}
@@ -279,9 +276,9 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .skill .pane{height:auto;flex-direction:column}
   .skill .tb{width:100%;padding:32px 24px}
   .skill .pane img{width:100%;height:56vw}
-  .feature .bento{grid-template-columns:1fr;padding-top:60px}
-  .feature .bento li{grid-column:auto !important;grid-row:auto !important;height:56vw !important}
-  .feature .gbtn,.free .gbtn{flex-direction:column;align-items:center}
+  .feature .fgrid{flex-direction:column;gap:56px}
+  .feature .fleft{width:100%;position:static}
+  .free .gbtn{flex-direction:column;align-items:center}
   .agenda .alist li{gap:14px;padding:20px 6px}
   .agenda .at{width:92px;font-size:13px}
   .agenda .am b{font-size:16px}
@@ -291,7 +288,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 }
 @media (prefers-reduced-motion:reduce){
   .answer .card > img{animation:none;transform:none}
-  .rv,.kv .ent,.kv h1 .w,.answer .card,.feature .bento li,h2.wt .w,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
+  .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
 </style>
 </head>
@@ -318,8 +315,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     <div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src='../../app/bg/ensol-hero.mp4'"></video></div>
     <div class="ov" id="kvOv"></div>
     <div class="in" id="kvIn">
-      <span class="date df ent d1">March 18, 2026</span>
-      <h1 class="df" id="kvTitle"><span class="l">Insanely Fast.</span><span class="l">Boundlessly Capable.</span></h1>
+      <h1 class="df" id="kvTitle"><span class="l">HYPER-S</span></h1>
+      <p class="klead ent d2">Insanely Fast. Boundlessly Capable.</p>
       <div class="gbtn ent d4">
         <a class="white" href="#register">Watch Now <span class="arr">→</span></a>
       </div>
@@ -328,7 +325,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       <span>MIDAS CIVIL NX</span>
       <span class="mid">3.18 (Wed) — 9:00 - 10:00 (GMT)</span>
       <span>LIVE WEBINAR &amp; ON-DEMAND</span>
-      <i class="chv"><svg width="34" height="16" viewBox="0 0 34 16" fill="none"><path d="M3 3l14 10L31 3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
+      <i class="chv"><svg width="44" height="20" viewBox="0 0 34 16" fill="none"><path d="M3 3l14 10L31 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i>
     </div>
     <div class="sub2" id="kvSub">
       <div class="tx">
@@ -425,23 +422,36 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   </div>
 </section>
 
-<!-- 7. 피처 벤토 -->
+<!-- 7. 피처 — 좌 고정 타이틀 + 우 카드 3 -->
 <section class="feature" id="feature">
   <div class="wrap">
-    <h2 class="tt df rv">See How Your Current<br>CIVIL NX Can Do More.</h2>
-    <p class="sub rv">Let our experts help you apply the new features instantly. Book a quick chat today!</p>
-    <div class="gbtn rv">
-      <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
-      <a class="ghost" href="#register">Product Leaflet <span class="arr">→</span></a>
+    <div class="fgrid">
+      <div class="fleft">
+        <h2 class="tt df rv">See How Your Current<br>CIVIL NX Can Do More.</h2>
+        <p class="sub rv">Let our experts help you apply the new features instantly. Book a quick chat today!</p>
+        <div class="gbtn rv">
+          <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
+          <a class="ghost" href="#register">Product Leaflet <span class="arr">→</span></a>
+        </div>
+      </div>
+      <div class="fright">
+        <div class="fitem rv">
+          <b class="df">Faster Analysis Solver — up to 6×</b>
+          <p>CIVIL NX powered by the HYPER-S engine keeps your workflow moving and ensures faster results.</p>
+          <div class="fcard"><img src="../../app/bg/ensol-feature1.jpg" alt="Faster Analysis Solver"></div>
+        </div>
+        <div class="fitem rv">
+          <b class="df">Localized Features &amp; Global Design Codes</b>
+          <p>Global design code coverage and localized features, with multi-language support for worldwide projects.</p>
+          <div class="fcard"><img src="../../app/bg/ensol-feature2.jpg" alt="Localized Features 2026"></div>
+        </div>
+        <div class="fitem rv">
+          <b class="df">Unrivaled Analysis, Unmatched Precision</b>
+          <p>Advanced features unavailable in other software establish a new benchmark for construction FEM.</p>
+          <div class="fcard"><img src="../../app/bg/ensol-feature5.jpg" alt="Unrivaled Analysis Unmatched Precision"></div>
+        </div>
+      </div>
     </div>
-    <ul class="bento" id="bento">
-      <li><img src="../../app/bg/ensol-feature1.jpg" alt="Faster Analysis Solver"></li>
-      <li><img src="../../app/bg/ensol-feature2.jpg" alt="Localized Features 2026"></li>
-      <li><img src="../../app/bg/ensol-feature3.jpg" alt="Global Design Code"></li>
-      <li><img src="../../app/bg/ensol-feature4.jpg" alt="Language Support"></li>
-      <li><video src="../../app/bg/ensol-case.mp4" muted loop playsinline autoplay></video></li>
-      <li><img src="../../app/bg/ensol-feature5.jpg" alt="Unrivaled Analysis Unmatched Precision"></li>
-    </ul>
   </div>
 </section>
 
@@ -682,7 +692,6 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
   document.querySelectorAll('h2.wt').forEach(function(el){ io.observe(el); });
   io.observe(document.getElementById('acards'));
-  io.observe(document.getElementById('bento'));
 
   // 7.5 어젠다 — 리스트 렌더 + 클릭 시 우측 드로어(내용은 실측 카피 재구성)
   var AGENDA = [
