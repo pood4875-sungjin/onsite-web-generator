@@ -83,6 +83,12 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px}
 .kv .date{color:var(--lime);font-size:26px;font-weight:600;text-shadow:0 0 2px rgba(0,0,0,.1)}
 .kv h1{margin:26px 0 48px;font-size:min(6vw,78px);font-weight:600;line-height:1.12;text-shadow:0 1px 10px rgba(0,0,0,.15)}
+.kv h1 .l{display:block}
+.kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
+.kv.ready .ent{opacity:1;transform:none}
+.kv.ready .d2{transition-delay:.12s}
+.kv.ready .d3{transition-delay:.26s}
+.kv.ready .d4{transition-delay:.44s}
 .kv .gbtn{justify-content:center}
 .kv .gbtn a{width:225px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
@@ -289,7 +295,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .free .bgm{animation:none}
   .register .glow i{animation:none}
   .answer .card:hover .ph img{animation:none;transform:none}
-  .rv,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
+  .rv,.kv .ent,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
 }
 </style>
 </head>
@@ -316,9 +322,9 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     <div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src='../../app/bg/ensol-hero.mp4'"></video></div>
     <div class="ov" id="kvOv"></div>
     <div class="in" id="kvIn">
-      <span class="date df">March 18, 2026</span>
-      <h1 class="df">Insanely Fast.<br>Boundlessly Capable.</h1>
-      <div class="gbtn">
+      <span class="date df ent d1">March 18, 2026</span>
+      <h1 class="df"><span class="l ent d2">Insanely Fast.</span><span class="l ent d3">Boundlessly Capable.</span></h1>
+      <div class="gbtn ent d4">
         <a class="white" href="#register">Watch Now <span class="arr">→</span></a>
         <a class="wghost" href="#register">1:1 Consultation <span class="arr">→</span></a>
       </div>
@@ -575,6 +581,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
   var kv = document.querySelector('.kv');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ kv.classList.add('ready'); }); });
   var kvIn = document.getElementById('kvIn');
   var kvSub = document.getElementById('kvSub');
   var kvOv = document.getElementById('kvOv');
