@@ -86,7 +86,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .gnb.solid nav a:hover{color:var(--lime2)}
 
 /* ── 1. 히어로 KV — 풀블리드 영상 스크럽(원본 invite + 씨드 KV) ── */
-.kv{position:relative;height:220vh}
+.kv{position:relative;height:260vh}
 .kv .stick{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--dark)}
 .kv .ph{position:absolute;inset:0}
 .kv .ph video{width:100%;height:100%;object-fit:cover}
@@ -118,7 +118,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
-.answer{padding:160px 0;background:#fff}
+.answer{position:relative;z-index:2;margin-top:-50vh;padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);font-size:56px;font-weight:600;line-height:1.24;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
 .answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
@@ -168,7 +168,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda{padding:160px 0;background:var(--dark)}
 .agenda h2{color:#fff;text-align:center}
 .agenda .asub{margin:16px 0 56px;text-align:center;color:rgba(255,255,255,.55);font-size:17px}
-.agenda .asub em{font-style:normal;color:var(--sub);font-weight:600;margin-right:10px}
+.agenda .asub em{font-style:normal;color:#F07818;font-weight:600;margin-right:10px}
 .agenda .alist{max-width:1060px;margin:0 auto}
 .agenda .alist li{display:flex;align-items:center;gap:28px;padding:26px 18px;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s,padding .25s}
 .agenda .alist.rv li{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1),background .25s,padding .25s}
@@ -207,7 +207,6 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
-.register .pt{color:var(--onsub);background:var(--sub);font-size:15px;font-weight:700;padding:4px 12px}
 .register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
 .register form{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .register .fld{position:relative}
@@ -263,7 +262,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
-.dock .tx i em{font-style:normal;color:var(--sub);font-weight:700;margin-right:6px}
+.dock .tx i em{font-style:normal;color:#F07818;font-weight:700;margin-right:6px}
 .dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--lime);color:var(--onp);font-size:15px;font-weight:700;padding:13px 24px}
 
 /* 프라이머리 컬러 피커 — 우하단 칩 5종 */
@@ -496,7 +495,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   <canvas id="wave2" aria-hidden="true"></canvas>
   <div class="wrap">
     <h2 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h2>
-    <div class="time rv"><span class="pt">Live</span><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
+    <div class="time rv"><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
     <form id="regForm" class="rv" autocomplete="off">
       <div class="fld"><input type="text" id="rf-name" placeholder=" " required><label for="rf-name">Name</label></div>
       <div class="fld"><input type="email" id="rf-email" placeholder=" " required><label for="rf-email">Email</label></div>
@@ -643,7 +642,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
   function kvScrub(){
     var p = clamp01(scrollY / (kv.offsetHeight - vh));
-    var t = clamp01((p - 0.38) / 0.22);
+    var t = clamp01((p - 0.3) / 0.18);
     kvIn.style.opacity = String(1 - t);
     kvIn.style.transform = 'translateY(' + (-50 - 70 * t) + 'px)';
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
@@ -651,14 +650,13 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       kvMeta.style.transition = 'none';
       kvMeta.style.opacity = String(Math.max(0, 1 - t * 1.6));
     }
-    var q = clamp01((p - 0.45) / 0.35);
+    var q = clamp01((p - 0.36) / 0.3);
     var e = 1 - Math.pow(1 - q, 3);
     kvOv.style.opacity = String(0.66 + 0.26 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
-    var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
-    var x = clamp01((p - 0.84) / 0.16), xe = Math.pow(x, 2); /* 마지막 구간: 위로 올라가며 퇴장 */
-    kvSub.style.opacity = String(se * (1 - xe));
-    kvSub.style.transform = 'translateY(' + (36 * (1 - se) - 110 * xe) + 'px)';
+    var s = clamp01((p - 0.5) / 0.18), se = 1 - Math.pow(1 - s, 3);
+    kvSub.style.opacity = String(se);
+    kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
   }
 
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
