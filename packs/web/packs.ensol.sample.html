@@ -26,15 +26,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
-  --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF;
+  --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF; --onsub:#fff;
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
 /* 프라이머리 프리셋 — 초록(기본)·블루·주황·퍼플·진분홍 */
-:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff;--sub:#9AFC4A}
-:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff;--sub:#E8338A}
-:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff;--sub:#3D8BFF}
-:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff;--sub:#F07818}
+:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff;--sub:#9AFC4A;--onsub:#222}
+:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff;--sub:#E8338A;--onsub:#fff}
+:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff;--sub:#3D8BFF;--onsub:#fff}
+:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff;--sub:#F07818;--onsub:#fff}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
@@ -168,7 +168,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda{padding:160px 0;background:var(--dark)}
 .agenda h2{color:#fff;text-align:center}
 .agenda .asub{margin:16px 0 56px;text-align:center;color:rgba(255,255,255,.55);font-size:17px}
-.agenda .asub em{font-style:normal;color:var(--lime);font-weight:600;margin-right:10px}
+.agenda .asub em{font-style:normal;color:var(--sub);font-weight:600;margin-right:10px}
 .agenda .alist{max-width:1060px;margin:0 auto}
 .agenda .alist li{display:flex;align-items:center;gap:28px;padding:26px 18px;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s,padding .25s}
 .agenda .alist.rv li{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.2,.6,.2,1),transform .6s cubic-bezier(.2,.6,.2,1),background .25s,padding .25s}
@@ -179,12 +179,12 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .agenda .alist.rv.on li:nth-child(5){transition-delay:.32s}
 .agenda .alist li:first-child{border-top:1px solid rgba(255,255,255,.12)}
 .agenda .alist li:hover{background:rgba(255,255,255,.06);padding-left:26px}
-.agenda .at{flex:none;width:128px;color:var(--lime);font-size:17px;font-weight:600;white-space:nowrap}
+.agenda .at{flex:none;width:128px;color:var(--sub);font-size:17px;font-weight:600;white-space:nowrap}
 .agenda .am{flex:1}
 .agenda .am b{display:block;color:#fff;font-size:19px;font-weight:600;line-height:1.4}
 .agenda .am span{display:block;margin-top:4px;color:rgba(255,255,255,.5);font-size:14px}
 .agenda .chev{color:rgba(255,255,255,.45);font-size:18px;font-weight:700;transition:transform .25s,color .25s}
-.agenda .alist li:hover .chev{transform:translateX(4px);color:var(--lime)}
+.agenda .alist li:hover .chev{transform:translateX(4px);color:var(--sub)}
 /* 드로어 */
 .adim{position:fixed;inset:0;z-index:190;background:rgba(4,3,8,.55);opacity:0;pointer-events:none;transition:opacity .35s}
 .adim.on{opacity:1;pointer-events:auto}
@@ -192,14 +192,14 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .adrawer.on{transform:none}
 .adrawer .dclose{position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:none;color:var(--g3);font-size:26px;line-height:1;cursor:pointer;transition:color .2s}
 .adrawer .dclose:hover{color:var(--ink)}
-.adrawer .dtime{display:inline-block;background:var(--lime);color:var(--onp);font-size:14px;font-weight:700;padding:5px 10px}
+.adrawer .dtime{display:inline-block;background:var(--sub);color:var(--onsub);font-size:14px;font-weight:700;padding:5px 10px}
 .adrawer h4{margin:18px 0 6px;font-size:26px;font-weight:600;line-height:1.35;color:var(--ink)}
 .adrawer .dspk{display:block;color:var(--g3);font-size:14px;margin-bottom:22px}
 .adrawer .dmedia{height:220px;margin-bottom:24px;background:var(--bgsoft);overflow:hidden}
 .adrawer .dmedia img,.adrawer .dmedia video{width:100%;height:100%;object-fit:cover;display:block}
 .adrawer .dtxt{color:var(--g);font-size:16px;line-height:1.65;margin-bottom:26px}
 .adrawer .dpoints li{position:relative;padding:12px 0 12px 22px;border-bottom:1px solid var(--line);color:var(--ink);font-size:15px;line-height:1.5}
-.adrawer .dpoints li:before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;background:var(--lime)}
+.adrawer .dpoints li:before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;background:var(--sub)}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
 .register{position:relative;padding:160px 0;background:var(--dark);overflow:hidden}
@@ -207,7 +207,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
-.register .pt{color:var(--onp);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
+.register .pt{color:var(--onsub);background:var(--sub);font-size:15px;font-weight:700;padding:4px 12px}
 .register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
 .register form{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .register .fld{position:relative}
@@ -263,7 +263,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
-.dock .tx i em{font-style:normal;color:var(--blue2);font-weight:700;margin-right:6px}
+.dock .tx i em{font-style:normal;color:var(--sub);font-weight:700;margin-right:6px}
 .dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--lime);color:var(--onp);font-size:15px;font-weight:700;padding:13px 24px}
 
 /* 프라이머리 컬러 피커 — 우하단 칩 5종 */
