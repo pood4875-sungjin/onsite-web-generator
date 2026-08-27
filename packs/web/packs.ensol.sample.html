@@ -26,15 +26,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
-  --lime:#9AFC4A; --lime2:#74E419; --onp:#222;
+  --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF;
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
 /* 프라이머리 프리셋 — 초록(기본)·블루·주황·퍼플·진분홍 */
-:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff}
-:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff}
-:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff}
-:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff}
+:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff;--sub:#9AFC4A}
+:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff;--sub:#E8338A}
+:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff;--sub:#3D8BFF}
+:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff;--sub:#F07818}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
@@ -93,7 +93,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv .ov{position:absolute;inset:0;background:rgba(4,3,8,.66)}
 /* 라이트 스윕 — 프라이머리(라임·시안) 광선이 이따금 은은하게 지나감 */
 .kv .sheen{position:absolute;inset:0;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
-.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,var(--lime) 6%,transparent) 35%,color-mix(in srgb,var(--lime2) 10%,transparent) 50%,color-mix(in srgb,var(--lime) 5%,transparent) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
+.kv .sheen i{position:absolute;top:-20%;bottom:-20%;left:0;width:44%;background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,var(--lime) 6%,transparent) 35%,color-mix(in srgb,var(--sub) 10%,transparent) 50%,color-mix(in srgb,var(--lime) 5%,transparent) 65%,transparent 100%);filter:blur(36px);transform:translateX(-160%) skewX(-14deg);animation:sheenSweep 7.5s ease-in-out infinite;will-change:transform}
 .kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}
 @keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}
@@ -811,7 +811,15 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     progs[0].style.width = '100%';
   }
 
-  // 프라이머리 컬러 피커 — data-p 전환 + 저장
+  // 프라이머리 컬러 피커 — data-p 전환 + 저장 (웨이브 팔레트도 갱신)
+  var WAVE_COLS = ['#C4D8F0', '#9AFC4A', '#3D8BFF', '#74E419'];
+  function readWaveCols(){
+    var cs = getComputedStyle(document.documentElement);
+    WAVE_COLS = ['#C4D8F0',
+      cs.getPropertyValue('--lime').trim() || '#9AFC4A',
+      cs.getPropertyValue('--sub').trim() || '#3D8BFF',
+      cs.getPropertyValue('--lime2').trim() || '#74E419'];
+  }
   var pchips = document.getElementById('pchips');
   function setPrimary(key){
     if (key) document.documentElement.setAttribute('data-p', key);
@@ -820,6 +828,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       b.classList.toggle('on', b.getAttribute('data-p') === key);
     });
     try { localStorage.setItem('ensol-primary', key); } catch (e) {}
+    readWaveCols();
   }
   Array.prototype.forEach.call(pchips.children, function(b){
     b.addEventListener('click', function(){ setPrimary(b.getAttribute('data-p')); });
@@ -897,10 +906,10 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       var gx = Math.cos(t * .18) * W * .4, gy = Math.sin(t * .14) * H * .3;
       var grad = ctx2.createLinearGradient(W * .5 - gx, H * .5 - gy, W * .5 + gx + W * .5, H * .5 + gy);
       var sh = (t * .06) % 1;
-      grad.addColorStop(0, '#8FC6FF');
-      grad.addColorStop(Math.max(0, Math.min(1, (.25 + sh * .5))), '#E85BF0');
-      grad.addColorStop(Math.max(0, Math.min(1, (.55 + sh * .4))), '#F07818');
-      grad.addColorStop(1, '#4B2FD6');
+      grad.addColorStop(0, WAVE_COLS[0]);
+      grad.addColorStop(Math.max(0, Math.min(1, (.25 + sh * .5))), WAVE_COLS[1]);
+      grad.addColorStop(Math.max(0, Math.min(1, (.55 + sh * .4))), WAVE_COLS[2]);
+      grad.addColorStop(1, WAVE_COLS[3]);
       ctx2.globalCompositeOperation = 'source-in';
       ctx2.fillStyle = grad;
       ctx2.fillRect(0, 0, W, H);
