@@ -191,7 +191,17 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .adrawer .dpoints li:before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;background:var(--lime)}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
-.register{padding:160px 0;background:var(--navy) url('../../app/bg/ensol-bg-answer.jpg') no-repeat center/cover}
+.register{position:relative;padding:160px 0;background:var(--dark);overflow:hidden}
+/* 키비주얼 글로우 — bg-answer 컬러감(우측 시안→블루 광선) 재현, 은은한 드리프트 */
+.register .glow{position:absolute;inset:0;pointer-events:none}
+.register .glow i{position:absolute;border-radius:50%}
+.register .glow .g1{width:720px;height:1100px;right:-320px;top:-10%;background:radial-gradient(closest-side,#2CADD5 0%,rgba(44,173,213,.45) 45%,transparent 75%);filter:blur(110px);opacity:.85;animation:regG1 16s ease-in-out infinite alternate}
+.register .glow .g2{width:960px;height:960px;right:-380px;bottom:-30%;background:radial-gradient(closest-side,#00479E 0%,rgba(0,71,158,.5) 50%,transparent 78%);filter:blur(130px);opacity:.95;animation:regG2 21s ease-in-out infinite alternate}
+.register .glow .g3{width:380px;height:640px;right:4%;top:30%;background:radial-gradient(closest-side,#9BE8FF 0%,rgba(155,232,255,.35) 50%,transparent 75%);filter:blur(95px);opacity:.5;animation:regG3 12s ease-in-out infinite alternate}
+@keyframes regG1{from{transform:translate(0,0) rotate(0deg)}to{transform:translate(-70px,60px) rotate(10deg)}}
+@keyframes regG2{from{transform:translate(0,0) scale(1)}to{transform:translate(-90px,-70px) scale(1.12)}}
+@keyframes regG3{from{transform:translate(0,0)}to{transform:translate(-50px,90px)}}
+.register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
 .register .pt{color:var(--ink);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
@@ -277,6 +287,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 }
 @media (prefers-reduced-motion:reduce){
   .free .bgm{animation:none}
+  .register .glow i{animation:none}
   .answer .card:hover .ph img{animation:none;transform:none}
   .rv,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
 }
@@ -448,6 +459,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
 <section class="register" id="register">
+  <div class="glow" aria-hidden="true"><i class="g1"></i><i class="g2"></i><i class="g3"></i></div>
   <div class="wrap">
     <h2 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h2>
     <div class="time rv"><span class="pt">Live</span><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
