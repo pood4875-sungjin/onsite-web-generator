@@ -656,8 +656,9 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
     kvOv.style.opacity = String(0.66 + 0.26 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
     var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
-    kvSub.style.opacity = String(se);
-    kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
+    var x = clamp01((p - 0.84) / 0.16), xe = Math.pow(x, 2); /* 마지막 구간: 위로 올라가며 퇴장 */
+    kvSub.style.opacity = String(se * (1 - xe));
+    kvSub.style.transform = 'translateY(' + (36 * (1 - se) - 110 * xe) + 'px)';
   }
 
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
