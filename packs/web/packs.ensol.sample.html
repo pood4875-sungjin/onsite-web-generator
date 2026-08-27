@@ -12,8 +12,8 @@
     - 원본 radius 거의 전부 0(각진 룩) — v6 방향과 일치, 전면 radius 0 유지
     - 원본 디스플레이 폰트 ITC Avant Garde Gothic Pro(상용) → Poppins 대체
   · 모션(원본 구현 방식 이식):
-    - 페인포인트 카드 7개(말풍선 PNG→텍스트 카드 교체): scale pop 스태거(좌표·딜레이 실측 유지) + 마우스 패럴랙스(깊이별 lerp 드리프트)
-    - answer 카드: hover 시 card_reveal translateY(100%)→0 .6s + base brightness(.6)
+    - 페인포인트 카드 7개: KV 스크럽 후반(오버레이 다크닝)에 통합 — scale pop 스태거 + 마우스 패럴랙스(깊이별 lerp)
+    - answer 카드: 토스증권 카드 리스트 스타일 번안(흰 배경·그래픽 카드+하단 텍스트·hover 줌·화살표 칩)
     - feature 벤토 6칸: opacity+translateY(50px) 스태거 .1s*n, 그리드 실측(379/789/632)
     - KV 히어로 스크럽: 씨드 보유 모션 유지(타이포 페이드→카드 축소, radius 0 고정)
   · 이미지/영상: app/bg/ensol-*(원본 hubfs 다운로드). 히어로 25.4MB mp4 — pages 25MiB 제한 내.
@@ -35,7 +35,7 @@ img,video{display:block;max-width:100%}
 a{text-decoration:none;color:inherit}
 ul{list-style:none}
 .df{font-family:Poppins,"Pretendard Variable",Pretendard,sans-serif;letter-spacing:0}
-.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 28px}
 h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
 .gbtn{display:flex;gap:20px}
@@ -54,9 +54,14 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .rv.on{opacity:1;transform:none}
 
+/* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
+.snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;mix-blend-mode:difference}
+.snav a{display:block;width:14px;height:2px;background:rgba(255,255,255,.45);transition:width .3s,background .3s}
+.snav a.on{width:26px;background:#fff}
+
 /* ── GNB ─────────────────────────────── */
 .gnb{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .35s,box-shadow .35s}
-.gnb .in{max-width:1200px;margin:0 auto;padding:0 24px;height:72px;display:flex;align-items:center;gap:24px}
+.gnb .in{max-width:1320px;margin:0 auto;padding:0 28px;height:72px;display:flex;align-items:center;gap:24px}
 .gnb .logo{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.01em}
 .gnb .logo b{color:inherit}
 .gnb nav{display:flex;gap:6px;margin-left:auto}
@@ -81,58 +86,54 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .kv .gbtn{justify-content:center}
 .kv .gbtn a{width:225px}
 .kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}
-.kv .sub2 p{font-size:min(3.4vw,44px);font-weight:600;line-height:1.5}
-.kv .sub2 p b{color:var(--lime)}
 
-/* ── 2. 페인포인트 — 다크 + 말풍선 pop(좌표·딜레이 원본 실측) ── */
-.pain{position:relative;height:100vh;background:var(--dark);overflow:hidden}
-.pain .tx{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;z-index:2;pointer-events:none}
-.pain .tx span{color:var(--lime);font-size:22px;font-weight:500}
-.pain .tx h2{color:#fff;font-size:64px;font-weight:600;line-height:1.16;text-shadow:0 1px 10px rgba(0,0,0,.15)}
-.pain .bubbles li{position:absolute;opacity:0;transition:opacity .5s;will-change:transform}
-.pain .bubbles li .pcard{background:#17171D;border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.88);font-size:15px;line-height:1.55;padding:20px 24px;text-align:center;word-break:keep-all;box-shadow:0 20px 50px rgba(0,0,0,.35);transform:scale(0);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
-.pain .bubbles.active li{opacity:1}
-.pain .bubbles.active li .pcard{transform:scale(1)}
-.pain .bubbles li:nth-child(1){left:15.46%;top:28.33%;width:16.34vw}
-.pain .bubbles li:nth-child(2){left:8.69%;top:59.9%;width:15.31vw}
-.pain .bubbles li:nth-child(3){left:60.57%;top:65.27%;width:20.57vw}
-.pain .bubbles li:nth-child(4){left:63.12%;top:17.68%;width:15vw}
-.pain .bubbles li:nth-child(5){left:70.1%;top:33.61%;width:16.87vw}
-.pain .bubbles li:nth-child(6){left:39.37%;top:22.4%;width:15.2vw}
-.pain .bubbles li:nth-child(7){left:31.14%;top:69.8%;width:17.44vw}
-.pain .bubbles li:nth-child(1) .pcard{transition-delay:0s}
-.pain .bubbles li:nth-child(2) .pcard{transition-delay:.1s}
-.pain .bubbles li:nth-child(3) .pcard{transition-delay:.15s}
-.pain .bubbles li:nth-child(4) .pcard{transition-delay:.2s}
-.pain .bubbles li:nth-child(5) .pcard{transition-delay:.25s}
-.pain .bubbles li:nth-child(6) .pcard{transition-delay:.3s}
-.pain .bubbles li:nth-child(7) .pcard{transition-delay:.35s}
+/* ── 1.5 KV 후반 — 어두워지며 페인포인트 카드 팝(스크럽 연동) ── */
+.kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;height:100%}
+.kv .sub2 .tx span{color:var(--lime);font-size:22px;font-weight:500}
+.kv .sub2 .tx h2{color:#fff;font-size:56px;font-weight:600;line-height:1.16;text-shadow:0 1px 10px rgba(0,0,0,.15)}
+.kv .bubbles li{position:absolute;opacity:0;transition:opacity .5s;will-change:transform}
+.kv .bubbles li .pcard{background:rgba(23,23,29,.92);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.88);font-size:15px;line-height:1.55;padding:20px 24px;text-align:center;word-break:keep-all;box-shadow:0 20px 50px rgba(0,0,0,.35);transform:scale(0);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
+.kv .bubbles.active li{opacity:1}
+.kv .bubbles.active li .pcard{transform:scale(1)}
+.kv .bubbles li:nth-child(1){left:15.46%;top:22%;width:16.34vw}
+.kv .bubbles li:nth-child(2){left:8.69%;top:62%;width:15.31vw}
+.kv .bubbles li:nth-child(3){left:60.57%;top:68%;width:20.57vw}
+.kv .bubbles li:nth-child(4){left:63.12%;top:14%;width:15vw}
+.kv .bubbles li:nth-child(5){left:70.1%;top:33.61%;width:16.87vw}
+.kv .bubbles li:nth-child(6){left:39.37%;top:16%;width:15.2vw}
+.kv .bubbles li:nth-child(7){left:31.14%;top:72%;width:17.44vw}
+.kv .bubbles li:nth-child(1) .pcard{transition-delay:0s}
+.kv .bubbles li:nth-child(2) .pcard{transition-delay:.1s}
+.kv .bubbles li:nth-child(3) .pcard{transition-delay:.15s}
+.kv .bubbles li:nth-child(4) .pcard{transition-delay:.2s}
+.kv .bubbles li:nth-child(5) .pcard{transition-delay:.25s}
+.kv .bubbles li:nth-child(6) .pcard{transition-delay:.3s}
+.kv .bubbles li:nth-child(7) .pcard{transition-delay:.35s}
 
-/* ── 3. 앤서 — 배경 포토 + hover reveal 카드 3(원본 이식) ── */
-.answer{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5.2vw;padding:120px 24px;background:url('../../app/bg/ensol-bg-answer.jpg') no-repeat center/cover;background-color:var(--navy)}
-.answer h2{color:#fff;font-size:70px;font-weight:600;line-height:1}
-.answer .cards{display:flex;gap:30px}
-.answer .card{position:relative;width:360px;height:420px;overflow:hidden;cursor:pointer}
-.answer .base{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;border:1px solid rgba(255,255,255,.5);background-size:cover;background-position:center;transition:filter .35s ease}
-.answer .base b{color:#fff;font-size:30px;font-weight:600;line-height:1.2;margin-bottom:48px;text-align:center}
-.answer .reveal{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;padding:0 34px;transform:translateY(100%);transition:transform .6s ease}
-.answer .reveal b{color:#fff;font-size:34px;font-weight:600;line-height:1.28;text-align:center}
-.answer .reveal span{color:#fff;font-size:16px;font-weight:400;line-height:26px;text-align:center}
-.answer .card:hover .base{filter:brightness(.6)}
-.answer .card:hover .reveal{transform:translateY(0)}
-.answer .card:nth-child(1) .base{background-image:url('../../app/bg/ensol-card1.jpg')}
-.answer .card:nth-child(2) .base{background-image:url('../../app/bg/ensol-card3.jpg')}
-.answer .card:nth-child(3) .base{background-image:url('../../app/bg/ensol-card2.jpg')}
-.answer .card:nth-child(1) .reveal{background:var(--blue1)}
-.answer .card:nth-child(2) .reveal{background:var(--blue2)}
-.answer .card:nth-child(3) .reveal{background:var(--navy)}
+/* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
+.answer{padding:160px 0;background:#fff}
+.answer h2{text-align:center;color:var(--ink);font-size:44px;font-weight:600;line-height:1.3;margin-bottom:60px}
+.answer .cards{display:flex;gap:0}
+.answer .card{flex:1;cursor:pointer;opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.answer .cards.active .card{opacity:1;transform:none}
+.answer .cards.active .card:nth-child(2){transition-delay:.15s}
+.answer .cards.active .card:nth-child(3){transition-delay:.3s}
+.answer .ph{position:relative;height:560px;overflow:hidden;background:var(--dark)}
+.answer .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.6,.2,1)}
+.answer .card:hover .ph img{animation:thumbLive 5s ease-in-out infinite alternate}
+@keyframes thumbLive{from{transform:scale(1.05) translate(0,0)}to{transform:scale(1.09) translate(-1.6%,-1.2%)}}
+.answer .go{position:absolute;right:24px;bottom:24px;width:46px;height:46px;display:grid;place-items:center;background:rgba(255,255,255,.16);color:#fff;font-size:19px;font-weight:700;transition:background .25s,transform .25s}
+.answer .card:hover .go{background:rgba(255,255,255,.3);transform:translateX(3px)}
+.answer .card b{display:block;margin:26px 8px 12px;font-size:22px;font-weight:600;line-height:1.35;color:var(--ink)}
+.answer .card p{margin:0 8px;color:var(--g2);font-size:16px;line-height:1.6}
 
 /* ── 6. 스킬 탭 5종(원본 이식: 좌 텍스트 500px 소프트 + 우 이미지) ── */
 .skill{padding:160px 0;background:#fff}
 .skill h3{text-align:center}
 .skill .tabs{display:flex;margin:4.5vw 0 30px;width:100%}
-.skill .tabs button{flex:1;padding-bottom:14px;border:0;border-bottom:2px solid transparent;background:none;color:#C6CCD4;font-family:Poppins,Pretendard,sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
-.skill .tabs button.active{border-color:var(--ink);color:var(--ink);font-weight:600}
+.skill .tabs button{position:relative;flex:1;padding-bottom:14px;border:0;border-bottom:2px solid var(--line);background:none;color:#C6CCD4;font-family:Poppins,Pretendard,sans-serif;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
+.skill .tabs button.active{border-color:var(--line);color:var(--ink);font-weight:600}
+.skill .tabs button .prog{position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--ink)}
 .skill .pane{display:none;height:400px}
 .skill .pane.onv{display:flex}
 .skill .tb{display:flex;flex-direction:column;justify-content:center;width:500px;flex:none;padding:0 48px 0 60px;background:var(--bgsoft)}
@@ -158,55 +159,84 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .feature .bento li:nth-child(6){grid-column:1/3}
 .feature .bento img,.feature .bento video{width:100%;height:100%;object-fit:cover}
 
+/* ── 7.5 어젠다 — 다크 리스트 + 클릭 시 우측 상세 드로어 ── */
+.agenda{padding:160px 0;background:var(--dark)}
+.agenda h3{color:#fff;text-align:center}
+.agenda .asub{margin:16px 0 56px;text-align:center;color:rgba(255,255,255,.55);font-size:17px}
+.agenda .asub em{font-style:normal;color:var(--lime);font-weight:600;margin-right:10px}
+.agenda .alist{max-width:1060px;margin:0 auto}
+.agenda .alist li{display:flex;align-items:center;gap:28px;padding:26px 18px;border-bottom:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s,padding .25s}
+.agenda .alist li:first-child{border-top:1px solid rgba(255,255,255,.12)}
+.agenda .alist li:hover{background:rgba(255,255,255,.06);padding-left:26px}
+.agenda .at{flex:none;width:128px;color:var(--lime);font-size:17px;font-weight:600;white-space:nowrap}
+.agenda .am{flex:1}
+.agenda .am b{display:block;color:#fff;font-size:19px;font-weight:600;line-height:1.4}
+.agenda .am span{display:block;margin-top:4px;color:rgba(255,255,255,.5);font-size:14px}
+.agenda .chev{color:rgba(255,255,255,.45);font-size:18px;font-weight:700;transition:transform .25s,color .25s}
+.agenda .alist li:hover .chev{transform:translateX(4px);color:var(--lime)}
+/* 드로어 */
+.adim{position:fixed;inset:0;z-index:190;background:rgba(4,3,8,.55);opacity:0;pointer-events:none;transition:opacity .35s}
+.adim.on{opacity:1;pointer-events:auto}
+.adrawer{position:fixed;top:0;right:0;bottom:0;z-index:200;width:min(480px,92vw);background:#fff;padding:56px 44px;overflow-y:auto;transform:translateX(100%);transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.adrawer.on{transform:none}
+.adrawer .dclose{position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:none;color:var(--g3);font-size:26px;line-height:1;cursor:pointer;transition:color .2s}
+.adrawer .dclose:hover{color:var(--ink)}
+.adrawer .dtime{display:inline-block;background:var(--lime);color:var(--ink);font-size:14px;font-weight:700;padding:5px 10px}
+.adrawer h4{margin:18px 0 6px;font-size:26px;font-weight:600;line-height:1.35;color:var(--ink)}
+.adrawer .dspk{display:block;color:var(--g3);font-size:14px;margin-bottom:22px}
+.adrawer .dmedia{height:220px;margin-bottom:24px;background:var(--bgsoft);overflow:hidden}
+.adrawer .dmedia img,.adrawer .dmedia video{width:100%;height:100%;object-fit:cover;display:block}
+.adrawer .dtxt{color:var(--g);font-size:16px;line-height:1.65;margin-bottom:26px}
+.adrawer .dpoints li{position:relative;padding:12px 0 12px 22px;border-bottom:1px solid var(--line);color:var(--ink);font-size:15px;line-height:1.5}
+.adrawer .dpoints li:before{content:"";position:absolute;left:0;top:19px;width:8px;height:8px;background:var(--lime)}
+
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
-.register{padding:160px 0;background:var(--bgsoft)}
-.register h3{text-align:center}
-.register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 18px;font-size:22px;font-weight:600}
-.register .pt{color:#fff;background:var(--blue2);font-size:15px;font-weight:700;padding:4px 12px}
-.register .bar{width:1px;height:18px;background:var(--line)}
+.register{padding:160px 0;background:var(--dark)}
+.register h3{text-align:center;color:#fff}
+.register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 18px;font-size:22px;font-weight:600;color:#fff}
+.register .pt{color:var(--ink);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
+.register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
 .register .infos{display:flex;justify-content:center;gap:44px;margin-bottom:56px;flex-wrap:wrap}
-.register .infos li{display:flex;align-items:center;gap:12px;color:var(--g);font-size:16px}
-.register .infos .pt{background:var(--ink)}
-.register form{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.register input{height:56px;padding:0 18px;border:1px solid var(--line);background:#fff;font-size:16px;font-family:inherit}
+.register .infos li{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:16px}
+.register .infos .pt{background:rgba(255,255,255,.14);color:#fff}
+.register form{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.register input{height:56px;padding:0 18px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-family:inherit}
+.register input::placeholder{color:rgba(255,255,255,.45)}
 .register input:focus{outline:2px solid var(--lime);outline-offset:-1px;border-color:var(--lime2)}
 .register .full{grid-column:1/-1}
 .register button{grid-column:1/-1;height:64px;border:0;background:var(--lime);color:var(--ink);font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;transition:filter .2s}
 .register button:hover{filter:brightness(1.05)}
-.register .done{display:none;max-width:640px;margin:0 auto;text-align:center}
-.register .done h4{font-size:34px;font-weight:600;margin-bottom:18px}
-.register .done p{color:var(--g);font-size:17px;line-height:1.65}
+.register .done{display:none;max-width:760px;margin:0 auto;text-align:center}
+.register .done h4{font-size:34px;font-weight:600;margin-bottom:18px;color:#fff}
+.register .done p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65}
 .register.submitted form{display:none}
 .register.submitted .done{display:block}
 
 /* ── 9. FAQ 아코디언 ── */
 .faq{padding:160px 0;background:#fff}
-.faq .in{max-width:998px;margin:0 auto;padding:0 24px}
+.faq .in{max-width:1060px;margin:0 auto;padding:0 28px}
 .faq h3{text-align:center;margin-bottom:26px}
 .faq .item{border-bottom:1px solid var(--line)}
 .faq .q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:88px;padding:0;border:0;background:none;color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;line-height:28px;text-align:left;cursor:pointer}
 .faq .q .ar{flex:none;font-size:20px;transition:transform .3s}
 .faq .item.open .q .ar{transform:rotate(180deg)}
 .faq .a{height:0;overflow:hidden;color:var(--g2);font-size:16px;line-height:26px;text-align:left;transition:height .3s ease,padding .3s ease}
-.faq .item.open .a{padding-bottom:30px}
 
-/* ── 10. 프리 CTA — 다크 포토 밴드 ── */
-.free{padding:160px 0;background:url('../../app/bg/ensol-bg-free.jpg') no-repeat center/cover;background-color:var(--dark);text-align:center}
+/* ── 10. 프리 CTA — 다크 포토 밴드(배경 슬로우 드리프트) ── */
+.free{position:relative;padding:160px 0;background:var(--dark);text-align:center;overflow:hidden}
+.free .bgm{position:absolute;inset:0;background:url('../../app/bg/ensol-bg-free.jpg') no-repeat center/cover;animation:freeDrift 22s ease-in-out infinite alternate;will-change:transform}
+@keyframes freeDrift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1.5%)}}
+.free .wrap{position:relative;z-index:1}
 .free h3{color:#fff}
 .free p{margin:14px 0 56px;color:rgba(255,255,255,.6);font-size:18px;line-height:1.65}
 .free p b{color:var(--lime);font-weight:500}
 .free .gbtn{justify-content:center}
 
 /* ── 푸터 ── */
-footer{background:var(--dark);color:#fff;padding:90px 0 60px}
-footer .cols{display:flex;gap:60px}
-footer .brand{margin-right:auto}
-footer .brand b{font-size:26px;font-weight:700}
-footer .brand p{margin-top:16px;color:rgba(255,255,255,.55);font-size:15px;line-height:1.6}
-footer .col span{display:block;margin-bottom:16px;color:rgba(255,255,255,.45);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-footer .col a{display:block;margin-bottom:10px;color:rgba(255,255,255,.8);font-size:15px}
-footer .col a:hover{color:var(--lime)}
-footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);font-size:13px}
+footer{background:var(--dark);color:#fff;padding:34px 0;border-top:1px solid rgba(255,255,255,.1)}
+footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+footer .row b{font-size:19px;font-weight:700}
+footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
 .dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:min(720px,calc(100vw - 48px));padding:14px 14px 14px 26px;background:#fff;box-shadow:0 18px 50px rgba(4,3,8,.25),0 2px 8px rgba(4,3,8,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
@@ -219,15 +249,16 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 /* ── 모바일 ── */
 @media (max-width:900px){
   .gnb nav{display:none}
+  .snav{display:none}
   h3.tt{font-size:32px}
   .kv h1{font-size:9vw}
   .kv .date{font-size:18px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
-  .pain .tx h2{font-size:36px}
-  .pain .bubbles li{width:34vw !important}
-  .answer h2{font-size:44px}
-  .answer .cards{flex-direction:column}
-  .answer .card{width:min(360px,84vw)}
+  .kv .sub2 .tx h2{font-size:32px}
+  .kv .bubbles li{width:34vw !important}
+  .answer h2{font-size:30px}
+  .answer .cards{flex-direction:column;gap:28px}
+  .answer .ph{height:80vw}
   .skill .tabs{flex-wrap:wrap;gap:10px}
   .skill .tabs button{flex:none;width:calc(50% - 5px)}
   .skill .pane{height:auto;flex-direction:column}
@@ -236,17 +267,24 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
   .feature .bento{grid-template-columns:1fr;padding-top:60px}
   .feature .bento li{grid-column:auto !important;grid-row:auto !important;height:56vw !important}
   .feature .gbtn,.free .gbtn{flex-direction:column;align-items:center}
+  .agenda .alist li{gap:14px;padding:20px 6px}
+  .agenda .at{width:92px;font-size:13px}
+  .agenda .am b{font-size:16px}
+  .adrawer{padding:48px 26px}
   .register form{grid-template-columns:1fr}
   .register .infos{flex-direction:column;align-items:center;gap:14px}
-  footer .cols{flex-direction:column;gap:36px}
   .dock{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  .rv,.pain .bubbles li,.pain .bubbles li img,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
+  .free .bgm{animation:none}
+  .answer .card:hover .ph img{animation:none}
+  .rv,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
 }
 </style>
 </head>
 <body>
+
+<nav class="snav" id="snav" aria-label="Sections"></nav>
 
 <header class="gnb" id="gnb">
   <div class="in">
@@ -254,6 +292,7 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <nav>
       <a href="#answer">CIVIL NX 2026</a>
       <a href="#skill">Features</a>
+      <a href="#agenda">Agenda</a>
       <a href="#register">Webinar</a>
     </nav>
     <a class="cta" href="#register">Watch Now</a>
@@ -274,54 +313,45 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
       </div>
     </div>
     <div class="sub2" id="kvSub">
-      <p class="df">Analysis speeds up to <b>6× faster</b>.<br>CIVIL NX powered by the HYPER-S engine.</p>
+      <div class="tx">
+        <span class="df">Needs</span>
+        <h2 class="df">Beyond Your<br>Engineering Struggles.</h2>
+      </div>
+      <ul class="bubbles" id="bubbles">
+        <li><div class="pcard">A seamless workflow without jumping between multiple tools.</div></li>
+        <li><div class="pcard">Stable and crash-free overnight runs for large-scale analysis.</div></li>
+        <li><div class="pcard">Freedom to explore complex optimizations without cost concerns.</div></li>
+        <li><div class="pcard">Focused re-analysis on only what's changed to save my day.</div></li>
+        <li><div class="pcard">Faster analysis to deliver reports with confidence, not pressure.</div></li>
+        <li><div class="pcard">Instant feedback to fix errors without wasting compute time.</div></li>
+        <li><div class="pcard">Focus on engineering judgment instead of waiting for analysis process.</div></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- 2. 페인포인트 — 말풍선 pop -->
-<section class="pain" id="pain">
-  <div class="tx">
-    <span class="df">Needs</span>
-    <h2 class="df">Beyond Your<br>Engineering Struggles.</h2>
-  </div>
-  <ul class="bubbles" id="bubbles">
-    <li><div class="pcard">A seamless workflow without jumping between multiple tools.</div></li>
-    <li><div class="pcard">Stable and crash-free overnight runs for large-scale analysis.</div></li>
-    <li><div class="pcard">Freedom to explore complex optimizations without cost concerns.</div></li>
-    <li><div class="pcard">Focused re-analysis on only what's changed to save my day.</div></li>
-    <li><div class="pcard">Faster analysis to deliver reports with confidence, not pressure.</div></li>
-    <li><div class="pcard">Instant feedback to fix errors without wasting compute time.</div></li>
-    <li><div class="pcard">Focus on engineering judgment instead of waiting for analysis process.</div></li>
-  </ul>
-</section>
-
-<!-- 3. 앤서 — hover reveal 카드 3 -->
+<!-- 3. 앤서 — 그래픽 카드 3 + 하단 텍스트 -->
 <section class="answer" id="answer">
-  <h2 class="df rv">CIVIL NX 2026</h2>
-  <ul class="cards rv">
-    <li class="card">
-      <div class="base"><b class="df">Incomparable<br>Speed</b></div>
-      <div class="reveal">
+  <div class="wrap">
+    <h2 class="df rv">CIVIL NX 2026</h2>
+    <ul class="cards" id="acards">
+      <li class="card">
+        <div class="ph"><img src="../../app/bg/ensol-card1.jpg" alt="Incomparable Speed"><span class="go">→</span></div>
         <b class="df">Incomparable<br>Speed</b>
-        <span>With analysis speeds up to 6× faster than conventional solutions, project turnaround times are dramatically reduced, boosting overall productivity by more than twofold.</span>
-      </div>
-    </li>
-    <li class="card">
-      <div class="base"><b class="df">User-driven<br>Workflow</b></div>
-      <div class="reveal">
+        <p>With analysis speeds up to 6× faster than conventional solutions, project turnaround times are dramatically reduced, boosting overall productivity by more than twofold.</p>
+      </li>
+      <li class="card">
+        <div class="ph"><img src="../../app/bg/ensol-card3.jpg" alt="User-driven Workflow"><span class="go">→</span></div>
         <b class="df">User-driven<br>Workflow</b>
-        <span>Selective analysis and independent control by load case enable engineers to work exactly the way they want, delivering a truly flexible and engineer-centric workflow.</span>
-      </div>
-    </li>
-    <li class="card">
-      <div class="base"><b class="df">Unrivaled<br>Analysis</b></div>
-      <div class="reveal">
+        <p>Selective analysis and independent control by load case enable engineers to work exactly the way they want, delivering a truly flexible and engineer-centric workflow.</p>
+      </li>
+      <li class="card">
+        <div class="ph"><img src="../../app/bg/ensol-card2.jpg" alt="Unrivaled Analysis"><span class="go">→</span></div>
         <b class="df">Unrivaled<br>Analysis</b>
-        <span>Advanced features such as buffeting analysis and simultaneous analysis systems, unavailable in other software, establish a new benchmark for construction FEM.</span>
-      </div>
-    </li>
-  </ul>
+        <p>Advanced features such as buffeting analysis and simultaneous analysis systems, unavailable in other software, establish a new benchmark for construction FEM.</p>
+      </li>
+    </ul>
+  </div>
 </section>
 
 <!-- 6. 스킬 탭 5종 -->
@@ -396,6 +426,26 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
   </div>
 </section>
 
+<!-- 7.5 어젠다 — 리스트 + 사이드 드로어 -->
+<section class="agenda" id="agenda">
+  <div class="wrap">
+    <h3 class="tt df rv">Webinar Agenda</h3>
+    <p class="asub rv"><em>Live</em>March 18, 2026 · 9:00 - 10:00 (GMT)</p>
+    <ul class="alist rv" id="alist"></ul>
+  </div>
+</section>
+
+<div class="adim" id="adim"></div>
+<aside class="adrawer" id="adrawer" aria-hidden="true">
+  <button class="dclose" id="adclose" aria-label="Close">×</button>
+  <span class="dtime df" id="adtime"></span>
+  <h4 class="df" id="adtitle"></h4>
+  <span class="dspk" id="adspk"></span>
+  <div class="dmedia" id="admedia"></div>
+  <p class="dtxt" id="adtxt"></p>
+  <ul class="dpoints" id="adpoints"></ul>
+</aside>
+
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
 <section class="register" id="register">
   <div class="wrap">
@@ -403,13 +453,15 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     <div class="time rv"><span class="pt">Live</span><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
     <ul class="infos rv">
       <li><span class="pt">Registration</span>Product Leaflet · 14-Day Replay Pass</li>
-      <li><span class="pt">Attendance</span>Release Note · Technical White Paper</li>
     </ul>
     <form id="regForm" class="rv" autocomplete="off">
       <input type="text" placeholder="Name" required>
       <input type="email" placeholder="Email" required>
       <input type="text" placeholder="Company" required>
-      <input type="text" class="full" placeholder="Job Title">
+      <input type="text" placeholder="Job Title">
+      <input type="tel" placeholder="Phone Number">
+      <input type="text" placeholder="Country / Region" required>
+      <input type="text" class="full" placeholder="Industry (e.g. Bridge, Rail, Plant)">
       <button type="submit">Register now — get the CIVIL NX 2026 Leaflet</button>
     </form>
     <div class="done">
@@ -454,9 +506,10 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 
 <!-- 10. 프리 CTA -->
 <section class="free" id="free">
+  <div class="bgm" aria-hidden="true"></div>
   <div class="wrap">
     <h3 class="tt df rv">The Best Time to<br>Move Forward</h3>
-    <p class="rv">The next generation of structural analysis is finally here. Adopt CIVIL NX 2026 today<br>to access outstanding performance and <b>up to 6x faster analysis speeds</b>.<br>Book a quick expert chat and experience the massive difference right away.</p>
+    <p class="rv">Adopt CIVIL NX 2026 today to access outstanding performance and <b>up to 6x faster analysis speeds</b>.<br>Book a quick expert chat and experience the massive difference right away.</p>
     <div class="gbtn rv">
       <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
     </div>
@@ -465,25 +518,10 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 
 <footer>
   <div class="wrap">
-    <div class="cols">
-      <div class="brand">
-        <b class="df">MIDAS</b>
-        <p>CIVIL NX 2026 Release with HYPER-S<br>Live Webinar &amp; On-Demand · March 18, 2026</p>
-      </div>
-      <div class="col">
-        <span>Main Products</span>
-        <a href="#top">CIVIL NX</a><a href="#top">GEN</a><a href="#top">GTS NX</a><a href="#top">FEA NX</a><a href="#top">iGEN</a><a href="#top">SOILWORKS for FLIP</a>
-      </div>
-      <div class="col">
-        <span>Resource</span>
-        <a href="#register">Event</a><a href="#register">Webinar</a><a href="#feature">Product Leaflet</a>
-      </div>
-      <div class="col">
-        <span>Join</span>
-        <a href="#register">Registration</a><a href="#register">1:1 Consultation</a>
-      </div>
+    <div class="row">
+      <b class="df">MIDAS</b>
+      <span>© MIDAS IT. All rights reserved.</span>
     </div>
-    <div class="base">© MIDAS IT. All rights reserved.</div>
   </div>
 </footer>
 
@@ -505,11 +543,29 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
 
   var gnb = document.getElementById('gnb');
 
+  // 좌측 섹션 인디케이터
+  var SNAV_IDS = ['top', 'answer', 'skill', 'feature', 'agenda', 'register', 'faq', 'free'];
+  var snav = document.getElementById('snav');
+  SNAV_IDS.forEach(function(id){
+    var a = document.createElement('a');
+    a.href = '#' + id;
+    a.setAttribute('aria-label', id);
+    snav.appendChild(a);
+  });
+  var snavLinks = snav.children;
+  function snavTick(){
+    var cur = 0, mid = scrollY + vh * 0.5;
+    for (var i = 0; i < SNAV_IDS.length; i++){
+      var sec = document.getElementById(SNAV_IDS[i]);
+      if (sec && sec.offsetTop <= mid) cur = i;
+    }
+    for (var j = 0; j < snavLinks.length; j++) snavLinks[j].classList.toggle('on', j === cur);
+  }
+
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
   var kv = document.querySelector('.kv');
   var kvIn = document.getElementById('kvIn');
   var kvSub = document.getElementById('kvSub');
-  var kvPhoto = document.getElementById('kvPhoto');
   var kvOv = document.getElementById('kvOv');
   function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }
   function kvScrub(){
@@ -520,11 +576,13 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
     var q = clamp01((p - 0.45) / 0.35);
     var e = 1 - Math.pow(1 - q, 3);
-    kvPhoto.style.transform = 'scale(' + (1 - 0.12 * e) + ')';
-    kvOv.style.opacity = String(0.45 + 0.3 * e);
-    var s = clamp01((p - 0.58) / 0.22), se = 1 - Math.pow(1 - s, 3);
+    kvOv.style.opacity = String(0.45 + 0.4 * e); /* 축소 없이 풀블리드 유지, 어두워지며 카드 무대 준비 */
+    var s = clamp01((p - 0.55) / 0.2), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
+    var bl = document.getElementById('bubbles');
+    if (p > 0.62) bl.classList.add('active');
+    else if (p < 0.5) bl.classList.remove('active');
   }
 
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
@@ -543,6 +601,7 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     requestAnimationFrame(function(){
       ticking = false;
       gnb.classList.toggle('solid', scrollY > vh * 0.9);
+      snavTick();
       if (!reduce) kvScrub();
       dockTick();
     });
@@ -550,8 +609,8 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // 2. 페인포인트 카드 마우스 패럴랙스 — 깊이 계수별로 커서 반대 방향 드리프트(lerp)
-  var painSec = document.getElementById('pain');
+  // 1.5 페인포인트 카드 마우스 패럴랙스 — 깊이 계수별로 커서 반대 방향 드리프트(lerp)
+  var painSec = kv.querySelector('.stick');
   var pcards = painSec.querySelectorAll('.bubbles li');
   if (!reduce) {
     var pd = [18, 26, 22, 20, 30, 16, 24];
@@ -582,20 +641,97 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     });
   }, { threshold: 0.12 });
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
-  io.observe(document.getElementById('bubbles'));
+  io.observe(document.getElementById('acards'));
   io.observe(document.getElementById('bento'));
 
-  // 6. 스킬 탭
+  // 7.5 어젠다 — 리스트 렌더 + 클릭 시 우측 드로어(내용은 실측 카피 재구성)
+  var AGENDA = [
+    { t: '9:00 ~ 9:10', title: 'Opening — CIVIL NX 2026 with HYPER-S', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-bg-answer.jpg',
+      txt: 'The next generation of structural analysis: what changes with the CIVIL NX 2026 release and the HYPER-S analysis engine.',
+      pts: ['Release overview & webinar guide', 'HYPER-S engine at a glance', 'All-Access Pass benefits'] },
+    { t: '9:10 ~ 9:25', title: 'Incomparable Speed — up to 6× Faster', spk: 'HYPER-S Engine Team', vid: '../../app/bg/ensol-graph.mp4',
+      txt: 'By focusing on only the modified components, CIVIL NX keeps your workflow moving and ensures faster results — the usual 14-hour analysis time reduced by 70% with selective re-analysis.',
+      pts: ['Up to 6× faster analysis speed', 'Selective re-analysis by load case', 'Simultaneous parallel processing'] },
+    { t: '9:25 ~ 9:45', title: 'Boundless Capabilities Deep-Dive', spk: 'Structural Solution Engineer', img: '../../app/bg/ensol-skill1.jpg',
+      txt: 'Four advanced features that establish a new benchmark for construction FEM, demonstrated on real project models.',
+      pts: ['Virtual Beam Design', 'Curved Rail Structure Interaction', 'Buckling Analysis with Construction Stage', 'Pushover Analysis Using Fiber Hinge Type'] },
+    { t: '9:45 ~ 9:55', title: 'Roadmap — Advanced Analysis +', spk: 'MIDAS CIVIL Product Team', img: '../../app/bg/ensol-skill5.jpg',
+      txt: 'Coming this September: high-end features setting a new standard in engineering. Be part of the evolution toward a more powerful CIVIL NX.',
+      pts: ['Multi P-delta analysis', 'Buffeting analysis', 'Global localization design standards', 'AI Assistant'] },
+    { t: '9:55 ~ 10:00', title: 'Q&A & Closing', spk: 'All Speakers', img: '../../app/bg/ensol-bg-free.jpg',
+      txt: 'Live questions from attendees, plus how to get the Release Note and Technical White Paper with your attendance.',
+      pts: ['Live Q&A', 'Release Note · Technical White Paper guide'] }
+  ];
+  var alist = document.getElementById('alist');
+  AGENDA.forEach(function(a, i){
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="at df">' + a.t + '</span><div class="am"><b>' + a.title + '</b><span>' + a.spk + '</span></div><span class="chev">→</span>';
+    li.addEventListener('click', function(){ openDrawer(i); });
+    alist.appendChild(li);
+  });
+  var adrawer = document.getElementById('adrawer'), adim = document.getElementById('adim');
+  function openDrawer(i){
+    var a = AGENDA[i];
+    document.getElementById('adtime').textContent = a.t + ' (GMT)';
+    document.getElementById('adtitle').textContent = a.title;
+    document.getElementById('adspk').textContent = a.spk;
+    var dm = document.getElementById('admedia');
+    dm.innerHTML = a.vid
+      ? '<video src="' + a.vid + '" muted autoplay loop playsinline></video>'
+      : '<img src="' + a.img + '" alt="">';
+    document.getElementById('adtxt').textContent = a.txt;
+    document.getElementById('adpoints').innerHTML = a.pts.map(function(p){ return '<li>' + p + '</li>'; }).join('');
+    adrawer.classList.add('on'); adim.classList.add('on');
+    adrawer.setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer(){
+    adrawer.classList.remove('on'); adim.classList.remove('on');
+    adrawer.setAttribute('aria-hidden', 'true');
+  }
+  adim.addEventListener('click', closeDrawer);
+  document.getElementById('adclose').addEventListener('click', closeDrawer);
+  addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDrawer(); });
+
+  // 6. 스킬 탭 — 하단 프로그레스가 차면 자동으로 다음 탭
   var tabs = document.getElementById('skillTabs').children;
   var panes = document.getElementById('skillPanes').children;
+  var TAB_MS = 6000, curTab = 0, tabStart = performance.now(), skillVisible = false;
+  var progs = [];
   Array.prototype.forEach.call(tabs, function(btn, i){
-    btn.addEventListener('click', function(){
-      for (var j = 0; j < tabs.length; j++){
-        tabs[j].classList.toggle('active', j === i);
-        panes[j].classList.toggle('onv', j === i);
-      }
-    });
+    var pr = document.createElement('i');
+    pr.className = 'prog';
+    btn.appendChild(pr);
+    progs.push(pr);
+    btn.addEventListener('click', function(){ setTab(i); });
   });
+  function setTab(i){
+    curTab = i;
+    tabStart = performance.now();
+    for (var j = 0; j < tabs.length; j++){
+      tabs[j].classList.toggle('active', j === i);
+      panes[j].classList.toggle('onv', j === i);
+      progs[j].style.width = '0';
+    }
+  }
+  var skillSec = document.getElementById('skill');
+  new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      skillVisible = en.isIntersecting;
+      if (skillVisible) tabStart = performance.now();
+    });
+  }, { threshold: 0.35 }).observe(skillSec);
+  if (!reduce) {
+    (function tabLoop(){
+      if (skillVisible) {
+        var r = (performance.now() - tabStart) / TAB_MS;
+        if (r >= 1) setTab((curTab + 1) % tabs.length);
+        else progs[curTab].style.width = (r * 100).toFixed(2) + '%';
+      }
+      requestAnimationFrame(tabLoop);
+    })();
+  } else {
+    progs[0].style.width = '100%';
+  }
 
   // 8. 폼 → 감사 메시지 (정적 시안: 전송 없음)
   document.getElementById('regForm').addEventListener('submit', function(e){
@@ -608,7 +744,7 @@ footer .base{margin-top:70px;padding-top:24px;border-top:1px solid rgba(255,255,
     var q = item.querySelector('.q'), a = item.querySelector('.a');
     q.addEventListener('click', function(){
       var open = item.classList.toggle('open');
-      a.style.height = open ? a.scrollHeight + 'px' : '0';
+      a.style.height = open ? (a.scrollHeight + 30) + 'px' : '0';
     });
   });
 })();
