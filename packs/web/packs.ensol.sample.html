@@ -242,8 +242,10 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 #faqList.rv.on .item:nth-child(5){transition-delay:.24s}
 #faqList.rv.on .item:nth-child(6){transition-delay:.3s}
 .faq .item:first-child{border-top:1px solid var(--line)}
-.faq .q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:88px;padding:0;border:0;background:none;color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;line-height:28px;text-align:left;cursor:pointer}
-.faq .q .ar{flex:none;display:grid;place-items:center;color:var(--g2);transition:transform .3s}
+.faq .q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:88px;padding:0;border:0;background:none;color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;line-height:28px;text-align:left;cursor:pointer;transition:color .25s}
+.faq .q:hover,.faq .item.open .q{color:var(--lime)}
+.faq .q .ar{flex:none;display:grid;place-items:center;color:var(--g2);transition:transform .3s,color .25s}
+.faq .q:hover .ar,.faq .item.open .ar{color:var(--lime)}
 .faq .item.open .q .ar{transform:rotate(180deg)}
 .faq .a{height:0;overflow:hidden;color:var(--g2);font-size:16px;line-height:26px;text-align:left;transition:height .3s ease,padding .3s ease}
 
