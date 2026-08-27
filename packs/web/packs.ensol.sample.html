@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>엔솔 MBM — 토스 스타일 랜딩 시안</title>
-<!-- 시안: 엔솔 MBM v5 — toss.im/service/create-an-account 로컬 미러 실측 재현(디자인+인터랙션).
-     실측값: H1 56px/700/lh1.28 #1C1F25 · 카드 radius 52 · pill 버튼 radius 136/bg #F2F4F7/h44 ·
-     앱다운로드 버튼 radius 12/bg rgba(7,25,76,.05) · GNB 메뉴 16px #333840 · 히어로 풀와이드 포토(1530×700급, radius 24)
-     구조: 좌 라벨+H1/우 설명 히어로 → 넘버 pill+좌 sticky 타이틀 섹션(01·02) → 회전 카드 캐러셀(03)
-     → 카드 스택 비주얼(04) → 기록 수치 → 지원 정의 리스트 → 법적 아코디언 → 더 읽어보기 → 푸터.
-     인터랙션: 스크롤 리빌 스태거·좌 타이틀 sticky·캐러셀 스크롤스냅+화살표·pill hover·아코디언·카운트업. -->
+<!-- 시안: 엔솔 MBM v5.1 — toss.im/service/create-an-account 로컬 미러 실측 재현(디자인+인터랙션).
+     [실측 — Framer 사이트, 1440 뷰포트 기준]
+     · 컨테이너: 좌우 108px 마진(콘텐츠 1224px) · 히어로 이미지 1530×700 브레이크아웃(-45 오버행, radius 0)
+     · 히어로 모션: 래퍼 overflow:hidden + 이미지 scale(1.25)·transform-origin 50% 58%·translateY 스크롤 연동(패럴랙스, 인라인 갱신)
+     · 좌 타이틀: 40px/700, position:sticky top:100px, 좌 컬럼 400px · H1 56px/700/lh1.28 #1C1F25
+     · 리빌: 인라인 opacity:0 + translateY(16px) (+filter:blur 예열) → 해제. Framer 스프링 ≈ .7s cubic-bezier(.2,.6,.2,1)
+     · 카드 목업 radius 52 · pill 버튼 radius 136/bg #F2F4F7/h44 · 앱다운로드 radius 12/bg rgba(7,25,76,.05)
+     · 03 캐러셀: 원호(arc) 배치 — 카드들이 원판 위 13° 간격 회전 배치, 화살표로 원판 스텝 회전. 카드 ~440×470
+     구조: 좌 라벨+H1/우 설명 히어로 → 01·02 좌 sticky 넘버 섹션 → 03 원호 캐러셀 → 04 부채꼴 스택
+     → 기록 수치 → 지원 정의 리스트 → 법적 ＋아코디언 → 더 읽어보기 → 푸터. -->
 <style>
 :root{
   --ink:#1C1F25; --g1:#333840; --g2:#4E5968; --g3:#6B7684; --g4:#8B95A1; --g5:#B0B8C1;
@@ -23,10 +27,10 @@ body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sa
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
-.wrap{width:min(1200px,calc(100vw - 96px));margin:0 auto}
+.wrap{width:min(1224px,calc(100vw - 96px));margin:0 auto}
 
-/* 리빌 — toss: opacity+translateY(20px) 스태거 */
-.rv{opacity:0;transform:translateY(20px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
+/* 리빌 — 실측: opacity 0 + translateY(16px) → 해제, Framer 스프링 근사 */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .rv.on{opacity:1;transform:none}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
 
@@ -51,16 +55,20 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .hero .lbl{font-size:15px;font-weight:600;color:var(--g3)}
 .hero h1{margin-top:16px;font-size:clamp(36px,3.9vw,56px);line-height:1.28;font-weight:700;letter-spacing:-.02em;word-break:keep-all}
 .hero .desc{max-width:420px;font-size:15px;line-height:1.65;color:var(--g2);font-weight:500;word-break:keep-all;padding-bottom:6px}
-.hero .ph{margin-top:44px;height:min(46vw,700px);border-radius:24px;overflow:hidden;background:var(--bg2)}
-.hero .ph img{width:100%;height:100%;object-fit:cover}
+/* 실측: 이미지가 컨테이너를 깨고 나가는 브레이크아웃(1530/1440 ≈ 106vw, radius 0)
+   + 패럴랙스 — 이미지 scale(1.25)·origin 50% 58%, translateY는 JS가 스크롤 연동 갱신 */
+.hero .ph{margin:44px calc(50% - 53vw) 0;height:min(48.6vw,700px);overflow:hidden;background:var(--bg2);position:relative}
+.hero .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 58%;
+  transform-origin:50% 58%;will-change:transform;transform:scale(1.25)}
 
 /* ── 넘버 섹션 공통 — 실측: 좌 sticky(넘버 pill+28~34px 타이틀) / 우 콘텐츠 ── */
 .nsec{padding:170px 0}
-.nsec .cols{display:grid;grid-template-columns:1fr 1.15fr;gap:60px;align-items:start}
-.nsec .left{position:sticky;top:120px}
+/* 실측: 좌 컬럼 400px 고정, 타이틀 40px, sticky top 100px */
+.nsec .cols{display:grid;grid-template-columns:400px 1fr;gap:100px;align-items:start}
+.nsec .left{position:sticky;top:100px}
 .npill{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;
   background:#fff;box-shadow:0 2px 10px rgba(3,7,18,.10);font-size:13px;font-weight:700;color:var(--g3)}
-.nsec .left h2{margin-top:22px;font-size:clamp(26px,2.5vw,34px);line-height:1.45;font-weight:700;letter-spacing:-.02em;word-break:keep-all}
+.nsec .left h2{margin-top:22px;font-size:clamp(28px,2.8vw,40px);line-height:1.42;font-weight:700;letter-spacing:-.02em;word-break:keep-all}
 
 /* 서브블록(01) — 소제목+설명+pill 버튼+라운드 52 카드 목업 */
 .blk{padding:34px 0 56px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 376px;gap:36px;align-items:center}
@@ -96,23 +104,20 @@ button{font:inherit;background:none;border:0;cursor:pointer;color:inherit}
 .orb:after{content:"";position:absolute;left:50%;bottom:-170px;transform:translateX(-50%);width:160vw;height:340px;
   background:radial-gradient(50% 100% at 50% 0%,#fff 60%,rgba(255,255,255,0) 100%);border-radius:50% 50% 0 0;pointer-events:none}
 
-/* ── 캐러셀(03) — 실측: 타이틀+우 설명 → 회전 라운드 카드 가로 스크롤+←→ ── */
-.car .head{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:start}
-.car .head h2{font-size:clamp(26px,2.5vw,34px);line-height:1.45;font-weight:700;letter-spacing:-.02em;word-break:keep-all;margin-top:22px}
+/* ── 캐러셀(03) — 실측: 원호(arc) 배치 캐러셀. 카드들이 거대 원판 위 13° 간격으로 얹혀
+   좌우로 기울고, 화살표가 원판을 스텝 회전. 카드 ~440×470, radius 28 ── */
+.car .head{display:grid;grid-template-columns:400px 1fr;gap:100px;align-items:start}
+.car .head h2{font-size:clamp(28px,2.8vw,40px);line-height:1.42;font-weight:700;letter-spacing:-.02em;word-break:keep-all;margin-top:22px}
 .car .head .tx{font-size:15px;line-height:1.85;color:var(--g2);word-break:keep-all;padding-top:56px}
-.rail{margin-top:64px;display:flex;gap:34px;overflow-x:auto;scroll-snap-type:x mandatory;padding:30px 8px 40px;
-  scrollbar-width:none}
-.rail::-webkit-scrollbar{display:none}
-.ccard{flex:0 0 300px;scroll-snap-align:center;border-radius:28px;padding:26px 26px 30px;position:relative;
-  transition:transform .5s cubic-bezier(.2,.6,.2,1)}
-.ccard:nth-child(odd){transform:rotate(-3deg)}
-.ccard:nth-child(even){transform:rotate(2.5deg)}
-.ccard:hover{transform:rotate(0) translateY(-6px)}
-.ccard .vis{height:190px;display:grid;place-items:center;font-size:56px}
-.ccard i{font-style:normal;display:block;font-size:13px;font-weight:700;color:var(--g3)}
-.ccard b{display:block;margin-top:4px;font-size:20px;font-weight:800;letter-spacing:-.015em}
-.ccard.c1{background:#F3EFE7}.ccard.c2{background:#EEF1F5}.ccard.c3{background:#E9F0FB}.ccard.c4{background:#F6F0E9}
-.car .navs{display:flex;gap:10px;justify-content:center}
+.arc{margin-top:40px;position:relative;height:560px;overflow:hidden}
+.arc .disc{position:absolute;left:50%;top:0;width:0;height:0;transition:transform .7s cubic-bezier(.2,.6,.2,1);will-change:transform}
+.ccard{position:absolute;left:0;top:0;width:440px;height:470px;margin-left:-220px;border-radius:28px;padding:30px 32px;
+  transform-origin:50% 2100px}   /* 원판 반지름 2100px — 13° 간격에서 카드 간 호 간격 ≈ 476px(겹침 없음) */
+.ccard .vis{height:300px;display:grid;place-items:center;font-size:84px}
+.ccard i{font-style:normal;display:block;font-size:14px;font-weight:700;color:var(--g3)}
+.ccard b{display:block;margin-top:4px;font-size:24px;font-weight:800;letter-spacing:-.015em}
+.ccard.c1{background:#F3EFE7}.ccard.c2{background:#EEF1F5}.ccard.c3{background:#E9F0FB}.ccard.c4{background:#F6F0E9}.ccard.c5{background:#EFF2EC}
+.car .navs{display:flex;gap:10px;justify-content:center;margin-top:8px}
 .car .navs button{width:40px;height:40px;border-radius:50%;background:var(--bg2);display:grid;place-items:center;font-size:16px;transition:background .2s}
 .car .navs button:hover{background:var(--line)}
 
@@ -197,8 +202,9 @@ footer .copy{margin-top:48px;padding-top:22px;border-top:1px solid var(--line);d
   .blk{grid-template-columns:1fr;padding:28px 0 40px}
   .mock{width:100%;max-width:376px}
   .car .head .tx{padding-top:0}
-  .rail{gap:22px}
-  .ccard{flex-basis:250px}
+  .arc{height:420px}
+  .ccard{width:300px;height:340px;margin-left:-150px;padding:22px}
+  .ccard .vis{height:190px;font-size:60px}
   .stack{height:240px}
   .stack span{width:140px;height:210px}
   .rec{padding:100px 0}
@@ -318,13 +324,16 @@ footer .copy{margin-top:48px;padding-top:22px;border-top:1px solid var(--line);d
       키노트는 물론 데모·핸즈온, 상담 부스 등 종류도 다양해요.</p>
     </div>
   </div>
-  <div class="wrap">
-    <div class="rail rv" id="rail">
+  <div class="arc rv" id="arc">
+    <div class="disc" id="disc">
       <div class="ccard c1"><div class="vis">🎤</div><i>13:30 시작</i><b>키노트</b></div>
       <div class="ccard c2"><div class="vis">🖥️</div><i>상시 운영</i><b>라이브 데모</b></div>
       <div class="ccard c3"><div class="vis">🛠️</div><i>15:20 시작</i><b>핸즈온</b></div>
       <div class="ccard c4"><div class="vis">💬</div><i>상시 운영</i><b>상담 부스</b></div>
+      <div class="ccard c5"><div class="vis">🎁</div><i>퇴장 시</i><b>웰컴 키트</b></div>
     </div>
+  </div>
+  <div class="wrap">
     <div class="navs rv"><button id="cprev" aria-label="이전">←</button><button id="cnext" aria-label="다음">→</button></div>
   </div>
 </section>
@@ -459,15 +468,30 @@ footer .copy{margin-top:48px;padding-top:22px;border-top:1px solid var(--line);d
     document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('on'); });
   }
 
-  /* GNB 그림자 */
+  /* GNB 그림자 + 히어로 패럴랙스(실측: 이미지 scale 1.25 고정, translateY 스크롤 연동 ≈ -0.096 비율) */
   var gnb = document.getElementById('gnb');
-  function gtick(){ gnb.classList.toggle('solid', scrollY > 8); }
+  var pimg = document.querySelector('.hero .ph img');
+  var pwrap = document.querySelector('.hero .ph');
+  function gtick(){
+    gnb.classList.toggle('solid', scrollY > 8);
+    /* 실측 선형식: scroll 0 → +29px, 420 → -11px (기울기 -0.096). 히어로가 화면에 있을 때만 갱신 */
+    if (pimg && !reduce && pwrap.getBoundingClientRect().bottom > 0) {
+      pimg.style.transform = 'translateY(' + (29 - scrollY * 0.096).toFixed(1) + 'px) scale(1.25)';
+    }
+  }
   addEventListener('scroll', gtick, { passive: true }); gtick();
 
-  /* 캐러셀 — 스크롤 스냅 + 화살표 */
-  var rail = document.getElementById('rail');
-  document.getElementById('cprev').onclick = function(){ rail.scrollBy({ left: -334, behavior: 'smooth' }); };
-  document.getElementById('cnext').onclick = function(){ rail.scrollBy({ left: 334, behavior: 'smooth' }); };
+  /* 원호 캐러셀 — 실측: 카드들이 원판 위 13° 간격 배치, 화살표로 원판 스텝 회전 */
+  var disc = document.getElementById('disc');
+  var ccards = disc.children, STEP = 13, R = 1400, cur = 0;
+  for (var ci = 0; ci < ccards.length; ci++) {
+    ccards[ci].style.transform = 'rotate(' + (ci * STEP) + 'deg) translateY(60px)';
+  }
+  var maxCur = ccards.length - 1;
+  function spin(){ disc.style.transform = 'rotate(' + (-cur * STEP) + 'deg)'; }
+  document.getElementById('cprev').onclick = function(){ cur = Math.max(0, cur - 1); spin(); };
+  document.getElementById('cnext').onclick = function(){ cur = Math.min(maxCur, cur + 1); spin(); };
+  spin();
 
   /* 법적 안내 아코디언 */
   document.querySelectorAll('.legal .row').forEach(function(row){
