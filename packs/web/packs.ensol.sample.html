@@ -54,6 +54,9 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 리빌 */
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .rv.on{opacity:1;transform:none}
+/* 타이틀 단어 스태거 등장(toss.im 참고) */
+h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
+h2.wt.active .w{opacity:1;transform:none;filter:none}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
 .snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px}
@@ -211,6 +214,7 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 @keyframes regG1{from{transform:translate(0,0) rotate(0deg) scale(1)}to{transform:translate(-180px,140px) rotate(16deg) scale(1.12)}}
 @keyframes regG2{from{transform:translate(0,0) scale(1)}to{transform:translate(-220px,-160px) scale(1.28)}}
 @keyframes regG3{from{transform:translate(0,0) scale(1)}to{transform:translate(-160px,200px) scale(1.2)}}
+.register canvas{position:absolute;inset:0;display:block;opacity:.4}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
@@ -253,10 +257,10 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 .free .gbtn{justify-content:center}
 
 /* ── 푸터 ── */
-footer{position:relative;z-index:2;margin-top:-86px;padding:0 0 34px;background:transparent;color:#fff}
-footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px;opacity:.62}
+footer{background:var(--dark);color:#fff;padding:34px 0}
+footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px}
 footer .row b{font-size:19px;font-weight:700}
-footer .row span{color:rgba(255,255,255,.6);font-size:13px}
+footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
 .dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:min(720px,calc(100vw - 48px));padding:14px 14px 14px 26px;background:#fff;box-shadow:0 18px 50px rgba(4,3,8,.25),0 2px 8px rgba(4,3,8,.08);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
@@ -299,7 +303,7 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
 @media (prefers-reduced-motion:reduce){
   .register .glow i{animation:none}
   .answer .card > img{animation:none;transform:none}
-  .rv,.kv .ent,.kv .bubbles li,.answer .card,.feature .bento li{opacity:1 !important;transform:none !important;transition:none !important}
+  .rv,.kv .ent,.kv .bubbles li,.answer .card,.feature .bento li,h2.wt .w{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
 </style>
 </head>
@@ -479,6 +483,7 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
 <section class="register" id="register">
   <div class="glow" aria-hidden="true"><i class="g1"></i><i class="g2"></i><i class="g3"></i></div>
+  <canvas id="wave2" aria-hidden="true"></canvas>
   <div class="wrap">
     <h2 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h2>
     <div class="time rv"><span class="pt">Live</span><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
@@ -547,7 +552,7 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
 <footer>
   <div class="wrap">
     <div class="row">
-      <b class="df">MIDAS</b>
+      <b class="df">MIDAS Group</b>
       <span>© MIDAS IT. All rights reserved.</span>
     </div>
   </div>
@@ -663,6 +668,32 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
     });
   }
 
+  // 섹션 타이틀 — 단어 단위 스태거 등장(toss.im 참고): rv 제거 → wt + 단어 span 분해
+  document.querySelectorAll('h2.tt.rv, .answer h2.rv').forEach(function(h2){
+    h2.classList.remove('rv');
+    h2.classList.add('wt');
+    var nodes = Array.prototype.slice.call(h2.childNodes);
+    var wi = 0;
+    nodes.forEach(function(nd){
+      if (nd.nodeType !== 3) return; /* <br> 등 요소는 그대로 유지 */
+      var frag = document.createDocumentFragment();
+      var parts = nd.textContent.split(/\s+/);
+      var added = false;
+      parts.forEach(function(word){
+        if (!word) return;
+        if (added) frag.appendChild(document.createTextNode(' '));
+        var sp = document.createElement('span');
+        sp.className = 'w';
+        sp.textContent = word;
+        sp.style.transitionDelay = (wi * 0.07) + 's';
+        wi++;
+        frag.appendChild(sp);
+        added = true;
+      });
+      h2.replaceChild(frag, nd);
+    });
+  });
+
   // 리빌 + 말풍선 + 벤토 IO
   var io = new IntersectionObserver(function(es){
     es.forEach(function(en){
@@ -672,6 +703,7 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
     });
   }, { threshold: 0.12 });
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('h2.wt').forEach(function(el){ io.observe(el); });
   io.observe(document.getElementById('acards'));
   io.observe(document.getElementById('bento'));
 
@@ -770,27 +802,25 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
     document.getElementById('register').classList.add('submitted');
   });
 
-  // 10. 프리 CTA — 데이터 지형 웨이브(퍼스펙티브 점 그리드 + 마우스 융기 + 핀 마커)
-  var wcv = document.getElementById('wave');
-  var freeSec = document.getElementById('free');
-  (function(){
-    if (!wcv) return;
-    var ctx2 = wcv.getContext('2d');
+  // 10. 데이터 지형 웨이브(퍼스펙티브 점 그리드 + 마우스 융기 + 무빙 그라데이션) — 공용
+  function initWave(cv, sec, horizonRatio){
+    if (!cv) return;
+    var ctx2 = cv.getContext('2d');
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var W = 0, H = 0, running = false;
     function wResize(){
-      W = freeSec.clientWidth; H = freeSec.clientHeight;
-      wcv.width = W * dpr; wcv.height = H * dpr;
-      wcv.style.width = W + 'px'; wcv.style.height = H + 'px';
+      W = sec.clientWidth; H = sec.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      cv.style.width = W + 'px'; cv.style.height = H + 'px';
       ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     wResize(); addEventListener('resize', wResize);
     var mx = -1e4, my = -1e4, smx = -1e4, smy = -1e4;
-    freeSec.addEventListener('mousemove', function(e){
-      var r = wcv.getBoundingClientRect();
+    sec.addEventListener('mousemove', function(e){
+      var r = cv.getBoundingClientRect();
       mx = e.clientX - r.left; my = e.clientY - r.top;
     });
-    freeSec.addEventListener('mouseleave', function(){ mx = -1e4; my = -1e4; });
+    sec.addEventListener('mouseleave', function(){ mx = -1e4; my = -1e4; });
     var ROWS = 44, COLS = 130;
     var acc = [];
     for (var i = 0; i < ROWS * COLS; i++){
@@ -804,7 +834,7 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
            + Math.sin(x * 8.3 + t * .22 + Math.sin(d * 7 + t * .3) * 2) * .14
            + Math.sin((x + d * 12) * 2.6 - t * .3) * .16;
     }
-    function rowY(d){ return H * .16 + Math.pow(d, 1.35) * (H - H * .16 - 30); }
+    function rowY(d){ return H * horizonRatio + Math.pow(d, 1.35) * (H - H * horizonRatio - 30); }
     function rowAmp(d){ return 18 + 150 * Math.pow(d, 1.6); }
     function colX(u, d){ return W / 2 + (u - .5) * W * (0.72 + (.25 + Math.pow(d, 1.55) * .75) * 0.6); }
     var t0 = performance.now();
@@ -855,9 +885,11 @@ footer .row span{color:rgba(255,255,255,.6);font-size:13px}
           running = en.isIntersecting;
           if (running && !was) requestAnimationFrame(wDraw);
         });
-      }, { threshold: .05 }).observe(freeSec);
+      }, { threshold: .05 }).observe(sec);
     }
-  })();
+  }
+  initWave(document.getElementById('wave'), document.getElementById('free'), .16);
+  initWave(document.getElementById('wave2'), document.getElementById('register'), .55);
 
   // 9. FAQ 아코디언
   document.querySelectorAll('#faqList .item').forEach(function(item){
