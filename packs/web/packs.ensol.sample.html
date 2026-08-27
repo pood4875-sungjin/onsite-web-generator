@@ -8,7 +8,8 @@
   EnSol 랜딩 씨드 v7 — CIVIL NX 2026 Release (HYPER-S) 실측 반영
   · 소스: resource.midasuser.com/en/event/260318-cnx2026-release (2026-08-27 실측)
     - 섹션 CSS(template_main.min.css) 전수 실측: intro/invite/painpoints/answer/skill/feature/faq/free (improvement·compare 섹션은 요청으로 삭제)
-    - 팔레트: 라임 #9AFC4A(+그라데이션 #74E419) · 다크 #040308 · 블루 #2CADD5/#00479E · 네이비 #00054D · 소프트 #F6F9FE
+    - 팔레트: 프라이머리 블루 #3186ff/#346bf0(제미나이 토큰) · 서브 #4ea0ff · 다크 #040308 · 소프트 #F6F9FE
+    - CTA 버튼: 제미나이 그라데이션(89.58deg #3186ff→#346bf0→#4ea0ff) + 호버 슬라이드
     - 원본 radius 거의 전부 0(각진 룩) — v6 방향과 일치, 전면 radius 0 유지
     - 폰트: 전부 Pretendard(CDN variable dynamic subset) — 원본 ITC Avant Garde는 상용이라 미사용
   · 모션(원본 구현 방식 이식):
@@ -26,18 +27,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
 :root{
-  --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF; --onsub:#fff;
+  --lime:#3186ff; --lime2:#346bf0; --onp:#fff; --sub:#4ea0ff; --onsub:#fff;
   --btng:linear-gradient(89.58deg,#3186ff 0%,#346bf0 30%,#4ea0ff 55%,#346bf0 78%,#3186ff 100%);
   --txtg:linear-gradient(89.58deg,#3186ff .28%,#346bf0 44.45%,#4ea0ff 99.55%);
   --txtgB:linear-gradient(89.58deg,#5AA7FF 0%,#4E8FF5 45%,#8FC6FF 100%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
-/* 프라이머리 프리셋 — 초록(기본)·블루·주황·퍼플·진분홍 */
-:root[data-p="blue"]{--lime:#3D8BFF;--lime2:#1E6BE0;--onp:#fff;--sub:#9AFC4A;--onsub:#222}
-:root[data-p="orange"]{--lime:#F07818;--lime2:#C95E0A;--onp:#fff;--sub:#E8338A;--onsub:#fff}
-:root[data-p="purple"]{--lime:#7A5CFF;--lime2:#5A3BE8;--onp:#fff;--sub:#3D8BFF;--onsub:#fff}
-:root[data-p="pink"]{--lime:#E8338A;--lime2:#C2186C;--onp:#fff;--sub:#F07818;--onsub:#fff}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
@@ -46,7 +42,7 @@ a{text-decoration:none;color:inherit}
 ul{list-style:none}
 .df{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif}
 .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
-h2.tt{font-size:56px;font-weight:600;line-height:1.24}
+h2.tt{font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
 .gbtn{display:flex;gap:20px}
 .gbtn a{border-radius:4px;display:flex;align-items:center;justify-content:center;gap:8px;width:auto;height:56px;padding:0 34px;font-size:18px;font-weight:600;letter-spacing:-.36px;transition:.3s;cursor:pointer}
@@ -66,9 +62,6 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
 h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 h2.wt.active .w{opacity:1;transform:none;filter:none}
-/* 타이틀 그라데이션 텍스트(제미나이) — 다크 섹션은 밝은 변형 */
-h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
-.agenda h2.wt .w,.register h2.wt .w,.free h2.wt .w{background-image:var(--txtgB)}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
 .snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transition:opacity .4s}
@@ -111,7 +104,7 @@ h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:tex
 .kv.ready .ent{opacity:1;transform:none}
 .kv.ready .d2{transition-delay:.35s}
 .kv.ready .d4{transition-delay:.6s}
-.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);background:var(--txtgB);-webkit-background-clip:text;background-clip:text;color:transparent;transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
+.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 .kv.ready h1 .w{opacity:1;transform:none;filter:none}
 .kv .gbtn{justify-content:center}
 .kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
@@ -120,12 +113,12 @@ h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:tex
 
 /* ── 1.5 KV 후반 — 어두워지며 미션 멘트 툭(toss insurance 미션 스테이지 참고) ── */
 .kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;text-align:center;height:100%}
-.kv .sub2 .eb{background:var(--txtgB);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:20px;font-weight:600}
+.kv .sub2 .eb{font-size:20px;font-weight:600}
 .kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
 .answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}
-.answer h2{text-align:center;color:var(--ink);font-size:56px;font-weight:600;line-height:1.24;margin-bottom:60px}
+.answer h2{text-align:center;color:var(--ink);font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
 .answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .answer .cards.active .card{opacity:1;transform:none}
@@ -161,7 +154,7 @@ h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:tex
 .feature{padding:180px 0 200px;background:#fff}
 .feature .fgrid{display:flex;gap:110px;align-items:flex-start}
 .feature .fleft{width:430px;flex:none;position:sticky;top:130px}
-.feature .fleft h2{font-size:40px}
+.feature .fleft h2{font-size:46px}
 .feature .fleft p.sub{margin:20px 0 0;color:var(--g2);font-size:18px;line-height:1.6}
 .feature .fright{flex:1;display:flex;flex-direction:column;gap:96px;min-width:0}
 .feature .fitem{border-top:1px solid var(--line);padding-top:30px}
@@ -280,13 +273,13 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 @media (max-width:900px){
   .gnb nav{display:none}
   .snav{display:none}
-  h2.tt{font-size:34px}
+  h2.tt{font-size:36px}
   .kv h1{font-size:18vw}
   .kv .klead{font-size:17px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
   .kv .kvmeta{font-size:11px;padding:0 20px}
   .kv .sub2 p{font-size:20px}
-  .answer h2{font-size:34px}
+  .answer h2{font-size:36px}
   .answer .cards{flex-direction:column;gap:28px}
   .answer .card{height:110vw}
   .answer .ctx{left:24px;right:80px;bottom:26px}
@@ -823,7 +816,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   }
 
   // 데이터 웨이브 팔레트(프라이머리 그린 + 서브 블루)
-  var WAVE_COLS = ['#C4D8F0', '#9AFC4A', '#3D8BFF', '#74E419'];
+  var WAVE_COLS = ['#C4D8F0', '#4ea0ff', '#3186ff', '#346bf0'];
 
   // 8. 폼 → 감사 메시지 (정적 시안: 전송 없음)
   document.getElementById('regForm').addEventListener('submit', function(e){
