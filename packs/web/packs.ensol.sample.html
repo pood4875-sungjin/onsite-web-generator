@@ -54,9 +54,11 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .rv.on{opacity:1;transform:none}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
-.snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;mix-blend-mode:difference}
-.snav a{display:block;width:14px;height:2px;background:rgba(255,255,255,.45);transition:width .3s,background .3s}
-.snav a.on{width:26px;background:#fff}
+.snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px}
+.snav a{display:block;width:14px;height:2px;background:rgba(0,71,158,.3);transition:width .3s,background .3s}
+.snav a.on{width:26px;background:var(--blue2)}
+.snav.ondark a{background:rgba(255,255,255,.4)}
+.snav.ondark a.on{background:#fff}
 
 /* ── GNB ─────────────────────────────── */
 .gnb{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .35s,box-shadow .35s}
@@ -554,6 +556,8 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
       if (sec && sec.offsetTop <= mid) cur = i;
     }
     for (var j = 0; j < snavLinks.length; j++) snavLinks[j].classList.toggle('on', j === cur);
+    var DARK = { top: 1, agenda: 1, register: 1, free: 1 };
+    snav.classList.toggle('ondark', !!DARK[SNAV_IDS[cur]]);
   }
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
