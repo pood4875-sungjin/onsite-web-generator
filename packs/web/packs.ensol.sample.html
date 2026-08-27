@@ -29,6 +29,7 @@
   --lime:#9AFC4A; --lime2:#74E419; --onp:#222; --sub:#3D8BFF; --onsub:#fff;
   --btng:linear-gradient(89.58deg,#3186ff 0%,#346bf0 30%,#4ea0ff 55%,#346bf0 78%,#3186ff 100%);
   --txtg:linear-gradient(89.58deg,#3186ff .28%,#346bf0 44.45%,#4ea0ff 99.55%);
+  --txtgB:linear-gradient(89.58deg,#5AA7FF 0%,#4E8FF5 45%,#8FC6FF 100%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
   --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
@@ -65,8 +66,9 @@ h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
 h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 h2.wt.active .w{opacity:1;transform:none;filter:none}
-/* 라이트 섹션 타이틀 — 제미나이 그라데이션 텍스트 */
-.answer h2.wt .w,.skill h2.wt .w,.feature h2.wt .w,.faq h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 타이틀 그라데이션 텍스트(제미나이) — 다크 섹션은 밝은 변형 */
+h2.wt .w{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
+.agenda h2.wt .w,.register h2.wt .w,.free h2.wt .w{background-image:var(--txtgB)}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
 .snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transition:opacity .4s}
@@ -109,7 +111,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv.ready .ent{opacity:1;transform:none}
 .kv.ready .d2{transition-delay:.35s}
 .kv.ready .d4{transition-delay:.6s}
-.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
+.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);background:var(--txtgB);-webkit-background-clip:text;background-clip:text;color:transparent;transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 .kv.ready h1 .w{opacity:1;transform:none;filter:none}
 .kv .gbtn{justify-content:center}
 .kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
@@ -118,7 +120,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 
 /* ── 1.5 KV 후반 — 어두워지며 미션 멘트 툭(toss insurance 미션 스테이지 참고) ── */
 .kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;text-align:center;height:100%}
-.kv .sub2 .eb{color:rgba(255,255,255,.55);font-size:19px;font-weight:500}
+.kv .sub2 .eb{background:var(--txtgB);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:20px;font-weight:600}
 .kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
