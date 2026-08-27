@@ -35,7 +35,7 @@ a{text-decoration:none;color:inherit}
 ul{list-style:none}
 .df{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif}
 .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
-h3.tt{font-size:50px;font-weight:600;line-height:1.24}
+h2.tt{font-size:56px;font-weight:600;line-height:1.24}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
 .gbtn{display:flex;gap:20px}
 .gbtn a{display:flex;align-items:center;justify-content:center;gap:8px;width:286px;height:64px;font-size:20px;font-weight:600;letter-spacing:-.4px;transition:.3s;cursor:pointer}
@@ -112,7 +112,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
 .answer{padding:160px 0;background:#fff}
-.answer h2{text-align:center;color:var(--ink);font-size:44px;font-weight:600;line-height:1.3;margin-bottom:60px}
+.answer h2{text-align:center;color:var(--ink);font-size:56px;font-weight:600;line-height:1.24;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
 .answer .card{flex:1;cursor:pointer;opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .answer .cards.active .card{opacity:1;transform:none}
@@ -129,7 +129,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 
 /* ── 6. 스킬 탭 5종(원본 이식: 좌 텍스트 500px 소프트 + 우 이미지) ── */
 .skill{padding:160px 0;background:#fff}
-.skill h3{text-align:center}
+.skill h2{text-align:center}
 .skill .tabs{display:flex;margin:4.5vw 0 30px;width:100%}
 .skill .tabs button{position:relative;flex:1;padding-bottom:14px;border:0;border-bottom:2px solid #F0F1F3;background:none;color:#C6CCD4;font-family:inherit;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
 .skill .tabs button.active{border-color:#F0F1F3;color:var(--ink);font-weight:600}
@@ -161,7 +161,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 
 /* ── 7.5 어젠다 — 다크 리스트 + 클릭 시 우측 상세 드로어 ── */
 .agenda{padding:160px 0;background:var(--dark)}
-.agenda h3{color:#fff;text-align:center}
+.agenda h2{color:#fff;text-align:center}
 .agenda .asub{margin:16px 0 56px;text-align:center;color:rgba(255,255,255,.55);font-size:17px}
 .agenda .asub em{font-style:normal;color:var(--lime);font-weight:600;margin-right:10px}
 .agenda .alist{max-width:1060px;margin:0 auto}
@@ -192,7 +192,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 
 /* ── 8. 레지스터 — All-Access Pass + 신청 폼(원본 카피 복원) ── */
 .register{padding:160px 0;background:var(--dark)}
-.register h3{text-align:center;color:#fff}
+.register h2{text-align:center;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
 .register .pt{color:var(--ink);background:var(--lime);font-size:15px;font-weight:700;padding:4px 12px}
 .register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
@@ -215,7 +215,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 /* ── 9. FAQ 아코디언 ── */
 .faq{padding:160px 0;background:#fff}
 .faq .in{max-width:1060px;margin:0 auto;padding:0 28px}
-.faq h3{text-align:center;margin-bottom:26px}
+.faq h2{text-align:center;margin-bottom:26px}
 .faq .item{border-bottom:1px solid var(--line)}
 .faq .q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:88px;padding:0;border:0;background:none;color:var(--ink);font-family:inherit;font-size:20px;font-weight:600;line-height:28px;text-align:left;cursor:pointer}
 .faq .q .ar{flex:none;display:grid;place-items:center;color:var(--g2);transition:transform .3s}
@@ -227,7 +227,7 @@ h3.tt{font-size:50px;font-weight:600;line-height:1.24}
 .free .bgm{position:absolute;inset:0;background:url('../../app/bg/ensol-bg-free.jpg') no-repeat center/cover;animation:freeDrift 22s ease-in-out infinite alternate;will-change:transform}
 @keyframes freeDrift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,1.5%)}}
 .free .wrap{position:relative;z-index:1}
-.free h3{color:#fff}
+.free h2{color:#fff}
 .free p{margin:14px 0 56px;color:rgba(255,255,255,.6);font-size:18px;line-height:1.65}
 .free p b{color:var(--lime);font-weight:500}
 .free .gbtn{justify-content:center}
@@ -250,13 +250,13 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 @media (max-width:900px){
   .gnb nav{display:none}
   .snav{display:none}
-  h3.tt{font-size:32px}
+  h2.tt{font-size:34px}
   .kv h1{font-size:9vw}
   .kv .date{font-size:18px}
   .kv .gbtn{flex-direction:column;align-items:center;gap:12px}
   .kv .sub2 .tx h2{font-size:32px}
   .kv .bubbles li{width:34vw !important}
-  .answer h2{font-size:30px}
+  .answer h2{font-size:34px}
   .answer .cards{flex-direction:column;gap:28px}
   .answer .ph{height:80vw}
   .skill .tabs{flex-wrap:wrap;gap:10px}
@@ -356,7 +356,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 6. 스킬 탭 5종 -->
 <section class="skill" id="skill">
   <div class="wrap">
-    <h3 class="tt df rv">Boundless Capabilities<br>of CIVIL NX 2026</h3>
+    <h2 class="tt df rv">Boundless Capabilities<br>of CIVIL NX 2026</h2>
     <div class="tabs rv" id="skillTabs">
       <button class="active">Virtual Beam Design</button>
       <button>Curved RSI</button>
@@ -408,7 +408,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 7. 피처 벤토 -->
 <section class="feature" id="feature">
   <div class="wrap">
-    <h3 class="tt df rv">See How Your Current<br>CIVIL NX Can Do More.</h3>
+    <h2 class="tt df rv">See How Your Current<br>CIVIL NX Can Do More.</h2>
     <p class="sub rv">Let our experts help you apply the new features instantly. Book a quick chat today!</p>
     <div class="gbtn rv">
       <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
@@ -428,7 +428,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 7.5 어젠다 — 리스트 + 사이드 드로어 -->
 <section class="agenda" id="agenda">
   <div class="wrap">
-    <h3 class="tt df rv">Webinar Agenda</h3>
+    <h2 class="tt df rv">Webinar Agenda</h2>
     <p class="asub rv"><em>Live</em>March 18, 2026 · 9:00 - 10:00 (GMT)</p>
     <ul class="alist rv" id="alist"></ul>
   </div>
@@ -448,7 +448,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
 <section class="register" id="register">
   <div class="wrap">
-    <h3 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h3>
+    <h2 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h2>
     <div class="time rv"><span class="pt">Live</span><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
     <form id="regForm" class="rv" autocomplete="off">
       <div class="fld"><input type="text" id="rf-name" placeholder=" " required><label for="rf-name">Name</label></div>
@@ -470,7 +470,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 9. FAQ -->
 <section class="faq" id="faq">
   <div class="in">
-    <h3 class="tt df rv">FAQ</h3>
+    <h2 class="tt df rv">FAQ</h2>
     <div id="faqList" class="rv">
       <div class="item">
         <button class="q">What’s new in CIVIL NX 2.0?<span class="ar"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
@@ -504,7 +504,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <section class="free" id="free">
   <div class="bgm" aria-hidden="true"></div>
   <div class="wrap">
-    <h3 class="tt df rv">The Best Time to<br>Move Forward</h3>
+    <h2 class="tt df rv">The Best Time to<br>Move Forward</h2>
     <p class="rv">Adopt CIVIL NX 2026 today to access outstanding performance and <b>up to 6x faster analysis speeds</b>.<br>Book a quick expert chat and experience the massive difference right away.</p>
     <div class="gbtn rv">
       <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
