@@ -59,6 +59,10 @@ h2.tt{font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em}
 /* 리빌 */
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .rv.on{opacity:1;transform:none}
+/* 그라데이션 강조 어구 — 여러 단어가 하나의 그라로 연결 */
+.gt{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
+.agenda .gt,.register .gt,.free .gt,.kv .gt{background-image:var(--txtgB)}
+.gt .w{background:none;color:transparent;filter:none;transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
 h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
 h2.wt.active .w{opacity:1;transform:none;filter:none}
@@ -80,7 +84,7 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .gnb nav a:hover{color:var(--lime)}
 .gnb .cta{border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:16px;font-weight:700;padding:16px 22px;transition:background-position .6s ease}
 .gnb .cta:hover{background-position:100% 50%}
-.gnb.solid{background:#fff;box-shadow:0 1px 0 var(--line)}
+.gnb.solid{background:rgba(255,255,255,.72);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}
 .gnb.solid .logo{color:var(--ink)}
 .gnb.solid nav a{color:var(--g)}
 .gnb.solid nav a:hover{color:var(--lime2)}
@@ -496,7 +500,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <!-- 8. 레지스터 — All-Access Pass + 폼 -->
 <section class="register" id="register">
   <div class="wrap">
-    <h2 class="tt df rv">CIVIL NX 2026<br>All-Access Pass</h2>
+    <h2 class="tt df rv">CIVIL NX 2026<br><span class="gt">All-Access Pass</span></h2>
     <div class="time rv"><span class="df">Mar 18</span><span class="bar"></span><span>9:00 - 10:00 (GMT)</span></div>
     <form id="regForm" class="rv" autocomplete="off">
       <div class="fld"><input type="text" id="rf-name" placeholder=" " required><label for="rf-name">Name</label></div>
@@ -552,7 +556,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 <section class="free" id="free">
   <canvas id="wave" aria-hidden="true"></canvas>
   <div class="wrap">
-    <h2 class="tt df rv">The Best Time to<br>Move Forward</h2>
+    <h2 class="tt df rv">The Best Time to<br><span class="gt">Move Forward</span></h2>
     <p class="rv">The next generation of structural analysis is here.<br>Experience up to 6× faster performance today.</p>
     <div class="gbtn rv">
       <a class="lime" href="#register">1:1 Consultation <span class="arr">→</span></a>
@@ -682,26 +686,29 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   document.querySelectorAll('h2.tt.rv, .answer h2.rv').forEach(function(h2){
     h2.classList.remove('rv');
     h2.classList.add('wt');
-    var nodes = Array.prototype.slice.call(h2.childNodes);
     var wi = 0;
-    nodes.forEach(function(nd){
-      if (nd.nodeType !== 3) return; /* <br> 등 요소는 그대로 유지 */
-      var frag = document.createDocumentFragment();
-      var parts = nd.textContent.split(/\s+/);
-      var added = false;
-      parts.forEach(function(word){
-        if (!word) return;
-        if (added) frag.appendChild(document.createTextNode(' '));
-        var sp = document.createElement('span');
-        sp.className = 'w';
-        sp.textContent = word;
-        sp.style.transitionDelay = (wi * 0.07) + 's';
-        wi++;
-        frag.appendChild(sp);
-        added = true;
+    function splitIn(host){
+      Array.prototype.slice.call(host.childNodes).forEach(function(nd){
+        if (nd.nodeType === 1 && nd.classList.contains('gt')) { splitIn(nd); return; } /* 그라 어구 내부도 분해 */
+        if (nd.nodeType !== 3) return; /* <br> 등 요소는 그대로 유지 */
+        var frag = document.createDocumentFragment();
+        var parts = nd.textContent.split(/\s+/);
+        var added = false;
+        parts.forEach(function(word){
+          if (!word) return;
+          if (added) frag.appendChild(document.createTextNode(' '));
+          var sp = document.createElement('span');
+          sp.className = 'w';
+          sp.textContent = word;
+          sp.style.transitionDelay = (wi * 0.07) + 's';
+          wi++;
+          frag.appendChild(sp);
+          added = true;
+        });
+        host.replaceChild(frag, nd);
       });
-      h2.replaceChild(frag, nd);
-    });
+    }
+    splitIn(h2);
   });
 
   // 리빌 + 말풍선 + 벤토 IO
