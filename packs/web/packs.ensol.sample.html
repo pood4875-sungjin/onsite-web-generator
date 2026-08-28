@@ -63,7 +63,7 @@ h2 .hw{font-weight:700}
 .rv.on{opacity:1;transform:none}
 /* 그라데이션 강조 어구 — 여러 단어가 하나의 그라로 연결 */
 .gt{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
-.agenda .gt,.free .gt,.kv .gt{background-image:var(--txtgB)}
+.agenda .gt,.register .gt,.free .gt,.kv .gt{background-image:var(--txtgB)}
 /* gt는 단어 분해 없이 통째로 등장 — 자식 레이어 승격 시 그라 클립이 안 그려지는 문제 회피 */
 h2.wt .gt{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}
 h2.wt.active .gt{opacity:1;transform:translate3d(0,0,0)}
@@ -222,7 +222,6 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .register{position:relative;padding:160px 0;background:radial-gradient(90% 45% at 50% 108%,rgba(120,190,255,.5) 0%,rgba(120,190,255,0) 62%),radial-gradient(150% 75% at 50% 115%,rgba(49,134,255,.65) 0%,rgba(49,134,255,0) 72%),linear-gradient(180deg,#040308 0%,#060D24 34%,#0C2470 66%,#1257ff 100%);overflow:hidden}
 .register .wrap{position:relative;z-index:1}
 .register h2{text-align:center;color:#fff}
-.register .gt{background:none;color:#fff}
 .register .time{display:flex;align-items:center;justify-content:center;gap:16px;margin:34px 0 56px;font-size:22px;font-weight:600;color:#fff}
 .register .bar{width:1px;height:18px;background:rgba(255,255,255,.25)}
 .register form{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px}
