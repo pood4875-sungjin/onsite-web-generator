@@ -655,7 +655,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     var p = clamp01(scrollY / (kv.offsetHeight - vh));
     var t = clamp01((p - 0.22) / 0.16);
     kvIn.style.opacity = String(1 - t);
-    kvIn.style.transform = 'translateY(' + (-20 - 70 * t) + 'px)';
+    kvIn.style.transform = 'translateY(-20px) scale(' + (1 - 0.12 * t).toFixed(4) + ')';
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
     var q = clamp01((p - 0.28) / 0.24);
     var e = 1 - Math.pow(1 - q, 3);
@@ -663,7 +663,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
     var s = clamp01((p - 0.4) / 0.14), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
-    kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
+    kvSub.style.transform = 'scale(' + (0.9 + 0.1 * se).toFixed(4) + ')';
     kvMeta.style.transition = 'none';
     kvMeta.style.opacity = String(.7 * (1 - se));
   }
