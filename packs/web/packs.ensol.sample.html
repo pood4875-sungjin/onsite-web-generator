@@ -62,7 +62,9 @@ h2.tt{font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em}
 /* 그라데이션 강조 어구 — 여러 단어가 하나의 그라로 연결 */
 .gt{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
 .agenda .gt,.register .gt,.free .gt,.kv .gt{background-image:var(--txtgB)}
-.gt .w{background:none;color:transparent;filter:none;transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+/* gt는 단어 분해 없이 통째로 등장 — 자식 레이어 승격 시 그라 클립이 안 그려지는 문제 회피 */
+h2.wt .gt{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}
+h2.wt.active .gt{opacity:1;transform:translate3d(0,0,0)}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
 h2.wt .w{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}
 h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
@@ -124,10 +126,10 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
-.answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
+.answer .card{position:relative;flex:1;height:520px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .answer .cards.active .card{opacity:1;transform:none}
-.answer .cards.active .card:nth-child(2){transition-delay:.15s}
-.answer .cards.active .card:nth-child(3){transition-delay:.3s}
+.answer .cards.active .card:nth-child(2){transition-delay:.28s}
+.answer .cards.active .card:nth-child(3){transition-delay:.56s}
 .answer .card > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .5s,transform .7s cubic-bezier(.2,.6,.2,1);animation:kvIdle 14s ease-in-out infinite alternate;will-change:transform}
 .answer .card:nth-child(2) > img{animation-duration:18s;animation-delay:-6s}
 .answer .card:nth-child(3) > img{animation-duration:22s;animation-delay:-11s}
@@ -161,7 +163,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .feature .fleft h2{font-size:36px}
 .feature .fleft p.sub{margin:20px 0 0;color:var(--g2);font-size:18px;line-height:1.6}
 .feature .fright{flex:1;display:flex;flex-direction:column;gap:96px;min-width:0}
-.feature .fitem{border-top:1px solid var(--line);padding-top:30px}
+.feature .fitem{border-top:1px solid #d9e4f3;padding-top:30px}
 .feature .fitem b{display:block;font-size:25px;font-weight:600;line-height:1.4}
 .feature .fitem > p{margin:12px 0 38px;color:var(--g2);font-size:17px;line-height:1.65}
 .feature .fcard{overflow:hidden;background:var(--bgsoft)}
@@ -311,7 +313,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
 @media (prefers-reduced-motion:reduce){
   .kv .sheen i{animation:none;opacity:0}
   .answer .card > img{animation:none;transform:none}
-  .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
+  .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,h2.wt .gt,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}
 }
 </style>
 </head>
@@ -691,7 +693,12 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     var wi = 0;
     function splitIn(host){
       Array.prototype.slice.call(host.childNodes).forEach(function(nd){
-        if (nd.nodeType === 1 && nd.classList.contains('gt')) { splitIn(nd); return; } /* 그라 어구 내부도 분해 */
+        if (nd.nodeType === 1 && nd.classList.contains('gt')) {
+          /* 그라 어구는 통째로 하나의 유닛으로 등장(클립 유지) */
+          nd.style.transitionDelay = (wi * 0.07) + 's';
+          wi += (nd.textContent.trim().split(/\s+/).length || 1);
+          return;
+        }
         if (nd.nodeType !== 3) return; /* <br> 등 요소는 그대로 유지 */
         var frag = document.createDocumentFragment();
         var parts = nd.textContent.split(/\s+/);
