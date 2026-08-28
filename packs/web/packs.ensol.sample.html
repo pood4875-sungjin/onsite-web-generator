@@ -32,7 +32,7 @@
   --txtg:linear-gradient(89.58deg,#3186ff .28%,#346bf0 44.45%,#4ea0ff 99.55%);
   --txtgB:linear-gradient(89.58deg,#5AA7FF 0%,#4E8FF5 45%,#8FC6FF 100%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
-  --dark:#040308; --ink:#222; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
+  --dark:#040308; --ink:#222; --bgray:#4E5968; --g:#444; --g2:#666; --g3:#999; --line:#DEDEDE; --bgsoft:#F6F9FE;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -42,7 +42,7 @@ a{text-decoration:none;color:inherit}
 ul{list-style:none}
 .df{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif}
 .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
-h2.tt{font-size:64px;line-height:1.2;letter-spacing:-.02em}
+h2.tt{font-size:clamp(44px,4.8vw,84px);line-height:1.2;letter-spacing:-.02em}
 h2 .lw{font-weight:500}
 h2 .hw{font-weight:700}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
@@ -81,7 +81,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 
 /* ── GNB ─────────────────────────────── */
 .gnb{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .35s,box-shadow .35s}
-.gnb .in{max-width:none;margin:0;padding:0 56px;height:72px;display:flex;align-items:center;gap:24px}
+.gnb .in{max-width:1920px;margin:0 auto;padding:0 56px;height:72px;display:flex;align-items:center;gap:24px}
 .gnb .logo{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.01em}
 .gnb nav{display:flex;gap:6px;margin-left:auto}
 .gnb nav a{padding:9px 14px;font-size:16px;font-weight:600;color:rgba(255,255,255,.85);transition:background .2s,color .2s}
@@ -106,7 +106,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 @keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}
 .kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}
 .kv h1{margin:0 0 34px;font-size:min(14.5vw,232px);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}
-.kv .klead{margin-bottom:56px;font-size:min(2.4vw,31px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}
+.kv .klead{margin-bottom:56px;font-size:clamp(19px,2.4vw,40px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}
 .kv h1 .l{display:block}
 .kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
 .kv.ready .ent{opacity:1;transform:none}
@@ -127,7 +127,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}
 
 /* ── 3. 앤서 — 흰 배경·그래픽 카드 3 + 하단 텍스트(토스증권 카드 리스트 스타일) ── */
-.answer{position:relative;z-index:2;margin-top:-100vh;min-height:100vh;padding:160px 0;background:#fff}
+.answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
 .answer .card{position:relative;flex:1;height:520px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
@@ -151,7 +151,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .skill .tabs{display:flex;margin:4.5vw 0 30px;width:100%}
 .skill .tabs button{position:relative;flex:1;padding-bottom:14px;border:0;border-bottom:2px solid #F0F1F3;background:none;color:#C6CCD4;font-family:inherit;font-size:18px;font-weight:500;cursor:pointer;transition:color .2s,border-color .2s}
 .skill .tabs button.active{border-color:#F0F1F3;color:var(--ink);font-weight:600}
-.skill .tabs button .prog{position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--ink)}
+.skill .tabs button .prog{position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--bgray)}
 #skillPanes{position:relative;height:400px}
 .skill .pane{position:absolute;inset:0;display:flex;height:400px;opacity:0;transform:translateY(10px);transition:opacity .45s cubic-bezier(.2,.6,.2,1),transform .45s cubic-bezier(.2,.6,.2,1);pointer-events:none}
 .skill .pane.onv{opacity:1;transform:none;pointer-events:auto}
@@ -274,7 +274,7 @@ footer{background:var(--dark);color:#fff;padding:34px 0}
 footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px}
 footer .row b{font-size:19px;font-weight:700}
 footer .row span{color:rgba(255,255,255,.45);font-size:13px}
-footer .wrap{max-width:none;margin:0;padding:0 56px}
+footer .wrap{max-width:1920px;margin:0 auto;padding:0 56px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
 .dock{position:fixed;left:50%;bottom:28px;z-index:60;border-radius:0;display:flex;align-items:center;gap:22px;width:720px;padding:20px 14px 20px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(4,3,8,.12),0 1px 4px rgba(4,3,8,.05);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
@@ -598,7 +598,16 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   'use strict';
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var vh = innerHeight;
-  addEventListener('resize', function(){ vh = innerHeight; });
+  // 오버랩 정밀화: 덮는 섹션(.answer) 실높이만큼만 KV 꼬리를 겹침 — 화면 세로가 커도 영상 안 샘, 여백 안 늘어남
+  var answerSec = document.querySelector('.answer');
+  function fitOverlap(){
+    var ah = answerSec.offsetHeight;
+    kv.style.height = 'calc(220vh + ' + ah + 'px)';
+    answerSec.style.marginTop = -ah + 'px';
+  }
+  fitOverlap();
+  addEventListener('load', fitOverlap);
+  addEventListener('resize', function(){ vh = innerHeight; fitOverlap(); });
 
   var gnb = document.getElementById('gnb');
 
