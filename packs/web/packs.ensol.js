@@ -212,7 +212,7 @@
       '.kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}',
       '@keyframes enSheen{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}',
       '.kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}',
-      '.kv h1{margin:0 0 34px;font-size:14.5vw;font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}',
+      '.kv h1{margin:0 0 34px;font-size:13vw;font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}',
       '.kv h1 .l{display:block}',
       '.kv .klead{margin-bottom:56px;font-size:clamp(19px,2.4vw,40px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}',
       '.kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}',
