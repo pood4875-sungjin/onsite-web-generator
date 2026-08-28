@@ -124,9 +124,6 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}
 .answer h2{text-align:center;color:var(--ink);font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em;margin-bottom:60px}
 .answer .cards{display:flex;gap:0}
-/* 글래스 원형 커서 — 카드 위에서만 등장, 마우스 추종 */
-.acur{position:fixed;left:0;top:0;z-index:90;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:700;pointer-events:none;opacity:0;transition:opacity .28s ease;will-change:transform,opacity}
-.acur.on{opacity:1}
 .answer .card{position:relative;flex:1;height:620px;overflow:hidden;cursor:pointer;background:var(--dark);opacity:0;transform:translateY(90px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 .answer .cards.active .card{opacity:1;transform:none}
 .answer .cards.active .card:nth-child(2){transition-delay:.15s}
@@ -136,8 +133,8 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .answer .card:nth-child(3) > img{animation-duration:22s;animation-delay:-11s}
 .answer .card:hover > img{filter:brightness(1.15);animation-play-state:paused;transform:scale(1.08)}
 @keyframes kvIdle{from{transform:scale(1.06) translate(1.2%,1%)}to{transform:scale(1.13) translate(-1.5%,-1.5%)}}
-.answer .go{display:none;position:absolute;right:26px;bottom:26px;width:46px;height:46px;display:grid;place-items:center;background:rgba(255,255,255,.16);color:#fff;font-size:19px;font-weight:700;transition:background .25s,transform .25s;z-index:2}
-.answer .card:hover .go{background:rgba(255,255,255,.32);transform:translateX(3px)}
+.answer .go{position:absolute;right:26px;bottom:26px;width:52px;height:52px;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);color:#fff;font-size:19px;font-weight:700;transition:background .25s;z-index:2;will-change:transform;pointer-events:none}
+.answer .card:hover .go{background:rgba(255,255,255,.26)}
 .answer .ctx{position:absolute;left:40px;right:96px;bottom:40px;z-index:1;text-align:left}
 .answer .ctx b{display:block;margin-bottom:14px;color:#fff;font-size:32px;font-weight:600;line-height:1.3}
 .answer .ctx p{color:rgba(255,255,255,.72);font-size:15px;line-height:1.6}
@@ -364,8 +361,6 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
 </section>
 
 <!-- 3. 앤서 — 그래픽 카드 3 + 하단 텍스트 -->
-<div class="acur" id="acur" aria-hidden="true">→</div>
-
 <section class="answer" id="answer">
   <div class="wrap">
     <h2 class="df rv">CIVIL NX 2026</h2>
@@ -730,25 +725,29 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   document.querySelectorAll('h2.wt').forEach(function(el){ io.observe(el); });
   io.observe(document.getElementById('acards'));
 
-  // 앤서 카드 — 글래스 원형 커서 추종
+  // 앤서 카드 — 우하단 배지가 마우스를 부드럽게 따라옴(이탈 시 원위치)
   (function(){
-    var acur = document.getElementById('acur');
     var cards = document.querySelectorAll('.answer .card');
-    if (!acur || reduce) return;
-    var ax = 0, ay = 0, cx = 0, cy = 0, sc = 0.5, raf = false;
-    function step(){
-      cx += (ax - cx) * .18; cy += (ay - cy) * .18;
-      var want = acur.classList.contains('on') ? 1 : 0.5;
-      sc += (want - sc) * .18;
-      acur.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0) scale(' + sc.toFixed(3) + ')';
-      if (Math.abs(ax - cx) > .3 || Math.abs(ay - cy) > .3 || Math.abs(want - sc) > .01) requestAnimationFrame(step);
-      else raf = false;
-    }
-    function kick(){ if (!raf) { raf = true; requestAnimationFrame(step); } }
+    if (!cards.length || reduce) return;
     Array.prototype.forEach.call(cards, function(card){
-      card.addEventListener('mouseenter', function(){ acur.classList.add('on'); kick(); });
-      card.addEventListener('mouseleave', function(){ acur.classList.remove('on'); kick(); });
-      card.addEventListener('mousemove', function(e){ ax = e.clientX; ay = e.clientY; kick(); });
+      var go = card.querySelector('.go');
+      if (!go) return;
+      var tx = 0, ty = 0, cx = 0, cy = 0, raf = false;
+      function step(){
+        cx += (tx - cx) * .12; cy += (ty - cy) * .12;
+        go.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0)';
+        if (Math.abs(tx - cx) > .4 || Math.abs(ty - cy) > .4) requestAnimationFrame(step);
+        else raf = false;
+      }
+      function kick(){ if (!raf) { raf = true; requestAnimationFrame(step); } }
+      card.addEventListener('mousemove', function(e){
+        var r = card.getBoundingClientRect();
+        /* 배지 기본 중심(우하단 26px + 26px) 대비 커서까지의 델타 */
+        tx = (e.clientX - r.left) - (r.width - 26 - 26);
+        ty = (e.clientY - r.top) - (r.height - 26 - 26);
+        kick();
+      });
+      card.addEventListener('mouseleave', function(){ tx = 0; ty = 0; kick(); });
     });
   })();
 
