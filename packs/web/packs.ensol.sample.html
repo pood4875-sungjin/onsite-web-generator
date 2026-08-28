@@ -28,7 +28,7 @@
 <style>
 :root{
   --lime:#3186ff; --lime2:#346bf0; --onp:#fff; --sub:#4ea0ff; --onsub:#fff;
-  --btng:linear-gradient(89.58deg,#7A5CFF 0%,#5A6BF0 18%,#4787FF 44%,#3E82FF 62%,#4787FF 78%,#5A6BF0 90%,#7A5CFF 100%);
+  --btng:linear-gradient(89.58deg,#3186ff 0%,#346bf0 30%,#4ea0ff 55%,#346bf0 78%,#3186ff 100%);
   --txtg:linear-gradient(89.58deg,#3186ff .28%,#346bf0 44.45%,#4ea0ff 99.55%);
   --txtgB:linear-gradient(89.58deg,#5AA7FF 0%,#4E8FF5 45%,#8FC6FF 100%);
   --blue1:#2CADD5; --blue2:#00479E; --navy:#00054D;
@@ -274,11 +274,11 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
 footer .wrap{max-width:none;margin:0;padding:0 56px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
-.dock{position:fixed;left:50%;bottom:28px;z-index:60;border-radius:4px;display:flex;align-items:center;gap:22px;width:720px;padding:20px 14px 20px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(4,3,8,.12),0 1px 4px rgba(4,3,8,.05);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
+.dock{position:fixed;left:50%;bottom:28px;z-index:60;border-radius:0;display:flex;align-items:center;gap:22px;width:720px;padding:20px 14px 20px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(4,3,8,.12),0 1px 4px rgba(4,3,8,.05);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
-.dock .go{margin-left:auto;flex:none;border-radius:4px;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}
+.dock .go{margin-left:auto;flex:none;border-radius:0;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}
 .dock .go:hover{background-position:100% 50%}
 
 /* ── 모바일 ── */
