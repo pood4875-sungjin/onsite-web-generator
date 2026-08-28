@@ -235,6 +235,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .register input:not(:placeholder-shown):not(:focus) + label{color:rgba(255,255,255,.75)}
 .register button{grid-column:1/-1;height:58px;border:0;border-radius:0;background:linear-gradient(89.58deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.72) 45%,rgba(255,255,255,.95) 100%);background-size:220% 100%;background-position:0% 50%;color:#1257ff;font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;transition:background-position .6s ease}
 .register button:hover{background-position:100% 50%}
+.register button .bt{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}
 .register .done{display:none;max-width:760px;margin:0 auto;text-align:center}
 .register .done h4{font-size:34px;font-weight:600;margin-bottom:18px;color:#fff}
 .register .done p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65}
@@ -522,7 +523,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
       <div class="fld"><input type="tel" id="rf-phone" placeholder=" "><label for="rf-phone">Phone Number</label></div>
       <div class="fld"><input type="text" id="rf-country" placeholder=" " required><label for="rf-country">Country / Region</label></div>
       <div class="fld full"><input type="text" id="rf-industry" placeholder=" "><label for="rf-industry">Industry (e.g. Bridge, Rail, Plant)</label></div>
-      <button type="submit">Register now — get the CIVIL NX 2026 Leaflet</button>
+      <button type="submit"><span class="bt">Register now — get the CIVIL NX 2026 Leaflet</span></button>
     </form>
     <div class="done">
       <h4 class="df">Thank you for registering.</h4>
