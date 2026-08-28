@@ -734,7 +734,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
       if (!go) return;
       var tx = 0, ty = 0, cx = 0, cy = 0, raf = false;
       function step(){
-        cx += (tx - cx) * .12; cy += (ty - cy) * .12;
+        cx += (tx - cx) * .05; cy += (ty - cy) * .05;
         go.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0)';
         if (Math.abs(tx - cx) > .4 || Math.abs(ty - cy) > .4) requestAnimationFrame(step);
         else raf = false;
@@ -742,9 +742,9 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
       function kick(){ if (!raf) { raf = true; requestAnimationFrame(step); } }
       card.addEventListener('mousemove', function(e){
         var r = card.getBoundingClientRect();
-        /* 배지 기본 중심(우하단 26px + 26px) 대비 커서까지의 델타 */
-        tx = (e.clientX - r.left) - (r.width - 26 - 26);
-        ty = (e.clientY - r.top) - (r.height - 26 - 26);
+        /* 커서를 덮지 않게 커서 우측아래(+14px)에 배지가 위치하도록 델타 계산 */
+        tx = (e.clientX - r.left) + 14 - (r.width - 26 - 52);
+        ty = (e.clientY - r.top) + 14 - (r.height - 26 - 52);
         kick();
       });
       card.addEventListener('mouseleave', function(){ tx = 0; ty = 0; kick(); });
