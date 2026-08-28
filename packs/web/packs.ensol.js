@@ -389,6 +389,11 @@
       'h2.tt{font-size:30px}.kv .sub2 p{font-size:17px}',
       '.feature .fleft h2{font-size:28px}.skill .tb strong{font-size:24px;line-height:1.35}',
       '}',
+      /* 커스텀 커서 — 글래스 사각, 파인 포인터 전용(부트가 body.curon 부여 시에만 발동) */
+      '@media (hover:hover) and (pointer:fine){',
+      'body.curon,body.curon a,body.curon button,body.curon input,body.curon select,body.curon textarea,body.curon label,body.curon summary{cursor:none}',
+      '#cur{position:fixed;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;z-index:2147483000;pointer-events:none;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.42);box-shadow:0 0 0 1px rgba(24,32,44,.25),0 6px 18px rgba(4,3,8,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);will-change:transform}',
+      '}',
       '@media (prefers-reduced-motion:reduce){',
       '.kv .sheen i{animation:none;opacity:0}',
       '.answer .card > img{animation:none;transform:none}',
@@ -415,16 +420,37 @@
     var answerSec = document.querySelector('.answer');
     var gnb = document.getElementById('gnb');
 
-    /* overlap fit: cover exactly the answer height */
+    /* overlap fit: cover exactly the answer height.
+       fractional rect.height + 1px under on the KV tail —
+       integer offsetHeight rounding leaked a sub-pixel dark hairline */
     function fitOverlap() {
       if (!kv || !answerSec) return;
-      var ah = answerSec.offsetHeight;
-      kv.style.height = 'calc(220vh + ' + ah + 'px)';
+      var ah = answerSec.getBoundingClientRect().height;
+      kv.style.height = 'calc(220vh + ' + (Math.floor(ah) - 1) + 'px)';
       answerSec.style.marginTop = -ah + 'px';
     }
     fitOverlap();
     addEventListener('load', fitOverlap);
     addEventListener('resize', function () { vh = innerHeight; fitOverlap(); });
+
+    /* custom cursor: glass square, grows over interactive elements (lerp follow) */
+    if (!reduce && matchMedia('(hover:hover) and (pointer:fine)').matches) {
+      var cur = document.createElement('div');
+      cur.id = 'cur';
+      document.body.appendChild(cur);
+      document.body.classList.add('curon');
+      var ccx = -100, ccy = -100, ctx = -100, cty = -100, ccs = 1, cts = 1;
+      addEventListener('pointermove', function (e) {
+        ctx = e.clientX; cty = e.clientY;
+        var t = e.target && e.target.closest ? e.target.closest('a,button,input,select,textarea,label,summary') : null;
+        cts = t ? 1.7 : 1;
+      }, { passive: true });
+      (function curLoop() {
+        ccx += (ctx - ccx) * 0.22; ccy += (cty - ccy) * 0.22; ccs += (cts - ccs) * 0.18;
+        cur.style.transform = 'translate3d(' + ccx + 'px,' + ccy + 'px,0) scale(' + ccs + ')';
+        requestAnimationFrame(curLoop);
+      })();
+    }
 
     /* side dots */
     var SNAV_IDS = [];

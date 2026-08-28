@@ -317,6 +317,11 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   footer .wrap{padding:0 20px}
   .dock{display:none}
 }
+/* 커스텀 커서 — 글래스 사각(반투명+블러+이중 헤어라인), 파인 포인터 전용 */
+@media (hover:hover) and (pointer:fine){
+  body.curon,body.curon a,body.curon button,body.curon input,body.curon select,body.curon textarea,body.curon label,body.curon summary{cursor:none}
+  #cur{position:fixed;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;z-index:2147483000;pointer-events:none;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.42);box-shadow:0 0 0 1px rgba(24,32,44,.25),0 6px 18px rgba(4,3,8,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);will-change:transform}
+}
 @media (prefers-reduced-motion:reduce){
   .kv .sheen i{animation:none;opacity:0}
   .answer .card > img{animation:none;transform:none}
@@ -599,14 +604,34 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var vh = innerHeight;
   // 오버랩 정밀화: 덮는 섹션(.answer) 실높이만큼만 KV 꼬리를 겹침 — 화면 세로가 커도 영상 안 샘, 여백 안 늘어남
+  // rect.height(소수)로 측정 + KV 꼬리 1px 언더 — offsetHeight 정수 반올림 시 0.x px 다크 헤어라인 노출 방지
   var answerSec = document.querySelector('.answer');
   function fitOverlap(){
-    var ah = answerSec.offsetHeight;
-    kv.style.height = 'calc(220vh + ' + ah + 'px)';
+    var ah = answerSec.getBoundingClientRect().height;
+    kv.style.height = 'calc(220vh + ' + (Math.floor(ah) - 1) + 'px)';
     answerSec.style.marginTop = -ah + 'px';
   }
   addEventListener('load', fitOverlap);
   addEventListener('resize', function(){ vh = innerHeight; fitOverlap(); });
+
+  // 커스텀 커서 — 글래스 사각, 인터랙티브 요소 위에서 확대(lerp 팔로우)
+  if (!reduce && matchMedia('(hover:hover) and (pointer:fine)').matches){
+    var cur = document.createElement('div');
+    cur.id = 'cur';
+    document.body.appendChild(cur);
+    document.body.classList.add('curon');
+    var ccx = -100, ccy = -100, ctx = -100, cty = -100, ccs = 1, cts = 1;
+    addEventListener('pointermove', function(e){
+      ctx = e.clientX; cty = e.clientY;
+      var t = e.target && e.target.closest ? e.target.closest('a,button,input,select,textarea,label,summary') : null;
+      cts = t ? 1.7 : 1;
+    }, {passive:true});
+    (function curLoop(){
+      ccx += (ctx - ccx) * 0.22; ccy += (cty - ccy) * 0.22; ccs += (cts - ccs) * 0.18;
+      cur.style.transform = 'translate3d(' + ccx + 'px,' + ccy + 'px,0) scale(' + ccs + ')';
+      requestAnimationFrame(curLoop);
+    })();
+  }
 
   var gnb = document.getElementById('gnb');
 
