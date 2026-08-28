@@ -605,7 +605,6 @@ footer .wrap{max-width:1920px;margin:0 auto;padding:0 56px}
     kv.style.height = 'calc(220vh + ' + ah + 'px)';
     answerSec.style.marginTop = -ah + 'px';
   }
-  fitOverlap();
   addEventListener('load', fitOverlap);
   addEventListener('resize', function(){ vh = innerHeight; fitOverlap(); });
 
@@ -635,6 +634,7 @@ footer .wrap{max-width:1920px;margin:0 auto;padding:0 56px}
 
   // 1. KV 스크럽 — 타이포 페이드(38~60%) → 서브 카피(58~80%) + 카드 축소(45~80%, radius 0 유지)
   var kv = document.querySelector('.kv');
+  fitOverlap();
   // 히어로 타이틀 글자 분해 — 섹션 타이틀 스태거와 동일한 결(글자당 .05s)
   (function(){
     var wi = 0;
