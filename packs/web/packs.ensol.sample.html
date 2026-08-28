@@ -663,7 +663,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     kvVid.style.filter = 'blur(' + (12 * e).toFixed(1) + 'px)'; /* 멘트 가독 — 배경 블러 */
     var s = clamp01((p - 0.4) / 0.14), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
-    kvSub.style.transform = 'scale(' + (0.82 + 0.18 * se).toFixed(4) + ')';
+    kvSub.style.transform = 'scale(' + (0.75 + 0.25 * se).toFixed(4) + ')';
     kvMeta.style.transition = 'none';
     kvMeta.style.opacity = String(.7 * (1 - se));
   }
