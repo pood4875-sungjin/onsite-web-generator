@@ -389,14 +389,6 @@
       'h2.tt{font-size:30px}.kv .sub2 p{font-size:17px}',
       '.feature .fleft h2{font-size:28px}.skill .tb strong{font-size:24px;line-height:1.35}',
       '}',
-      /* 커스텀 커서 — 글래스 원형, 기본 커서 전면 대체(부트가 body.curon 부여 시에만 발동) */
-      '@media (hover:hover) and (pointer:fine){',
-      'body.curon,body.curon *{cursor:none !important}',
-      '#cur{position:fixed;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;z-index:2147483000;pointer-events:none;background:rgba(30,38,50,.22);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);will-change:transform;transition:background-color .25s}',
-      '#cur.ondark{background:rgba(255,255,255,.34)}',
-      '#cur.big{background:rgba(30,38,50,.10);backdrop-filter:none;-webkit-backdrop-filter:none}',
-      '#cur.big.ondark{background:rgba(255,255,255,.14)}',
-      '}',
       '@media (prefers-reduced-motion:reduce){',
       '.kv .sheen i{animation:none;opacity:0}',
       '.answer .card > img{animation:none;transform:none}',
@@ -435,34 +427,6 @@
     fitOverlap();
     addEventListener('load', fitOverlap);
     addEventListener('resize', function () { vh = innerHeight; fitOverlap(); });
-
-    /* custom cursor: glass circle, full replacement, grows over interactive elements,
-       tone flips over dark backgrounds via elementFromPoint */
-    if (!reduce && matchMedia('(hover:hover) and (pointer:fine)').matches) {
-      var cur = document.createElement('div');
-      cur.id = 'cur';
-      document.body.appendChild(cur);
-      document.body.classList.add('curon');
-      var ccx = -100, ccy = -100, ctx = -100, cty = -100, ccs = 1, cts = 1;
-      var CUR_DARK = '.kv,.answer .card,.agenda,.register,.free,footer,.enfoot,.dock,.adrawer,[data-dark]';
-      function curTheme() {
-        var el = document.elementFromPoint(ctx, cty);
-        cur.classList.toggle('ondark', !!(el && el.closest && el.closest(CUR_DARK)));
-      }
-      addEventListener('pointermove', function (e) {
-        ctx = e.clientX; cty = e.clientY;
-        var t = e.target && e.target.closest ? e.target.closest('a,button,input,select,textarea,label,summary') : null;
-        cts = t ? 1.7 : 1;
-        cur.classList.toggle('big', !!t);
-        curTheme();
-      }, { passive: true });
-      addEventListener('scroll', curTheme, { passive: true });
-      (function curLoop() {
-        ccx += (ctx - ccx) * 0.22; ccy += (cty - ccy) * 0.22; ccs += (cts - ccs) * 0.18;
-        cur.style.transform = 'translate3d(' + ccx + 'px,' + ccy + 'px,0) scale(' + ccs + ')';
-        requestAnimationFrame(curLoop);
-      })();
-    }
 
     /* side dots */
     var SNAV_IDS = [];
