@@ -43,6 +43,8 @@ ul{list-style:none}
 .df{font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif}
 .wrap{max-width:1320px;margin:0 auto;padding:0 28px}
 h2.tt{font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em}
+h2.tt .lw{font-weight:500}
+h2.tt .hw{font-weight:700}
 /* 공용 버튼 — 원본 group_btn a: 225~286×64, 각진, 라임/아웃라인 */
 .gbtn{display:flex;gap:20px}
 .gbtn a{border-radius:4px;display:flex;align-items:center;justify-content:center;gap:8px;width:auto;height:56px;padding:0 34px;font-size:18px;font-weight:600;letter-spacing:-.36px;transition:.3s;cursor:pointer}
@@ -398,7 +400,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
 <!-- 6. 스킬 탭 5종 -->
 <section class="skill" id="skill">
   <div class="wrap">
-    <h2 class="tt df rv">Boundless Capabilities<br>of CIVIL NX 2026</h2>
+    <h2 class="tt df rv"><span class="lw">Boundless Capabilities</span><br><span class="hw">of CIVIL NX 2026</span></h2>
     <div class="tabs rv" id="skillTabs">
       <button class="active">Virtual Beam Design</button>
       <button>Curved RSI</button>
@@ -452,7 +454,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   <div class="wrap">
     <div class="fgrid">
       <div class="fleft">
-        <h2 class="tt df rv">See How Your Current<br><span class="gt">CIVIL NX</span> Can Do More.</h2>
+        <h2 class="tt df rv">See How Your Current<br>CIVIL NX Can Do More.</h2>
         <p class="sub rv">Let our experts help you apply the new features instantly. Book a quick chat today!</p>
       </div>
       <div class="fright">
@@ -699,6 +701,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
           wi += (nd.textContent.trim().split(/\s+/).length || 1);
           return;
         }
+        if (nd.nodeType === 1 && nd.tagName === 'SPAN') { splitIn(nd); return; } /* 줄 웨이트 래퍼 내부도 분해 */
         if (nd.nodeType !== 3) return; /* <br> 등 요소는 그대로 유지 */
         var frag = document.createDocumentFragment();
         var parts = nd.textContent.split(/\s+/);
