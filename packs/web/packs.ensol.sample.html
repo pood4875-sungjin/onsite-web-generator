@@ -664,6 +664,8 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     var s = clamp01((p - 0.4) / 0.14), se = 1 - Math.pow(1 - s, 3);
     kvSub.style.opacity = String(se);
     kvSub.style.transform = 'translateY(' + (36 * (1 - se)) + 'px)';
+    kvMeta.style.transition = 'none';
+    kvMeta.style.opacity = String(.7 * (1 - se));
   }
 
   // 독: KV 지난 뒤 등장, 레지스터 도달 시 퇴장
