@@ -225,8 +225,8 @@
       '.kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}',
       '.kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}',
       '.kv .sub2 .tx{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;text-align:center;height:100%}',
-      '.kv .sub2 .eb{font-size:20px;font-weight:600}',
-      '.kv .sub2 p{color:#fff;font-size:34px;font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}',
+      '.kv .sub2 .eb{font-size:clamp(20px,1.2vw,26px);font-weight:600}',
+      '.kv .sub2 p{color:#fff;font-size:clamp(38px,2.9vw,60px);font-weight:600;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.15)}',
       /* answer — 오버랩 카드 3 */
       '.answer{position:relative;z-index:2;margin-top:-100vh;padding:160px 0;background:#fff}',
       '.answer h2{text-align:center;color:var(--ink);margin-bottom:60px}',
