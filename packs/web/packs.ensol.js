@@ -171,7 +171,7 @@
       'body{font-family:' + (LANG === 'ja' ? '"Noto Sans JP",' : LANG === 'zh' ? '"Noto Sans SC",' : '') + '"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip;word-break:keep-all}',
       'img,video{display:block;max-width:100%}a{text-decoration:none;color:inherit}ul{list-style:none}',
       '.wrap{max-width:1320px;margin:0 auto;padding:0 28px}',
-      'h2.tt{font-size:clamp(44px,4.8vw,84px);line-height:1.2;letter-spacing:-.02em}',
+      'h2.tt{font-size:clamp(40px,4.2vw,72px);line-height:1.2;letter-spacing:-.02em}',
       'h2 .lw{font-weight:500}h2 .hw{font-weight:700}',
       '.gt{background:var(--txtg);-webkit-background-clip:text;background-clip:text;color:transparent}',
       '[data-edit]{white-space:pre-wrap}',
