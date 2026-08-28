@@ -14,7 +14,7 @@ CIVIL NX 2026 릴리즈 웨비나 씨드의 팩화. 블루 그라데이션(#3186
 ## 3. 타이틀 문법
 줄 단위: 첫 줄 `.lw`(500) → 이후 `.hw`(700). `**마커**` = 블루 그라데이션 `.gt`.
 적용 필드: answerTitle·skillTitle·featureTitle·agendaTitle·regTitle·ctaTitle + bannerText(KV 미션 멘트 줄들).
-섹션 타이틀 `clamp(44px,4.8vw,84px)` — 대형 모니터 반응. GNB·footer 내용은 max 1920 컨테인.
+섹션 타이틀 `clamp(44px,4.8vw,84px)` — 대형 모니터 반응. GNB·footer는 풀블리드(좌우 끝 정렬).
 
 ## 3.5 섹션 어휘 (movable 7 + 고정)
 answer(오버랩 그래픽 카드 3 — features) · skill(자동재생 탭 5 — skills, 6초 프로그레스·모바일 아코디언 전환)
