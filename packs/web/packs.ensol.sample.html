@@ -64,8 +64,8 @@ h2.tt{font-size:72px;font-weight:600;line-height:1.18;letter-spacing:-.02em}
 .agenda .gt,.register .gt,.free .gt,.kv .gt{background-image:var(--txtgB)}
 .gt .w{background:none;color:transparent;filter:none;transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1)}
 /* 타이틀 단어 스태거 등장(toss.im 참고) */
-h2.wt .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
-h2.wt.active .w{opacity:1;transform:none;filter:none}
+h2.wt .w{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}
+h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 
 /* ── 좌측 섹션 인디케이터(toss.im 대시 내비) ── */
 .snav{position:fixed;left:26px;top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transition:opacity .4s}
@@ -108,8 +108,8 @@ h2.wt.active .w{opacity:1;transform:none;filter:none}
 .kv.ready .ent{opacity:1;transform:none}
 .kv.ready .d2{transition-delay:.35s}
 .kv.ready .d4{transition-delay:.6s}
-.kv h1 .w{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1),filter .7s cubic-bezier(.2,.6,.2,1)}
-.kv.ready h1 .w{opacity:1;transform:none;filter:none}
+.kv h1 .w{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}
+.kv.ready h1 .w{opacity:1;transform:translate3d(0,0,0)}
 .kv .gbtn{justify-content:center}
 .kv .kvmeta{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}
 .kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}
@@ -353,8 +353,8 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     <div class="sub2" id="kvSub">
       <div class="tx">
         <span class="eb">Why CIVIL NX 2026</span>
-        <p>Engineers have always needed faster analysis,<br>a seamless workflow, and stable large-scale runs.</p>
-        <p>CIVIL NX 2026, powered by the HYPER-S engine,<br>goes beyond your engineering struggles.</p>
+        <p>Engineers have always needed <span class="gt">faster analysis</span>,<br>a <span class="gt">seamless workflow</span>, and <span class="gt">stable large-scale runs</span>.</p>
+        <p>CIVIL NX 2026, powered by the <span class="gt">HYPER-S engine</span>,<br>goes beyond your engineering struggles.</p>
       </div>
     </div>
   </div>
