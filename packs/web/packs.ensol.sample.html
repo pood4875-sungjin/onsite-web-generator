@@ -266,9 +266,10 @@ footer{background:var(--dark);color:#fff;padding:34px 0}
 footer .row{display:flex;align-items:center;justify-content:space-between;gap:20px}
 footer .row b{font-size:19px;font-weight:700}
 footer .row span{color:rgba(255,255,255,.45);font-size:13px}
+footer .wrap{max-width:none;margin:0;padding:0 56px}
 
 /* ── 플로팅 독(원본 registerToast 번안) ── */
-.dock{position:fixed;left:50%;bottom:28px;z-index:60;display:flex;align-items:center;gap:22px;width:720px;padding:20px 14px 20px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(4,3,8,.12),0 1px 4px rgba(4,3,8,.05);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
+.dock{position:fixed;left:50%;bottom:28px;z-index:60;border-radius:4px;display:flex;align-items:center;gap:22px;width:720px;padding:20px 14px 20px 26px;background:rgba(255,255,255,.6);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.55);box-shadow:0 10px 30px rgba(4,3,8,.12),0 1px 4px rgba(4,3,8,.05);opacity:0;transform:translate(-50%,140%);pointer-events:none;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease}
 .dock.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .dock .tx b{display:block;font-size:17px;font-weight:700}
 .dock .tx i{display:block;margin-top:7px;font-style:normal;color:var(--g2);font-size:13px}
@@ -304,6 +305,7 @@ footer .row span{color:rgba(255,255,255,.45);font-size:13px}
   .agenda .am b{font-size:16px}
   .adrawer{padding:48px 26px}
   .register form{grid-template-columns:1fr}
+  footer .wrap{padding:0 20px}
   .dock{display:none}
 }
 @media (prefers-reduced-motion:reduce){
