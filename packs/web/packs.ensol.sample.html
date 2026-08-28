@@ -110,7 +110,7 @@ h2.wt.active .w{opacity:1;transform:translate3d(0,0,0)}
 .kv h1 .l{display:block}
 .kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}
 .kv.ready .ent{opacity:1;transform:none}
-.kv.ready .kvmeta{opacity:.6}
+.kv.ready .kvmeta{opacity:.7}
 .kv.ready .klead{opacity:.8}
 .kv.ready .d2{transition-delay:.35s}
 .kv.ready .d4{transition-delay:.6s}
@@ -656,10 +656,6 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
     kvIn.style.opacity = String(1 - t);
     kvIn.style.transform = 'translateY(' + (-50 - 70 * t) + 'px)';
     kvIn.style.pointerEvents = t > 0.6 ? 'none' : 'auto';
-    if (p > 0.02) { /* 등장 트랜지션 지연 무시하고 즉시 페이드 */
-      kvMeta.style.transition = 'none';
-      kvMeta.style.opacity = String(Math.max(0, 1 - t * 1.6));
-    }
     var q = clamp01((p - 0.28) / 0.24);
     var e = 1 - Math.pow(1 - q, 3);
     kvOv.style.opacity = String(0.66 + 0.26 * e); /* 축소 없이 풀블리드 유지, 어두워지며 멘트 무대 준비 */
