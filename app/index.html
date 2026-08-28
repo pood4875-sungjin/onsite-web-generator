@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/web/packs.mbm.js','../packs/web/packs.skmbm.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','../packs/ppt/packs.hfd.js','llm.js','../packs/edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','pagetypes.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/web/packs.mbm.js','../packs/web/packs.skmbm.js','../packs/web/packs.axday.js','../packs/web/packs.toss.js','../packs/web/packs.orbit.js','../packs/web/packs.ensol.js','../packs/ppt/packs.ppt.js','charts.js','../packs/ppt/packs.pitch.js','../packs/ppt/packs.honors.js','../packs/ppt/packs.naver.js','../packs/ppt/packs.rams.js','../packs/ppt/packs.pastel.js','../packs/ppt/packs.sfmi.js','../packs/ppt/packs.machine.js','../packs/ppt/packs.hfd.js','llm.js','../packs/edm/promo01.js','templates.js','modal.js','i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -823,6 +823,7 @@
           { id:'mbmtoss', name:(typeof MBMTOSS_STYLE!=='undefined'?MBMTOSS_STYLE.name:'SK MBM'), swatch:(typeof MBMTOSS_STYLE!=='undefined'?MBMTOSS_STYLE.swatch:'linear-gradient(135deg,#05D16E,#121419)') },
           { id:'axday', name:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.name:'Ensol MBM'), swatch:(typeof AXDAY_STYLE!=='undefined'?AXDAY_STYLE.swatch:'linear-gradient(115deg,#fff 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)') },
           { id:'orbit', name:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.name:'Global MBM'), swatch:(typeof ORBIT_STYLE!=='undefined'?ORBIT_STYLE.swatch:'linear-gradient(135deg,#050B1A,#2AB8FF)') },
+          { id:'ensol', name:(typeof ENSOL_STYLE!=='undefined'?ENSOL_STYLE.name:'Ensol Release'), swatch:(typeof ENSOL_STYLE!=='undefined'?ENSOL_STYLE.swatch:'linear-gradient(135deg,#040308,#0C2470,#3186ff)') },
         ];
         const SITE_STYLES=[
           { id:'saturn', name:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.name:'Saturn Blue'), swatch:(typeof SATURN_STYLE!=='undefined'?SATURN_STYLE.swatch:'linear-gradient(135deg,#0B1F4B,#2E6BFF)') },
@@ -847,6 +848,7 @@
   function styleThumb(id){
     if(id==='mbm' && window.renderMbmPage) return renderMbmPage({}, {motion:false});
     if(id==='mbmtoss' && window.renderMbmtossPage) return renderMbmtossPage({}, {motion:false});
+    if(id==='ensol' && window.renderEnsolPage) return renderEnsolPage({}, {motion:false});
     if(id==='axday' && window.renderAxdayPage) return renderAxdayPage({}, {motion:false});
     if(id==='toss' && window.renderTossPage) return renderTossPage({}, {motion:false});
     if(id==='orbit' && window.renderOrbitPage) return renderOrbitPage({}, {motion:false});
