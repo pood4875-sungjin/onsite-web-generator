@@ -284,6 +284,9 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
 .dock .go{margin-left:auto;flex:none;border-radius:0;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}
 .dock .go:hover{background-position:100% 50%}
 
+/* JS 미실행 환경 안전망 — 등장용 숨김을 전부 해제(콘텐츠가 모션보다 우선) */
+html:not(.js) .rv,html:not(.js) .kv .ent,html:not(.js) h2.wt .w,html:not(.js) h2.wt .gt,html:not(.js) .answer .card,html:not(.js) .agenda .alist.rv li,html:not(.js) #faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important}
+
 /* ── 모바일 ── */
 @media (max-width:900px){
   .gnb nav{display:none}
@@ -596,6 +599,7 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
 <script>
 (function(){
   'use strict';
+  document.documentElement.classList.add('js'); /* no-JS 환경에선 등장 숨김을 아예 안 건다 */
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var vh = innerHeight;
   // 오버랩 정밀화: 덮는 섹션(.answer) 실높이만큼만 KV 꼬리를 겹침 — 화면 세로가 커도 영상 안 샘, 여백 안 늘어남
@@ -738,13 +742,22 @@ footer .wrap{max-width:none;margin:0;padding:0 56px}
   });
 
   // 리빌 + 말풍선 + 벤토 IO
+  var ioAlive = false;
   var io = new IntersectionObserver(function(es){
+    ioAlive = true;
     es.forEach(function(en){
       if (!en.isIntersecting) return;
       en.target.classList.add(en.target.classList.contains('rv') ? 'on' : 'active');
       io.unobserve(en.target);
     });
   }, { threshold: 0.12 });
+  /* 일부 임베드 프리뷰는 IO 콜백이 아예 안 온다 — 정상 환경은 등록 직후 최소 1회 오므로, 침묵이면 전부 공개 */
+  setTimeout(function(){
+    if (ioAlive) return;
+    document.querySelectorAll('.rv, h2.wt, #acards').forEach(function(el){
+      el.classList.add(el.classList.contains('rv') ? 'on' : 'active');
+    });
+  }, 1200);
   document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
   document.querySelectorAll('h2.wt').forEach(function(el){ io.observe(el); });
   io.observe(document.getElementById('acards'));

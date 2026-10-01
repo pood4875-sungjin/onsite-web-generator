@@ -457,6 +457,9 @@
     '.dock .go{margin-left:auto;flex:none;border-radius:0;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:15px;font-weight:700;padding:13px 24px;transition:background-position .6s ease}\n'+
     '.dock .go:hover{background-position:100% 50%}\n'+
     '\n'+
+    '/* JS 미실행 환경 안전망 — 등장용 숨김을 전부 해제(콘텐츠가 모션보다 우선) */\n'+
+    'html:not(.js) .rv,html:not(.js) .kv .ent,html:not(.js) h2.wt .w,html:not(.js) h2.wt .gt,html:not(.js) .answer .card,html:not(.js) .agenda .alist.rv li,html:not(.js) #faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important}\n'+
+    '\n'+
     '/* ── 모바일 ── */\n'+
     '@media (max-width:900px){\n'+
     '  .gnb nav{display:none}\n'+
@@ -499,6 +502,7 @@
 
   var FNJS = '\n'+
     '  \'use strict\';\n'+
+    '  document.documentElement.classList.add(\'js\'); /* no-JS 환경에선 등장 숨김을 아예 안 건다 */\n'+
     '  var reduce = matchMedia(\'(prefers-reduced-motion: reduce)\').matches || document.documentElement.classList.contains(\'nomo\');\n'+
     '  var vh = innerHeight;\n'+
     '  // 오버랩 정밀화: 덮는 섹션(.answer) 실높이만큼만 KV 꼬리를 겹침 — 화면 세로가 커도 영상 안 샘, 여백 안 늘어남\n'+
@@ -643,13 +647,22 @@
     '  });\n'+
     '\n'+
     '  // 리빌 + 말풍선 + 벤토 IO\n'+
+    '  var ioAlive = false;\n'+
     '  var io = new IntersectionObserver(function(es){\n'+
+    '    ioAlive = true;\n'+
     '    es.forEach(function(en){\n'+
     '      if (!en.isIntersecting) return;\n'+
     '      en.target.classList.add(en.target.classList.contains(\'rv\') ? \'on\' : \'active\');\n'+
     '      io.unobserve(en.target);\n'+
     '    });\n'+
     '  }, { threshold: 0.12 });\n'+
+    '  /* 일부 임베드 프리뷰는 IO 콜백이 아예 안 온다 — 정상 환경은 등록 직후 최소 1회 오므로, 침묵이면 전부 공개 */\n'+
+    '  setTimeout(function(){\n'+
+    '    if (ioAlive) return;\n'+
+    '    document.querySelectorAll(\'.rv, h2.wt, #acards\').forEach(function(el){\n'+
+    '      el.classList.add(el.classList.contains(\'rv\') ? \'on\' : \'active\');\n'+
+    '    });\n'+
+    '  }, 1200);\n'+
     '  document.querySelectorAll(\'.rv\').forEach(function(el){ io.observe(el); });\n'+
     '  document.querySelectorAll(\'h2.wt\').forEach(function(el){ io.observe(el); });\n'+
     '  var acardsEl = document.getElementById(\'acards\');\n'+
@@ -887,6 +900,12 @@
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
     d.images = shared.images || {};
+    /* 기획 데이터 렌더면 토목 실사 기본값이 주제와 충돌 — 추상 키비주얼 로테이션으로 교체(교체 슬롯은 그대로) */
+    var SKILL_IMGS = SKILL_ROT, FEAT_IMGS = FEAT_ROT;
+    if (shared.tagline || (Array.isArray(shared.features) && shared.features.length)) {
+      SKILL_IMGS = [KV_ROT[1], KV_ROT[2], KV_ROT[3], KV_ROT[0], KV_ROT[2]];
+      FEAT_IMGS = [KV_ROT[0], KV_ROT[2], KV_ROT[1]];
+    }
     /* GNB — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
     if (!shared.navTitle && (shared.productName || shared.tagline)) d.navTitle = shared.productName || BD.navTitle;
     if (!shared.navLinks && (shared.productName || shared.tagline)) d.navLinks = (TT[LANG] || TT.ko).nav;
@@ -943,7 +962,7 @@
       SEC.skill = '<section class="skill" id="skill" data-section="skill"><div class="wrap">' + sklTitle +
         '<div class="eg-vskill rv"><ul id="vsList">' + zz.map(function (z, i) {
           return '<li class="' + (i === 0 ? 'on' : '') + '"' + de('zigs.' + i + '.cap') + '>' + esc(z.cap || z.title) + '</li>';
-        }).join('') + '</ul><div class="vis">' + imSlot(d, 'skill0', SKILL_ROT[0], ' id="vsImg"') + '</div></div>' +
+        }).join('') + '</ul><div class="vis">' + imSlot(d, 'skill0', SKILL_IMGS[0], ' id="vsImg"') + '</div></div>' +
         zz.map(function (z, i) {
           return '<p class="eg-vsdesc" data-vsd="' + i + '"' + (i === 0 ? '' : ' style="display:none"') + de('zigs.' + i + '.desc') + '>' + ml(z.desc) + '</p>';
         }).join('') + '</div></section>';
@@ -956,7 +975,7 @@
         return '<div class="pane' + (i === 0 ? ' onv' : '') + '"><div class="tb">' +
           '<strong class="df"' + de('zigs.' + i + '.title') + '>' + ml(z.title) + '</strong>' +
           '<p' + de('zigs.' + i + '.desc') + '>' + ml(z.desc) + '</p></div>' +
-          imSlot(d, 'skill' + i, SKILL_ROT[i % SKILL_ROT.length]) + '</div>';
+          imSlot(d, 'skill' + i, SKILL_IMGS[i % SKILL_ROT.length]) + '</div>';
       }).join('') + '</div></div></section>';
 
     /* ── feature — 좌 sticky + 혜택(benefits) ── */
@@ -965,7 +984,7 @@
       SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap">' +
         '<h2 class="tt df rv" style="text-align:center">' + ml(tp(T.featT)) + '</h2>' +
         '<div class="eg-fgrid">' + bens.map(function (b, i) {
-          return '<div class="fc rv">' + imSlot(d, 'feature' + i, FEAT_ROT[i % FEAT_ROT.length]) +
+          return '<div class="fc rv">' + imSlot(d, 'feature' + i, FEAT_IMGS[i % FEAT_ROT.length]) +
             '<div class="bd"><b' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
             '<p' + de('benefits.' + i + '.link') + '>' + esc(b.cap ? b.cap + ' · ' : '') + esc(b.link || '') + '</p></div></div>';
         }).join('') + '</div></div></section>';
@@ -975,7 +994,7 @@
       '<div class="fright">' + bens.map(function (b, i) {
         return '<div class="fitem rv"><b class="df"' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
           '<p' + de('benefits.' + i + '.link') + '>' + esc(b.cap ? b.cap + ' · ' : '') + esc(b.link || '') + '</p>' +
-          '<div class="fcard">' + imSlot(d, 'feature' + i, FEAT_ROT[i % FEAT_ROT.length]) + '</div></div>';
+          '<div class="fcard">' + imSlot(d, 'feature' + i, FEAT_IMGS[i % FEAT_ROT.length]) + '</div></div>';
       }).join('') + '</div></div></div></section>';
 
     /* ── agenda — 리스트+드로어 | 시간표(sessions) ── */
@@ -1043,7 +1062,15 @@
     var ORDER = ['answer', 'skill', 'feature', 'agenda', 'faq', 'free'];
     var savedOrd = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
     var ordAll = savedOrd.concat(ORDER.filter(function (k) { return savedOrd.indexOf(k) < 0 && SEC[k]; }));
-    var hidden = shared.hiddenSections || [];
+    var hidden = (shared.hiddenSections || []).slice();
+    /* 기획(AI) 데이터가 있을 때: 주제와 안 맞아 빈 배열로 온 섹션은 데모로 채우지 않고 생략 */
+    var hasBrief = !!(shared.tagline || shared.productName || (Array.isArray(shared.features) && shared.features.length));
+    if (hasBrief) {
+      if (Array.isArray(shared.zigs) && !shared.zigs.length && hidden.indexOf('skill') < 0) hidden.push('skill');
+      if (Array.isArray(shared.benefits) && !shared.benefits.length && hidden.indexOf('feature') < 0) hidden.push('feature');
+      if (Array.isArray(shared.sessions) && !shared.sessions.length && hidden.indexOf('agenda') < 0) hidden.push('agenda');
+      if (Array.isArray(shared.faq) && !shared.faq.length && hidden.indexOf('faq') < 0) hidden.push('faq');
+    }
     var bodySecs = ordAll.filter(function (k) { return hidden.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
 
     /* ── 고정 프레임 — GNB·KV(+미션)·register·footer·dock·드로어 ── */
@@ -1054,14 +1081,18 @@
       '<nav>' + (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + navAnchors[i % 4] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</nav>' +
       '<a class="cta" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>';
 
-    var h1lines = String(d.tagline || '').split('\n').map(function (ln) { return '<span class="l">' + esc(ln) + '</span>'; }).join('');
+    var tgLines = String(d.tagline || '').split('\n');
+    var tgMax = tgLines.reduce(function (m, ln) { return Math.max(m, ln.length); }, 0);
+    /* 타이틀 길이별 스케일 — 짧은 임팩트 워드(HYPER-S)만 초대형, 길면 줄이 깨지지 않게 단계 축소 */
+    var h1Size = tgMax <= 9 ? '11.5vw' : tgMax <= 14 ? 'clamp(44px,8vw,150px)' : tgMax <= 22 ? 'clamp(36px,6vw,110px)' : 'clamp(30px,4.6vw,84px)';
+    var h1lines = tgLines.map(function (ln) { return '<span class="l">' + esc(ln) + '</span>'; }).join('');
     var kvHtml = '<section class="kv" id="top">' +
       '<div class="stick">' +
       '<div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src=\'' + att('ensol-hero.mp4') + '\'"></video></div>' +
       '<div class="ov" id="kvOv"></div>' +
       '<div class="sheen" aria-hidden="true"><i></i><i class="s2"></i></div>' +
       '<div class="in" id="kvIn">' +
-      '<h1 class="df" id="kvTitle"' + de('tagline') + '>' + h1lines + '</h1>' +
+      '<h1 class="df" id="kvTitle" style="font-size:' + h1Size + '"' + de('tagline') + '>' + h1lines + '</h1>' +
       '<p class="klead ent d2"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<div class="gbtn ent d4"><a class="white" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></div>' +
       '<div class="kvmeta ent d4">' +
@@ -1105,7 +1136,7 @@
 
     /* 드로어 데이터 주입 — 세션 + 이미지 로테이션 */
     var agData = ses.map(function (s0, i) {
-      return { t: s0.time || '', title: s0.title || '', spk: s0.by || '', img: att(SKILL_ROT[i % SKILL_ROT.length]), txt: s0.desc || '', pts: [] };
+      return { t: s0.time || '', title: s0.title || '', spk: s0.by || '', img: att(SKILL_IMGS[i % SKILL_ROT.length]), txt: s0.desc || '', pts: [] };
     });
     var agJson = JSON.stringify(agData).replace(/</g, '\\u003c').replace(/<\/script/gi, '<\\/script');
 
@@ -1117,7 +1148,7 @@
       '<style>' + CSS + (motion ? '' : '\n.nomo .rv,.nomo .kv .ent,.nomo h2.wt .w,.nomo h2.wt .gt,.nomo .answer .card{opacity:1 !important;transform:none !important;transition:none !important}') + '</style></head>' +
       '<body>' + gnbHtml + kvHtml + bodySecs + regHtml + footHtml + dockHtml + drawerHtml +
       '<script>window.__ensolAgenda=' + agJson + ';<\/script>' +
-      (V.skill === 'list' ? '<script>(function(){var l=document.getElementById("vsList");if(!l)return;var im=document.getElementById("vsImg");var imgs=' + JSON.stringify(zz.map(function (z, i) { return (d.images && d.images['skill' + i]) || att(SKILL_ROT[i % SKILL_ROT.length]); })) + ';Array.prototype.forEach.call(l.children,function(li,i){li.addEventListener("click",function(){Array.prototype.forEach.call(l.children,function(x){x.classList.remove("on")});li.classList.add("on");if(im)im.src=imgs[i];document.querySelectorAll(".eg-vsdesc").forEach(function(p){p.style.display=p.getAttribute("data-vsd")==String(i)?"":"none"});});});})();<\/script>' : '') +
+      (V.skill === 'list' ? '<script>(function(){var l=document.getElementById("vsList");if(!l)return;var im=document.getElementById("vsImg");var imgs=' + JSON.stringify(zz.map(function (z, i) { return (d.images && d.images['skill' + i]) || att(SKILL_IMGS[i % SKILL_ROT.length]); })) + ';Array.prototype.forEach.call(l.children,function(li,i){li.addEventListener("click",function(){Array.prototype.forEach.call(l.children,function(x){x.classList.remove("on")});li.classList.add("on");if(im)im.src=imgs[i];document.querySelectorAll(".eg-vsdesc").forEach(function(p){p.style.display=p.getAttribute("data-vsd")==String(i)?"":"none"});});});})();<\/script>' : '') +
       '<script>(function(){' + FNJS + '})();<\/script>' +
       '</body></html>';
   };
