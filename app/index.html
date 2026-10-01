@@ -421,7 +421,7 @@
   }
   // 첫 입력에 "내용"이 담겼는지 — 종류 단어·요청 상투구를 걷어내고 잔여 정보량으로 판단
   function hasContent(t){
-    const s=(t||'').replace(/ppt|피피티|발표용|발표|장표|슬라이드|프레젠테이션|이메일|메일|edm|뉴스레터|웹사이트|홈페이지|사이트|랜딩페이지|랜딩|만들고 ?싶어요?|만들어 ?줘|만들려고 ?해?|필요해요?|보내려고 ?해?|하고 ?싶어요?|해줘/gi,'').replace(/[\s.,!?~을를이가은는의로]/g,'');
+    const s=(t||'').replace(/ppt|피피티|발표용|발표|장표|슬라이드|프레젠테이션|이메일|메일|edm|뉴스레터|웹사이트|홈페이지|사이트|랜딩페이지|랜딩|만들고 ?싶어요?|만들어 ?줘|만들려고 ?해?|필요해요?|보내려고 ?해?|하고 ?싶어요?|해줘|첨부한?|파일|기획서|자료|바탕으로|기반으로|참고해서?|내용으로|프로모션|소개용?|attached?|file|based ?on/gi,'').replace(/[\s.,!?~을를이가은는의로]/g,'');
     return s.length>=8;
   }
 
@@ -1266,7 +1266,16 @@
 
     if(S.kind!=='edm'){
       // 내용: 첫 입력에 이미 담겨 있으면 그대로 시드, 아니면 브리프 질문 + 예시 칩
-      if(hasContent(first)){ S.plan=first; }
+      // 첨부를 언급했는데 실제 첨부가 없으면 — 받은 척 금지, 파일이나 내용을 다시 요청(사용자 신뢰 문제)
+      const saysAttach=/첨부|파일|기획서|attach|\bfile/i.test(S._rawInput||'');
+      const hasAttach=(first||'').indexOf('[첨부 문서:')>=0;
+      if(saysAttach && !hasAttach){
+        bot(_L('말씀하신 첨부 파일이 아직 안 보여요 📎 아래 + 버튼으로 올려주시거나, 내용을 직접 적어주세요.'));
+        sampleChips(SAMPLES[S.kind]);
+        const re=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
+        S.plan=re||'';
+      }
+      else if(hasContent(first)){ S.plan=first; }
       else {
         bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));
         sampleChips(SAMPLES[S.kind]);
