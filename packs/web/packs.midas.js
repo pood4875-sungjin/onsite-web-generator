@@ -280,7 +280,12 @@ const sections = {
     // lead 섹션이면 표제 블록 생략(페이지히어로가 대신) + 그리드 상단 여백 제거
     const head = c._lead ? '' : `<div class="rise">${(c.eyebrow || ctx.data.featureEyebrow) ? `<div class="badge" data-edit="featureEyebrow">${esc(c.eyebrow || ctx.data.featureEyebrow)}</div>` : ''}<h2 class="sec-title" data-edit="featureTitle">${esc(c.title || ctx.data.featureTitle || '핵심 기능')}</h2></div>`;
     const mt = c._lead ? '' : ' style="margin-top:40px"';
-    const cell = (cls) => items.map((it, i) => `<div class="${cls} rise"><span class="fcard__ico">${C.icon(ICONS[it.icon] || ICONS.check)}</span><h3 class="fcard__t" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="fcard__d" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div>`).join('');
+    // 카드 상단 미디어 — 편집모드에서 클릭→이미지 교체(data-img="feature{i}"). 이미지 없으면 기존 아이콘 유지
+    const imgs = ctx.data.images || {};
+    const fVis = (it, i) => imgs['feature' + i]
+      ? `<div class="fcard__media" data-img="feature${i}"><img src="${esc(imgs['feature' + i])}" alt=""></div>`
+      : `<span class="fcard__ico" data-img="feature${i}">${C.icon(ICONS[it.icon] || ICONS.check)}</span>`;
+    const cell = (cls) => items.map((it, i) => `<div class="${cls} rise">${fVis(it, i)}<h3 class="fcard__t" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="fcard__d" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div>`).join('');
     // cards — 보더 카드형 (feature.cards)
     if (vr === 'cards') return `
     <section class="${secCls(c)}">${head}
@@ -295,7 +300,7 @@ const sections = {
       <div class="flist feat--list"${mt}>${items.map((it, i) => `<div class="flist__it rise"><span class="flist__ico">${C.icon(ICONS[it.icon] || ICONS.check)}</span><div class="flist__body"><h3 class="flist__t" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="flist__d" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`;
     return `
     <section class="${secCls(c)}">${head}
-      <div class="card-grid"${mt}>${items.map((it, i) => `<div class="p-card rise"><div class="p-card__media">${C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="p-card__desc" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`;
+      <div class="card-grid"${mt}>${items.map((it, i) => `<div class="p-card rise"><div class="p-card__media" data-img="feature${i}">${imgs['feature' + i] ? `<img class="gal__img" src="${esc(imgs['feature' + i])}" alt="">` : C.icon(ICONS[it.icon] || ICONS.check)}</div><div class="p-card__body"><h3 class="p-card__title" data-edit="features.${i}.title">${esc(it.title)}</h3><p class="p-card__desc" data-edit="features.${i}.desc">${esc(it.desc || PH)}</p></div></div>`).join('')}</div></section>`;
   },
   stat: (c, ctx) => {
     const vr = V(ctx, 'stats'); // 정식 어휘 키(stats) 기준 — stat/stats 어느 타입으로 불려도 동일
@@ -760,6 +765,9 @@ const sectionsCss = () => `
   .midas .fcard{padding:28px;border:var(--bw) solid var(--line-2);border-radius:var(--radius-lg);background:var(--bg);text-align:left;transition:border-color .25s,transform .25s cubic-bezier(.33,1,.68,1)}
   .midas .fcard:hover{border-color:var(--ink);transform:translateY(-2px)}
   .midas .fcard__ico .ico{width:32px;height:32px;color:var(--ink)}
+  /* fcard 상단 미디어 — 편집에서 이미지 적용 시 아이콘 자리를 대체 */
+  .midas .fcard__media{aspect-ratio:16/9;border-radius:calc(var(--radius-lg) - 8px);overflow:hidden;background:rgba(244,244,249,.5)}
+  .midas .fcard__media img{width:100%;height:100%;object-fit:cover;display:block}
   .midas .fcard__t{margin-top:18px;font-family:var(--font-display);font-size:20px;font-weight:600;letter-spacing:-.3px}
   .midas .fcard__d{margin-top:8px;font-size:15px;line-height:1.6;color:var(--muted)}
   .midas .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}

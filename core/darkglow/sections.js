@@ -123,7 +123,9 @@ export const SECTIONS = {
       <div style="max-width:900px;margin:48px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
         ${features.map((f, i) => `<div class="rise" style="position:relative;overflow:hidden;padding:24px;border-radius:${t.radius};background:${t.surface};border:1px solid ${t.surfaceBorder}">
           <div style="position:absolute;right:-32px;top:-32px;width:96px;height:96px;border-radius:999px;filter:blur(32px);background:${t.glow};opacity:.35;pointer-events:none"></div>
-          <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
+          ${(d.images && d.images['feature' + i])
+            ? `<img data-img="feature${i}" src="${esc(d.images['feature' + i])}" alt="" style="position:relative;display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px">`
+            : `<div data-img="feature${i}" style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>`}
           <h3 data-edit="features.${i}.title" style="position:relative;margin:16px 0 0;font-size:18px;font-weight:600">${esc(f.title)}</h3>
           <p data-edit="features.${i}.desc" style="position:relative;margin:8px 0 0;color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`).join('')}
       </div>
@@ -645,7 +647,9 @@ export const DGV = {
           const big = i === 0;
           return `<div class="rise" style="position:relative;overflow:hidden;padding:${big ? '36px 32px' : '24px'};${card(t)}${big ? `;grid-column:1/-1;border-color:${t.accent}` : ''}">
             ${big ? `<div style="position:absolute;right:-48px;top:-48px;width:200px;height:200px;border-radius:999px;filter:blur(56px);background:${t.glow};opacity:.45;pointer-events:none"></div>` : ''}
-            <div style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>
+            ${(d.images && d.images['feature' + i])
+              ? `<img data-img="feature${i}" src="${esc(d.images['feature' + i])}" alt="" style="position:relative;display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px">`
+              : `<div data-img="feature${i}" style="position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:${t.accentSoft};color:${t.accent}">${svg(ICONS[i % ICONS.length])}</div>`}
             <h3 data-edit="features.${i}.title" style="position:relative;margin:16px 0 0;font-size:${big ? '24px' : '17px'};font-weight:600">${esc(f.title)}</h3>
             <p data-edit="features.${i}.desc" style="position:relative;margin:8px 0 0;${big ? 'max-width:520px;' : ''}color:${t.textMuted};font-size:15px;line-height:1.6">${esc(f.desc)}</p></div>`;
         }).join('')}

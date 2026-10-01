@@ -204,7 +204,12 @@
       var d = ctx.data, v = vr(ctx, 'feature');
       var items = (d.features && d.features.length ? d.features : [{ title: '기능', desc: '설명' }, { title: '기능', desc: '설명' }, { title: '기능', desc: '설명' }]);
       var cells = items.map(function (f, i) {
-        return '<div class="s-feat up d' + Math.min(i + 1, 3) + '"><span class="s-fic">' + icon(FEAT_ICONS[i % FEAT_ICONS.length]) + '</span>' +
+        // 카드 상단 비주얼 — 이미지(data.images['feature{i}'])가 있으면 미디어, 없으면 기존 아이콘 칩(클릭→교체 슬롯 공통)
+        var fk = 'feature' + i;
+        var vis = (d.images && d.images[fk])
+          ? '<img class="s-feat-img" src="' + esc(d.images[fk]) + '" alt="" data-img="' + fk + '">'
+          : '<span class="s-fic" data-img="' + fk + '">' + icon(FEAT_ICONS[i % FEAT_ICONS.length]) + '</span>';
+        return '<div class="s-feat up d' + Math.min(i + 1, 3) + '">' + vis +
           '<h3' + de('features.' + i + '.title') + '>' + esc(f.title || '') + '</h3>' +
           '<p' + de('features.' + i + '.desc') + '>' + esc(f.desc || '') + '</p></div>';
       }).join('');
@@ -730,6 +735,8 @@
       '.sat .cols3{grid-template-columns:repeat(3,1fr)}.sat .cols2{grid-template-columns:repeat(2,1fr)}',
       /* feature */
       '.sat .s-fic{display:grid;place-items:center;width:56px;height:56px;border-radius:var(--r);background:var(--brand-weak);color:var(--brand)}',
+      /* feature 카드 상단 미디어 — 편집에서 이미지 적용 시 아이콘 칩 자리를 대체 */
+      '.sat .s-feat-img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r)}',
       '.sat .s-feat h3{font-size:var(--fs-h24);line-height:32px;font-weight:600;margin-top:24px}',
       '.sat .s-feat p{font-size:var(--fs-sm);line-height:24px;font-weight:500;color:var(--body);margin-top:8px}',
       /* stat */

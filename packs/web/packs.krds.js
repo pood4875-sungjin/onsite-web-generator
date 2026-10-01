@@ -426,7 +426,9 @@ const sections = {
         </div>`}
         <div class="grid cols-3" style="margin-top:${c._lead ? 0 : 32}px">
           ${items.map((it, i) => C.card(
-            `${C.icon(ICONS[it.icon] || ICONS.check)}
+            `${(ctx.data.images && ctx.data.images['feature' + i])
+              ? `<div class="feat__media" data-img="feature${i}"><img src="${ctx.esc(ctx.data.images['feature' + i])}" alt=""></div>`
+              : `<span class="feat__icw" data-img="feature${i}">${C.icon(ICONS[it.icon] || ICONS.check)}</span>`}
              <h3 class="feat__t" data-edit="features.${i}.title">${ctx.esc(it.title)}</h3>
              <p class="feat__d" data-edit="features.${i}.desc">${ctx.esc(it.desc || H)}</p>`,
           ).replace('class="card', 'class="card rise')).join('')}
@@ -1034,7 +1036,9 @@ wrapVariants('feature', 'feature', {
         <div class="grid cols-3" ${topGap(c, 32)}>
           ${featItems(c).map((it, i) => `
           <div class="card card--pad fcard krise">
-            <span class="fcard__ic">${C.icon(ICONS[it.icon] || ICONS.check)}</span>
+            ${(ctx.data.images && ctx.data.images['feature' + i])
+              ? `<div class="feat__media" data-img="feature${i}"><img src="${esc(ctx.data.images['feature' + i])}" alt=""></div>`
+              : `<span class="fcard__ic" data-img="feature${i}">${C.icon(ICONS[it.icon] || ICONS.check)}</span>`}
             <h3 class="feat__t" data-edit="features.${i}.title">${esc(it.title)}</h3>
             <p class="feat__d" data-edit="features.${i}.desc">${esc(it.desc || H)}</p>
           </div>`).join('')}
@@ -1602,6 +1606,10 @@ function pageSectionsCss() {
   .krds .heroS__l{margin-top:4px;color:var(--muted);font-size:var(--fs-body-sm)}
   /* feature:cards / list */
   .krds .fcard__ic{display:inline-flex;width:48px;height:48px;border-radius:var(--radius);background:var(--brand-weak);align-items:center;justify-content:center;margin-bottom:4px}
+  /* feature 카드 상단 미디어 — 편집에서 이미지 적용 시 아이콘 자리를 대체(data-img="feature{i}") */
+  .krds .feat__icw{display:inline-flex}
+  .krds .feat__media{aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;margin-bottom:8px;background:var(--brand-weak)}
+  .krds .feat__media img{width:100%;height:100%;object-fit:cover;display:block}
   .krds .flist{gap:8px 48px}
   .krds .flist__it{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:var(--bw) solid var(--line)}
   .krds .flist__it .ico{margin-top:2px}

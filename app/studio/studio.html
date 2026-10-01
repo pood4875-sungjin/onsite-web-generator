@@ -815,6 +815,14 @@
       const rd=new FileReader(); rd.onload=()=>{ applyImage(key, rd.result); }; rd.readAsDataURL(f); };
     inp.click();
   }
+  /* 기본 이미지로 되돌리기 — data.images[key] 삭제 → 팩 렌더러의 기본 이미지/placeholder 복귀.
+     raw 팩(eDM)은 교체 시 html에 src가 박혀 원본 복원이 불가능하므로 버튼 자체를 숨긴다(pickImage 참조) */
+  function resetImage(key){
+    if(data.images && key in data.images){ delete data.images[key]; }
+    persist();
+    if(!isRawPack()) render();
+    if(curMode().slides) refreshPptPanel();   // 좌측 레일 썸네일 동기화(applyImage와 동일 계약)
+  }
   /* 이미지 피커 — Unsplash 큐레이션(키 불필요 직링크, 카테고리 탭) + 파일 업로드 + URL 입력.
      그리드 항목은 onerror 시 자동 제거 — 죽은 링크는 아예 안 보인다 */
   const IMGLIB={
@@ -833,11 +841,15 @@
     if(m) m.remove();
     m=document.createElement('div'); m.className='linkmodal'; m.id='imgPicker';
     const cats=Object.keys(IMGLIB);
+    // 되돌리기 — 교체한 적이 있을 때만 노출. raw 팩(eDM)은 기본값 복원 불가라 제외
+    const canReset=!!(data && data.images && data.images[key]!=null) && !isRawPack();
     m.innerHTML='<div class="lm-card" style="width:min(720px,94vw)"><button class="lm-x" id="ipClose" title="'+tL('닫기')+'">✕</button><b class="t">🖼 '+tL('이미지 바꾸기')+'</b>'+
       '<div class="ip-tabs"><button class="ip-tab on" data-c="__ai">✨ '+tL('AI 생성')+'</button>'+cats.map(c=>'<button class="ip-tab" data-c="'+c+'">'+tL(c)+'</button>').join('')+'<button class="ip-tab" data-c="__url">'+tL('직접 입력')+'</button></div>'+
       '<div class="ip-grid" id="ipGrid"></div>'+
+      (canReset?'<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><button class="dl" id="ipReset">↺ '+tL('기본 이미지로 되돌리기')+'</button></div>':'')+
       '</div>';
     document.body.append(m);
+    const rs=m.querySelector('#ipReset'); if(rs) rs.onclick=()=>{ resetImage(key); m.remove(); };
     const grid=m.querySelector('#ipGrid');
     function paint(cat){
       grid.innerHTML='';
