@@ -27,8 +27,8 @@ packs/
 | ppt | PPT | 기본(ax) | 레거시 폴백 | 팩 옆 .md |
 | mbm | 웹 | Civil Blue | **활성·시연 잠금**(GNB·히어로) | [packs.mbm.md](../../packs/web/packs.mbm.md) |
 | skmbm(id:mbmtoss) | 웹 | SK MBM | 활성 — MBM×toss 번안, 핀 스크럽 4종·배경 존 전환 | [packs.skmbm.md](../../packs/web/packs.skmbm.md) |
-| ensol | 웹 | Ensol Release | 활성 — 릴리즈 웨비나, 영상 히어로 핀+오버랩 카드·탭·드로어·웨이브 CTA | [packs.ensol.md](../../packs/web/packs.ensol.md) |
-| axday | 웹 | Ensol MBM | **활성·시연 잠금**(GNB·eyebrow·히어로·사진) | [packs.axday.md](../../packs/web/packs.axday.md) |
+| ensol | 웹 | Ensol MBM | 활성 — 릴리즈 웨비나, 영상 히어로 핀+오버랩 카드·탭·드로어·웨이브 CTA | [packs.ensol.md](../../packs/web/packs.ensol.md) |
+| axday | 웹 | Ensol AX Day | **활성·시연 잠금**(GNB·eyebrow·히어로·사진) | [packs.axday.md](../../packs/web/packs.axday.md) |
 | orbit | 웹 | Global MBM | **활성·시연 잠금**(GNB·히어로) | [packs.orbit.md](../../packs/web/packs.orbit.md) |
 | toss | 웹 | 챌린지 화이트 | 유지(피커 제외) | 팩 옆 .md |
 | saturn | 웹 | Saturn 블루 | 레거시(기존 프로젝트 열람용) | 팩 옆 .md |

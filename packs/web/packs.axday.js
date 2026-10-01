@@ -359,5 +359,5 @@
     fixed: [],
     labels: { band: '임팩트 밴드', count: '카운트다운', about: '소개', program: '세션', info: '일정·장소', faq: 'FAQ' },
   };
-  window.AXDAY_STYLE = { id: 'axday', name: 'Ensol MBM', desc: '화이트·블랙 미니멀 · 오렌지 임팩트 밴드 · 포토 카드 · 블루 CTA', swatch: 'linear-gradient(115deg,#FFFFFF 0%,#FFFFFF 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)' };
+  window.AXDAY_STYLE = { id: 'axday', name: 'Ensol AX Day', desc: '화이트·블랙 미니멀 · 오렌지 임팩트 밴드 · 포토 카드 · 블루 CTA', swatch: 'linear-gradient(115deg,#FFFFFF 0%,#FFFFFF 34%,#FF5500 34%,#FF5500 70%,#00A3FE 70%)' };
 })();
