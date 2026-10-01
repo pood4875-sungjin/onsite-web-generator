@@ -164,6 +164,40 @@
     footerBrand: 'MIDAS Group',
   };
 
+  /* 베리에이션 전용 CSS — 카탈로그(sections-ensol) 시안 이식 */
+  var EXT =
+    '.eg-bento{display:grid;grid-template-columns:1fr 1fr;gap:0}' +
+    '.eg-bento .bcard{position:relative;height:340px;overflow:hidden;background:var(--dark)}' +
+    '.eg-bento .bcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}' +
+    '.eg-bento .bcard:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,8,.45) 0%,rgba(4,3,8,0) 45%)}' +
+    '.eg-bento .bcard .bt{position:absolute;left:30px;top:28px;color:#fff;font-size:24px;font-weight:600;line-height:1.3;z-index:2}' +
+    '.eg-bento .bcard .bt p{margin-top:12px;font-size:14.5px;font-weight:400;line-height:1.55;color:rgba(255,255,255,.72);max-width:300px}' +
+    '.eg-vskill{display:grid;grid-template-columns:380px 1fr;gap:48px;max-width:1160px;margin:64px auto 0;align-items:stretch}' +
+    '.eg-vskill ul{list-style:none;display:flex;flex-direction:column;justify-content:center;gap:4px}' +
+    '.eg-vskill li{padding:18px 22px;font-size:19px;font-weight:600;color:#9AA3AE;border-left:2px solid var(--line);cursor:pointer;transition:color .25s,border-color .25s,background .25s}' +
+    '.eg-vskill li.on{color:var(--ink);border-color:var(--lime);background:linear-gradient(90deg,rgba(49,134,255,.07),transparent)}' +
+    '.eg-vskill .vis{height:420px;overflow:hidden}' +
+    '.eg-vskill .vis img{width:100%;height:100%;object-fit:cover}' +
+    '.eg-vsdesc{max-width:1160px;margin:22px auto 0;color:var(--g2);font-size:16px;line-height:1.65}' +
+    '.eg-tt2{display:grid;grid-template-columns:150px 1fr 220px;gap:24px;align-items:center;padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.12);color:#fff;max-width:1060px;margin:0 auto}' +
+    '.eg-tt2:first-of-type{border-top:1px solid rgba(255,255,255,.12)}' +
+    '.eg-tt2 .t{font-weight:600;opacity:.75}' +
+    '.eg-tt2 b{font-size:19px;font-weight:600}' +
+    '.eg-tt2 .s{color:rgba(255,255,255,.55);font-size:14px;text-align:right}' +
+    '.eg-faq2{max-width:1160px;margin:56px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:0 56px;align-items:start}' +
+    '.eg-faq2>div>.item:first-child{border-top:1px solid var(--line)}' +
+    '.eg-fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1160px;margin:64px auto 0}' +
+    '.eg-fgrid .fc{background:#fff}' +
+    '.eg-fgrid .fc img{width:100%;height:220px;object-fit:cover;display:block}' +
+    '.eg-fgrid .fc .bd{padding:22px 4px}' +
+    '.eg-fgrid .fc b{font-size:20px;font-weight:600;line-height:1.35}' +
+    '.eg-fgrid .fc p{margin-top:10px;font-size:15px;line-height:1.6;color:var(--g2)}' +
+    '.eg-band{padding:140px 0;text-align:center;background:linear-gradient(89.58deg,#3186ff 0%,#1257ff 45%,#346bf0 100%);color:#fff}' +
+    '.eg-band p{margin:18px 0 34px;font-size:19px;opacity:.85}' +
+    '.eg-band .gbtn{justify-content:center}' +
+    '.eg-band .gbtn a.white{background:#fff;color:#1257ff}' +
+    '@media (max-width:900px){.eg-bento{grid-template-columns:1fr}.eg-vskill{grid-template-columns:1fr;gap:20px}.eg-faq2{grid-template-columns:1fr}.eg-fgrid{grid-template-columns:1fr}.eg-tt2{grid-template-columns:90px 1fr;gap:12px}.eg-tt2 .s{display:none}}';
+
   var CSS = '\n'+
     ':root{\n'+
     '  --lime:#3186ff; --lime2:#346bf0; --onp:#fff; --sub:#4ea0ff; --onsub:#fff;\n'+
@@ -461,7 +495,7 @@
     '  .answer .card > img{animation:none;transform:none}\n'+
     '  .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,h2.wt .gt,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}\n'+
     '}\n'+
-    '';
+    '' + EXT;
 
   var FNJS = '\n'+
     '  \'use strict\';\n'+
@@ -864,12 +898,35 @@
       return '<span class="lw"' + (dePath ? ' data-edit="' + dePath + '"' : '') + '>' + lines.map(esc).join('<br>') + '</span><br><span class="hw">' + esc(last) + '</span>';
     }
 
+    /* 섹션 베리에이션 — 팩 키(shared.variants.answer 등) 우선, compose-web 공용 enum 번역 보조 */
+    var V0 = shared.variants || {};
+    var V = {
+      answer: V0.answer || (V0.feature === 'bento' ? 'bento' : 'cards'),
+      skill: V0.skill || (V0.feature === 'list' ? 'list' : 'tabs'),
+      agenda: V0.agenda === 'table' ? 'table' : 'list',
+      faq: V0.faq === 'twocol' ? 'twocol' : 'accordion',
+      feature: V0.feature === 'cards' || V0.feature === 'icons' ? 'grid' : (V0.featureGrid ? 'grid' : (V0.feature === 'grid' ? 'grid' : 'sticky')),
+      free: (V0.cta === 'banner' || V0.free === 'band') ? 'band' : 'wave',
+    };
+    if (V0.answer) V.answer = V0.answer;
+    if (V0.skill) V.skill = V0.skill;
+    if (V0.feature === 'sticky' || V0.feature === 'grid') V.feature = V0.feature;
+
     var SEC = {};
 
     /* ── answer — 키비주얼 카드(features 0-2) ── */
     var feats = (Array.isArray(d.features) && d.features.length ? d.features : BD.features).slice(0, 3);
-    SEC.answer = '<section class="answer" id="answer" data-section="answer"><div class="wrap">' +
-      '<h2 class="tt df rv"><span class="lw">' + esc(T.ansPre) + '</span><br><span class="hw"' + de('productName') + '>' + esc(d.productName) + '</span></h2>' +
+    var feats4 = (Array.isArray(d.features) && d.features.length ? d.features : BD.features).slice(0, 4);
+    var ansTitle = '<h2 class="tt df rv"><span class="lw">' + esc(T.ansPre) + '</span><br><span class="hw"' + de('productName') + '>' + esc(d.productName) + '</span></h2>';
+    if (V.answer === 'bento') {
+      SEC.answer = '<section class="answer" id="answer" data-section="answer" style="margin-top:0"><div class="wrap">' + ansTitle +
+        '<div class="eg-bento">' + feats4.map(function (f, i) {
+          return '<div class="bcard">' + imSlot(d, 'answer' + i, KV_ROT[i % KV_ROT.length]) +
+            '<div class="bt"><span' + de('features.' + i + '.title') + '>' + ml(f.title) + '</span>' +
+            '<p' + de('features.' + i + '.desc') + '>' + ml(f.desc) + '</p></div></div>';
+        }).join('') + '</div></div></section>';
+    }
+    else SEC.answer = '<section class="answer" id="answer" data-section="answer"><div class="wrap">' + ansTitle +
       '<ul class="cards" id="acards">' + feats.map(function (f, i) {
         return '<li class="card">' + imSlot(d, 'answer' + i, KV_ROT[i % KV_ROT.length]) +
           '<div class="ctx"><b class="df"' + de('features.' + i + '.title') + '>' + ml(f.title) + '</b>' +
@@ -878,8 +935,17 @@
 
     /* ── skill — 탭(zigs) ── */
     var zz = (Array.isArray(d.zigs) && d.zigs.length ? d.zigs : BD.zigs).slice(0, 5);
-    SEC.skill = '<section class="skill" id="skill" data-section="skill"><div class="wrap">' +
-      '<h2 class="tt df rv"><span class="lw">' + esc(T.sklPre) + '</span><br><span class="hw">' + esc(tp(T.sklPost)) + '</span></h2>' +
+    var sklTitle = '<h2 class="tt df rv"><span class="lw">' + esc(T.sklPre) + '</span><br><span class="hw">' + esc(tp(T.sklPost)) + '</span></h2>';
+    if (V.skill === 'list') {
+      SEC.skill = '<section class="skill" id="skill" data-section="skill"><div class="wrap">' + sklTitle +
+        '<div class="eg-vskill rv"><ul id="vsList">' + zz.map(function (z, i) {
+          return '<li class="' + (i === 0 ? 'on' : '') + '"' + de('zigs.' + i + '.cap') + '>' + esc(z.cap || z.title) + '</li>';
+        }).join('') + '</ul><div class="vis">' + imSlot(d, 'skill0', SKILL_ROT[0], ' id="vsImg"') + '</div></div>' +
+        zz.map(function (z, i) {
+          return '<p class="eg-vsdesc" data-vsd="' + i + '"' + (i === 0 ? '' : ' style="display:none"') + de('zigs.' + i + '.desc') + '>' + ml(z.desc) + '</p>';
+        }).join('') + '</div></section>';
+    }
+    else SEC.skill = '<section class="skill" id="skill" data-section="skill"><div class="wrap">' + sklTitle +
       '<div class="tabs rv" id="skillTabs">' + zz.map(function (z, i) {
         return '<button class="' + (i === 0 ? 'active' : '') + '"' + de('zigs.' + i + '.cap') + '>' + esc(z.cap || z.title) + '</button>';
       }).join('') + '</div>' +
@@ -892,7 +958,16 @@
 
     /* ── feature — 좌 sticky + 혜택(benefits) ── */
     var bens = (Array.isArray(d.benefits) && d.benefits.length ? d.benefits : BD.benefits).slice(0, 3);
-    SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap"><div class="fgrid">' +
+    if (V.feature === 'grid') {
+      SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap">' +
+        '<h2 class="tt df rv" style="text-align:center">' + ml(tp(T.featT)) + '</h2>' +
+        '<div class="eg-fgrid">' + bens.map(function (b, i) {
+          return '<div class="fc rv">' + imSlot(d, 'feature' + i, FEAT_ROT[i % FEAT_ROT.length]) +
+            '<div class="bd"><b' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
+            '<p' + de('benefits.' + i + '.link') + '>' + esc(b.cap ? b.cap + ' · ' : '') + esc(b.link || '') + '</p></div></div>';
+        }).join('') + '</div></div></section>';
+    }
+    else SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap"><div class="fgrid">' +
       '<div class="fleft"><h2 class="tt df rv">' + ml(tp(T.featT)) + '</h2><p class="sub rv">' + esc(T.featS) + '</p></div>' +
       '<div class="fright">' + bens.map(function (b, i) {
         return '<div class="fitem rv"><b class="df"' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
@@ -900,24 +975,57 @@
           '<div class="fcard">' + imSlot(d, 'feature' + i, FEAT_ROT[i % FEAT_ROT.length]) + '</div></div>';
       }).join('') + '</div></div></div></section>';
 
-    /* ── agenda — 리스트 + 드로어(sessions) ── */
+    /* ── agenda — 리스트+드로어 | 시간표(sessions) ── */
     var ses = (Array.isArray(d.sessions) && d.sessions.length ? d.sessions : BD.sessions).slice(0, 8);
-    SEC.agenda = '<section class="agenda" id="agenda" data-section="agenda"><div class="wrap">' +
-      '<h2 class="tt df rv">' + esc(T.agdT) + '</h2>' +
-      '<p class="asub rv"' + de('eventDate') + '>' + esc(d.eventDate) + '</p>' +
+    var agdHead = '<h2 class="tt df rv">' + esc(T.agdT) + '</h2>' +
+      '<p class="asub rv"' + de('eventDate') + '>' + esc(d.eventDate) + '</p>';
+    if (V.agenda === 'table') {
+      SEC.agenda = '<section class="agenda" id="agenda" data-section="agenda"><div class="wrap">' + agdHead +
+        ses.map(function (s0, i) {
+          return '<div class="eg-tt2"><span class="t df"' + de('sessions.' + i + '.time') + '>' + esc(s0.time) + '</span>' +
+            '<b' + de('sessions.' + i + '.title') + '>' + esc(s0.title) + '</b>' +
+            '<span class="s"' + de('sessions.' + i + '.by') + '>' + esc(s0.by) + '</span></div>';
+        }).join('') + '</div></section>';
+    }
+    else SEC.agenda = '<section class="agenda" id="agenda" data-section="agenda"><div class="wrap">' + agdHead +
       '<ul class="alist rv" id="alist"></ul></div></section>';
 
     /* ── faq ── */
     var fq = (Array.isArray(d.faq) && d.faq.length ? d.faq : BD.faq).slice(0, 8);
     var chev = '<span class="ar"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-    SEC.faq = '<section class="faq" id="faq" data-section="faq"><div class="wrap">' +
+    function faqItem(f, i) {
+      return '<div class="item"><button class="q"><span' + de('faq.' + i + '.q') + '>' + esc(f.q) + '</span>' + chev + '</button>' +
+        '<div class="a"><span' + de('faq.' + i + '.a') + '>' + ml(f.a) + '</span></div></div>';
+    }
+    if (V.faq === 'twocol') {
+      var half = Math.ceil(fq.length / 2);
+      SEC.faq = '<section class="faq" id="faq" data-section="faq"><div class="wrap">' +
+        '<h2 class="tt df rv">FAQ</h2><div class="eg-faq2" id="faqList">' +
+        '<div>' + fq.slice(0, half).map(function (f, i) { return faqItem(f, i); }).join('') + '</div>' +
+        '<div>' + fq.slice(half).map(function (f, i) { return faqItem(f, half + i); }).join('') + '</div>' +
+        '</div></div></section>';
+    }
+    else SEC.faq = '<section class="faq" id="faq" data-section="faq"><div class="wrap">' +
       '<h2 class="tt df rv">FAQ</h2><div id="faqList" class="rv">' + fq.map(function (f, i) {
         return '<div class="item"><button class="q"><span' + de('faq.' + i + '.q') + '>' + esc(f.q) + '</span>' + chev + '</button>' +
           '<div class="a"><span' + de('faq.' + i + '.a') + '>' + ml(f.a) + '</span></div></div>';
       }).join('') + '</div></div></section>';
 
     /* ── free — 웨이브 CTA ── */
-    SEC.free = '<section class="free" id="free" data-section="free"><canvas id="wave" aria-hidden="true"></canvas><div class="wrap">' +
+    var freeTitle = (function () {
+      var lines = String(d.ctaTitle || '').split('\n');
+      if (lines.length === 1) return '<span class="gt"' + de('ctaTitle') + '>' + esc(d.ctaTitle) + '</span>';
+      var last = lines.pop();
+      return '<span data-edit="ctaTitle">' + lines.map(esc).join('<br>') + '</span><br><span class="gt">' + esc(last) + '</span>';
+    })();
+    if (V.free === 'band') {
+      SEC.free = '<section class="free eg-band" id="free" data-section="free"><div class="wrap">' +
+        '<h2 class="tt df rv" style="color:#fff">' + ml(d.ctaTitle) + '</h2>' +
+        '<p class="rv"' + de('ctaSub') + '>' + ml(d.ctaSub) + '</p>' +
+        '<div class="gbtn rv"><a class="white" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div>' +
+        '</div></section>';
+    }
+    else SEC.free = '<section class="free" id="free" data-section="free"><canvas id="wave" aria-hidden="true"></canvas><div class="wrap">' +
       '<h2 class="tt df rv">' + (function () {
         var lines = String(d.ctaTitle || '').split('\n');
         if (lines.length === 1) return '<span class="gt"' + de('ctaTitle') + '>' + esc(d.ctaTitle) + '</span>';
@@ -984,7 +1092,7 @@
       '<i' + de('eventDate') + '>' + esc(d.eventDate) + '</i></div>' +
       '<a class="go" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' →</a></div>';
 
-    var drawerHtml = (hidden.indexOf('agenda') >= 0) ? '' :
+    var drawerHtml = (hidden.indexOf('agenda') >= 0 || V.agenda === 'table') ? '' :
       '<div class="adim" id="adim"></div>' +
       '<aside class="adrawer" id="adrawer" aria-hidden="true">' +
       '<button class="dclose" id="adclose" aria-label="Close">×</button>' +
@@ -1006,6 +1114,7 @@
       '<style>' + CSS + (motion ? '' : '\n.nomo .rv,.nomo .kv .ent,.nomo h2.wt .w,.nomo h2.wt .gt,.nomo .answer .card{opacity:1 !important;transform:none !important;transition:none !important}') + '</style></head>' +
       '<body>' + gnbHtml + kvHtml + bodySecs + regHtml + footHtml + dockHtml + drawerHtml +
       '<script>window.__ensolAgenda=' + agJson + ';<\/script>' +
+      (V.skill === 'list' ? '<script>(function(){var l=document.getElementById("vsList");if(!l)return;var im=document.getElementById("vsImg");var imgs=' + JSON.stringify(zz.map(function (z, i) { return (d.images && d.images['skill' + i]) || att(SKILL_ROT[i % SKILL_ROT.length]); })) + ';Array.prototype.forEach.call(l.children,function(li,i){li.addEventListener("click",function(){Array.prototype.forEach.call(l.children,function(x){x.classList.remove("on")});li.classList.add("on");if(im)im.src=imgs[i];document.querySelectorAll(".eg-vsdesc").forEach(function(p){p.style.display=p.getAttribute("data-vsd")==String(i)?"":"none"});});});})();<\/script>' : '') +
       '<script>(function(){' + FNJS + '})();<\/script>' +
       '</body></html>';
   };
