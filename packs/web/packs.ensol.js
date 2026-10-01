@@ -36,28 +36,28 @@
 
   /* 템플릿 고정 라벨 — 번역 파이프라인을 안 타므로 팩이 4언어 직접 처리. {p}=productName */
   var TT = {
-    ko: { msnEb: 'Why {p}', msn1: '엔지니어에게는 늘 **더 빠른 해석**과\n**끊김 없는 워크플로우**, **안정적인 대규모 해석**이 필요했습니다.', msn2: '{p}는 그 고민의 **다음 단계**를 제시합니다.',
+    ko: { nav: ['소개','핵심 기능','아젠다','웨비나'], msnEb: 'Why {p}', msn1: '엔지니어에게는 늘 **더 빠른 해석**과\n**끊김 없는 워크플로우**, **안정적인 대규모 해석**이 필요했습니다.', msn2: '{p}는 그 고민의 **다음 단계**를 제시합니다.',
           ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
           featT: '지금 쓰시는 {p},\n더 많은 일을 할 수 있습니다.', featS: '전문가와 함께 새 기능을 바로 적용해 보세요.',
           agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: '성함', fEmail: '이메일', fCompany: '회사명', fJob: '직책', fPhone: '휴대전화번호', fCountry: '국가/지역', fIndustry: '산업 분야 (예: 교량, 철도, 플랜트)',
           done1: '신청이 완료되었습니다.', done2: '자료를 메일로 보내드렸어요!\n캘린더에 웨비나 일정을 추가하고 특별 자료도 받아보세요.',
           dockTag: '사전 신청' },
-    en: { msnEb: 'Why {p}', msn1: 'Engineers have always needed **faster analysis**,\na **seamless workflow**, and **stable large-scale runs**.', msn2: '{p} goes beyond\nyour engineering struggles.',
+    en: { nav: ['Overview','Features','Agenda','Webinar'], msnEb: 'Why {p}', msn1: 'Engineers have always needed **faster analysis**,\na **seamless workflow**, and **stable large-scale runs**.', msn2: '{p} goes beyond\nyour engineering struggles.',
           ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
           featT: 'See How Your Current\n{p} Can Do More.', featS: 'Let our experts help you apply the new features instantly. Book a quick chat today!',
           agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: 'Name', fEmail: 'Email', fCompany: 'Company', fJob: 'Job Title', fPhone: 'Phone Number', fCountry: 'Country / Region', fIndustry: 'Industry (e.g. Bridge, Rail, Plant)',
           done1: 'Thank you for registering.', done2: 'Your materials are in your inbox!\nAdd the webinar to your calendar to unlock an exclusive White Paper.',
           dockTag: 'Register' },
-    ja: { msnEb: 'Why {p}', msn1: 'エンジニアには常に**より速い解析**と\n**途切れないワークフロー**、**安定した大規模解析**が必要でした。', msn2: '{p}は、その悩みの**次の段階**を示します。',
+    ja: { nav: ['紹介','主要機能','アジェンダ','ウェビナー'], msnEb: 'Why {p}', msn1: 'エンジニアには常に**より速い解析**と\n**途切れないワークフロー**、**安定した大規模解析**が必要でした。', msn2: '{p}は、その悩みの**次の段階**を示します。',
           ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
           featT: 'いまお使いの{p}、\nもっと多くのことができます。', featS: '専門家と一緒に新機能をすぐに適用してみましょう。',
           agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: 'お名前', fEmail: 'メール', fCompany: '会社名', fJob: '役職', fPhone: '電話番号', fCountry: '国・地域', fIndustry: '業種（例：橋梁・鉄道・プラント）',
           done1: 'お申し込みありがとうございます。', done2: '資料をメールでお送りしました！\nカレンダーにウェビナーを追加して特典資料も受け取りましょう。',
           dockTag: '事前登録' },
-    zh: { msnEb: 'Why {p}', msn1: '工程师始终需要**更快的分析**、\n**顺畅的工作流**与**稳定的大规模计算**。', msn2: '{p}为这些难题\n给出**下一步答案**。',
+    zh: { nav: ['介绍','核心功能','议程','直播'], msnEb: 'Why {p}', msn1: '工程师始终需要**更快的分析**、\n**顺畅的工作流**与**稳定的大规模计算**。', msn2: '{p}为这些难题\n给出**下一步答案**。',
           ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
           featT: '您现在使用的{p}，\n可以做得更多。', featS: '与专家一起立即应用新功能。',
           agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
@@ -887,6 +887,9 @@
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
     d.images = shared.images || {};
+    /* GNB — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
+    if (!shared.navTitle && (shared.productName || shared.tagline)) d.navTitle = shared.productName || BD.navTitle;
+    if (!shared.navLinks && (shared.productName || shared.tagline)) d.navLinks = (TT[LANG] || TT.ko).nav;
     var motion = opts.motion !== false;
     var T = TT[LANG] || TT.ko;
     function tp(s) { return String(s || '').replace(/\{p\}/g, d.productName); }
