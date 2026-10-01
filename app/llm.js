@@ -686,11 +686,18 @@
     '형식: {"productName":str,"tagline":str,"subcopy":str,"primaryCta":str,' +
     '"features":[{"title":str,"desc":str}],"stats":[{"value":str,"label":str}],' +
     '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str],' +
+    '"sessions":[{"time":str,"title":str,"by":str}],"eventDate":str|null,"eventPlace":str|null,"deadline":str|null,' +
+    '"faq":[{"q":str,"a":str}],"ctaTitle":str|null,"ctaSub":str|null,' +
+    '"zigs":[{"cap":str,"title":str,"desc":str}],"benefits":[{"cap":str,"title":str,"link":str}],' +
     '"pages":[{"name":str,"type":"product"|"features"|"pricing"|"faq"|"contact"|"manual"|"blog"|"landing"|"event","tagline":str,"subcopy":str,"features":[{"title":str,"desc":str}]}]}\n' +
     '규칙: pages는 kind=multi이고 브리프에 메뉴·페이지 구성(IA)이 있을 때만 채운다(메인홈 제외, 최대 6개, 각 features 3개). ' +
     'IA 언급이 없거나 single이면 []. productName은 브리프의 실제 제품명을 쓰고, 지어냈다면 assumed에 넣는다. 모든 필드를 빠짐없이 채운다. 브리프 근거 없는 항목은 맥락에 맞는 그럴듯한 예시로 채우고 ' +
     '그 필드명을 assumed에 넣는다(지어낸 수치 stats는 반드시, 단 브리프의 실제 수치를 쓴 필드는 제외). features 3개, stats 3개, ' +
-    'footerLinks 표준 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장.';
+    'footerLinks 표준 3개. 문구는 lang 언어로. tagline 12자 내외, subcopy 1~2문장. ' +
+    '행사·세미나면 sessions 4~6개·eventDate·faq 4~6개·ctaTitle/Sub를 채운다(아니면 sessions=[]·eventDate=null·faq=[]). ' +
+    'zigs=핵심 주제 딥다이브 4~5개(cap=탭 라벨 2~4단어, desc 2~3문장), benefits=참여·도입 혜택 3개(title은 \\n 두 줄). ' +
+    '실존 브랜드가 등장하면 널리 알려진 공개 정보(인재상·슬로건·주력 사업)는 네 지식으로 구체화하되, 날짜·일정·가격은 지어내지 말고 assumed에. ' +
+    '모든 설명은 빈 문자열 없이 알차게(한 단어 설명 금지).';
   async function composeSite(brief, onText) {
     brief = brief || {};
     var payload = { product: brief.product || '', name: brief.name || '', purpose: brief.purpose || '', plan: brief.plan || '', kind: brief.kind || 'single', lang: brief.lang || 'ko' };

@@ -1,46 +1,41 @@
-# packs.ensol.js — Ensol Release (제품 릴리즈 이벤트 랜딩)
+# Ensol MBM 랜딩 팩 (packs.ensol.js)
 
-## 1. 정체성
-CIVIL NX 2026 릴리즈 웨비나 씨드의 팩화. 블루 그라데이션(#3186ff→#346bf0→#4ea0ff) · 다크 #040308 · 각진 버튼(라운드 0) · 영상 히어로 핀 스크럽 · 좌측 snav 도트.
-원본 시안: `packs.ensol.sample.html` · 베리에이션 카탈로그: `docs/sections-ensol.html`(25블록).
+## 1. 정체
+CIVIL NX 2026 릴리즈 이벤트 씨드(packs.ensol.sample.html)의 팩화. 릴리즈·웨비나·행사 집객 랜딩 전용.
+제미나이 블루 그라(--btng/--txtg/--txtgB) · 잉크 #222 · 다크 #040308 · radius 0 · 컨테이너 1320.
 
-## 2. 계약
-- `renderEnsolPage(shared, {volume, motion})` → 완성 HTML 문서 반환 (volume 미사용, motion=false 시 nomo 정적)
-- `ENSOL_SECTION_SPEC` (template/fixed/labels) · `ENSOL_STYLE` (id: `ensol`)
-- 데이터: compose-web 평면 스키마(productName·tagline·navTitle·navLinks·primaryCta·secondaryCta·eventDate·bannerText·features[3]·agenda[5]·faq·ctaTitle·ctaSub·footerCopyright).
-- 팩 전용 필드(스키마 밖 — DEMO 폴백, 인라인 편집으로만 수정): `kvNote`·`whyEyebrow`·`answerTitle`·`skillTitle`·`skills[5]`(tab/title/desc/badge)·`featureTitle`·`featureSub`·`fitems[3]`·`regTitle`·`formCta`·`doneTitle`·`doneText`·`dockText`·`footerBrand`.
-- agenda 항목 확장 필드: `txt`(드로어 본문)·`pts[]`(포인트)·`img|vid`(드로어 미디어) — 리스트 li의 data-속성으로 실려 드로어가 DOM에서 읽음.
+## 2. export
+`renderEnsolPage(shared, {volume, motion})` · `ENSOL_SECTION_SPEC` · `ENSOL_STYLE`(id 'ensol', 표시명 "Ensol MBM").
 
-## 3. 타이틀 문법
-줄 단위: 첫 줄 `.lw`(500) → 이후 `.hw`(700). `**마커**` = 블루 그라데이션 `.gt`.
-적용 필드: answerTitle·skillTitle·featureTitle·agendaTitle·regTitle·ctaTitle + bannerText(KV 미션 멘트 줄들).
-섹션 타이틀 `clamp(44px,4.8vw,84px)` — 대형 모니터 반응. GNB·footer는 풀블리드(좌우 끝 정렬).
+## 3. 구성(고정 TEMPLATE)
+GNB(글래스→솔리드) → KV 핀 320vh(영상 풀블리드 → 글자 스태거 → 스케일다운 아웃 → 다크닝+블러 → 미션 멘트 스케일업 인)
+→ [movable] answer → skill → feature → agenda → faq → free → 고정 register(오로라 폼) → footer → dock → 드로어.
 
-## 3.5 섹션 어휘 (movable 7 + 고정)
-answer(오버랩 그래픽 카드 3 — features) · skill(자동재생 탭 5 — skills, 6초 프로그레스·모바일 아코디언 전환)
-· feature(좌 sticky 타이틀 + 우 카드 3 — fitems) · agenda(다크 리스트 + 우측 드로어 + Prev/Next)
-· register(블루 그라 배경 + 플로팅 라벨 폼 7필드 + 제출 시 done 전환) · faq(아코디언) · free(데이터 웨이브 캔버스 CTA).
-고정: GNB(투명→글래스) · KV 핀(220vh 스크럽 + answer 실높이 오버랩) · footer · dock(플로팅 바, hiddenSections로 숨김).
-answer를 숨기면 KV는 100vh 정적 히어로로 강등(오버랩 대상 부재).
+## 4. 데이터 매핑 (compose-web 평면 스키마)
+| 섹션 | 필드 |
+|---|---|
+| GNB | navTitle(로고)·navLinks(4)·primaryCta |
+| KV | tagline(h1, \n 줄분해+글자 스태거)·subcopy(klead)·eventDate·bannerText(메타 스트립) |
+| 미션 멘트 | TT 4언어 고정 카피 + productName 치환(**마커**→.gt 그라) |
+| answer | features 0-2 (title 2줄 권장·desc) + 키비주얼 ensol-kv4/3/2 로테이션 |
+| skill 탭 | zigs 0-4 (cap=탭 라벨·title=소제목·desc=본문) + ensol-skill1~5 |
+| feature | benefits 0-2 (cap 캡션·title 2줄·link 행동 문구) + mbmtoss 실사 3종 |
+| agenda | sessions (time·title·by) — 드로어 주입(window.__ensolAgenda) |
+| register | 고정 폼 7필드(TT 라벨) + productName·formTitle·deadline·eventDate |
+| faq | faq (q·a) |
+| free | ctaTitle(\n 마지막 줄 .gt)·ctaSub·primaryCta + 데이터 웨이브 |
+| dock | bannerCta·eventDate·primaryCta |
 
-## 4. 모션
-KV 스크럽(타이포 페이드 22~38% → 배경 블러+오버레이 28~52% → 미션 멘트 40~54%) — `fitOverlap()`이 KV 높이를
-`220vh + answer 실높이`로 동적 계산(화면 세로가 answer보다 커도 영상 누출·여백 증가 없음. 호출은 반드시 kv 참조 확보 뒤).
-+ 타이틀 글자/단어 스태거 · 카드 3 오버랩 등장(0/.45/.9s) · 탭 자동재생 · 드로어 슬라이드 · 웨이브 캔버스(마우스 융기·IO로 뷰포트 밖 정지).
-부트는 `ensolBoot.toString()` 직렬화 주입 — **함수 안 주석은 영문만**(EN 렌더 한국어 0 검증에 걸림).
-motion=false → `html.nomo`: 핀·오버랩 해제, 전부 표시, sub2·독·웨이브·프로그레스 제거. 탭 클릭 전환은 버튼 인라인 폴백으로 nomo에서도 동작.
+모든 슬롯 필드 단위 DEMO(KO)/DEMO_EN 폴백 — 빈 섹션·빈 텍스트 없음.
+이미지 전부 data-img 슬롯(images.answerN/skillN/featureN) — 스튜디오 교체·AI 생성·되돌리기 지원.
 
-## 5. 자산
-히어로 영상 `app/bg/ensol-hero.mp4`(로컬. 씨드의 원격 vod 88MB는 팩에서 미사용 — 외부망 차단·행 방지).
-카드 `ensol-kv2/3/4.avif` · 탭 `ensol-skill1~5.jpg` · 피처 `mbmtoss-hero3/session/network.jpg`(공유).
-이미지 슬롯: hero / answer1~3 / skill1~5 / feat1~3 (onerror 로컬→프로드 2단 폴백). imgs.hero에 .mp4/.webm이면 video.
+## 5. 섹션 컨트롤
+movable: answer/skill/feature/agenda/faq/free (tier core/mid). fixed: dock. sectionOrder·hiddenSections 계약.
+숨김 조합 안전: 씨드 JS에 섹션별 존재 가드(스킬·어젠다 블록 래핑, answer 오버랩, snav 필터, 웨이브).
 
 ## 6. 언어
-TT 4언어(ko/en/ja/zh) — 폼 7필드 라벨·FAQ 헤더·드로어 Prev/Next/닫기. DEMO(KO 번역)/DEMO_EN(씨드 원문) 쌍.
-CJK는 Noto Sans JP/SC 1순위 로드.
+LANG=shared._clang(ko/en/ja/zh). 템플릿 고정 라벨(TT)·미션 멘트 4언어. 데모 KO/EN 쌍.
 
-## 7. 함정
-- KV 핀은 `body{overflow-x:clip}` 필수 — css()에 포함
-- `fitOverlap()` 최초 호출은 kv 셀렉트 뒤(앞이면 TypeError로 부트 전체 사망 — 씨드에서 실사고)
-- 드로어 콘텐츠는 li data-속성 경유라 agenda 편집(title/by/time)은 리스트에서, txt/pts는 데이터로만
-- 좌측 snav 도트는 `data-snav` 섹션 자동 수집 — 섹션 추가 시 속성만 붙이면 도트 따라옴(다크 구간은 `data-dark`)
+## 7. 재생성
+씨드 수정 → 스크래치패드 build-ensol-pack.py 재실행(씨드 CSS/JS 추출·가드 가공·팩 재조립).
+주의: 씨드의 해당 앵커 문자열이 바뀌면 어셈블러 assert가 멈춘다(의도된 동기화 장치).

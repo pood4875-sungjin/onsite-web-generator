@@ -402,6 +402,7 @@ const WEB_SYSTEM =
   '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str],' +
   '"sessions":[{"time":str,"title":str,"by":str}],"eventDate":str|null,"eventPlace":str|null,"deadline":str|null,' +
   '"faq":[{"q":str,"a":str}],"ctaTitle":str|null,"ctaSub":str|null,' +
+  '"zigs":[{"cap":str,"title":str,"desc":str}],"benefits":[{"cap":str,"title":str,"link":str}],' +
   '"pages":[{"name":str,"type":"product"|"features"|"pricing"|"faq"|"contact"|"manual"|"blog"|"landing"|"event","tagline":str,"subcopy":str,' +
   '"features":[{"title":str,"desc":str}]}]}\n' +
   '규칙:\n' +
@@ -426,6 +427,13 @@ const WEB_SYSTEM =
   '- variants(섹션 표현 변형, 최상위·각 페이지 객체에 선택): {hero:"center|split|screenshot|bgimage", pagehero:"banner|breadcrumb", overview:"split|center|problem", intro:"center|quote", featurerows:"zigzag|numbered|checks", feature:"icons|cards|bento|list", gallery:"grid|mosaic", stats:"numbers|kpi|big", compare:"table|beforeafter|cards", testimonial:"cards|single|logos", steps:"horizontal|vertical|cards", agenda:"timeline|table", faq:"accordion|twocol|category", form:"center|split", cta:"banner|simple|cards", bloglist:"cards|list|featured", doclist:"cards|list", pricing:"cards|table"} — 콘텐츠 성격에 맞게(제품 화면 강조면 hero:screenshot, 기능 많으면 feature:bento). 페이지마다 똑같은 조합 반복 금지.\n' +
   '  features=그 페이지 주제에 맞는 카드 3개(메인홈 것과 겹치지 않게). 최대 6개 페이지, 메인홈은 제외.\n' +
   '- productName은 브리프에 있는 실제 제품·서비스명을 그대로 쓴다. 브리프에 없어 지어냈다면 assumed에 "productName"을 넣어라.\n' +
+  '- [조사] 브리프에 실존 기업·브랜드·제품이 등장하면, 널리 알려진 공개 정보(인재상·브랜드 슬로건·주력 사업·제품 특장점)를\n' +
+  '  네 지식으로 적극 반영해 구체적으로 채워라(예: "현대자동차 채용" 브리프 → 현대차 인재상·사업영역을 features·zigs에 녹인다).\n' +
+  '  단 날짜·장소·전형 일정·가격처럼 시기마다 달라지는 정보는 지어내지 말고 assumed에 넣는다.\n' +
+  '- zigs = 핵심 주제 딥다이브 4~5개: cap=짧은 탭 라벨(2~4단어), title=소제목, desc=2~3문장 상세. 탭·아코디언형 섹션에 쓰인다.\n' +
+  '- benefits = 참여·도입 혜택 3개: cap=짧은 라벨(내용에 맞게), title=두 줄 혜택명(\\n 분리), link=행동 문구(예 "자세히 보기").\n' +
+  '- [분량] 템플릿이 비지 않게 알차게: features desc 1~2문장(40~90자), zigs desc 2~3문장, faq 4~6개(답변 2문장 내외),\n' +
+  '  행사면 sessions 4~6개. 빈 문자열·한 단어 설명·같은 문장 반복 금지.\n' +
   '- 브리프(특히 plan)에 근거 있는 건 그대로 반영. 근거 없는 항목은 제품 맥락에 맞는 그럴듯한 예시로 채운다.\n' +
   '- 예시로 채운(=브리프에 없던) 필드명을 assumed 배열에 넣는다. 예: ["stats","footerLinks"]. 전부 근거 있으면 [].\n' +
   '- 특히 stats처럼 지어낸 수치는 반드시 assumed에 포함(사용자가 실제 값으로 고치도록). 단, 브리프에 있는 실제 수치를 그대로 쓴 필드는 assumed에 넣지 않는다.\n' +
@@ -452,6 +460,8 @@ const INTAKE_SYSTEM =
   '- opts=그 질문에 대한 구체적 선택지 3~4개. 브리프 맥락에 맞게 서로 다른 방향으로("기타"는 넣지 마라 — UI가 붙인다).\n' +
   '- multi=복수 응답이 자연스러운 질문이면 true(예: 강조하고 싶은 내용, 포함할 요소). 하나만 고르는 게 맞으면 false(예: 청중, 목적, 톤).\n' +
   '  예: 청중 질문이면 ["대학생·취준생","주니어 디자이너","실무 디자이너","리더·경영진"]처럼 브리프 주제에 맞춘 구체 선택지.\n' +
+  '- 행사·채용·캠페인처럼 일정이 생명인 브리프면: 일시·장소(온/오프라인)·대상·신청 방법 중 빠진 것을 최우선으로 묻는다.\n' +
+  '- 널리 알려진 공개 정보(기업 인재상·제품 특징 등)는 묻지 마라 — 생성 단계에서 알아서 채운다. 사용자만 아는 정보를 물어라.\n' +
   '- 브리프에 이미 있는 걸 다시 묻지 마라. 디자인 취향은 묻지 마라(스타일은 따로 고름). 분량도 묻지 마라(따로 고름).\n' +
   '- q는 정중한 한 문장. key는 영문 스네이크(예: target_audience). opts 각 항목은 내용과 어울리는 이모지 1개로 시작한다(예: "📈 매출 성장").\n' +
   '[언어 — 최우선 규칙] q와 opts의 모든 항목·name·product까지, 사용자에게 보이는 모든 문자열을 {LANG}로 작성한다.\n' +
