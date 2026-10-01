@@ -34,35 +34,37 @@
   var SKILL_ROT = ['ensol-skill1.jpg', 'ensol-skill2.jpg', 'ensol-skill3.jpg', 'ensol-skill4.jpg', 'ensol-skill5.jpg'];
   var FEAT_ROT = ['mbmtoss-hero3.jpg', 'mbmtoss-session.jpg', 'mbmtoss-network.jpg'];
 
-  /* 템플릿 고정 라벨 — 번역 파이프라인을 안 타므로 팩이 4언어 직접 처리. {p}=productName */
+  /* 템플릿 고정 라벨 — 번역 파이프라인을 안 타므로 팩이 4언어 직접 처리. {p}=productName.
+     주의: 어떤 주제(제품 릴리즈·채용·세미나·프로모션)가 와도 성립하는 범용 카피만 —
+     특정 도메인 용어(해석·기능·웨비나 등)를 넣지 않는다. */
   var TT = {
-    ko: { nav: ['소개','핵심 기능','아젠다','웨비나'], msnEb: 'Why {p}', msn1: '엔지니어에게는 늘 **더 빠른 해석**과\n**끊김 없는 워크플로우**, **안정적인 대규모 해석**이 필요했습니다.', msn2: '{p}는 그 고민의 **다음 단계**를 제시합니다.',
-          ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
-          featT: '지금 쓰시는 {p},\n더 많은 일을 할 수 있습니다.', featS: '전문가와 함께 새 기능을 바로 적용해 보세요.',
-          agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
-          fName: '성함', fEmail: '이메일', fCompany: '회사명', fJob: '직책', fPhone: '휴대전화번호', fCountry: '국가/지역', fIndustry: '산업 분야 (예: 교량, 철도, 플랜트)',
-          done1: '신청이 완료되었습니다.', done2: '자료를 메일로 보내드렸어요!\n캘린더에 웨비나 일정을 추가하고 특별 자료도 받아보세요.',
+    ko: { nav: ['소개','하이라이트','아젠다','신청'], msnEb: 'Why {p}', msn1: '우리에게는 늘 **더 나은 방법**과\n**확실한 다음 단계**가 필요했습니다.', msn2: '{p}에서\n그 **다음 단계**를 확인하세요.',
+          ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
+          featT: '{p},\n함께해야 할 이유가 더 있습니다.', featS: '참여자에게 드리는 혜택을 확인해 보세요.',
+          agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
+          fName: '성함', fEmail: '이메일', fCompany: '회사명', fJob: '직책', fPhone: '휴대전화번호', fCountry: '국가/지역', fIndustry: '소속 산업/분야',
+          done1: '신청이 완료되었습니다.', done2: '자료를 메일로 보내드렸어요!\n캘린더에 일정을 추가하고 특별 자료도 받아보세요.',
           dockTag: '사전 신청' },
-    en: { nav: ['Overview','Features','Agenda','Webinar'], msnEb: 'Why {p}', msn1: 'Engineers have always needed **faster analysis**,\na **seamless workflow**, and **stable large-scale runs**.', msn2: '{p} goes beyond\nyour engineering struggles.',
-          ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
-          featT: 'See How Your Current\n{p} Can Do More.', featS: 'Let our experts help you apply the new features instantly. Book a quick chat today!',
-          agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
-          fName: 'Name', fEmail: 'Email', fCompany: 'Company', fJob: 'Job Title', fPhone: 'Phone Number', fCountry: 'Country / Region', fIndustry: 'Industry (e.g. Bridge, Rail, Plant)',
-          done1: 'Thank you for registering.', done2: 'Your materials are in your inbox!\nAdd the webinar to your calendar to unlock an exclusive White Paper.',
+    en: { nav: ['Overview','Highlights','Agenda','Register'], msnEb: 'Why {p}', msn1: 'We have always needed **a better way**\nand a **clear next step**.', msn2: '{p} is where\nthat **next step** begins.',
+          ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
+          featT: 'More Reasons\nto Join {p}.', featS: 'See the benefits waiting for every attendee.',
+          agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
+          fName: 'Name', fEmail: 'Email', fCompany: 'Company', fJob: 'Job Title', fPhone: 'Phone Number', fCountry: 'Country / Region', fIndustry: 'Industry / Field',
+          done1: 'Thank you for registering.', done2: 'Your materials are in your inbox!\nAdd the event to your calendar and watch for bonus materials.',
           dockTag: 'Register' },
-    ja: { nav: ['紹介','主要機能','アジェンダ','ウェビナー'], msnEb: 'Why {p}', msn1: 'エンジニアには常に**より速い解析**と\n**途切れないワークフロー**、**安定した大規模解析**が必要でした。', msn2: '{p}は、その悩みの**次の段階**を示します。',
-          ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
-          featT: 'いまお使いの{p}、\nもっと多くのことができます。', featS: '専門家と一緒に新機能をすぐに適用してみましょう。',
-          agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
-          fName: 'お名前', fEmail: 'メール', fCompany: '会社名', fJob: '役職', fPhone: '電話番号', fCountry: '国・地域', fIndustry: '業種（例：橋梁・鉄道・プラント）',
-          done1: 'お申し込みありがとうございます。', done2: '資料をメールでお送りしました！\nカレンダーにウェビナーを追加して特典資料も受け取りましょう。',
+    ja: { nav: ['紹介','ハイライト','アジェンダ','登録'], msnEb: 'Why {p}', msn1: '私たちには、いつも**より良いやり方**と\n**確かな次の一歩**が必要でした。', msn2: 'その**次の一歩**を、\n{p}でご確認ください。',
+          ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
+          featT: '{p}に\n参加すべき理由が、まだあります。', featS: '参加者向けの特典をご確認ください。',
+          agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
+          fName: 'お名前', fEmail: 'メール', fCompany: '会社名', fJob: '役職', fPhone: '電話番号', fCountry: '国・地域', fIndustry: '業種・分野',
+          done1: 'お申し込みありがとうございます。', done2: '資料をメールでお送りしました！\nカレンダーに日程を追加して特典資料も受け取りましょう。',
           dockTag: '事前登録' },
-    zh: { nav: ['介绍','核心功能','议程','直播'], msnEb: 'Why {p}', msn1: '工程师始终需要**更快的分析**、\n**顺畅的工作流**与**稳定的大规模计算**。', msn2: '{p}为这些难题\n给出**下一步答案**。',
-          ansPre: 'The Answer,', sklPre: 'Boundless Capabilities', sklPost: 'of {p}',
-          featT: '您现在使用的{p}，\n可以做得更多。', featS: '与专家一起立即应用新功能。',
-          agdT: 'Webinar Agenda', regPre: '{p}', regPass: 'All-Access Pass',
-          fName: '姓名', fEmail: '邮箱', fCompany: '公司', fJob: '职位', fPhone: '电话', fCountry: '国家/地区', fIndustry: '行业（如桥梁、铁路、工厂）',
-          done1: '报名成功。', done2: '资料已发送至您的邮箱！\n将直播日程加入日历，还可获得专属白皮书。',
+    zh: { nav: ['介绍','亮点','议程','报名'], msnEb: 'Why {p}', msn1: '我们始终需要**更好的方法**\n和**明确的下一步**。', msn2: '在{p}，\n遇见那个**下一步**。',
+          ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
+          featT: '加入{p}，\n理由不止一个。', featS: '查看为参与者准备的专属权益。',
+          agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
+          fName: '姓名', fEmail: '邮箱', fCompany: '公司', fJob: '职位', fPhone: '电话', fCountry: '国家/地区', fIndustry: '行业/领域',
+          done1: '报名成功。', done2: '资料已发送至您的邮箱！\n将日程加入日历，还可获得专属资料。',
           dockTag: '报名' },
   };
 
@@ -196,7 +198,9 @@
     '.eg-band p{margin:18px 0 34px;font-size:19px;opacity:.85}' +
     '.eg-band .gbtn{justify-content:center}' +
     '.eg-band .gbtn a.white{background:#fff;color:#1257ff}' +
-    '@media (max-width:900px){.eg-bento{grid-template-columns:1fr}.eg-vskill{grid-template-columns:1fr;gap:20px}.eg-faq2{grid-template-columns:1fr}.eg-fgrid{grid-template-columns:1fr}.eg-tt2{grid-template-columns:90px 1fr;gap:12px}.eg-tt2 .s{display:none}}';
+    '@media (max-width:900px){.eg-bento{grid-template-columns:1fr}.eg-vskill{grid-template-columns:1fr;gap:20px}.eg-faq2{grid-template-columns:1fr}.eg-fgrid{grid-template-columns:1fr}.eg-tt2{grid-template-columns:90px 1fr;gap:12px}.eg-tt2 .s{display:none}}' +
+    /* 한국어 어절 줄바꿈 — 좁은 폭에서 단어 중간이 끊기지 않게 */
+    'h2.tt,.kv .klead,.kv .sub2 p,.answer .ctx,.eg-bento .bt,.eg-tt2 b,.agenda .am b,.skill .tb,.feature .fitem b,.faq .q span,.eg-fgrid .fc b{word-break:keep-all}';
 
   var CSS = '\n'+
     ':root{\n'+
@@ -255,11 +259,11 @@
     '/* ── GNB ─────────────────────────────── */\n'+
     '.gnb{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .35s,box-shadow .35s}\n'+
     '.gnb .in{max-width:none;margin:0;padding:0 56px;height:72px;display:flex;align-items:center;gap:24px}\n'+
-    '.gnb .logo{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.01em}\n'+
+    '.gnb .logo{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}\n'+
     '.gnb nav{display:flex;gap:6px;margin-left:auto}\n'+
     '.gnb nav a{padding:9px 14px;font-size:16px;font-weight:600;color:rgba(255,255,255,.85);transition:background .2s,color .2s}\n'+
     '.gnb nav a:hover{color:var(--lime)}\n'+
-    '.gnb .cta{border-radius:0;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:16px;font-weight:700;padding:16px 22px;transition:background-position .6s ease}\n'+
+    '.gnb .cta{border-radius:0;white-space:nowrap;flex-shrink:0;background:var(--btng);background-size:220% 100%;background-position:0% 50%;color:#fff;font-size:16px;font-weight:700;padding:16px 22px;transition:background-position .6s ease}\n'+
     '.gnb .cta:hover{background-position:100% 50%}\n'+
     '.gnb.solid{background:rgba(255,255,255,.72);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}\n'+
     '.gnb.solid .logo{color:var(--ink)}\n'+
@@ -278,9 +282,9 @@
     '.kv .sheen i.s2{width:24%;opacity:.7;animation-delay:3.8s}\n'+
     '@keyframes sheenSweep{0%{transform:translateX(-160%) skewX(-14deg)}34%{transform:translateX(440%) skewX(-14deg)}100%{transform:translateX(440%) skewX(-14deg)}}\n'+
     '.kv .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:0 24px;transform:translateY(-50px)}\n'+
-    '.kv h1{margin:0 0 34px;font-size:11.5vw;font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}\n'+
+    '.kv h1{margin:0 0 34px;font-size:var(--h1s,11.5vw);word-break:keep-all;font-weight:700;line-height:1.02;letter-spacing:-.02em;text-shadow:0 1px 10px rgba(0,0,0,.15)}\n'+
     '.kv .klead{margin-bottom:56px;font-size:clamp(19px,2.4vw,40px);font-weight:500;color:rgba(255,255,255,.95);text-shadow:0 1px 6px rgba(0,0,0,.2)}\n'+
-    '.kv h1 .l{display:block}\n'+
+    '.kv h1 .l{display:block}.kv h1 .l.lt{font-weight:500}\n'+
     '.kv .ent{opacity:0;transform:translateY(16px);transition:opacity .8s cubic-bezier(.2,.6,.2,1),transform .8s cubic-bezier(.2,.6,.2,1)}\n'+
     '.kv.ready .ent{opacity:1;transform:none}\n'+
     '.kv.ready .kvmeta{opacity:.7}\n'+
@@ -290,7 +294,7 @@
     '.kv h1 .w{display:inline-block;opacity:0;transform:translate3d(0,14px,0);transition:opacity .7s cubic-bezier(.2,.6,.2,1),transform .7s cubic-bezier(.2,.6,.2,1);will-change:opacity,transform}\n'+
     '.kv.ready h1 .w{opacity:1;transform:translate3d(0,0,0)}\n'+
     '.kv .gbtn{justify-content:center}\n'+
-    '.kv .kvmeta{position:absolute;left:0;right:0;bottom:32px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:18px;font-weight:500;letter-spacing:.01em}\n'+
+    '.kv .kvmeta{position:absolute;left:0;right:0;bottom:32px;display:flex;justify-content:space-between;align-items:center;padding:0 56px;color:rgba(255,255,255,.85);font-size:clamp(12px,1.25vw,18px);font-weight:500;letter-spacing:.01em}\n'+
     '.kv .kvmeta .mid{position:absolute;left:50%;transform:translateX(-50%)}\n'+
     '.kv .sub2{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;opacity:0;pointer-events:none;padding:0 24px}\n'+
     '\n'+
@@ -314,7 +318,7 @@
     '@keyframes kvIdle{from{transform:scale(1.06) translate(1.2%,1%)}to{transform:scale(1.13) translate(-1.5%,-1.5%)}}\n'+
     '.answer .go{position:absolute;right:26px;bottom:26px;width:52px;height:52px;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);color:#fff;font-size:19px;font-weight:700;transition:background .25s;z-index:2;will-change:transform;pointer-events:none}\n'+
     '.answer .card:hover .go{background:rgba(255,255,255,.26)}\n'+
-    '.answer .ctx{position:absolute;left:40px;right:96px;top:40px;z-index:1;text-align:left}\n'+
+    '.answer .ctx{position:absolute;left:40px;right:96px;top:40px;z-index:1;text-align:left;text-shadow:0 1px 12px rgba(0,0,0,.35)}\n'+
     '.answer .ctx b{display:block;margin-bottom:14px;color:#fff;font-size:32px;font-weight:600;line-height:1.3}\n'+
     '.answer .ctx p{color:rgba(255,255,255,.72);font-size:15px;line-height:1.6}\n'+
     '\n'+
@@ -463,12 +467,15 @@
     '/* ── 모바일 ── */\n'+
     '@media (max-width:900px){\n'+
     '  .gnb nav{display:none}\n'+
+    '  .gnb .in{padding:0 20px;height:60px}\n'+
+    '  .gnb .logo{font-size:15px;max-width:62vw}\n'+
+    '  .gnb .cta{font-size:13px;padding:10px 14px;margin-left:auto}\n'+
     '  .snav{display:none}\n'+
     '  h2.tt{font-size:36px}\n'+
-    '  .kv h1{font-size:18vw}\n'+
+    '  .kv h1{font-size:var(--h1sm,18vw)}\n'+
     '  .kv .klead{font-size:17px}\n'+
     '  .kv .gbtn{flex-direction:column;align-items:center;gap:12px}\n'+
-    '  .kv .kvmeta{font-size:11px;padding:0 20px}\n'+
+    '  .kv .kvmeta{font-size:11px;padding:0 20px;flex-direction:column;gap:3px;align-items:center;justify-content:flex-end;bottom:16px;text-align:center}.kv .kvmeta .mid{position:static;transform:none}\n'+
     '  .kv .sub2 p{font-size:20px}\n'+
     '  .answer .cards{flex-direction:column;gap:28px}\n'+
     '  .answer .card{flex:none;height:110vw}\n'+
@@ -900,15 +907,28 @@
     var d = {};
     for (var k in BD) d[k] = shared[k] != null && shared[k] !== '' && !(Array.isArray(shared[k]) && !shared[k].length) ? shared[k] : BD[k];
     d.images = shared.images || {};
+    /* 기획(AI) 데이터 유무 — 데모 전용 요소(토목 이미지·데모 브랜드·토목 폼 예시)를 범용으로 전환하는 스위치 */
+    var hasBrief = !!(shared.tagline || shared.productName || (Array.isArray(shared.features) && shared.features.length));
     /* 기획 데이터 렌더면 토목 실사 기본값이 주제와 충돌 — 추상 키비주얼 로테이션으로 교체(교체 슬롯은 그대로) */
     var SKILL_IMGS = SKILL_ROT, FEAT_IMGS = FEAT_ROT;
-    if (shared.tagline || (Array.isArray(shared.features) && shared.features.length)) {
+    if (hasBrief) {
       SKILL_IMGS = [KV_ROT[1], KV_ROT[2], KV_ROT[3], KV_ROT[0], KV_ROT[2]];
       FEAT_IMGS = [KV_ROT[0], KV_ROT[2], KV_ROT[1]];
     }
-    /* GNB — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
-    if (!shared.navTitle && (shared.productName || shared.tagline)) d.navTitle = shared.productName || BD.navTitle;
-    if (!shared.navLinks && (shared.productName || shared.tagline)) d.navLinks = (TT[LANG] || TT.ko).nav;
+    /* GNB·푸터 — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
+    if (!shared.navTitle && hasBrief) d.navTitle = shared.productName || BD.navTitle;
+    if (!shared.navLinks && hasBrief) d.navLinks = (TT[LANG] || TT.ko).nav;
+    if (!shared.footerBrand && hasBrief) d.footerBrand = d.productName;
+    /* deadline — compose-web가 ISO8601로 보내는 값은 표시용으로 포맷 */
+    d.deadline = (function (s) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(s || ''));
+      if (!m) return s;
+      var mo = +m[2], da = +m[3], hm = m[4] + ':' + m[5];
+      if (LANG === 'en') { var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; return 'Until ' + MON[mo - 1] + ' ' + da + ', ' + hm; }
+      if (LANG === 'ja') return mo + '月' + da + '日 ' + hm + ' 締切';
+      if (LANG === 'zh') return mo + '月' + da + '日 ' + hm + ' 截止';
+      return mo + '월 ' + da + '일 ' + hm + ' 마감';
+    })(d.deadline);
     var motion = opts.motion !== false;
     var T = TT[LANG] || TT.ko;
     function tp(s) { return String(s || '').replace(/\{p\}/g, d.productName); }
@@ -1064,7 +1084,6 @@
     var ordAll = savedOrd.concat(ORDER.filter(function (k) { return savedOrd.indexOf(k) < 0 && SEC[k]; }));
     var hidden = (shared.hiddenSections || []).slice();
     /* 기획(AI) 데이터가 있을 때: 주제와 안 맞아 빈 배열로 온 섹션은 데모로 채우지 않고 생략 */
-    var hasBrief = !!(shared.tagline || shared.productName || (Array.isArray(shared.features) && shared.features.length));
     if (hasBrief) {
       if (Array.isArray(shared.zigs) && !shared.zigs.length && hidden.indexOf('skill') < 0) hidden.push('skill');
       if (Array.isArray(shared.benefits) && !shared.benefits.length && hidden.indexOf('feature') < 0) hidden.push('feature');
@@ -1082,23 +1101,38 @@
       '<a class="cta" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></header>';
 
     var tgLines = String(d.tagline || '').split('\n');
-    var tgMax = tgLines.reduce(function (m, ln) { return Math.max(m, ln.length); }, 0);
-    /* 타이틀 길이별 스케일 — 짧은 임팩트 워드(HYPER-S)만 초대형, 길면 줄이 깨지지 않게 단계 축소 */
-    var h1Size = tgMax <= 9 ? '11.5vw' : tgMax <= 14 ? 'clamp(44px,8vw,150px)' : tgMax <= 22 ? 'clamp(36px,6vw,110px)' : 'clamp(30px,4.6vw,84px)';
-    var h1lines = tgLines.map(function (ln) { return '<span class="l">' + esc(ln) + '</span>'; }).join('');
+    /* 타이틀 자동 스케일 — 글자폭 추정(CJK 0.95em·라틴 0.6em·공백 0.25em) 기반 연속 스케일.
+       짧은 임팩트 워드(HYPER-S)는 씨드 원형 11.5vw(모바일 18vw) 그대로, 길면 한 줄이 가로폭에 맞게 줄어든다.
+       인라인 font-size가 아니라 CSS 변수(--h1s/--h1sm)로 넣어 모바일 미디어쿼리가 살아있다. */
+    var tgWu = tgLines.reduce(function (m, ln) {
+      var w = 0;
+      for (var i = 0; i < ln.length; i++) {
+        var c = ln.charAt(i);
+        w += /[ᄀ-ᇿ⺀-鿿가-힯豈-﫿　-〿＀-￯]/.test(c) ? 0.95 : c === ' ' ? 0.25 : 0.6;
+      }
+      return Math.max(m, w);
+    }, 0) || 1;
+    var dvw = Math.min(11.5, 90 / tgWu), mvw = Math.min(18, 87 / tgWu);
+    var h1Vars = '--h1s:' + (dvw >= 11.5 ? '11.5vw' : 'clamp(30px,' + dvw.toFixed(2) + 'vw,' + Math.round(dvw * 14.4) + 'px)') + ';--h1sm:' + mvw.toFixed(2) + 'vw';
+    /* 여러 줄이면 마지막 줄만 볼드, 앞 줄은 라이트(.lt) — 하우스 타이틀 강약 룰 */
+    var h1lines = tgLines.map(function (ln, i) { return '<span class="l' + (tgLines.length > 1 && i < tgLines.length - 1 ? ' lt' : '') + '">' + esc(ln) + '</span>'; }).join('');
     var kvHtml = '<section class="kv" id="top">' +
       '<div class="stick">' +
       '<div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src=\'' + att('ensol-hero.mp4') + '\'"></video></div>' +
       '<div class="ov" id="kvOv"></div>' +
       '<div class="sheen" aria-hidden="true"><i></i><i class="s2"></i></div>' +
       '<div class="in" id="kvIn">' +
-      '<h1 class="df" id="kvTitle" style="font-size:' + h1Size + '"' + de('tagline') + '>' + h1lines + '</h1>' +
+      '<h1 class="df" id="kvTitle" style="' + h1Vars + '"' + de('tagline') + '>' + h1lines + '</h1>' +
       '<p class="klead ent d2"' + de('subcopy') + '>' + ml(d.subcopy) + '</p>' +
       '<div class="gbtn ent d4"><a class="white" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div></div>' +
       '<div class="kvmeta ent d4">' +
       '<span' + de('navTitle') + '>' + esc(d.navTitle) + '</span>' +
       '<span class="mid"' + de('eventDate') + '>' + esc(d.eventDate) + '</span>' +
-      '<span' + de('bannerText') + '>' + esc(d.bannerText) + '</span></div>' +
+      /* 세 번째 슬롯은 짧은 행사 성격 라벨 자리 — 기획 데이터면 eventPlace 1행(문장형 bannerText는 dock으로) */
+      (function () {
+        var pl = String(d.eventPlace || '').split('\n')[0];
+        return hasBrief && pl ? '<span' + de('eventPlace') + '>' + esc(pl) + '</span>' : '<span' + de('bannerText') + '>' + esc(d.bannerText) + '</span>';
+      })() + '</div>' +
       '<div class="sub2" id="kvSub"><div class="tx">' +
       '<span class="eb">' + esc(tp(T.msnEb)) + '</span>' +
       '<p>' + gt(T.msn1) + '</p><p>' + gt(tp(T.msn2)) + '</p>' +
@@ -1120,9 +1154,12 @@
       '<b class="df"' + de('footerBrand') + '>' + esc(d.footerBrand) + '</b>' +
       '<span' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span></div></div></footer>';
 
+    /* dock 본문 — 설명형 문장이 어울리는 자리. AI 스키마는 bannerText=문장·bannerCta=짧은 버튼형이라
+       기획 데이터면 둘 중 긴 쪽을 쓴다(짧은 CTA는 옆의 go 버튼과 중복). 데모는 씨드 그대로 bannerCta. */
+    var dockLong = hasBrief && String(d.bannerText || '').length > String(d.bannerCta || '').length;
     var dockHtml = (shared.hiddenSections || []).indexOf('dock') >= 0 ? '' :
       '<div class="dock" id="dock" data-section="dock"><div class="tx">' +
-      '<b' + de('bannerCta') + '>' + esc(d.bannerCta) + '</b>' +
+      '<b' + de(dockLong ? 'bannerText' : 'bannerCta') + '>' + esc(dockLong ? d.bannerText : d.bannerCta) + '</b>' +
       '<i' + de('eventDate') + '>' + esc(d.eventDate) + '</i></div>' +
       '<a class="go" href="#register"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' →</a></div>';
 

@@ -15,18 +15,18 @@ GNB(글래스→솔리드) → KV 핀 320vh(영상 풀블리드 → 글자 스�
 | 섹션 | 필드 |
 |---|---|
 | GNB | navTitle(로고)·navLinks(4)·primaryCta |
-| KV | tagline(h1, \n 줄분해+글자 스태거)·subcopy(klead)·eventDate·bannerText(메타 스트립) |
-| 미션 멘트 | TT 4언어 고정 카피 + productName 치환(**마커**→.gt 그라) |
+| KV | tagline(h1, \n 줄분해+글자 스태거, 글자폭 추정 연속 자동 스케일 --h1s/--h1sm·마지막 줄만 볼드)·subcopy(klead)·eventDate·메타 스트립 3번째=eventPlace 1행(기획)/bannerText(데모) |
+| 미션 멘트 | TT 4언어 고정 카피(주제 불문 범용 — 도메인 용어 금지) + productName 치환(**마커**→.gt 그라) |
 | answer | features 0-2 (title 2줄 권장·desc) + 키비주얼 ensol-kv4/3/2 로테이션 |
 | skill 탭 | zigs 0-4 (cap=탭 라벨·title=소제목·desc=본문) + ensol-skill1~5 |
 | feature | benefits 0-2 (cap 캡션·title 2줄·link 행동 문구) + mbmtoss 실사 3종 |
 | agenda | sessions (time·title·by) — 드로어 주입(window.__ensolAgenda) |
-| register | 고정 폼 7필드(TT 라벨) + productName·formTitle·deadline·eventDate |
+| register | 고정 폼 7필드(TT 라벨) + productName·formTitle·deadline(ISO8601이면 언어별 'M월 D일 HH:MM 마감' 자동 포맷)·eventDate |
 | faq | faq (q·a) |
 | free | ctaTitle(\n 마지막 줄 .gt)·ctaSub·primaryCta + 데이터 웨이브 |
-| dock | bannerCta·eventDate·primaryCta |
+| dock | 기획 데이터면 bannerText/bannerCta 중 긴 쪽(짧은 CTA는 go 버튼과 중복)·eventDate·primaryCta |
 
-모든 슬롯 필드 단위 DEMO(KO)/DEMO_EN 폴백 — 빈 섹션·빈 텍스트 없음.
+모든 슬롯 필드 단위 DEMO(KO)/DEMO_EN 폴백 — 빈 섹션·빈 텍스트 없음. 기획 데이터(hasBrief)면 데모 전용 요소를 범용 전환: 토목 실사→추상 키비주얼, footerBrand→productName, GNB 라벨→TT nav.
 이미지 전부 data-img 슬롯(images.answerN/skillN/featureN) — 스튜디오 교체·AI 생성·되돌리기 지원.
 
 ## 5. 섹션 컨트롤
