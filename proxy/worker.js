@@ -402,7 +402,7 @@ const WEB_SYSTEM =
   '"bannerText":str,"bannerCta":str,"footerLinks":[str],"footerCopyright":str,"assumed":[str],' +
   '"sessions":[{"time":str,"title":str,"by":str}],"eventDate":str|null,"eventPlace":str|null,"deadline":str|null,' +
   '"faq":[{"q":str,"a":str}],"ctaTitle":str|null,"ctaSub":str|null,' +
-  '"zigs":[{"cap":str,"title":str,"desc":str}],"benefits":[{"cap":str,"title":str,"link":str}],' +
+  '"zigs":[{"cap":str,"title":str,"desc":str}],"benefits":[{"cap":str,"title":str,"link":str}],"imageTheme":"people|tech|event|civil|architecture|machine|geo|abstract",' +
   '"pages":[{"name":str,"type":"product"|"features"|"pricing"|"faq"|"contact"|"manual"|"blog"|"landing"|"event","tagline":str,"subcopy":str,' +
   '"features":[{"title":str,"desc":str}]}]}\n' +
   '규칙:\n' +
@@ -427,6 +427,8 @@ const WEB_SYSTEM =
   '- variants(섹션 표현 변형, 최상위·각 페이지 객체에 선택): {hero:"center|split|screenshot|bgimage", pagehero:"banner|breadcrumb", overview:"split|center|problem", intro:"center|quote", featurerows:"zigzag|numbered|checks", feature:"icons|cards|bento|list", gallery:"grid|mosaic", stats:"numbers|kpi|big", compare:"table|beforeafter|cards", testimonial:"cards|single|logos", steps:"horizontal|vertical|cards", agenda:"timeline|table", faq:"accordion|twocol|category", form:"center|split", cta:"banner|simple|cards", bloglist:"cards|list|featured", doclist:"cards|list", pricing:"cards|table"} — 콘텐츠 성격에 맞게(제품 화면 강조면 hero:screenshot, 기능 많으면 feature:bento). 페이지마다 똑같은 조합 반복 금지.\n' +
   '  features=그 페이지 주제에 맞는 카드 3개(메인홈 것과 겹치지 않게). 최대 6개 페이지, 메인홈은 제외.\n' +
   '- productName은 브리프에 있는 실제 제품·서비스명을 그대로 쓴다. 브리프에 없어 지어냈다면 assumed에 "productName"을 넣어라.\n' +
+  '- imageTheme: 페이지 사진 분위기 1개 — 채용·조직문화·사람 중심=people, IT·SaaS·개발=tech, 세미나·행사·컨퍼런스=event,\n' +
+  '  교량·토목·건설=civil, 건축·부동산=architecture, 기계·제조=machine, 지반·지질=geo, 그 외·중립=abstract.\n' +
   '- [조사] 브리프에 실존 기업·브랜드·제품이 등장하면, 널리 알려진 공개 정보(인재상·브랜드 슬로건·주력 사업·제품 특장점)를\n' +
   '  네 지식으로 적극 반영해 구체적으로 채워라(예: "현대자동차 채용" 브리프 → 현대차 인재상·사업영역을 features·zigs에 녹인다).\n' +
   '  단 날짜·장소·전형 일정·가격처럼 시기마다 달라지는 정보는 지어내지 말고 assumed에 넣는다.\n' +
@@ -498,7 +500,7 @@ const WEB_EDIT_SYSTEM =
   '형식: {"site":{...수정된 전체 사이트 JSON...},"message":"무엇을 어떻게 바꿨는지 {LANG} 한두 문장"}\n' +
   '규칙:\n' +
   '- site는 입력 JSON과 같은 구조·같은 필드 구성을 유지하고, 지시에 해당하는 부분만 바꾼다. 나머지 필드는 값 그대로 복사한다.\n' +
-  '- 필드 참고: productName(제품명), tagline(히어로 타이틀), subcopy(히어로 설명), primaryCta(대표 버튼), features[](기능 카드 {title,desc}), stats[](수치 {value,label}), bannerText/bannerCta(하단 배너), footerLinks[], footerCopyright, pages[](하위 페이지 — 같은 구조 반복), variants(섹션 표현 변형), 유형별 필드(overview·featureRows·faq·form·agenda·speakers·posts·docs·steps·testimonials 등).\n' +
+  '- 필드 참고: productName(제품명), tagline(히어로 타이틀), subcopy(히어로 설명), primaryCta(대표 버튼), features[](기능 카드 {title,desc}), stats[](수치 {value,label}), zigs[](딥다이브 탭 {cap,title,desc}), benefits[](혜택 {cap,title,link}), sessions[](일정 {time,title,by}), faq[]({q,a}), imageTheme, bannerText/bannerCta(하단 배너), footerLinks[], footerCopyright, pages[](하위 페이지 — 같은 구조 반복), variants(섹션 표현 변형), 유형별 필드(overview·featureRows·faq·form·agenda·speakers·posts·docs·steps·testimonials 등).\n' +
   '- 콘텐츠(문구·수치·항목 추가/삭제/순서·페이지 문구)만 수정한다. 색·글꼴·배치 같은 디자인 지시면 site를 그대로 두고 message에 "디자인은 스타일 팩이 자동 관리해요"라고 안내한다.\n' +
   '- 항목을 추가할 땐 이웃 항목과 같은 구조로. 근거 없는 수치 창작 금지 — 지시나 기존 값에 근거해서만.\n' +
   '- 지시가 특정 페이지를 가리키면(예: "요금 페이지") pages[]에서 그 페이지를 찾아 수정한다.\n' +

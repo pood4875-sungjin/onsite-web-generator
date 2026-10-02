@@ -26,9 +26,23 @@
   /* data-img 슬롯 — 스튜디오 이미지 교체. 교체값 있으면 그걸, 없으면 팩 기본 이미지 */
   function imSlot(d, key, rel, extra) {
     var ov = d.images && d.images[key];
-    var src = ov || att(rel);
-    return '<img src="' + esc(src) + '" alt="" data-img="images.' + key + '" ' + (ov ? '' : imFall(rel)) + (extra || '') + '>';
+    var isUrl = /^https?:/.test(rel);
+    var src = ov || (isUrl ? rel : att(rel));
+    return '<img src="' + esc(src) + '" alt="" data-img="images.' + key + '" ' + (ov || isUrl ? '' : imFall(rel)) + (extra || '') + '>';
   }
+
+  /* 주제 실사 풀(unsplash 고정 ID — 스튜디오 카탈로그와 동일, 눈검증) */
+  var UNS = function (id) { return 'https://images.unsplash.com/photo-' + id + '?w=1400&q=80&auto=format&fit=crop'; };
+  var THEME_POOL = {
+    people: ['1522071820081-009f0129c71c', '1551434678-e076c223a692', '1556761175-b413da4baf72', '1521737604893-d14cc237f11d', '1560250097-0b93528c311a'],
+    tech: ['1518770660439-4636190af475', '1526374965328-7f61d4dc18c5', '1550751827-4bd374c3f58b', '1519389950473-47ba0277781c', '1531297484001-80022131f5a1'],
+    event: ['1540575467063-178a50c2df87', '1505373877841-8d25f7d46678', '1511578314322-379afb476865', '1475721027785-f74eccf877e2', '1587825140708-dfaf72ae4b04'],
+    civil: ['1533852990198-bdd4082bf8c0', '1512187849-463fdb898f21', '1515674744565-0d7112cd179a', '1559843788-693858bf7338', '1494867121604-060b20cba39c'],
+    architecture: ['1617761141732-d481912af1a9', '1637640213473-34cdeb01ab11', '1673296844329-7b110b0de4ac', '1685210482397-037803ed3902', '1554793000-245d3a3c2a51'],
+    machine: ['1524514587686-e2909d726e9b', '1512813759302-a44af29da3c1', '1655874837055-7adc909ae602', '1569968201228-01aebb252e80', '1563456021008-5cd6ac7c005d'],
+    geo: ['1504635589510-808c8a0b509f', '1525121577197-56ddc8d76c87', '1542753151-fa8c1cab6aff', '1563741957649-8de4b44903c8', '1534590158618-73acb7d3641d'],
+    abstract: ['1557672172-298e090bd0f1', '1550859492-d5da9d8e45f3', '1618005182384-a83a8bd57fbe', '1620641788421-7a1c342ea42e', '1558591710-4b4a1ae0f04d'],
+  };
 
   var KV_ROT = ['ensol-kv4.avif', 'ensol-kv3.avif', 'ensol-kv2.avif', 'ensol-kv1.avif'];
   var SKILL_ROT = ['ensol-skill1.jpg', 'ensol-skill2.jpg', 'ensol-skill3.jpg', 'ensol-skill4.jpg', 'ensol-skill5.jpg'];
@@ -912,8 +926,14 @@
     /* 기획 데이터 렌더면 토목 실사 기본값이 주제와 충돌 — 추상 키비주얼 로테이션으로 교체(교체 슬롯은 그대로) */
     var SKILL_IMGS = SKILL_ROT, FEAT_IMGS = FEAT_ROT;
     if (hasBrief) {
-      SKILL_IMGS = [KV_ROT[1], KV_ROT[2], KV_ROT[3], KV_ROT[0], KV_ROT[2]];
-      FEAT_IMGS = [KV_ROT[0], KV_ROT[2], KV_ROT[1]];
+      var pool = THEME_POOL[shared.imageTheme];
+      if (pool) {
+        SKILL_IMGS = pool.map(UNS);
+        FEAT_IMGS = [pool[1], pool[3], pool[0]].map(UNS);
+      } else {
+        SKILL_IMGS = [KV_ROT[1], KV_ROT[2], KV_ROT[3], KV_ROT[0], KV_ROT[2]];
+        FEAT_IMGS = [KV_ROT[0], KV_ROT[2], KV_ROT[1]];
+      }
     }
     /* GNB·푸터 — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
     if (!shared.navTitle && hasBrief) d.navTitle = shared.productName || BD.navTitle;

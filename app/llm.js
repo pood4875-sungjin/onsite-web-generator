@@ -787,6 +787,7 @@
       var fq = o.faq.map(function (x) { return x && { q: str(x.q), a: str(x.a) }; }).filter(function (x) { return x && x.q; }).slice(0, 8);
       if (fq.length) out.faq = fq;
     }
+    if (str(o.imageTheme)) out.imageTheme = str(o.imageTheme);
     if (str(o.ctaTitle)) out.ctaTitle = str(o.ctaTitle);
     if (str(o.ctaSub)) out.ctaSub = str(o.ctaSub);
     if (Array.isArray(o.zigs)) {

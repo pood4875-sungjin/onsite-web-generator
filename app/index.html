@@ -1072,12 +1072,24 @@
       try{ draft=await LLM.composeSite({ product:prod, name, plan, kind:S.kind, lang:S.lang }, stop.onText); stop(true); await new Promise(r=>setTimeout(r,650)); }
       catch(e){ stop(false); console.warn('[ai] compose-web 실패 → 대화 플로우 폴백', e); if(window.uiAlert) await uiAlert(_L('AI 초안 생성에 실패해 대화로 채우는 방식으로 시작해요.')+' ('+(e&&e.message||'')+')'); }
       if(draft){
+        // 상시 검수 패스 — 산출물이 주제에 적합한지 AI가 한 번 더 훑고, 안 맞는 섹션은 빼고 어색한 문구는 다듬는다
+        try{
+          const RV=_L('마지막으로 전체 내용을 검수하고 있어요 🔍');
+          if(typeof bot==='function') bot(RV);
+          const inst='너는 이 페이지의 최종 검수자다. 아래 브리프와 대조해 초안을 검수하고 수정본을 돌려줘라.\n'
+            +'브리프: '+String(S.plan||'').slice(0,1200)+'\n'
+            +'검수 기준: ① 브리프 주제와 안 맞거나 근거 없이 억지로 채워진 섹션 배열(zigs·benefits·sessions·faq·stats)은 빈 배열 []로 바꿔라(그 섹션은 페이지에서 빠진다). '
+            +'② "우리회사" 같은 placeholder, 행사가 아닌데 쓰인 웨비나·세미나·참석 어휘, 중복 문장, 빈 설명을 구체적으로 다듬어라. '
+            +'③ 문제없는 필드는 값 그대로 복사하라. 전체 삭제가 아니라 다듬기가 기본이다.';
+          const rv=await LLM.editSite(draft, inst);
+          if(rv && rv.site && (rv.site.productName||rv.site.tagline)) draft=Object.assign({}, draft, rv.site);
+        }catch(e){ console.warn('[ai] 검수 패스 실패(원안 사용)', e); }
         const full=getProject(p.id); const pg0=full.pages.find(x=>x.id===pg.id)||full.pages[0];
         const seed={ productName:draft.productName||prod||'', tagline:draft.tagline||'', subcopy:draft.subcopy||'', primaryCta:draft.primaryCta||'',
           features:draft.features||[], stats:draft.stats||[], bannerText:draft.bannerText||'', bannerCta:draft.bannerCta||'',
           footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[], _clang:S.lang };
         // 세미나·행사 필드 — 첨부 기획서의 세션·일시·장소·마감·FAQ가 초안에 있으면 그대로 시드(집객 팩이 소비)
-        ['sessions','eventDate','eventPlace','deadline','faq','ctaTitle','ctaSub','zigs','benefits'].forEach(k=>{ if(draft[k]!=null && draft[k]!=='') seed[k]=draft[k]; });
+        ['sessions','eventDate','eventPlace','deadline','faq','ctaTitle','ctaSub','zigs','benefits','imageTheme'].forEach(k=>{ if(draft[k]!=null && draft[k]!=='') seed[k]=draft[k]; });
         if(S.kind==='multi'){
           pg0.pageType='main'; pg0.name='메인홈';
           seed.shownSections=['feature','cta'];
