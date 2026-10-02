@@ -159,7 +159,7 @@
       '.ob-srow:hover{transform:translateY(-2px);border-color:rgba(120,190,255,.35)}',
       '.ob-srow .tm{font-size:14.5px;font-weight:700;color:' + CYAN + ';font-variant-numeric:tabular-nums}',
       '.ob-srow .st{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.02em;word-break:keep-all}',
-      '.ob-srow .by{font-size:13px;color:' + SUB + ';white-space:nowrap;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}',
+      '.ob-srow .by{font-size:13px;color:' + SUB + ';word-break:keep-all;max-width:280px;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}',
       '.ob-srow .by:empty{display:none}',
       /* 일정·장소 */
       '.ob-info{max-width:860px;margin:60px auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}',
@@ -206,7 +206,7 @@
       '@media (max-width:600px){.ob-nav .wrap{gap:12px;height:56px}.ob-menu{display:none}.ob-logo{font-size:14.5px}.ob-navcta{padding:8px 14px;font-size:12.5px}',
       '.ob-hero{padding:64px 0 0}.ob-ht{font-size:34px}.ob-hs{font-size:15.5px}.ob-earth{margin:44px auto -170px}',
       '.ob-stats{padding:96px 0 0}.ob-stats b{font-size:52px}.ob-sec{padding:64px 0}.ob-tt{font-size:26px}.ob-tt+*{margin-top:44px}.ob-slist,.ob-info,.ob-qs{margin:44px auto}',
-      '.ob-srow{grid-template-columns:1fr;gap:8px}.ob-srow .by{justify-self:start}.ob-st .tx{font-size:27px}.ob-cta .tt{font-size:28px}}',
+      '.ob-srow{grid-template-columns:1fr;gap:8px}.ob-srow .by{justify-self:start;max-width:none}.ob-st .tx{font-size:27px}.ob-cta .tt{font-size:28px}}',
       '[data-edit]{white-space:pre-wrap}',
     ].join('\n');
   }
