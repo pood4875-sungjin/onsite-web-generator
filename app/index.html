@@ -1273,13 +1273,22 @@
         bot(_L('말씀하신 첨부 파일이 아직 안 보여요 📎 아래 + 버튼으로 올려주시거나, 내용을 직접 적어주세요.'));
         sampleChips(SAMPLES[S.kind]);
         const re=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
-        S.plan=re||'';
+        S.plan=[S._rawInput, re].filter(Boolean).join('\n');   // 주제(첫 입력) 유실 금지 — 회사명이 plan에 남아야 한다
       }
       else if(hasContent(first)){ S.plan=first; }
       else {
-        bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));
-        sampleChips(SAMPLES[S.kind]);
-        S.plan=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
+        // 주제(첫 입력)가 있으면 — 고정 문구 대신 그 주제에 맞는 브리프 질문·예시를 AI가 생성
+        let ba=null;
+        if(S._rawInput && window.LLM && LLM.aiAvailable()){
+          const tp0=typing();
+          try{ ba=await LLM.intake({kind:S.kind, plan:S._rawInput}); }catch(e){ console.warn('[ai] 브리프 질문 생성 실패(고정 문구 폴백)', e); }
+          tp0.remove();
+        }
+        if(ba && ba.briefAsk){ bot(ba.briefAsk); }
+        else bot(_L(BRIEF_PROMPT[S.kind]||BRIEF_PROMPT.single));
+        sampleChips(ba && ba.examples && ba.examples.length ? ba.examples : SAMPLES[S.kind]);
+        const re=await askInput(BRIEF_PH[S.kind]||BRIEF_PH.single, '건너뛰기 — 나중에 채울게요');
+        S.plan=[S._rawInput, re].filter(Boolean).join('\n');   // 주제(첫 입력) 유실 금지
       }
 
       // AI 되묻기(내용 기반 질문) + 종류별 기본 질문(분량·목표 등) — 전부 카드 한 장 페이저로
@@ -1299,7 +1308,8 @@
           freeQs=it.questions.filter(q=>!q.opts || !q.opts.length);
         }
       }
-      const pagerQs=aiQs.concat(FIXED_QS[S.kind]||[]);
+      const fixedQs=(FIXED_QS[S.kind]||[]).filter(q=>!(aiQs.length && q.key==='goal'));
+      const pagerQs=aiQs.concat(fixedQs);
       if(pagerQs.length){
         bot(_L('내용 잘 봤어요! 더 정확한 초안을 위해 몇 가지만 여쭤볼게요. 눌러서 고르기만 하면 돼요.'));
         const ans=await askOptionCards(pagerQs);

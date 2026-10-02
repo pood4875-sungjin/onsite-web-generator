@@ -1085,10 +1085,19 @@
     var hidden = (shared.hiddenSections || []).slice();
     /* 기획(AI) 데이터가 있을 때: 주제와 안 맞아 빈 배열로 온 섹션은 데모로 채우지 않고 생략 */
     if (hasBrief) {
-      if (Array.isArray(shared.zigs) && !shared.zigs.length && hidden.indexOf('skill') < 0) hidden.push('skill');
-      if (Array.isArray(shared.benefits) && !shared.benefits.length && hidden.indexOf('feature') < 0) hidden.push('feature');
-      if (Array.isArray(shared.sessions) && !shared.sessions.length && hidden.indexOf('agenda') < 0) hidden.push('agenda');
-      if (Array.isArray(shared.faq) && !shared.faq.length && hidden.indexOf('faq') < 0) hidden.push('faq');
+      /* 기획 데이터 렌더에선 데모 콘텐츠 폴백 금지 — 없는 섹션은 대체 구성하거나 뺀다 */
+      var hasArr = function (k) { return Array.isArray(shared[k]) && shared[k].length; };
+      if (!hasArr('zigs')) {
+        if (hasArr('features')) d.zigs = shared.features.map(function (f) {
+          return { cap: String(f.title || '').split('\n')[0], title: f.title || '', desc: f.desc || '' };
+        });
+        else if (hidden.indexOf('skill') < 0) hidden.push('skill');
+      }
+      if (!hasArr('features') && hidden.indexOf('answer') < 0) hidden.push('answer');
+      if (!hasArr('benefits') && hidden.indexOf('feature') < 0) hidden.push('feature');
+      if (!hasArr('sessions') && hidden.indexOf('agenda') < 0) hidden.push('agenda');
+      if (!hasArr('faq') && hidden.indexOf('faq') < 0) hidden.push('faq');
+      if (!shared.ctaTitle && hidden.indexOf('free') < 0) hidden.push('free');
     }
     var bodySecs = ordAll.filter(function (k) { return hidden.indexOf(k) < 0; }).map(function (k) { return SEC[k]; }).join('');
 

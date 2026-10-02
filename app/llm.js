@@ -675,7 +675,9 @@
       return x && { key: String(x.key || ''), q: String(x.q || '').trim(), multi: !!x.multi,
         opts: (Array.isArray(x.opts) ? x.opts : []).map(function (t) { return String(t || '').trim(); }).filter(Boolean).slice(0, 4) };
     }).filter(function (x) { return x && x.q; }).slice(0, 3);
-    return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs };
+    return { name: (typeof o.name === 'string' && o.name.trim()) || '', product: (typeof o.product === 'string' && o.product.trim()) || '', questions: qs,
+      briefAsk: (typeof o.briefAsk === 'string' && o.briefAsk.trim()) || '',
+      examples: (Array.isArray(o.examples) ? o.examples : []).map(function (t) { return String(t || '').trim(); }).filter(Boolean).slice(0, 3) };
   }
 
   /* 웹(랜딩/웹사이트) 초안 — 모든 필드를 채워 완성된 페이지로. 근거 없는 항목은
