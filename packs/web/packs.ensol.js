@@ -519,7 +519,8 @@
     '  .answer .card > img{animation:none;transform:none}\n'+
     '  .rv,.kv .ent,.kv h1 .w,.answer .card,h2.wt .w,h2.wt .gt,.agenda .alist.rv li,#faqList.rv .item{opacity:1 !important;transform:none !important;transition:none !important;filter:none !important}\n'+
     '}\n'+
-    '' + EXT;
+    '' + EXT + '.kv .ph img{width:100%;height:100%;object-fit:cover}' +
+    '.kv.brief .klead{max-width:820px;margin-left:auto;margin-right:auto;font-size:clamp(17px,1.5vw,23px);line-height:1.55}';
 
   var FNJS = '\n'+
     '  \'use strict\';\n'+
@@ -587,7 +588,7 @@
     '  var kvIn = document.getElementById(\'kvIn\');\n'+
     '  var kvSub = document.getElementById(\'kvSub\');\n'+
     '  var kvOv = document.getElementById(\'kvOv\');\n'+
-    '  var kvVid = kv.querySelector(\'.ph video\');\n'+
+    '  var kvVid = kv.querySelector(\'.ph video, .ph img\');\n'+
     '  var kvMeta = kv.querySelector(\'.kvmeta\');\n'+
     '\n'+
     '  function clamp01(x){ return x < 0 ? 0 : x > 1 ? 1 : x; }\n'+
@@ -940,7 +941,7 @@
     if (!shared.navLinks && hasBrief) d.navLinks = (TT[LANG] || TT.ko).nav;
     if (!shared.footerBrand && hasBrief) d.footerBrand = d.productName;
     /* 폼 제목·독 문구 — 데모('All-Access Pass'·CIVIL 릴리즈 문구) 대신 기획 값에서 */
-    if (hasBrief && !shared.formTitle) d.formTitle = d.primaryCta || d.productName;
+    if (hasBrief && !shared.formTitle) d.formTitle = (shared.heads && shared.heads.form) || d.primaryCta || d.productName;
     if (hasBrief && !shared.bannerCta && !shared.bannerText) d.bannerCta = d.productName;
     /* deadline — compose-web가 ISO8601로 보내는 값은 표시용으로 포맷 */
     d.deadline = (function (s) {
@@ -982,7 +983,9 @@
     /* ── answer — 키비주얼 카드(features 0-2) ── */
     var feats = (Array.isArray(d.features) && d.features.length ? d.features : BD.features).slice(0, 3);
     var feats4 = (Array.isArray(d.features) && d.features.length ? d.features : BD.features).slice(0, 4);
-    var ansTitle = '<h2 class="tt df rv"><span class="lw">' + esc(T.ansPre) + '</span><br><span class="hw"' + de('productName') + '>' + esc(d.productName) + '</span></h2>';
+    var HD = (shared.heads && typeof shared.heads === 'object') ? shared.heads : {};
+    var ansTitle = HD.features ? '<h2 class="tt df rv"><span class="hw"' + de('heads.features') + '>' + esc(HD.features) + '</span></h2>'
+      : '<h2 class="tt df rv"><span class="lw">' + esc(T.ansPre) + '</span><br><span class="hw"' + de('productName') + '>' + esc(d.productName) + '</span></h2>';
     if (V.answer === 'bento') {
       SEC.answer = '<section class="answer" id="answer" data-section="answer" style="margin-top:0"><div class="wrap">' + ansTitle +
         '<div class="eg-bento">' + feats4.map(function (f, i) {
@@ -1000,7 +1003,8 @@
 
     /* ── skill — 탭(zigs) ── */
     var zz = (Array.isArray(d.zigs) && d.zigs.length ? d.zigs : BD.zigs).slice(0, 5);
-    var sklTitle = '<h2 class="tt df rv"><span class="lw">' + esc(T.sklPre) + '</span><br><span class="hw">' + esc(tp(T.sklPost)) + '</span></h2>';
+    var sklTitle = HD.zigs ? '<h2 class="tt df rv"><span class="hw"' + de('heads.zigs') + '>' + esc(HD.zigs) + '</span></h2>'
+      : '<h2 class="tt df rv"><span class="lw">' + esc(T.sklPre) + '</span><br><span class="hw">' + esc(tp(T.sklPost)) + '</span></h2>';
     if (V.skill === 'list') {
       SEC.skill = '<section class="skill" id="skill" data-section="skill"><div class="wrap">' + sklTitle +
         '<div class="eg-vskill rv"><ul id="vsList">' + zz.map(function (z, i) {
@@ -1025,7 +1029,7 @@
     var bens = (Array.isArray(d.benefits) && d.benefits.length ? d.benefits : BD.benefits).slice(0, 3);
     if (V.feature === 'grid') {
       SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap">' +
-        '<h2 class="tt df rv" style="text-align:center">' + ml(tp(T.featT)) + '</h2>' +
+        '<h2 class="tt df rv" style="text-align:center"' + (HD.benefits ? de('heads.benefits') : '') + '>' + (HD.benefits ? esc(HD.benefits) : ml(tp(T.featT))) + '</h2>' +
         '<div class="eg-fgrid">' + bens.map(function (b, i) {
           return '<div class="fc rv">' + imSlot(d, 'feature' + i, FEAT_IMGS[i % FEAT_ROT.length]) +
             '<div class="bd"><b' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
@@ -1033,7 +1037,7 @@
         }).join('') + '</div></div></section>';
     }
     else SEC.feature = '<section class="feature" id="feature" data-section="feature"><div class="wrap"><div class="fgrid">' +
-      '<div class="fleft"><h2 class="tt df rv">' + ml(tp(T.featT)) + '</h2><p class="sub rv">' + esc(T.featS) + '</p></div>' +
+      '<div class="fleft"><h2 class="tt df rv"' + (HD.benefits ? de('heads.benefits') : '') + '>' + (HD.benefits ? esc(HD.benefits) : ml(tp(T.featT))) + '</h2><p class="sub rv">' + esc(T.featS) + '</p></div>' +
       '<div class="fright">' + bens.map(function (b, i) {
         return '<div class="fitem rv"><b class="df"' + de('benefits.' + i + '.title') + '>' + ml(b.title) + '</b>' +
           '<p' + de('benefits.' + i + '.link') + '>' + esc(b.cap ? b.cap + ' · ' : '') + esc(b.link || '') + '</p>' +
@@ -1042,7 +1046,7 @@
 
     /* ── agenda — 리스트+드로어 | 시간표(sessions) ── */
     var ses = (Array.isArray(d.sessions) && d.sessions.length ? d.sessions : BD.sessions).slice(0, 8);
-    var agdHead = '<h2 class="tt df rv">' + esc(T.agdT) + '</h2>' +
+    var agdHead = '<h2 class="tt df rv"' + (HD.sessions ? de('heads.sessions') : '') + '>' + esc(HD.sessions || T.agdT) + '</h2>' +
       '<p class="asub rv"' + de('eventDate') + '>' + esc(d.eventDate) + '</p>';
     if (V.agenda === 'table') {
       SEC.agenda = '<section class="agenda" id="agenda" data-section="agenda"><div class="wrap">' + agdHead +
@@ -1065,13 +1069,13 @@
     if (V.faq === 'twocol') {
       var half = Math.ceil(fq.length / 2);
       SEC.faq = '<section class="faq" id="faq" data-section="faq"><div class="wrap">' +
-        '<h2 class="tt df rv">FAQ</h2><div class="eg-faq2" id="faqList">' +
+        '<h2 class="tt df rv"' + (HD.faq ? de('heads.faq') : '') + '>' + esc(HD.faq || 'FAQ') + '</h2><div class="eg-faq2" id="faqList">' +
         '<div>' + fq.slice(0, half).map(function (f, i) { return faqItem(f, i); }).join('') + '</div>' +
         '<div>' + fq.slice(half).map(function (f, i) { return faqItem(f, half + i); }).join('') + '</div>' +
         '</div></div></section>';
     }
     else SEC.faq = '<section class="faq" id="faq" data-section="faq"><div class="wrap">' +
-      '<h2 class="tt df rv">FAQ</h2><div id="faqList" class="rv">' + fq.map(function (f, i) {
+      '<h2 class="tt df rv"' + (HD.faq ? de('heads.faq') : '') + '>' + esc(HD.faq || 'FAQ') + '</h2><div id="faqList" class="rv">' + fq.map(function (f, i) {
         return '<div class="item"><button class="q"><span' + de('faq.' + i + '.q') + '>' + esc(f.q) + '</span>' + chev + '</button>' +
           '<div class="a"><span' + de('faq.' + i + '.a') + '>' + ml(f.a) + '</span></div></div>';
       }).join('') + '</div></div></section>';
@@ -1145,12 +1149,17 @@
       return Math.max(m, w);
     }, 0) || 1;
     var dvw = Math.min(11.5, 90 / tgWu), mvw = Math.min(18, 87 / tgWu);
+    /* 기획 렌더 — 문장형 타이틀이 화면을 꽉 채우지 않게 상한(데모 HYPER-S 원형은 그대로) */
+    if (hasBrief) { dvw = Math.min(dvw, tgLines.length > 1 ? 6.4 : 8); mvw = Math.min(mvw, 11); }
     var h1Vars = '--h1s:' + (dvw >= 11.5 ? '11.5vw' : 'clamp(30px,' + dvw.toFixed(2) + 'vw,' + Math.round(dvw * 14.4) + 'px)') + ';--h1sm:' + mvw.toFixed(2) + 'vw';
     /* 여러 줄이면 마지막 줄만 볼드, 앞 줄은 라이트(.lt) — 하우스 타이틀 강약 룰 */
     var h1lines = tgLines.map(function (ln, i) { return '<span class="l' + (tgLines.length > 1 && i < tgLines.length - 1 ? ' lt' : '') + '">' + esc(ln) + '</span>'; }).join('');
-    var kvHtml = '<section class="kv" id="top">' +
+    var heroPhoto = (d.images && d.images.hero) || ((hasBrief && THEME_POOL[shared.imageTheme] && shared.imageTheme !== 'event') ? UNS(THEME_POOL[shared.imageTheme][0]) : '');
+    var kvHtml = '<section class="kv' + (hasBrief ? ' brief' : '') + '" id="top">' +
       '<div class="stick">' +
-      '<div class="ph" id="kvPhoto"><video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src=\'' + att('ensol-hero.mp4') + '\'"></video></div>' +
+      '<div class="ph" id="kvPhoto">' + (heroPhoto
+        ? '<img alt="" data-img="images.hero" src="' + esc(heroPhoto) + '">'
+        : '<video src="https://resource.midasuser.com/hubfs/midasSquare24/vod/vod_invite.mp4" autoplay muted loop playsinline onerror="this.onerror=null;this.src=\'' + att('ensol-hero.mp4') + '\'"></video>') + '</div>' +
       '<div class="ov" id="kvOv"></div>' +
       '<div class="sheen" aria-hidden="true"><i></i><i class="s2"></i></div>' +
       '<div class="in" id="kvIn">' +

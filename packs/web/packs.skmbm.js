@@ -568,6 +568,13 @@
               fCompany: '所属单位', fSize: '关注领域', fRole: '类别', fRoles: ['个人', '企业·机构', '学生', '其他'], dockTag: '进行中', fCols: ['介绍', '参与', '联系'] },
       }[LANG] || null;
       if (GEN) for (var gk in GEN) TT[gk] = GEN[gk];
+      /* AI가 쓴 섹션 머리말(heads) 우선 — 콘텐츠 맞춤 제목 */
+      var HD = (shared.heads && typeof shared.heads === 'object') ? shared.heads : {};
+      if (HD.features) TT.areasT = HD.features;
+      if (HD.sessions) TT.sesT = HD.sessions;
+      if (HD.zigs) TT.zigT = HD.zigs;
+      if (HD.benefits) TT.evT = HD.benefits;
+      if (HD.faq) TT.faqT = HD.faq;
     }
     /* 스텝 패널 미니 UI 문구 — 팩 고정 그래픽 (4언어) */
     TT.pv = ({
@@ -834,7 +841,7 @@
 
     /* ── 고정 apply 폼 + 푸터 + 독 ── */
     var apply = '<section class="sec" id="apply"><div class="wrap center form">' +
-      '<h2 class="tt rv"><span' + de('productName') + '>' + esc(d.productName) + '</span>' + esc(TT.applyT) + '</h2>' +
+      '<h2 class="tt rv"><span' + de('productName') + '>' + esc(d.productName) + '</span>' + (BRIEF && shared.heads && shared.heads.form ? '<br><span' + de('heads.form') + '>' + esc(shared.heads.form) + '</span>' : esc(TT.applyT)) + '</h2>' +
       '<p class="sub rv d1"><span' + de('eventDate') + '>' + esc(d.eventDate) + '</span>' + (placeMain ? ' ㅣ <span>' + esc(placeMain) + '</span>' : '') + '</p>' +
       '<div class="fgrid rv d2" style="margin-top:64px">' +
       '<div><div class="fl">' + esc(TT.fName) + ' <em>*</em></div><input class="fi" type="text" placeholder="' + esc(TT.fPh) + '"></div>' +
