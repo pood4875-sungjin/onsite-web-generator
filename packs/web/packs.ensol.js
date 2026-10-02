@@ -939,6 +939,9 @@
     if (!shared.navTitle && hasBrief) d.navTitle = shared.productName || BD.navTitle;
     if (!shared.navLinks && hasBrief) d.navLinks = (TT[LANG] || TT.ko).nav;
     if (!shared.footerBrand && hasBrief) d.footerBrand = d.productName;
+    /* 폼 제목·독 문구 — 데모('All-Access Pass'·CIVIL 릴리즈 문구) 대신 기획 값에서 */
+    if (hasBrief && !shared.formTitle) d.formTitle = d.primaryCta || d.productName;
+    if (hasBrief && !shared.bannerCta && !shared.bannerText) d.bannerCta = d.productName;
     /* deadline — compose-web가 ISO8601로 보내는 값은 표시용으로 포맷 */
     d.deadline = (function (s) {
       var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(s || ''));

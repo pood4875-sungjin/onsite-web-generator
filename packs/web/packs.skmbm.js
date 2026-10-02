@@ -51,6 +51,18 @@
     'radial-gradient(120% 100% at 18% 0%,#FAD9C6 0%,rgba(250,217,198,0) 60%),radial-gradient(110% 90% at 85% 100%,#CBDCF8 0%,rgba(203,220,248,0) 55%),linear-gradient(160deg,#FAEDE4,#EDF1FA)',
     'radial-gradient(120% 100% at 18% 0%,#C8EEDC 0%,rgba(200,238,220,0) 60%),radial-gradient(110% 90% at 85% 100%,#DCD8F8 0%,rgba(220,216,248,0) 55%),linear-gradient(160deg,#E8F6EE,#ECEAF9)',
   ];
+  /* 주제 실사 풀 — 언스플래시 고정 ID(스튜디오 카탈로그와 동일, 눈검증). compose-web imageTheme로 선택 */
+  var UNS = function (id) { return 'https://images.unsplash.com/photo-' + id + '?w=1400&q=80&auto=format&fit=crop'; };
+  var THEME_POOL = {
+    people: ['1522071820081-009f0129c71c', '1551434678-e076c223a692', '1556761175-b413da4baf72', '1521737604893-d14cc237f11d', '1560250097-0b93528c311a'],
+    tech: ['1518770660439-4636190af475', '1526374965328-7f61d4dc18c5', '1550751827-4bd374c3f58b', '1519389950473-47ba0277781c', '1531297484001-80022131f5a1'],
+    event: ['1540575467063-178a50c2df87', '1505373877841-8d25f7d46678', '1511578314322-379afb476865', '1475721027785-f74eccf877e2', '1587825140708-dfaf72ae4b04'],
+    civil: ['1533852990198-bdd4082bf8c0', '1512187849-463fdb898f21', '1515674744565-0d7112cd179a', '1559843788-693858bf7338', '1494867121604-060b20cba39c'],
+    architecture: ['1617761141732-d481912af1a9', '1637640213473-34cdeb01ab11', '1673296844329-7b110b0de4ac', '1685210482397-037803ed3902', '1554793000-245d3a3c2a51'],
+    machine: ['1524514587686-e2909d726e9b', '1512813759302-a44af29da3c1', '1655874837055-7adc909ae602', '1569968201228-01aebb252e80', '1563456021008-5cd6ac7c005d'],
+    geo: ['1504635589510-808c8a0b509f', '1525121577197-56ddc8d76c87', '1542753151-fa8c1cab6aff', '1563741957649-8de4b44903c8', '1534590158618-73acb7d3641d'],
+    abstract: ['1557672172-298e090bd0f1', '1550859492-d5da9d8e45f3', '1618005182384-a83a8bd57fbe', '1620641788421-7a1c342ea42e', '1558591710-4b4a1ae0f04d'],
+  };
   function pvMini(i, TT) {
     var M = TT.pv[i % 4];
     if (i % 4 === 2) {
@@ -472,6 +484,30 @@
     var motion = opts.motion !== false;
     var TH = THEMES[shared.theme] || THEMES.green;
 
+    /* 기획(AI) 데이터 렌더 — 데모 콘텐츠·HR 세미나 고정 라벨이 새지 않게: 없는 섹션은 숨기고, 라벨은 범용, 사진은 주제 풀 */
+    var BRIEF = !!(shared.tagline || shared.productName);   /* AI 초안은 항상 둘 다 옴 — features만 주는 카탈로그 데모 렌더는 제외 */
+    if (BRIEF) {
+      var hdn = Array.isArray(shared.hiddenSections) ? shared.hiddenSections.slice() : [];
+      var needArr = { zig: 'zigs', event: 'benefits', session: 'sessions', faq: 'faq', about: 'stats' };
+      Object.keys(needArr).forEach(function (sec) {
+        var f = needArr[sec];
+        if (!(Array.isArray(shared[f]) && shared[f].length) && hdn.indexOf(sec) < 0) hdn.push(sec);
+      });
+      var needStr = { location: 'eventPlace', narrative: 'bannerText', ctaband: 'ctaTitle' };
+      Object.keys(needStr).forEach(function (sec) {
+        if (!(typeof shared[needStr[sec]] === 'string' && shared[needStr[sec]].trim()) && hdn.indexOf(sec) < 0) hdn.push(sec);
+      });
+      shared = Object.assign({}, shared, { hiddenSections: hdn });
+      if (!shared.eventPlace) d.eventPlace = '';
+      if (!(Array.isArray(shared.footerLinks) && shared.footerLinks.length)) d.footerLinks = ({ ko: ['이용약관', '개인정보처리방침'], en: ['Terms', 'Privacy'], ja: ['利用規約', 'プライバシーポリシー'], zh: ['使用条款', '隐私政策'] })[LANG] || ['Terms', 'Privacy'];
+      if (!shared.footerCopyright) d.footerCopyright = '© ' + new Date().getFullYear() + ' ' + (shared.productName || '');
+      if (!shared.eventDate) d.eventDate = '';
+    }
+    var POOL = BRIEF ? (THEME_POOL[shared.imageTheme] || THEME_POOL.abstract) : null;
+    /* 슬롯 기본 이미지 — 기획 렌더면 주제 실사 풀(URL), 데모면 팩 자산 */
+    function dflt(rel, i, off) { return POOL ? UNS(POOL[(i + (off || 0)) % POOL.length]) : att(rel); }
+    function dfall(rel) { return POOL ? '' : imFall(rel); }
+
     /* 템플릿 고정 라벨 — 번역 파이프라인을 안 타므로 팩이 4언어 직접 처리 */
     var TT = {
       ko: { aboutT: '숫자로 보는\n지금 이 흐름', chipsPre: '수많은 ', chipsPost: ' 앞에서', chipsTail: '막막함은 사라지고, ', chipsHl: '실전 해답', chipsEnd: '만 남도록.',
@@ -511,6 +547,28 @@
             agr1: '同意收集和使用个人信息', agr1s: '（必填）', agr2: '同意用于推广营销', agr2s: '（可选）',
             fCols: ['活动', '参与', '联系'], fDone: '报名成功！' },
     }[LANG];
+    if (BRIEF) {
+      /* HR 세미나 전용 라벨 → 주제 무관하게 성립하는 범용 문구(채용·제품·행사 공통) */
+      var GEN = {
+        ko: { areasT: '핵심 내용을\n한눈에', sesT: 'SCHEDULE', sesS: '단계별 일정을 확인하세요.', zigT: '주목해야 할\n이유',
+              slog1: '새로운 시작,', slog2p: '', slog2s: '에서', evT: 'BENEFIT', evS: '함께하는 분들을 위해 준비했어요.',
+              faqT: '자주 묻는\n질문', chipsPre: '', chipsPost: '', chipsTail: '그 모든 것이 ', chipsHl: '한 곳에', chipsEnd: ' 담겼습니다.',
+              fCompany: '소속', fSize: '관심 분야', fRole: '구분', fRoles: ['개인', '기업·기관', '학생', '기타'], dockTag: '지금 확인', fCols: ['안내', '참여', '문의'] },
+        en: { areasT: 'What matters,\nat a glance', sesT: 'SCHEDULE', sesS: 'See every step at a glance.', zigT: 'Why it\nmatters',
+              slog1: 'A new beginning', slog2p: 'starts with ', slog2s: '', evT: 'BENEFIT', evS: 'Prepared for everyone joining us.',
+              faqT: 'Frequently asked\nquestions', chipsPre: '', chipsPost: '', chipsTail: 'All of it, ', chipsHl: 'in one place', chipsEnd: '.',
+              fCompany: 'Organization', fSize: 'Area of interest', fRole: 'Type', fRoles: ['Individual', 'Company', 'Student', 'Other'], dockTag: 'Open now', fCols: ['Info', 'Join', 'Contact'] },
+        ja: { areasT: '大切なことを\nひと目で', sesT: 'SCHEDULE', sesS: '各ステップの日程をご確認ください。', zigT: '注目すべき\n理由',
+              slog1: '新しい始まり、', slog2p: '', slog2s: 'から', evT: 'BENEFIT', evS: '参加される皆さまのためにご用意しました。',
+              faqT: 'よくある\nご質問', chipsPre: '', chipsPost: '', chipsTail: 'そのすべてが', chipsHl: 'ひとつに', chipsEnd: '。',
+              fCompany: '所属', fSize: '関心分野', fRole: '区分', fRoles: ['個人', '企業・団体', '学生', 'その他'], dockTag: '受付中', fCols: ['案内', '参加', 'お問い合わせ'] },
+        zh: { areasT: '重要内容\n一目了然', sesT: 'SCHEDULE', sesS: '查看各阶段日程。', zigT: '值得关注的\n理由',
+              slog1: '新的开始，', slog2p: '从 ', slog2s: ' 出发', evT: 'BENEFIT', evS: '为每一位参与者准备。',
+              faqT: '常见\n问题', chipsPre: '', chipsPost: '', chipsTail: '一切尽在', chipsHl: '这里', chipsEnd: '。',
+              fCompany: '所属单位', fSize: '关注领域', fRole: '类别', fRoles: ['个人', '企业·机构', '学生', '其他'], dockTag: '进行中', fCols: ['介绍', '参与', '联系'] },
+      }[LANG] || null;
+      if (GEN) for (var gk in GEN) TT[gk] = GEN[gk];
+    }
     /* 스텝 패널 미니 UI 문구 — 팩 고정 그래픽 (4언어) */
     TT.pv = ({
       ko: [
@@ -549,6 +607,14 @@
 
     /* ── GNB / KV ── */
     var anchors = ['#about', '#session', '#event', '#location'];
+    if (BRIEF && !(Array.isArray(shared.navLinks) && shared.navLinks.length)) {
+      var hidNow = shared.hiddenSections || [];
+      var NAVMAP = [['about', '#about', 'ABOUT'], ['session', '#session', 'SCHEDULE'], ['event', '#event', 'BENEFIT'], ['location', '#location', 'LOCATION'], ['faq', '#faq', 'FAQ']];
+      var vis = NAVMAP.filter(function (x) { return hidNow.indexOf(x[0]) < 0; }).slice(0, 4);
+      anchors = vis.map(function (x) { return x[1]; });
+      d.navLinks = vis.map(function (x) { return x[2]; });
+      if (!anchors.length) { anchors = ['#apply']; d.navLinks = []; }
+    }
     var menu = (d.navLinks || []).slice(0, 4).map(function (l, i) {
       return '<a href="' + anchors[i % anchors.length] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>';
     }).join('');
@@ -559,6 +625,7 @@
     var tagFit = fitCls(d.tagline, 13.5, 26);
     var subFit = fitCls(d.subcopy, 16, 30);
     var heroSrc = imgs.hero || '';
+    if (!heroSrc && POOL && shared.imageTheme && shared.imageTheme !== 'event') heroSrc = UNS(POOL[0]);   /* 행사 아닌 주제엔 세미나 객석 영상이 안 맞음 */
     var isVid = heroSrc ? /\.(mp4|webm)(\?|$)/i.test(heroSrc) : true;
     var heroMedia = isVid
       ? '<video class="kimg" src="' + esc(heroSrc || att(HERO_MP4)) + '" poster="' + esc(att(HERO_POSTER)) + '" autoplay muted loop playsinline data-img="hero"></video>'
@@ -570,8 +637,8 @@
       ? gnbHtml + '<section class="hero-light"><div class="wrap">' +
         '<div class="eb"' + de('productName') + '>' + esc(d.productName) + '</div>' +
         '<h1' + (tagFit ? ' class="' + tagFit + '"' : '') + de('tagline') + '>' + ml(d.tagline) + '</h1>' +
-        '<div class="meta"><b' + de('eventDate') + '>' + esc(d.eventDate) + '</b> ㅣ <span' + de('eventPlace') + '>' + esc(placeMain + (placeSub ? ' (' + placeSub + ')' : '')) + '</span></div>' +
-        '<div class="act"><a class="pill" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a><a class="cta2" href="#session">' + esc((d.navLinks || [])[1] || 'SESSION') + ' <span class="arr">→</span></a></div>' +
+        (d.eventDate || placeMain ? '<div class="meta"><b' + de('eventDate') + '>' + esc(d.eventDate) + '</b>' + (placeMain ? ' ㅣ <span' + de('eventPlace') + '>' + esc(placeMain + (placeSub ? ' (' + placeSub + ')' : '')) + '</span>' : '') + '</div>' : '') +
+        '<div class="act"><a class="pill" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a><a class="cta2" href="' + (anchors[1] || anchors[0] || '#apply') + '">' + esc((d.navLinks || [])[1] || (d.navLinks || [])[0] || 'SESSION') + ' <span class="arr">→</span></a></div>' +
         '</div></section>'
       : gnbHtml +
       '<div class="track kv-track" id="kvtrack"><section class="kv stage" id="kv"><div class="kv-photo">' +
@@ -579,7 +646,7 @@
       '<div class="kv-sub"><h3' + (subFit ? ' class="' + subFit + '"' : '') + de('subcopy') + '>' + ml(d.subcopy) + '</h3></div></div>' +
       '<div class="in wrap"><div class="eb"' + de('productName') + '>' + esc(d.productName) + '</div>' +
       '<h1' + (tagFit ? ' class="' + tagFit + '"' : '') + de('tagline') + '>' + tagLines + '</h1>' +
-      '<div class="meta"><b' + de('eventDate') + '>' + esc(d.eventDate) + '</b> ㅣ <span' + de('eventPlace') + '>' + esc(placeMain + (placeSub ? ' (' + placeSub + ')' : '')) + '</span></div>' +
+      (d.eventDate || placeMain ? '<div class="meta"><b' + de('eventDate') + '>' + esc(d.eventDate) + '</b>' + (placeMain ? ' ㅣ <span' + de('eventPlace') + '>' + esc(placeMain + (placeSub ? ' (' + placeSub + ')' : '')) + '</span>' : '') + '</div>' : '') +
       '<div class="act"><a class="cta2 w" href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + ' <span class="arr">→</span></a></div>' +
       '</div></section></div>';
 
@@ -647,7 +714,10 @@
           '<div class="more"><p' + de(P + '.desc') + '>' + ml(f.desc || '') + '</p><span class="go">' + esc(String(f.title || '').split('\n')[0] + TT.learn) + '</span></div></div>';
       }).join('') + '</div></div>' +
       '<div class="spanel">' + feats.map(function (f, i) {
-        return '<div class="pv' + (i === 0 ? ' on' : '') + '" style="--pvbg:' + PV_BG[i % 4] + '">' + pvMini(i, TT) + '<span class="goarr">→</span></div>';
+        var inner = POOL
+          ? '<img alt="" data-img="area.' + i + '" src="' + esc(imgs['area.' + i] || dflt('', i, 0)) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'
+          : pvMini(i, TT);
+        return '<div class="pv' + (i === 0 ? ' on' : '') + '" style="--pvbg:' + PV_BG[i % 4] + '">' + inner + '<span class="goarr">→</span></div>';
       }).join('') + '</div></div></section></div>';
 
     if (d.bannerText) {
@@ -682,7 +752,7 @@
         return '<div class="scard rv"><div><div class="cap"' + de(P + '.time') + '>' + esc(s.time || '') + '</div>' +
           '<h3' + de(P + '.title') + '>' + ml(s.title || '') + '</h3>' +
           '<div class="who"' + de(P + '.by') + '>' + esc(s.by || '') + '</div></div>' +
-          '<div class="photo" style="height:248px;border-radius:14px"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || att(rel)) + '" ' + imFall(rel) + '><div class="tint"></div></div></div>';
+          '<div class="photo" style="height:248px;border-radius:14px"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || dflt(rel, i, 1)) + '" ' + dfall(rel) + '><div class="tint"></div></div></div>';
       }).join('') + '</div></div></section>';
 
     SEC.zig = '<section class="sec" data-section="zig"><div class="wrap">' +
@@ -691,7 +761,7 @@
         var P = 'zigs.' + i, slot = 'zig.' + i, rel = IMG_ZIG[i % IMG_ZIG.length];
         var txt = '<div class="rv' + (i % 2 ? ' d1' : '') + '"><div class="cap"' + de(P + '.cap') + '>' + esc(z.cap || '') + '</div><h3' + de(P + '.title') + '>' + ml(z.title || '') + '</h3>' +
           '<p' + de(P + '.desc') + '>' + ml(z.desc || '') + '</p></div>';
-        var vis = '<div class="zcard rv' + (i % 2 ? '' : ' d1') + '" style="height:340px"><div class="photo" style="height:100%"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || att(rel)) + '" ' + imFall(rel) + '><div class="tint"></div></div></div>';
+        var vis = '<div class="zcard rv' + (i % 2 ? '' : ' d1') + '" style="height:340px"><div class="photo" style="height:100%"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || dflt(rel, i, 2)) + '" ' + dfall(rel) + '><div class="tint"></div></div></div>';
         return '<div class="zig">' + (i % 2 ? vis + txt : txt + vis) + '</div>';
       }).join('') + '</div></div></section>';
 
@@ -717,7 +787,7 @@
       '<h2 class="tt rv">' + esc(TT.evT) + '</h2><p class="sub rv d1">' + esc(TT.evS) + '</p>' +
       '<div class="egrid" style="margin-top:70px">' + benefits.map(function (b, i) {
         var P = 'benefits.' + i, slot = 'event.' + i, rel = IMG_EV[i % IMG_EV.length];
-        return '<div class="ecard rv' + (i ? ' d' + i : '') + '"><div class="photo" style="height:190px"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || att(rel)) + '" ' + imFall(rel) + '></div>' +
+        return '<div class="ecard rv' + (i ? ' d' + i : '') + '"><div class="photo" style="height:190px"><img loading="lazy" alt="" data-img="' + slot + '" src="' + esc(imgs[slot] || dflt(rel, i, 3)) + '" ' + dfall(rel) + '></div>' +
           '<span class="cap"' + de(P + '.cap') + '>' + esc(b.cap || '') + '</span><b' + de(P + '.title') + '>' + ml(b.title || '') + '</b>' +
           '<span class="lnk"' + de(P + '.link') + '>' + esc(b.link || '') + '</span></div>';
       }).join('') + '</div></div></section>';
@@ -735,14 +805,14 @@
       '</div>') + '</div></div></section>';
 
     if (V.faq === 'cards') {
-      SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
+      SEC.faq = '<section class="sec" style="background:var(--bg1)" id="faq" data-section="faq"><div class="wrap center">' +
         '<h2 class="tt rv">' + ml(TT.faqT) + '</h2>' +
         '<div class="faqcards rv d1">' + faq.map(function (f, i) {
           return '<div class="fqc"><b><i>Q.</i> <span' + de('faq.' + i + '.q') + '>' + esc(f.q || '') + '</span></b>' +
             '<p' + de('faq.' + i + '.a') + '>' + ml(f.a || '') + '</p></div>';
         }).join('') + '</div></div></section>';
     } else
-    SEC.faq = '<section class="sec" style="background:var(--bg1)" data-section="faq"><div class="wrap center">' +
+    SEC.faq = '<section class="sec" style="background:var(--bg1)" id="faq" data-section="faq"><div class="wrap center">' +
       '<h2 class="tt rv">' + ml(TT.faqT) + '</h2>' +
       '<div class="faq rv d1" style="margin-top:64px">' + faq.map(function (f, i) {
         return '<div class="fitem"><div class="frow"><b><i>Q.</i> <span' + de('faq.' + i + '.q') + '>' + esc(f.q || '') + '</span></b><span>+</span></div>' +
@@ -757,17 +827,6 @@
 
     /* ── 섹션 조립 ── */
     var ORDER = ['about', 'chips', 'areas', 'narrative', 'session', 'zig', 'typeline', 'event', 'location', 'faq', 'ctaband'];
-    /* 기획 데이터 렌더에선 데모 콘텐츠 폴백 금지 — AI가 안 보낸 섹션은 숨긴다(토목·HR 데모 누수 방지) */
-    var hasBrief = !!(shared.tagline || shared.productName || (Array.isArray(shared.features) && shared.features.length));
-    if (hasBrief) {
-      var hdn = Array.isArray(shared.hiddenSections) ? shared.hiddenSections.slice() : [];
-      var needArr = { zig: 'zigs', event: 'benefits', session: 'sessions', faq: 'faq', about: 'stats' };
-      Object.keys(needArr).forEach(function (sec) {
-        var f = needArr[sec];
-        if (!(Array.isArray(shared[f]) && shared[f].length) && hdn.indexOf(sec) < 0) hdn.push(sec);
-      });
-      shared = Object.assign({}, shared, { hiddenSections: hdn });
-    }
     var savedOrd = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
     var ordAll = savedOrd.concat(ORDER.filter(function (k) { return savedOrd.indexOf(k) < 0 && SEC[k]; }));
     var hidden = shared.hiddenSections || [];
@@ -776,7 +835,7 @@
     /* ── 고정 apply 폼 + 푸터 + 독 ── */
     var apply = '<section class="sec" id="apply"><div class="wrap center form">' +
       '<h2 class="tt rv"><span' + de('productName') + '>' + esc(d.productName) + '</span>' + esc(TT.applyT) + '</h2>' +
-      '<p class="sub rv d1"><span' + de('eventDate') + '>' + esc(d.eventDate) + '</span> ㅣ <span>' + esc(placeMain) + '</span></p>' +
+      '<p class="sub rv d1"><span' + de('eventDate') + '>' + esc(d.eventDate) + '</span>' + (placeMain ? ' ㅣ <span>' + esc(placeMain) + '</span>' : '') + '</p>' +
       '<div class="fgrid rv d2" style="margin-top:64px">' +
       '<div><div class="fl">' + esc(TT.fName) + ' <em>*</em></div><input class="fi" type="text" placeholder="' + esc(TT.fPh) + '"></div>' +
       '<div><div class="fl">' + esc(TT.fPhone) + ' <em>*</em></div><input class="fi" type="tel" placeholder="' + esc(TT.fPhTel) + '"></div>' +
@@ -792,10 +851,10 @@
       '<div class="rv d4" style="margin-top:44px"><button class="pill sbm" type="button" style="padding:18px 80px;font-size:17px" data-fdone="' + esc(TT.fDone) + '"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</button></div>' +
       '</div></section>';
 
-    var footAnchors = ['#about', '#session', '#event', '#location'];
+    var footAnchors = anchors.length ? anchors : ['#apply'];
     var footer = '<footer class="dawnfoot"><div class="in">' +
       '<div class="slog"' + de('tagline') + '>' + ml(d.tagline) + '</div>' +
-      '<div class="col"><i>' + esc(TT.fCols[0]) + '</i>' + (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + footAnchors[i % 4] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div>' +
+      '<div class="col"><i>' + esc(TT.fCols[0]) + '</i>' + (d.navLinks || []).slice(0, 4).map(function (l, i) { return '<a href="' + footAnchors[i % footAnchors.length] + '"' + de('navLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div>' +
       '<div class="col"><i>' + esc(TT.fCols[1]) + '</i><a href="#apply"' + de('primaryCta') + '>' + esc(d.primaryCta) + '</a></div>' +
       '<div class="col"><i>' + esc(TT.fCols[2]) + '</i>' + (d.footerLinks || []).slice(0, 4).map(function (l, i) { return '<a' + de('footerLinks.' + i) + '>' + esc(l) + '</a>'; }).join('') + '</div>' +
       '</div><div class="copy"><span' + de('footerCopyright') + '>' + esc(d.footerCopyright) + '</span><span' + de('productName') + '>' + esc(d.productName) + '</span></div></footer>';
