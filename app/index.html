@@ -1077,7 +1077,7 @@
           features:draft.features||[], stats:draft.stats||[], bannerText:draft.bannerText||'', bannerCta:draft.bannerCta||'',
           footerLinks:draft.footerLinks||[], footerCopyright:draft.footerCopyright||'', images:{}, sectionOrder:[], hiddenSections:[], shownSections:[], _clang:S.lang };
         // 세미나·행사 필드 — 첨부 기획서의 세션·일시·장소·마감·FAQ가 초안에 있으면 그대로 시드(집객 팩이 소비)
-        ['sessions','eventDate','eventPlace','deadline','faq','ctaTitle','ctaSub'].forEach(k=>{ if(draft[k]!=null && draft[k]!=='') seed[k]=draft[k]; });
+        ['sessions','eventDate','eventPlace','deadline','faq','ctaTitle','ctaSub','zigs','benefits'].forEach(k=>{ if(draft[k]!=null && draft[k]!=='') seed[k]=draft[k]; });
         if(S.kind==='multi'){
           pg0.pageType='main'; pg0.name='메인홈';
           seed.shownSections=['feature','cta'];

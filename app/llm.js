@@ -789,6 +789,14 @@
     }
     if (str(o.ctaTitle)) out.ctaTitle = str(o.ctaTitle);
     if (str(o.ctaSub)) out.ctaSub = str(o.ctaSub);
+    if (Array.isArray(o.zigs)) {
+      var zg = o.zigs.map(function (x) { return x && { cap: str(x.cap), title: str(x.title), desc: str(x.desc) }; }).filter(function (x) { return x && x.title; }).slice(0, 6);
+      if (zg.length) out.zigs = zg;
+    }
+    if (Array.isArray(o.benefits)) {
+      var bn = o.benefits.map(function (x) { return x && { cap: str(x.cap), title: str(x.title), link: str(x.link) }; }).filter(function (x) { return x && x.title; }).slice(0, 4);
+      if (bn.length) out.benefits = bn;
+    }
     // IA(하위 페이지 목록) — 브리프에 메뉴 구성이 있을 때만 채워짐. 없으면 빈 배열.
     var PT = { product: 1, features: 1, pricing: 1, faq: 1, contact: 1, manual: 1, blog: 1, landing: 1, event: 1 };   // pagetypes.js PAGE_TYPES와 동일(메인 제외)
     out.pages = (Array.isArray(o.pages) ? o.pages : []).map(function (x) {

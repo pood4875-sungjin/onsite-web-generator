@@ -757,6 +757,17 @@
 
     /* ── 섹션 조립 ── */
     var ORDER = ['about', 'chips', 'areas', 'narrative', 'session', 'zig', 'typeline', 'event', 'location', 'faq', 'ctaband'];
+    /* 기획 데이터 렌더에선 데모 콘텐츠 폴백 금지 — AI가 안 보낸 섹션은 숨긴다(토목·HR 데모 누수 방지) */
+    var hasBrief = !!(shared.tagline || shared.productName || (Array.isArray(shared.features) && shared.features.length));
+    if (hasBrief) {
+      var hdn = Array.isArray(shared.hiddenSections) ? shared.hiddenSections.slice() : [];
+      var needArr = { zig: 'zigs', event: 'benefits', session: 'sessions', faq: 'faq', about: 'stats' };
+      Object.keys(needArr).forEach(function (sec) {
+        var f = needArr[sec];
+        if (!(Array.isArray(shared[f]) && shared[f].length) && hdn.indexOf(sec) < 0) hdn.push(sec);
+      });
+      shared = Object.assign({}, shared, { hiddenSections: hdn });
+    }
     var savedOrd = (Array.isArray(shared.sectionOrder) ? shared.sectionOrder : []).filter(function (k) { return SEC[k]; });
     var ordAll = savedOrd.concat(ORDER.filter(function (k) { return savedOrd.indexOf(k) < 0 && SEC[k]; }));
     var hidden = shared.hiddenSections || [];
