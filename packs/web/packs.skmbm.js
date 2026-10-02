@@ -498,6 +498,7 @@
         if (!(typeof shared[needStr[sec]] === 'string' && shared[needStr[sec]].trim()) && hdn.indexOf(sec) < 0) hdn.push(sec);
       });
       shared = Object.assign({}, shared, { hiddenSections: hdn });
+      if (!shared.navTitle) d.navTitle = shared.productName || d.navTitle;   /* 데모 로고 'H.'(HR Growth) 누수 방지 */
       if (!shared.eventPlace) d.eventPlace = '';
       if (!(Array.isArray(shared.footerLinks) && shared.footerLinks.length)) d.footerLinks = ({ ko: ['이용약관', '개인정보처리방침'], en: ['Terms', 'Privacy'], ja: ['利用規約', 'プライバシーポリシー'], zh: ['使用条款', '隐私政策'] })[LANG] || ['Terms', 'Privacy'];
       if (!shared.footerCopyright) d.footerCopyright = '© ' + new Date().getFullYear() + ' ' + (shared.productName || '');

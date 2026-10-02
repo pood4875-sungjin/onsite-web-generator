@@ -52,28 +52,28 @@
      주의: 어떤 주제(제품 릴리즈·채용·세미나·프로모션)가 와도 성립하는 범용 카피만 —
      특정 도메인 용어(해석·기능·웨비나 등)를 넣지 않는다. */
   var TT = {
-    ko: { nav: ['소개','하이라이트','아젠다','신청'], msnEb: 'Why {p}', msn1: '우리에게는 늘 **더 나은 방법**과\n**확실한 다음 단계**가 필요했습니다.', msn2: '{p}에서\n그 **다음 단계**를 확인하세요.',
+    ko: { nav: ['소개','하이라이트','일정','신청'], msnEb: 'Why {p}', msn1: '우리에게는 늘 **더 나은 방법**과\n**확실한 다음 단계**가 필요했습니다.', msn2: '{p}에서\n그 **다음 단계**를 확인하세요.',
           ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
           featT: '{p},\n함께해야 할 이유가 더 있습니다.', featS: '참여자에게 드리는 혜택을 확인해 보세요.',
           agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: '성함', fEmail: '이메일', fCompany: '회사명', fJob: '직책', fPhone: '휴대전화번호', fCountry: '국가/지역', fIndustry: '소속 산업/분야',
           done1: '신청이 완료되었습니다.', done2: '자료를 메일로 보내드렸어요!\n캘린더에 일정을 추가하고 특별 자료도 받아보세요.',
           dockTag: '사전 신청' },
-    en: { nav: ['Overview','Highlights','Agenda','Register'], msnEb: 'Why {p}', msn1: 'We have always needed **a better way**\nand a **clear next step**.', msn2: '{p} is where\nthat **next step** begins.',
+    en: { nav: ['Overview','Highlights','Schedule','Register'], msnEb: 'Why {p}', msn1: 'We have always needed **a better way**\nand a **clear next step**.', msn2: '{p} is where\nthat **next step** begins.',
           ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
           featT: 'More Reasons\nto Join {p}.', featS: 'See the benefits waiting for every attendee.',
           agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: 'Name', fEmail: 'Email', fCompany: 'Company', fJob: 'Job Title', fPhone: 'Phone Number', fCountry: 'Country / Region', fIndustry: 'Industry / Field',
           done1: 'Thank you for registering.', done2: 'Your materials are in your inbox!\nAdd the event to your calendar and watch for bonus materials.',
           dockTag: 'Register' },
-    ja: { nav: ['紹介','ハイライト','アジェンダ','登録'], msnEb: 'Why {p}', msn1: '私たちには、いつも**より良いやり方**と\n**確かな次の一歩**が必要でした。', msn2: 'その**次の一歩**を、\n{p}でご確認ください。',
+    ja: { nav: ['紹介','ハイライト','日程','登録'], msnEb: 'Why {p}', msn1: '私たちには、いつも**より良いやり方**と\n**確かな次の一歩**が必要でした。', msn2: 'その**次の一歩**を、\n{p}でご確認ください。',
           ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
           featT: '{p}に\n参加すべき理由が、まだあります。', featS: '参加者向けの特典をご確認ください。',
           agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
           fName: 'お名前', fEmail: 'メール', fCompany: '会社名', fJob: '役職', fPhone: '電話番号', fCountry: '国・地域', fIndustry: '業種・分野',
           done1: 'お申し込みありがとうございます。', done2: '資料をメールでお送りしました！\nカレンダーに日程を追加して特典資料も受け取りましょう。',
           dockTag: '事前登録' },
-    zh: { nav: ['介绍','亮点','议程','报名'], msnEb: 'Why {p}', msn1: '我们始终需要**更好的方法**\n和**明确的下一步**。', msn2: '在{p}，\n遇见那个**下一步**。',
+    zh: { nav: ['介绍','亮点','日程','报名'], msnEb: 'Why {p}', msn1: '我们始终需要**更好的方法**\n和**明确的下一步**。', msn2: '在{p}，\n遇见那个**下一步**。',
           ansPre: 'The Answer,', sklPre: 'A Closer Look', sklPost: 'at {p}',
           featT: '加入{p}，\n理由不止一个。', featS: '查看为参与者准备的专属权益。',
           agdT: 'Agenda', regPre: '{p}', regPass: 'All-Access Pass',
@@ -939,6 +939,7 @@
     /* GNB·푸터 — 스키마 밖 필드: 기획 입력이 있으면 productName·범용 라벨로, 데모 상태면 데모 유지 */
     if (!shared.navTitle && hasBrief) d.navTitle = shared.productName || BD.navTitle;
     if (!shared.navLinks && hasBrief) d.navLinks = (TT[LANG] || TT.ko).nav;
+    if (!shared.navLinks && hasBrief && shared.heads) { var nv = d.navLinks.slice(); if (shared.heads.form && shared.heads.form.length <= 7) nv[3] = shared.heads.form; if (shared.heads.sessions && shared.heads.sessions.length <= 7) nv[2] = shared.heads.sessions; d.navLinks = nv; }
     if (!shared.footerBrand && hasBrief) d.footerBrand = d.productName;
     /* 폼 제목·독 문구 — 데모('All-Access Pass'·CIVIL 릴리즈 문구) 대신 기획 값에서 */
     if (hasBrief && !shared.formTitle) d.formTitle = (shared.heads && shared.heads.form) || d.primaryCta || d.productName;
