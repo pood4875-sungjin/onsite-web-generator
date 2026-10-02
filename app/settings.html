@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['bundle.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/ppt/packs.ppt.js','llm.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['bundle.js','../packs/web/packs.krds.js','../packs/web/packs.midas.js','../packs/edm/packs.edm.js','../packs/web/packs.aether.js','../packs/web/packs.saturn.js','../packs/ppt/packs.ppt.js','prompts.js','llm.js','i18n.js','icons.js','shell.js','modal.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="ds.css">
 <style>
@@ -62,7 +62,7 @@
 
     <div class="card">
       <h2 data-i18n="AI 생성 (선택)">AI 생성 (선택)</h2>
-      <p class="sub" data-i18n="내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.">내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.</p>
+      <p class="sub" data-i18n="내 Anthropic(Claude) API 키를 등록하면 페이지·PPT 내용을 AI가 기획에 맞게 채워줘요. 키는 이 브라우저에만 저장되고 Anthropic 외 다른 서버로 전송되지 않아요.">내 Anthropic(Claude) API 키를 등록하면 페이지·PPT 내용을 AI가 기획에 맞게 채워줘요. 키는 이 브라우저에만 저장되고 Anthropic 외 다른 서버로 전송되지 않아요.</p>
       <div class="ai-fields">
         <label data-i18n="API 키">API 키</label>
         <div class="ai-keyrow">

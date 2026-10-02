@@ -474,7 +474,7 @@
       "The team's shared AI is connected. You can use AI deck generation without a personal API key.",
       'チーム共用のAIが接続されています。個人のAPIキーなしでPPTのAI生成を使えます。',
       '已连接团队共用 AI。无需个人 API 密钥即可使用 PPT AI 生成。'],
-    '내 Anthropic API 키를 등록하면 PPT 내용을 AI가 실제 문장으로 채워줘요. 키는 이 브라우저에만 저장되고 서버로 전송되지 않아요.': [
+    '내 Anthropic(Claude) API 키를 등록하면 페이지·PPT 내용을 AI가 기획에 맞게 채워줘요. 키는 이 브라우저에만 저장되고 Anthropic 외 다른 서버로 전송되지 않아요.': [
       'Register your own Anthropic API key and AI will write the deck copy for you. The key is stored only in this browser and never sent to our server.',
       '自分のAnthropic APIキーを登録すると、AIがPPTの内容を実際の文章で埋めます。キーはこのブラウザにのみ保存され、サーバーには送信されません。',
       '注册你自己的 Anthropic API 密钥后，AI 会为演示文稿撰写真实文案。密钥仅保存在此浏览器，不会发送到服务器。'],
@@ -688,6 +688,7 @@
     '일': [' days', '日', '天'],
     '말씀하신 첨부 파일이 아직 안 보여요 📎 아래 + 버튼으로 올려주시거나, 내용을 직접 적어주세요.': ['I don\'t see the attached file yet 📎 Upload it with the + button below, or type the details directly.', '添付ファイルがまだ見つかりません 📎 下の＋ボタンでアップロードするか、内容を直接入力してください。', '还没有看到您提到的附件 📎 请用下方 + 按钮上传，或直接输入内容。'],
     '마지막으로 전체 내용을 검수하고 있어요 🔍': ['Final review of all content 🔍', '最後に全体の内容を検収しています 🔍', '正在对整体内容做最终检查 🔍'],
+    'AI 초안 생성은 Claude API 키를 연결하면 켜져요. 설정 → API 키에서 등록해주세요(키는 이 브라우저에만 저장돼요). 지금은 대화로 직접 채우는 방식으로 진행할게요.': ['AI drafting turns on once you connect a Claude API key. Add it in Settings → API key (stored only in this browser). For now, let’s fill things in together through chat.', 'Claude APIキーを接続するとAI下書きが使えます。設定 → APIキーで登録してください（キーはこのブラウザにのみ保存）。今回は会話で内容を埋めていきます。', '连接 Claude API 密钥后即可启用 AI 草稿。请在 设置 → API 密钥 中添加（密钥仅保存在此浏览器）。现在先通过对话来填写内容。'],
     '페이지 이름': ['Page name', 'ページ名', '页面名称'],
     '핵심 카드': ['Key cards', 'キーカード', '核心卡片'],
     '수치 하이라이트': ['Key figures', '数値ハイライト', '数据亮点'],

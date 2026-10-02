@@ -56,6 +56,10 @@
   function maskGKey() { return maskKey(getGKey()); }
   function maskKey(k) { k = k || getKey(); if (!k) return ''; return k.length <= 12 ? '••••' : k.slice(0, 7) + '…' + k.slice(-4); }
   // UI 언어 — 되묻기 질문·수정 결과 메시지를 이 언어로 받는다(초안 콘텐츠 언어는 brief.lang)
+  /* 개인 키(BYOK) 모드 지시문 — 워커와 같은 원문(app/prompts.js, scripts/sync-prompts.cjs로 생성) 우선 */
+  function WP(k) { return (window.WORKER_PROMPTS && window.WORKER_PROMPTS[k]) || ''; }
+  var LANG_NAME = { ko: '한국어', en: '영어(English)', ja: '일본어(日本語)', zh: '중국어 간체(简体中文)' };
+  function langName(l) { return LANG_NAME[l] || LANG_NAME.ko; }
   function uiLang() { try { return (window.I18N ? I18N.getLang() : localStorage.getItem('midas-lang')) || 'ko'; } catch (e) { return 'ko'; } }
   /* 프록시 주소 결정: localStorage 오버라이드 > 내장 PROXY_URL.
      오버라이드에 'off'를 넣으면 프록시를 끄고 BYOK(개인 키) 모드로 — 인계자가 코드 수정 없이
@@ -476,7 +480,8 @@
         '너는 웹 콘텐츠 편집자다. 현재 사이트 콘텐츠 JSON과 지시를 받아 수정 결과를 돌려준다.\n' +
         '반드시 유효한 JSON 하나만 출력: {"site":{...수정된 전체 JSON...},"message":"무엇을 바꿨는지 한두 문장"}\n' +
         '구조·필드 구성 유지, 지시 부분만 수정, 나머지 값 그대로. 색·폰트·배치 등 디자인 지시면 site 없이 message로 "디자인은 스타일 팩이 자동 관리해요" 안내.';
-      txt = await messages({ system: wsys, user: '현재 사이트:\n' + JSON.stringify(site) + '\n\n사용자 지시:\n' + instruction, maxTokens: 8000 });
+      if (WP('WEB_EDIT_SYSTEM')) wsys = WP('WEB_EDIT_SYSTEM').replace('{LANG}', langName(uiLang()));
+      txt = await messages({ system: wsys, user: '현재 사이트 콘텐츠:\n' + JSON.stringify(site) + '\n\n사용자 지시:\n' + instruction, maxTokens: 8000 });
     }
     var out = _repairParse(String(txt || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim());
     if (!out) throw new Error('BAD_EDIT_JSON');
@@ -665,7 +670,10 @@
       if (!r.ok) throw new Error(_proxyErrMsg(j, r.status));
       txt = j.text;
     } else {
-      txt = await messages({ system: INTAKE_SYSTEM, user: '브리프(kind=' + (brief.kind || '') + '):\n' + (brief.plan || ''), maxTokens: 500 });
+      var _il = uiLang();
+      var _isys = WP('INTAKE_SYSTEM') ? WP('INTAKE_SYSTEM').replace(/\{LANG\}/g, langName(_il)) : INTAKE_SYSTEM;
+      txt = await messages({ system: _isys, user: '브리프(kind=' + (brief.kind || '') + '):\n' + String(brief.plan || '').slice(0, 4000) +
+        (_il !== 'ko' ? '\n\n[OUTPUT LANGUAGE] You MUST write q and EVERY item in opts in ' + langName(_il) + '.' : ''), maxTokens: 1500 });
     }
     var s = String(txt || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
     var i = s.indexOf('{'), k = s.lastIndexOf('}');
@@ -731,7 +739,7 @@
         return await _attemptW(false);
       }
     } else {
-      txt = await messages({ system: WEB_SYSTEM + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2), maxTokens: 4000, onText: onText });
+      txt = await messages({ system: (WP('WEB_SYSTEM') || WEB_SYSTEM) + (window.PAGE_SECTION_DOC ? '\n' + window.PAGE_SECTION_DOC : '') + (window.VARIANT_DOC ? '\n' + window.VARIANT_DOC : ''), user: '브리프:\n' + JSON.stringify(payload, null, 2) + '\n(올해 연도: ' + new Date().getFullYear() + ')', maxTokens: 8000, onText: onText });
     }
     return _parseSite(txt);
   }

@@ -7,7 +7,7 @@
 <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('midas-theme')||'light')</script>
 <script>
 // 캐시 버스터 로더 — python http.server 휴리스틱 캐시로 팩 스크립트가 스테일해지는 것 방지(로컬 전용이라 비용 없음)
-['../bundle.js','../pagetypes.js','../../packs/web/packs.krds.js','../../packs/web/packs.midas.js','../../packs/edm/packs.edm.js','../../packs/web/packs.aether.js','../../packs/web/packs.saturn.js','../../packs/web/packs.mbm.js','../../packs/web/packs.skmbm.js','../../packs/web/packs.axday.js','../../packs/web/packs.toss.js','../../packs/web/packs.orbit.js','../../packs/web/packs.ensol.js','../../packs/ppt/packs.ppt.js','../charts.js','../../packs/ppt/packs.pitch.js','../../packs/ppt/packs.honors.js','../../packs/ppt/packs.naver.js','../../packs/ppt/packs.rams.js','../../packs/ppt/packs.pastel.js','../../packs/ppt/packs.sfmi.js','../../packs/ppt/packs.machine.js','../../packs/ppt/packs.hfd.js','../export-pptx.js','../llm.js','../../packs/edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
+['../bundle.js','../pagetypes.js','../../packs/web/packs.krds.js','../../packs/web/packs.midas.js','../../packs/edm/packs.edm.js','../../packs/web/packs.aether.js','../../packs/web/packs.saturn.js','../../packs/web/packs.mbm.js','../../packs/web/packs.skmbm.js','../../packs/web/packs.axday.js','../../packs/web/packs.toss.js','../../packs/web/packs.orbit.js','../../packs/web/packs.ensol.js','../../packs/ppt/packs.ppt.js','../charts.js','../../packs/ppt/packs.pitch.js','../../packs/ppt/packs.honors.js','../../packs/ppt/packs.naver.js','../../packs/ppt/packs.rams.js','../../packs/ppt/packs.pastel.js','../../packs/ppt/packs.sfmi.js','../../packs/ppt/packs.machine.js','../../packs/ppt/packs.hfd.js','../export-pptx.js','../prompts.js','../llm.js','../../packs/edm/promo01.js','../modal.js','../i18n.js'].forEach(function(s){ document.write('<scr'+'ipt src="'+s+'?v='+Date.now()+'"></scr'+'ipt>'); });
 </script>
 <link rel="stylesheet" href="../ds.css">
 <style>
@@ -3000,7 +3000,7 @@
     /* 웹/랜딩: "링크 만들기" — 페이지 HTML을 워커에 발행해 접속 가능한 공유 URL 생성 (시안 V3-05) */
     if(!curMode().editOnly){
       const lb=document.getElementById('linkBtn');
-      lb.style.display='';
+      lb.style.display=(window.LLM && LLM.usingProxy && LLM.usingProxy()) ? '' : 'none';   // 공유 링크는 중계 서버 전용 — 개인 키 배포본에선 숨김
       lb.onclick=async ()=>{
         if(!generated){ await uiAlert(tL('먼저 페이지를 생성해주세요.')); return; }
         const base=(window.LLM && LLM.proxyUrl && LLM.proxyUrl())||'';

@@ -26,7 +26,7 @@ function jsFiles(dir, recursive) {
 }
 
 /* 1) 문법 전수 */
-console.log('[1/3] JS 문법 검사');
+console.log('[1/4] JS 문법 검사');
 const targets = [...jsFiles('packs', true), ...jsFiles('app', false), ...jsFiles('scripts', false)];
 for (const f of targets) {
   try { execFileSync('node', ['--check', path.join(ROOT, f)], { stdio: 'pipe' }); }
@@ -36,7 +36,7 @@ console.log('  ' + targets.length + '개 파일');
 
 /* 2) 팩 한국어 폴백 지뢰 — 4개 언어로 나가는 "활성 팩"만 검사.
    레거시 팩(aether·saturn·krds·midas·ppt·pitch·honors·pastel·sfmi·edm)은 KO 전용 세대라 제외 */
-console.log('[2/3] 활성 팩 한국어 하드코딩 폴백 검사');
+console.log('[2/4] 활성 팩 한국어 하드코딩 폴백 검사');
 const FBRE = /\|\|\s*['"][가-힣]/;
 const LOCALIZED = ['packs.naver.js', 'packs.rams.js', 'packs.machine.js', 'packs.mbm.js', 'packs.axday.js', 'packs.orbit.js', 'packs.toss.js'];
 for (const f of jsFiles('packs', true).filter(p => LOCALIZED.includes(path.basename(p)))) {
@@ -47,7 +47,10 @@ for (const f of jsFiles('packs', true).filter(p => LOCALIZED.includes(path.basen
 }
 
 /* 3) core 단위 테스트 */
-console.log('[3/3] core 단위 테스트 (node --test)');
+console.log('[3/4] 개인 키(BYOK) 지시문 동기화');
+{ const r = require('child_process').spawnSync(process.execPath, [require('path').join(__dirname, 'sync-prompts.cjs'), '--check'], { encoding: 'utf8' });
+  process.stdout.write(r.stdout || ''); if (r.status !== 0) { console.error('  → 워커 지시문을 고쳤다면: node scripts/sync-prompts.cjs'); process.exit(1); } }
+console.log('[4/4] core 단위 테스트 (node --test)');
 const t = spawnSync('node', ['--test'], { cwd: ROOT, encoding: 'utf8' });
 if (t.status !== 0) bad('단위 테스트 실패\n' + (t.stdout || '').split('\n').filter(l => l.includes('fail') || l.includes('✖')).slice(0, 5).join('\n'));
 else console.log('  ' + ((t.stdout.match(/pass (\d+)/) || [])[1] || '?') + '개 통과');

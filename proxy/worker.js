@@ -674,7 +674,7 @@ export default {
     } else if (route === '/edit-web') {
       // 웹/랜딩 자연어 수정 — 현재 사이트 콘텐츠 JSON 전체를 받아 지시대로 고친 전체를 돌려받는다(PPT /edit와 같은 계약)
       const site = body.site && typeof body.site === 'object' ? body.site : null;
-      const instruction = clip(body.instruction, 800);
+      const instruction = clip(body.instruction, 4000);   // 검수 패스(브리프+기준)가 800자에서 잘리던 문제
       if (!site || !instruction) return json({ error: 'BAD_REQUEST' }, 400);
       system = WEB_EDIT_SYSTEM.replace('{LANG}', uiLangName(clip(body.lang, 5) || 'ko'));
       userMsg = '현재 사이트 콘텐츠:\n' + clip(JSON.stringify(site), 26000) + '\n\n사용자 지시:\n' + instruction;
