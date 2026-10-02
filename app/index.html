@@ -974,10 +974,10 @@
     const onText = job==='composeweb'
       ? (full)=>{
           let m;
-          if((m=/"productName"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(full)) && m[1]){ const l='📌 '+_L('제품명')+' — '+un(m[1]); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
+          if((m=/"productName"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(full)) && m[1]){ const l='📌 '+_L('페이지 이름')+' — '+un(m[1]); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
           if((m=/"tagline"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(full)) && m[1]){ const l='✍️ '+_L('핵심 카피')+' — '+un(m[1]); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
-          [...full.matchAll(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(x=>un(x[1])).slice(0,3).forEach(t=>{ const l='🧩 '+_L('기능 카드')+' — '+t; if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} });
-          if(/"stats"\s*:/.test(full)){ const l='📊 '+_L('지표 구성'); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
+          [...full.matchAll(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(x=>un(x[1])).slice(0,3).forEach(t=>{ const l='🧩 '+_L('핵심 카드')+' — '+t; if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} });
+          if(/"stats"\s*:/.test(full)){ const l='📊 '+_L('수치 하이라이트'); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
           if(/"bannerText"\s*:/.test(full)){ const l='🪧 '+_L('배너 문구 작성'); if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} }
           [...full.matchAll(/"name"\s*:\s*"((?:[^"\\]|\\.)*)"/g)].map(x=>un(x[1])).forEach(n=>{ const l='📄 '+_L('하위 페이지')+' — '+n; if(!seenSet.has(l)){seenSet.add(l); pushLine(l);} });
         }
@@ -1084,7 +1084,7 @@
           seed.hiddenSections=['comparison','testimonial','blog','faq','stat'];
         } else { pg0.pageType='landing'; }
         // 임의로 채운 부분 안내 — 완성본으로 시작하고, 예시 채움 위치를 알려 편집 유도
-        const A_LABEL={ productName:'제품명', tagline:'태그라인', subcopy:'소개 문구', primaryCta:'CTA 버튼',
+        const A_LABEL={ productName:'페이지 이름', tagline:'핵심 카피', subcopy:'소개 문구', primaryCta:'CTA 버튼',
           features:'기능 카드', stats:'지표 수치', bannerText:'배너 문구', bannerCta:'배너 버튼',
           footerLinks:'푸터 링크', footerCopyright:'저작권 문구' };
         const assumed=[...new Set((draft.assumed||[]).map(k=>A_LABEL[k]).filter(Boolean))];
